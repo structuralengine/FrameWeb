@@ -1,0 +1,7 @@
+.unity-container,
+.unity-container canvas {
+    background-color: #000;
+    height: "100%";
+    margin: auto !important;
+    width: "100%";
+}

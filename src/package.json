@@ -1,0 +1,8 @@
+{
+  "name": "flac-selecter",
+  "productName": "FLAC Selecter",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "調査・計測データに基づく対策工設計ソフト",
+  "author": "JRSE"
+}

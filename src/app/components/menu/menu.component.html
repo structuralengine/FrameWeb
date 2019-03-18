@@ -1,0 +1,34 @@
+<div class="row">
+
+  <div class="col">
+    <div ngbDropdown class="d-inline-block">
+      <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>ファイル</button>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+        <button ngbDropdownItem (click)="renew()">新規作成</button>
+
+        <label>
+          <span  ngbDropdownItem>
+            ファイルを開く
+            <input type="file" accept="application/json" (change)="open($event)" style="display:none" />
+          </span>
+        </label>
+        
+        <button ngbDropdownItem (click)="save()">ファイルを保存</button>
+        <button ngbDropdownItem (click)="calcrate()">計算</button>
+        <button ngbDropdownItem (click)="print()">印刷</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col text-right">
+    <div *ngIf="!loggedIn" class="d-inline-block">
+      <button (click)="logIn()" class="btn btn-outline-primary">ログイン</button>
+    </div>
+    <div *ngIf="loggedIn" class="d-inline-block">
+      {{loginUserName}}さん！あなたの保有ポイントは{{userPoint}}ポイントです
+      <button (click)="logOut()" class="btn btn-outline-primary">ログアウト</button>
+    </div>
+  </div>
+
+
+</div>

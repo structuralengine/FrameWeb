@@ -1,0 +1,16 @@
+<div class="pager">
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination"></ngb-pagination>
+</div>
+
+<div class="datasheet">
+  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true"
+   [width]="450" [height]="500">
+    <hot-column data="m" title="部材No"></hot-column>
+    <hot-column data="xi" title="xi"></hot-column>
+    <hot-column data="yi" title="yi"></hot-column>
+    <hot-column data="zi" title="zi"></hot-column>
+    <hot-column data="xj" title="xj"></hot-column>
+    <hot-column data="yj" title="yj"></hot-column>
+    <hot-column data="zj" title="zj"></hot-column>
+  </hot-table>
+</div>

@@ -1,0 +1,13 @@
+<div class="btn-group">
+  <nav>
+    <a routerLink="/input-define" routerLinkActive="selected-item" class="btn btn-outline-primary">DEFINE</a>
+    <a routerLink="/input-combine" routerLinkActive="selected-item" class="btn btn-outline-primary">COMBINE</a>
+    <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary">PICKUP</a>
+  </nav>
+</div>
+
+<div class="datasheet">
+  <hot-table class="hot" [data]="combineData" [colHeaders]="true" [rowHeaders]="true" [height]="500">
+    <hot-column *ngFor="let c of combineColums;" [data]="c" [title]="c"></hot-column>
+  </hot-table>
+</div>

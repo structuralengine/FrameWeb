@@ -1,0 +1,54 @@
+<div class="header">
+    <div class="container">
+        <div class="liner">
+            <img src="./assets/img/logo.png" />
+            <div class="title-and-menu">
+                <h1>立体骨組構造解析ソフト</h1>
+                <app-menu></app-menu>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="btn-group">
+        <nav>
+            <a routerLink="./input-nodes" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">格点</a>
+            <a routerLink="./input-fix-node" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">支点</a>
+            <a routerLink="./input-members" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">部材</a>
+            <a routerLink="./input-elements" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">材料</a>
+            <a routerLink="./input-joint" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">結合</a>
+            <a routerLink="./input-notice-points" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">着目点</a>
+            <a routerLink="./input-fix-member" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">バネ</a>
+
+            <a routerLink="./input-load-name" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">荷重</a>
+                
+            <a routerLink="./input-define" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">組合せ</a>
+
+            <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">変位</a>
+            <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">支点反力</a>
+            <a routerLink="./result-fsec" *ngIf="isCalculated" (click)="contentsDailogShow()" routerLinkActive="selected-item"
+                class="btn btn-outline-primary">基本荷重断面力</a>
+        </nav>
+    </div>
+</div>
+
+<div *ngIf="unityVisible" class="unity-container">
+    <app-unity #unityView></app-unity>
+</div>
+
+<div cdkDrag *ngIf="isContentsDailogShow" class="contents-dailog">
+    <button (click)="dialogClose()" class="dialog-close-button"></button>
+    <router-outlet></router-outlet>
+</div>
+

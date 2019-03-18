@@ -1,0 +1,18 @@
+<div class="btn-group">
+  <nav>
+    <a routerLink="/input-load-name" routerLinkActive="selected-item" class="btn btn-outline-primary">荷重名称</a>
+    <a routerLink="/input-load" routerLinkActive="selected-item" class="btn btn-outline-primary">荷重強度</a>
+  </nav>
+</div>
+
+<div class="datasheet">
+  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="500" [height]="500">
+    <hot-column data="rate" title="割増し係数"></hot-column>
+    <hot-column data="symbol" title="記号"></hot-column>
+    <hot-column data="name" title="名称"></hot-column>
+    <hot-column data="fix_node" title="支点"></hot-column>
+    <hot-column data="fix_member" title="バネ"></hot-column>
+    <hot-column data="element" title="断面"></hot-column>
+    <hot-column data="joint" title="結合"></hot-column>
+  </hot-table>
+</div>

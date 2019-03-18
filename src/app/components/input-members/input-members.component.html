@@ -1,0 +1,14 @@
+<div class="pager">
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination"></ngb-pagination>
+</div>
+
+<div class="datasheet">
+  <hot-table class="hot" [data]="dataset" 
+  [colHeaders]="true" [rowHeaders]="false" [width]="380" [height]="500">
+    <hot-column data="id" [readOnly]="true" title="部材No"></hot-column>
+    <hot-column data="ni" title="i端"></hot-column>
+    <hot-column data="nj" title="j端"></hot-column>
+    <hot-column data="e" title="材料No"></hot-column>
+    <hot-column data="cg" title="コードアングル"></hot-column>
+  </hot-table>
+</div>
