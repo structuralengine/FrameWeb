@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
+import { FrameDataService } from '../../providers/frame-data.service';
 
 @Component({
   selector: 'app-input-load-name',
@@ -8,20 +9,43 @@ import { InputDataService } from '../../providers/input-data.service';
 })
 export class InputLoadNameComponent implements OnInit {
 
+  static ROWS_COUNT = 20;
   dataset: any[];
   page: number;
+  rowHeaders: any[];
 
-  constructor(private input: InputDataService) {
-    this.dataset = new Array();
+  constructor(private input: InputDataService,
+    private frame: FrameDataService) {
+    this.page = 1;
   }
 
   ngOnInit() {
-
-    for (var i = 1; i <= 20; i++) {
-      const load_name = this.input.getLoadNameColumns(i);
-      this.dataset.push(load_name)
-    }
-
+    this.loadPage(1);
   }
 
+  loadPage(currentPage: number) {
+    if (currentPage !== this.page) {
+      this.page = currentPage;
+    }
+    this.dataset = new Array();
+    this.rowHeaders = new Array();
+
+    const a1: number = (currentPage - 1) * InputLoadNameComponent.ROWS_COUNT + 1;
+    const a2: number = a1 + InputLoadNameComponent.ROWS_COUNT - 1;
+
+    for (var i = a1; i <= a2; i++) {
+      const load_name = this.input.getLoadNameColumns(i);
+      this.dataset.push(load_name);
+      this.rowHeaders.push(i);
+    }
+  }
+
+  hotTableSettings = {
+
+    beforeChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.frame.chengeData('load_name');
+      }
+    }
+  }
 }

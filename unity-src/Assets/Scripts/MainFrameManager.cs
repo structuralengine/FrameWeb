@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ public class MainFrameManager : MonoBehaviour
         comb_fsec,
         pic_fsec,
         disg,
-        reac,
+        reac
 	}
 
     webframe _webframe = null;

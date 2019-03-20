@@ -1,10 +1,12 @@
 <div class="pager">
-  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination"></ngb-pagination>
+  <div class="pager-title">タイプ</div>
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+  </ngb-pagination>
 </div>
 
 <div class="datasheet">
-  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true"
-   [width]="450" [height]="500">
+  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="450" [height]="500"
+    [settings]="hotTableSettings">
     <hot-column data="m" title="部材No"></hot-column>
     <hot-column data="xi" title="xi"></hot-column>
     <hot-column data="yi" title="yi"></hot-column>

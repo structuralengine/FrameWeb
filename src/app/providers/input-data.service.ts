@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ɵangular_packages_platform_browser_platform_browser_k } from '@angular/platform-browser';
 
 @Injectable({
     providedIn: 'root'
@@ -79,7 +80,7 @@ export class InputDataService {
         }
         // 対象データが無かった時に処理
         if (result == null) {
-            result = { id: index, ni: '', nj: '', e: '', cg: '' };
+            result = { id: index, L:'', ni: '', nj: '', e: '', cg: '' };
             this.member.push(result);
         }
         return result;
@@ -198,9 +199,6 @@ export class InputDataService {
             this.notice_points.push(result);
         } else {
             // データの不足を補う
-            if (!('len' in result)) {
-                result['len'] = '0'; //ここに部材長さを計算するコードを書いてください. sasa
-            }
             for (var i = 1; i <= InputDataService.NOTICE_POINTS_COUNT; i++) {
                 if (!(("L" + i) in result)) {
                     result["L" + i] = '';
@@ -259,23 +257,36 @@ export class InputDataService {
         return result;
     }
 
-    public getLoadColumns(row: number): any {
+    public getLoadColumns(typNo: number, row: number): any {
 
+        let target: any = null;
         let result: any = null;
-        for (let i = 0; i < this.load.length; i++) {
-            var tmp = this.load[i];
+
+        // タイプ番号を探す
+        if (!this.load[typNo]) {
+            target = new Array();
+        } else {
+            target = this.load[typNo];
+        }
+
+        // 行を探す
+        for (let i = 0; i < target.length; i++) {
+            var tmp = target[i];
             if (tmp['row'] == row) {
                 result = tmp;
                 break;
             }
         }
+
         // 対象データが無かった時に処理
+        // 対象行が無かった時に処理
         if (result == null) {
             result = {
-                row: row, load_id: '', m1: '', m2: '', direction: '', mark: '', L1: '', L2: '', P1: '', P2: '',
+                row: row, m1: '', m2: '', direction: '', mark: '', L1: '', L2: '', P1: '', P2: '',
                 n: '', tx: '', ty: '', tz: '', rx: '', ry: '', rz: ''
             };
-            this.load.push(result);
+            target.push(result);
+            this.load[typNo] = target;
         }
         return result;
     }
@@ -348,5 +359,6 @@ export class InputDataService {
         }
         return result;
     }
+
 
 }

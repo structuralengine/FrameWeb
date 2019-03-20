@@ -20,7 +20,7 @@ export class ResultFsecComponent implements OnInit {
 
   ngOnInit() {
 
-    for (var i = 1; i < 200; i++) {
+    for (var i = 1; i <= this.result.FSEC_ROWS_COUNT; i++) {
       const reac = this.result.getFsecColumns(this.page, i);
       this.dataset.push(reac)
     }

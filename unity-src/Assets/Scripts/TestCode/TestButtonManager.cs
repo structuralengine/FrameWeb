@@ -1,75 +1,159 @@
-﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(1000)] //Start を最後に呼び出すため
-public class TestButtonManager : MonoBehaviour {
-	[SerializeField]
-	private MainFrameManager.InputModeType _inputModeType = (MainFrameManager.InputModeType)0;
-    private ExternalConnect script;
+public class TestButtonManager : MonoBehaviour
+{
+  [SerializeField]
+  private ExternalConnect script;
+  private int stepNo;
 
-	//[SerializeField, Multiline(10)]
-	string _initText;
+  /// <summary>開始時</summary>
+  void Start()
+  {
+    GameObject connecter = GameObject.Find("ExternalConnect");
+    this.script = connecter.GetComponent<ExternalConnect>();
 
-	//[SerializeField, Multiline(10)]
-	string _testText;
+#if UNITY_EDITOR
+    this.stepNo = 1;
+    this.DoTestCode();
+#else
+    GameObject TestButton = GameObject.Find("TestButton");
+    TestButton.SetActive(false);
+#endif
 
+  }
 
+  [Conditional("UNITY_EDITOR")]
+  private void DoTestCode()
+  {
+    //ファイルを取得
+    string path = Application.dataPath + "/Resources/Test/";
+    string[] files = System.IO.Directory.GetFiles(path, string.Format("{0}*.json", this.stepNo));
 
-	/// <summary>
-	/// 開始時
-	/// </summary>
-    void Start()
+    // ファイルを読み込む
+    TextAsset textAsset = null;
+    string stepName = null;
+    foreach (string fileName in files)
     {
-        GameObject connecter = GameObject.Find("ExternalConnect");
-        this.script = connecter.GetComponent<ExternalConnect>();
-
-		this.script.ChengeMode(_inputModeType);
-
-		string initTextPath = "Test/" + _inputModeType.ToString() + "/InitText";
-		TextAsset textAsset = Resources.Load<TextAsset>(initTextPath);
-		if( textAsset == null )
-		{ 
-			Debug.LogError("ファイルが読み込めません。 : " + initTextPath );
-		}
-
-		_initText = textAsset.text;
-        this.script.ReceiveData(_initText);
+      stepName = System.IO.Path.GetFileNameWithoutExtension(fileName);
+      textAsset = Resources.Load<TextAsset>("Test/" + stepName);
+      break;
+    }
+    if (textAsset == null)
+    {
+      UnityEngine.Debug.LogError("ファイルが読み込めません。 :" + stepName);
+      return;
     }
 
-
-
-	/// <summary>
-	/// テストボタンをクリックしたとき
-	/// </summary>
-    public void testBotton_Click()
+    // JSON データを解釈する
+    string ReceiveJson = textAsset.text;
+    Dictionary<string, object> objJson;
+    try
     {
-		string initTextPath = "Test/" + _inputModeType.ToString() + "/TestText";
-		TextAsset textAsset = Resources.Load<TextAsset>(initTextPath);
-		if( textAsset == null )
-		{ 
-			Debug.LogError("ファイルが読み込めません。 : " + initTextPath );
-		}
-		_testText = textAsset.text;
-        this.script.ReceiveModeData(_testText);
-        
-		/*
-            case "nodes":
-            case "members":
-            case "panels":
-            case "fix_nodes":
-            case "elements":
-            case "joints":
-            case "notice_points":
-            case "fix_members":
-            case "loads":
-            case "fsec":
-            case "comb.fsec":
-            case "pic.fsec":
-            case "disg":
-            case "reac":
-         */
+      objJson = Json.Deserialize(ReceiveJson) as Dictionary<string, object>;
     }
+    catch
+    {
+      UnityEngine.Debug.Log("Error!! at webframe SetData Json.Deserialize");
+      return;
+    }
+
+    // 処理を実行する
+    try
+    {
+      string methodName = objJson["methodName"].ToString();
+
+      switch (methodName){
+        case "ReceiveData":
+          object output1 = objJson["strJson"];
+          string strJson1 = Json.Serialize(output1);
+          this.script.ReceiveData(strJson1);
+          break;
+
+        case "ChengeMode":
+          object output2 = objJson["inputModeType"];
+          int inputModeType = int.Parse(Json.Serialize(output2));
+          this.script.ChengeMode(inputModeType);
+          break;
+
+        case "ReceiveModeData":
+          object output3 = objJson["strJson"];
+          string strJson2 = Json.Serialize(output3);
+          this.script.ReceiveModeData(strJson2);
+          break;
+
+        case "SendCapture":
+          this.script.SendCapture();
+          break;
+
+        case "SelectItemChange":
+          object output4 = objJson["strMode"];
+          string strMode = Json.Serialize(output4);
+          object output5 = objJson["i"];
+          int i = int.Parse(Json.Serialize(output5));
+          this.script.SelectItemChange(strMode, i);
+          break;
+
+        default:
+          break;
+      }
+      UnityEngine.Debug.Log(stepName + " を実行しました。");
+    }
+    catch
+    {
+      UnityEngine.Debug.Log(stepName + " の実行に失敗しました。");
+      return;
+    }
+
+    // 次の手順の準備をする
+    this.stepNo += 1;
+    GameObject TestButton = GameObject.Find("TestButton");
+
+    //ファイルを取得
+    files = System.IO.Directory.GetFiles(path, string.Format("{0}*.json", this.stepNo));
+
+    // ファイルを読み込む
+    stepName = null;
+    foreach (string fileName in files)
+    {
+      stepName = System.IO.Path.GetFileNameWithoutExtension(fileName);
+      break;
+    }
+    if (stepName == null)
+    {
+      Text targetText = this.FindText(TestButton);
+      targetText.text = "次の処理はありません";
+      Button btn = TestButton.GetComponent<Button>();
+      btn.interactable = false; // 無効フラグを設定
+    }
+    else
+    {
+      Text targetText = this.FindText(TestButton);
+      targetText.text = stepName;
+    }
+  }
+
+  /// <summary>
+  /// テストボタンをクリックしたとき
+  /// </summary>
+  [Conditional("UNITY_EDITOR")]
+  public void testBotton_Click()
+  {
+    this.DoTestCode();
+  }
+
+
+
+  /// 指定のオブジェクトのTextを探す
+  public Text FindText(GameObject target)
+  {
+    foreach (Transform child in target.transform)
+      if (child.name == "Text")
+        return child.GetComponent<Text>();
+    return null;
+  }
 
 }

@@ -19,7 +19,6 @@ export class AppComponent {
 
   isContentsDailogShow: boolean;
   isCalculated: boolean;
-  unityVisible: boolean;
 
   constructor(platformLocation: PlatformLocation,
     public electronService: ElectronService,
@@ -43,15 +42,12 @@ export class AppComponent {
     // custom property
     this.isContentsDailogShow = false;
     this.isCalculated = false;
-    this.unityVisible = false;
   }
 
 
   ngOnInit() {
     this.project = 'unity';
-    if (this.unityVisible == true){
-      this.unityView.loadProject(`${this.baseUrl}assets/unity/Build/unity.json`);
-    }
+    this.unityView.loadProject(`${this.baseUrl}assets/unity/Build/unity.json`);
   }
 
   dialogClose(): void{

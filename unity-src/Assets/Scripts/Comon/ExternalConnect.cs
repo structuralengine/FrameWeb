@@ -38,12 +38,20 @@ public class ExternalConnect : MonoBehaviour {
   /// <param name="message"></param>
   internal static void SendAngular(string message)
   {
+#if UNITY_EDITOR
+    Debug.Log("ReceiveUnity(" + message + ")");
+#else
     ReceiveUnity(message);
+#endif
   }
 
   internal static void SendAngularSelectItemChenge(int id)
   {
+#if UNITY_EDITOR
+    Debug.Log("ReceiveUnitySelectItemChenge(" + id.ToString() + ")");
+#else
     ReceiveUnitySelectItemChenge(id.ToString());
+#endif
   }
 
   #endregion
@@ -53,7 +61,6 @@ public class ExternalConnect : MonoBehaviour {
   /// <summary> Htmlから Jsonデータが一式届く </summary>
   public void ReceiveData(string strJson)
   {
-      Debug.Log(strJson);
       mainFrameObject.InputDataChenge(strJson);
   }
 
@@ -83,9 +90,10 @@ public class ExternalConnect : MonoBehaviour {
   }
 
   /// <summary> Htmlから モードの変更通知がくる </summary>
-  public void ChengeMode(MainFrameManager.InputModeType inputModeType)
+  public void ChengeMode(int inputModeType)
   {
-      mainFrameObject.InputModeChange(inputModeType);
+    MainFrameManager.InputModeType i = (MainFrameManager.InputModeType)inputModeType;
+    mainFrameObject.InputModeChange(i);
   }
 
   /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>

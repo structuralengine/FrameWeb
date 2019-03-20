@@ -6,8 +6,18 @@
   </nav>
 </div>
 
+<div class="pager">
+  <div class="pager-title">ページ</div>
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+  </ngb-pagination>
+</div>
+
 <div class="datasheet">
-  <hot-table class="hot" [data]="combineData" [colHeaders]="true" [rowHeaders]="true" [height]="500">
+  <hot-table class="hot" 
+  [data]="combineData" 
+  [colHeaders]="true" 
+  [rowHeaders]="rowHeaders" 
+  [height]="500">
     <hot-column *ngFor="let c of combineColums;" [data]="c" [title]="c"></hot-column>
   </hot-table>
 </div>

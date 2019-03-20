@@ -51,6 +51,12 @@ import { InputPickupComponent } from './components/input-pickup/input-pickup.com
 import { ResultDisgComponent } from './components/result-disg/result-disg.component';
 import { ResultReacComponent } from './components/result-reac/result-reac.component';
 import { ResultFsecComponent } from './components/result-fsec/result-fsec.component';
+import { ResultCombineDisgComponent } from './components/result-combine-disg/result-combine-disg.component';
+import { ResultPickupDisgComponent } from './components/result-pickup-disg/result-pickup-disg.component';
+import { ResultCombineReacComponent } from './components/result-combine-reac/result-combine-reac.component';
+import { ResultPickupReacComponent } from './components/result-pickup-reac/result-pickup-reac.component';
+import { ResultPickupFsecComponent } from './components/result-pickup-fsec/result-pickup-fsec.component';
+import { ResultCombineFsecComponent } from './components/result-combine-fsec/result-combine-fsec.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -97,7 +103,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputPickupComponent,
     ResultDisgComponent,
     ResultReacComponent,
-    ResultFsecComponent
+    ResultFsecComponent,
+    ResultCombineDisgComponent,
+    ResultPickupDisgComponent,
+    ResultCombineReacComponent,
+    ResultPickupReacComponent,
+    ResultPickupFsecComponent,
+    ResultCombineFsecComponent
   ],
   entryComponents: [
     LoginDialogComponent

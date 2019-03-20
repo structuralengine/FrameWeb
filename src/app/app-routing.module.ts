@@ -18,6 +18,12 @@ import { InputPickupComponent } from './components/input-pickup/input-pickup.com
 import { ResultDisgComponent } from './components/result-disg/result-disg.component';
 import { ResultReacComponent } from './components/result-reac/result-reac.component';
 import { ResultFsecComponent } from './components/result-fsec/result-fsec.component';
+import { ResultCombineDisgComponent } from './components/result-combine-disg/result-combine-disg.component';
+import { ResultCombineReacComponent } from './components/result-combine-reac/result-combine-reac.component';
+import { ResultCombineFsecComponent } from './components/result-combine-fsec/result-combine-fsec.component';
+import { ResultPickupDisgComponent } from './components/result-pickup-disg/result-pickup-disg.component';
+import { ResultPickupReacComponent } from './components/result-pickup-reac/result-pickup-reac.component';
+import { ResultPickupFsecComponent } from './components/result-pickup-fsec/result-pickup-fsec.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/input-nodes', pathMatch: 'full' },
@@ -38,7 +44,15 @@ const routes: Routes = [
 
     { path: 'result-disg', component: ResultDisgComponent },
     { path: 'result-reac', component: ResultReacComponent },
-    { path: 'result-fsec', component: ResultFsecComponent }
+    { path: 'result-fsec', component: ResultFsecComponent },
+
+    { path: 'result-combine-disg', component: ResultCombineDisgComponent },
+    { path: 'result-combine-reac', component: ResultCombineReacComponent },
+    { path: 'result-combine-fsec', component: ResultCombineFsecComponent },
+
+    { path: 'result-pickup-disg', component: ResultPickupDisgComponent },
+    { path: 'result-pickup-reac', component: ResultPickupReacComponent },
+    { path: 'result-pickup-fsec', component: ResultPickupFsecComponent }
 
 ];
 

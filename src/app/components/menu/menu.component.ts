@@ -36,6 +36,7 @@ export class MenuComponent implements OnInit {
   renew(): void{
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.InputData.clear();
+    this.app.isCalculated = false;
   }
   
   //ファイルを開く
@@ -47,6 +48,7 @@ export class MenuComponent implements OnInit {
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
+        this.app.isCalculated = false;
       })
       .catch(err => console.log(err));
   }
@@ -78,11 +80,14 @@ export class MenuComponent implements OnInit {
     
     if (this.user.loggedIn == false) {
       this.logIn();
+    }
+    if (this.user.loggedIn == false) {
       return;
     }
 
+    const mode: number = 2; //インプットデータの生成モード
     const inputJson = 'inp_grid='
-      + this.InputData.getInputText(true, this.user.loginUserName, this.user.loginPassword)
+      + this.InputData.getInputText(mode, this.user.loginUserName, this.user.loginPassword)
     
     console.log(inputJson);
 

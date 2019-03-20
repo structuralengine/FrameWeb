@@ -8,20 +8,30 @@ import { InputDataService } from '../../providers/input-data.service';
 })
 export class InputLoadComponent implements OnInit {
 
+  static ROWS_COUNT = 20;
   dataset: any[];
   page: number;
+  load_name: string;
 
   constructor(private input: InputDataService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
+    this.loadPage(1);
+  }
 
-    for (var i = 1; i <= 20; i++) {
-      const load_name = this.input.getLoadColumns(i);
+  loadPage(currentPage: number) {
+    if (currentPage !== this.page) {
+      this.page = currentPage;
+    }
+    this.dataset = new Array();
+    for (var i = 1; i <= InputLoadComponent.ROWS_COUNT; i++) {
+      const load_name = this.input.getLoadColumns(this.page, i);
       this.dataset.push(load_name)
     }
-
+    const currentLoad:{} = this.input.getLoadNameColumns(currentPage);
+    this.load_name = currentLoad['name'];
   }
 
 }

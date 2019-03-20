@@ -5,9 +5,16 @@
   </nav>
 </div>
 
+<div class="pager">
+  <div class="pager-title">タイプ</div>
+  <ngb-pagination class="ngb-pagination" [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+  </ngb-pagination>
+  <div class="load-name">{{load_name}}</div>
+</div>
+
+
 <div class="datasheet">
   <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="900" [height]="500">
-    <hot-column data="load_id" title="荷重No"></hot-column>
 
     <hot-column data="m1" title="部材1"></hot-column>
     <hot-column data="m2" title="部材2"></hot-column>
