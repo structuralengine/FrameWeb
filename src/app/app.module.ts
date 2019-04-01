@@ -30,6 +30,8 @@ import { FrameDataService } from './providers/frame-data.service';
 import { InputDataService } from './providers/input-data.service';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
+import { UnityConnectorService } from './providers/unity-connector.service';
+
 
 import { MenuComponent } from './components/menu/menu.component';
 import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
@@ -119,7 +121,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     FrameDataService,
     InputDataService,
     ResultDataService,
-    UserInfoService
+    UserInfoService,
+    UnityConnectorService
   ],
   bootstrap: [
     AppComponent

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, NgZone } from '@angular/core';
 import { UnityLoader } from './UnityLoader.js';
 import { UnityProgress } from './UnityProgress.js';
-import { FrameDataService } from '../providers/frame-data.service';
+import { UnityConnectorService } from '../providers/unity-connector.service';
 
 declare var window: any;
 
@@ -16,13 +16,33 @@ export class UnityComponent implements OnInit {
   @Input() appWidth: String;
   @Input() appHeight: String;
 
-  constructor(private frame: FrameDataService) { }
+  constructor(private zone: NgZone,
+    private unityConnector: UnityConnectorService) {
+  }
 
   ngOnInit() {
     window['UnityLoader'] = UnityLoader;
     window['UnityProgress'] = UnityProgress;
-    window['ReceiveUnity'] = this.ReceiveUnity;
-    window['ReceiveUnitySelectItemChenge'] = this.ReceiveUnitySelectItemChenge;
+
+    window['angularComponentReference'] = {
+      zone: this.zone,
+      componentFnction1: (value) => this.unityConnector.ReceiveUnity(value),
+      componentFnction2: (value) => this.unityConnector.ReceiveUnitySelectItemChenge(value),
+      component: this,
+    };
+
+    window['ReceiveUnity'] = function (value: any) {
+      window.angularComponentReference.zone.run(function () {
+        window.angularComponentReference.componentFnction1(value);
+      });
+    };
+
+    window['ReceiveUnitySelectItemChenge'] = function (value: any) {
+      window.angularComponentReference.zone.run(function () {
+        window.angularComponentReference.componentFnction2(value);
+      });
+    };
+
     if (this.appLocation) {
       this.loadProject(this.appLocation);
     }
@@ -30,31 +50,7 @@ export class UnityComponent implements OnInit {
 
   public loadProject(path) {
     this.unityInstance = UnityLoader.instantiate('unityContainer', path);
+    this.unityConnector.setUnityInstance(this.unityInstance);
   }
 
-  public sendMessageToUnity(objectName: string, methodName: string, messageValue: string = '') {
-    if (messageValue == '') {
-      this.unityInstance.SendMessage(objectName, methodName); 
-    } else {
-      this.unityInstance.SendMessage(objectName, methodName, messageValue); 
-    }
-  }
-
-  public ReceiveUnity(messageValue: string) {
-    switch (messageValue) {
-      case 'GetInputJSON':
-        console.log('Called!!---GetInputJSON');
-        //const strJson: string = this.frame.getInputText(1);
-        //this.sendMessageToUnity('ExternalConnect', 'ReceiveData', strJson);
-        break;
-      default:
-        break;
-
-    }
-    console.log('ReceiveUnity', messageValue);
-  }
-
-  public ReceiveUnitySelectItemChenge(messageValue: string) {
-    console.log('ReceiveUnitySelectItemChenge', messageValue);
-  }
 }

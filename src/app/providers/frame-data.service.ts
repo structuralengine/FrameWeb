@@ -19,27 +19,25 @@ export class FrameDataService {
 
 
   // データを生成
-  // mode 0:ファイルに保存用データを生成
-  //      1: unity に送信用データを生成
-  //      2: 計算サーバーに送信用データを生成
-  public getInputText(mode: number = 0, username: string = '', password: string = ''): string {
-    
+  // mode file:ファイルに保存用データを生成
+  //      unity: unity に送信用データを生成
+  //      calc: 計算サーバーに送信用データを生成
+  public getInputText(mode: string = 'file', Properties = {}): string {
+
     let jsonData: {} = this.getInputJson(mode);
 
-    if (username.length > 0) {
-      jsonData['username'] = username;
-    }
-    if (password.length > 0) {
-      jsonData['password'] = password;
+    // パラメータを追加したい場合
+    for (let key in Properties) {
+      jsonData[key] = Properties[key];
     }
 
     let result: string = JSON.stringify(jsonData);
     return result;
   }
 
-  private getInputJson(mode: number) {
+  private getInputJson(mode: string) {
     let jsonData = {};
-
+    
     const node: {} = this.getNodeJson(mode);
     if (Object.keys(node).length > 0) {
       jsonData['node'] = node;
@@ -80,7 +78,7 @@ export class FrameDataService {
       jsonData['load'] = load;
     }
 
-    if (mode == 0) {
+    if (mode == 'file') {
       const define: {} = this.getDefineJson();
       if (Object.keys(define).length > 0) {
         jsonData['define'] = define;
@@ -100,9 +98,13 @@ export class FrameDataService {
     return jsonData;
   }
 
-  private getNodeJson(mode: number = 0) {
+  private getNodeJson(mode: string = 'file') {
 
     let jsonData = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('nodes') < 0) {
+      return jsonData;
+    }
+
     for (let i = 0; i < this.input.node.length; i++) {
       const row = this.input.node[i];
       let x = this.toNumber(row['x']);
@@ -112,17 +114,17 @@ export class FrameDataService {
         continue;
       }
       let item = {};
-      if (mode < 2) {
+      if (mode =='calc') {
+        x = (x == null) ? 0 : x;
+        y = (y == null) ? 0 : y;
+        z = (z == null) ? 0 : z;
+        item = { "x": x, "y": y, "z": z };
+      } else {
         for (var _key in row) {
           if (_key != 'id') {
             item[_key] = row[_key];
           }
         }
-      } else {
-        x = (x == null) ? 0 : x;
-        y = (y == null) ? 0 : y;
-        z = (z == null) ? 0 : z;
-        item = { "x": x, "y": y, "z": z };
       }
       let key: string = row['id'];
       jsonData[key] = item;
@@ -130,9 +132,13 @@ export class FrameDataService {
     return jsonData;
   }
 
-  private getFixNodeJson(mode: number = 0) {
+  private getFixNodeJson(mode: string = 'file') {
 
     let result = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('fix_nodes') < 0) {
+      return result;
+    }
+
     for (var typNo in this.input.fix_node) {
       const fix_node = this.input.fix_node[typNo];
       let jsonData = new Array();
@@ -149,9 +155,7 @@ export class FrameDataService {
           && rx == null && ry == null && rz == null) {
           continue;
         }
-        if (mode < 2) {
-          jsonData.push(row);
-        } else {
+        if (mode =='calc') {
           n = (n == null) ? 0 : n;
           tx = (tx == null) ? 0 : tx;
           ty = (ty == null) ? 0 : ty;
@@ -161,6 +165,8 @@ export class FrameDataService {
           rz = (rz == null) ? 0 : rz;
           let item = { n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
           jsonData.push(item);
+        } else {
+          jsonData.push(row);
         }
       }
       if (jsonData.length > 0) {
@@ -170,8 +176,13 @@ export class FrameDataService {
     return result;
   }
 
-  private getMemberJson(mode: number = 0) {
+  private getMemberJson(mode: string = 'file') {
+
     let jsonData = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('members') < 0) {
+      return jsonData;
+    }
+
     for (let i = 0; i < this.input.member.length; i++) {
       const row = this.input.member[i];
       let ni = this.toNumber(row['ni']);
@@ -182,18 +193,18 @@ export class FrameDataService {
         continue;
       }
       let item = {};
-      if (mode < 2) {
-        for (var _key in row) {
-          if ((_key != 'id') && (_key != 'L') ) {
-            item[_key] = row[_key];
-          }
-        }
-      } else {
+      if (mode =='calc') {
         ni = (ni == null) ? 0 : ni;
         nj = (nj == null) ? 0 : nj;
         e = (e == null) ? 0 : e;
         cg = (cg == null) ? 0 : cg;
         item = { "ni": ni, "nj": nj, "e": e, "cg": cg };
+      } else {
+        for (var _key in row) {
+          if ((_key != 'id') && (_key != 'L')) {
+            item[_key] = row[_key];
+          }
+        }
       }
       let key: string = row.id;
       jsonData[key] = item;
@@ -201,9 +212,13 @@ export class FrameDataService {
     return jsonData;
   }
 
-  private getElementJson(mode: number = 0) {
+  private getElementJson(mode: string = 'file') {
 
     let result = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('elements') < 0) {
+      return result;
+    }
+
     for (var typNo in this.input.element) {
       const element = this.input.element[typNo];
       let jsonData = {};
@@ -221,13 +236,7 @@ export class FrameDataService {
           continue;
         }
         let item = {};
-        if (mode < 2) {
-          for (var _key in row) {
-            if (_key != 'id') {
-              item[_key] = row[_key];
-            }
-          }
-        } else {
+        if (mode == 'calc') {
           E = (E == null) ? 0 : E;
           G = (G == null) ? 0 : G;
           Xp = (Xp == null) ? 0 : Xp;
@@ -236,6 +245,12 @@ export class FrameDataService {
           Iy = (Iy == null) ? 0 : Iy;
           Iz = (Iz == null) ? 0 : Iz;
           item = { E: E, G: G, Xp: Xp, A: A, J: J, Iy: Iy, Iz: Iz };
+        } else {
+          for (var _key in row) {
+            if (_key != 'id') {
+              item[_key] = row[_key];
+            }
+          }
         }
         let key: string = row['id'];
         jsonData[key] = item;
@@ -247,9 +262,13 @@ export class FrameDataService {
     return result;
   }
 
-  private getJointJson(mode: number = 0) {
+  private getJointJson(mode: string = 'file') {
 
     let result = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('joints') < 0) {
+      return result;
+    }
+
     for (var typNo in this.input.joint) {
       const joint = this.input.joint[typNo];
       let jsonData = new Array();
@@ -268,9 +287,7 @@ export class FrameDataService {
           continue;
         }
         let item = {};
-        if (mode < 2) {
-          jsonData.push(row);
-        } else {
+        if (mode == 'calc') {
           m = (m == null) ? 0 : m;
           xi = (xi == null) ? 0 : xi;
           yi = (yi == null) ? 0 : yi;
@@ -280,6 +297,8 @@ export class FrameDataService {
           zj = (zj == null) ? 0 : zj;
           item = { m: m, xi: xi, yi: yi, zi: zi, xj: xj, yj: yj, zj: zj };
           jsonData.push(item);
+        } else {
+          jsonData.push(row);
         }
       }
       if (jsonData.length > 0) {
@@ -289,9 +308,12 @@ export class FrameDataService {
     return result;
   }
 
-  private getNoticePointsJson(mode: number = 0) {
+  private getNoticePointsJson(mode: string = 'file') {
 
     let result = new Array();
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('notice_points') < 0) {
+      return result;
+    }
 
     for (let i = 0; i < this.input.notice_points.length; i++) {
       const row: {} = this.input.notice_points[i];
@@ -312,7 +334,7 @@ export class FrameDataService {
       }
       m = (m == null) ? 0 : m;
       let item = { m: m, Points: points };
-      if (mode < 2) {
+      if (mode != 'calc') {
         item['row'] = r;
       }
       result.push(item);
@@ -320,9 +342,13 @@ export class FrameDataService {
     return result;
   }
 
-  private getFixMemberJson(mode: number = 0) {
+  private getFixMemberJson(mode: string = 'file') {
 
     let result = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('fix_members') < 0) {
+      return result;
+    }
+
     for (var typNo in this.input.fix_member) {
       const fix_member = this.input.fix_member[typNo];
       let jsonData = new Array();
@@ -336,9 +362,7 @@ export class FrameDataService {
         if (m == null && tx == null && ty == null && tz == null && tr == null) {
           continue;
         }
-        if (mode < 2) {
-          jsonData.push(row);
-        } else {
+        if (mode =='calc') {
           m = (m == null) ? 0 : m;
           tx = (tx == null) ? 0 : tx;
           ty = (ty == null) ? 0 : ty;
@@ -346,6 +370,8 @@ export class FrameDataService {
           tr = (tr == null) ? 0 : tr;
           let item = { m: m, tx: tx, ty: ty, tz: tz, tr: tr };
           jsonData.push(item);
+        } else {
+          jsonData.push(row);
         }
       }
       if (jsonData.length > 0) {
@@ -355,9 +381,12 @@ export class FrameDataService {
     return result;
   }
 
-  private getLoadJson(mode: number = 0) {
+  private getLoadJson(mode: string = 'file') {
 
     let result = {};
+    if (mode.indexOf('unity-') > 0 && mode.indexOf('loads') < 0) {
+      return result;
+    }
 
     let load_name = {};
     for (let i = 0; i < this.input.load_name.length; i++) {
@@ -381,18 +410,18 @@ export class FrameDataService {
       }
 
       let jsonData = {};
-      if (mode<2) {
-        for (var _key in tmp) {
-          if (_key != 'id') {
-            jsonData[_key] = tmp[_key];
-          }
-        }
-      } else {
+      if (mode=='calc') {
         fix_node = (fix_node == null) ? 1 : fix_node;
         fix_member = (fix_member == null) ? 1 : fix_member;
         element = (element == null) ? 1 : element;
         joint = (joint == null) ? 1 : joint;
         jsonData = { fix_node: fix_node, fix_member: fix_member, element: element, joint: joint }
+      } else {
+        for (var _key in tmp) {
+          if (_key != 'id') {
+            jsonData[_key] = tmp[_key];
+          }
+        }
       }
       load_name[i] = jsonData;
     }
@@ -418,9 +447,7 @@ export class FrameDataService {
           rx != null || ry != null || rz != null)) {
 
           let item2 = {};
-          if ( mode < 2 ) {
-            item2 = { row: r, n: row['n'], tx: row['tx'], ty: row['ty'], tz: row['tz'], rx: row['rx'], ry: row['ry'], rz: row['rz'] };
-          } else {
+          if (mode == 'calc') {
             tx = (tx == null) ? 0 : tx;
             ty = (ty == null) ? 0 : ty;
             tz = (tz == null) ? 0 : tz;
@@ -428,6 +455,8 @@ export class FrameDataService {
             ry = (ry == null) ? 0 : ry;
             rz = (rz == null) ? 0 : rz;
             item2 = { n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
+          } else {
+            item2 = { row: r, n: row['n'], tx: row['tx'], ty: row['ty'], tz: row['tz'], rx: row['rx'], ry: row['ry'], rz: row['rz'] };
           }
           tmp_node.push(item2);
         }
@@ -459,12 +488,7 @@ export class FrameDataService {
           && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
           let item1 = {};
-          if ( mode < 2 ) {
-            item1 = {
-              row: r, m1: row['m1'], m2: row['m2'], direction: row['direction'], mark: row['mark'],
-              L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
-            };
-          } else {
+          if (mode == 'calc') {
             direction = direction.trim();
             L1 = (L1 == null) ? 0 : L1;
             L2 = (L2 == null) ? 0 : L2;
@@ -472,6 +496,11 @@ export class FrameDataService {
             P2 = (P2 == null) ? 0 : P2;
             //m1, m2 の変換処理をすること sasa
             item1 = { m: m1, direction: direction, mark: mark, L1: L1, L2: L2, P1: P1, P2: P2 };
+          } else {
+            item1 = {
+              row: r, m1: row['m1'], m2: row['m2'], direction: row['direction'], mark: row['mark'],
+              L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
+            };
           }
           tmp_member.push(item1);
         }
@@ -482,7 +511,7 @@ export class FrameDataService {
     }
     
     // 合成する
-    if (mode < 1){
+    if (mode == 'file'){
       for (let load_id in load_name) {
         let jsonData = load_name[load_id];
         if (load_id in load_node) {
@@ -936,7 +965,7 @@ export class FrameDataService {
   private getNodeNo(memberNo: string) {
     let jsonData = { ni: '', nj: '' };
 
-    const memberList: {} = this.getMemberJson(2);
+    const memberList: {} = this.getMemberJson('calc');
     if (Object.keys(memberList).length <= 0) {
       console.log("return { ni: '', nj: '' }");
       return jsonData;
@@ -951,7 +980,7 @@ export class FrameDataService {
   }
 
   private getNodePos(nodeNo: string) {
-    const nodeList: {} = this.getNodeJson(2);
+    const nodeList: {} = this.getNodeJson('calc');
     if (Object.keys(nodeList).length <= 0) {
       return null;
     }
@@ -984,19 +1013,6 @@ export class FrameDataService {
     const result: number = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2 );
     return result;
     
-  }
-
-  // 入力の変更時の処理 sasa
-  public chengeData(mode: string) {
-    switch (mode) {
-      case 'node':
-        break;
-      case 'member':
-        break;
-
-      default:
-        break;
-    }
   }
 
 }

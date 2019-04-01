@@ -12,23 +12,24 @@ using UnityEditor;
 public class MainFrameManager : MonoBehaviour
 {
 	public enum InputModeType {
-		nodes,
-        members,
-        panels,
-        fix_nodes,
-        elements,
-        joints,
-        notice_points,
-        fix_members,
-        loads,
-        fsec,
-        comb_fsec,
-        pic_fsec,
-        disg,
-        reac
-	}
+    nodes,
+    members,
+    panels,
+    fix_nodes,
+    elements,
+    joints,
+    notice_points,
+    fix_members,
+    loads,
+    fsec,
+    comb_fsec,
+    disg,
+    comb_disg,
+    reac,
+    comb_reac
+  }
 
-    webframe _webframe = null;
+  webframe _webframe = null;
 
     #region 表示モード制御用
 
@@ -225,15 +226,16 @@ public class MainFrameManager : MonoBehaviour
 
             case InputModeType.fsec:
             case InputModeType.comb_fsec:
-            case InputModeType.pic_fsec:
                 result = InputPanelLabel.Fsec;
                 break;
 
             case InputModeType.disg:
+            case InputModeType.comb_disg:
                 result = InputPanelLabel.Disg;
                 break;
 
             case InputModeType.reac:
+            case InputModeType.comb_reac:
                 result = InputPanelLabel.Reac;
                 break;
 
@@ -251,7 +253,7 @@ public class MainFrameManager : MonoBehaviour
 
     public void SetActiveDispManager(InputPanelLabel label)
     {
-        Debug.Log("Unity 表示モードを切り替えます");
+        Debug.Log(string.Format("Unity 表示モードを切り替えます:{0}", label));
 
         try
         {
@@ -316,11 +318,6 @@ public class MainFrameManager : MonoBehaviour
             return;
         }
 
-        // まだインプットデータの全部を受け取っていない場合
-        if (this._webframe.SetDataFlag == false){
-            ExternalConnect.SendAngular("GetInputJSON");
-            return;
-        }
 
         // jsonデータを読み込みます
         this._webframe.SetData(json);

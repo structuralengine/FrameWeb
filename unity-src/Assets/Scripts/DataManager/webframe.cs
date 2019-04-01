@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.IO;
 using System.Collections;
@@ -971,7 +971,6 @@ public class webframe : Singleton<webframe>
     #endregion
 
 
-    public bool SetDataFlag = false;
 
     /// <summary> データを作成する </summary>
     public void SetData(string strJson)
@@ -1014,7 +1013,6 @@ public class webframe : Singleton<webframe>
         // 断面力データ
         SetFsecData(objJson);
 
-        SetDataFlag = true;
     }
 
     #region データヘルパー

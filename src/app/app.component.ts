@@ -1,11 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { Router, NavigationEnd } from "@angular/router";
 
 import { ElectronService } from './providers/electron.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfig } from '../environments/environment';
 
+import { UnityConnectorService } from './providers/unity-connector.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,9 @@ export class AppComponent {
 
   constructor(platformLocation: PlatformLocation,
     public electronService: ElectronService,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private _router: Router,
+    private unityConnector: UnityConnectorService ) {
     
     const location = (platformLocation as any).location;
     this.baseUrl = location.origin + location.pathname;
@@ -39,9 +43,17 @@ export class AppComponent {
       console.log('Mode web');
     }
 
+    // ページが遷移した時の処理
+    this._router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.unityConnector.ChengeMode(event.url);
+      }
+    })
+
     // custom property
     this.isContentsDailogShow = false;
     this.isCalculated = false;
+
   }
 
 
@@ -57,35 +69,5 @@ export class AppComponent {
   contentsDailogShow(): void{
     this.isContentsDailogShow = true;
   }
-
-  SendCaptureToUnity(): void {
-    this.unityView.sendMessageToUnity('ExternalConnect', 'SendCapture');
-  }
-
-  SendModeToUnity(templateUrl: string): void {
-    if (typeof templateUrl == 'undefined')
-      return;
-    let mode_name = this.GetModeName(templateUrl);
-    if (mode_name == '') {
-      mode_name = 'nodes'; // デフォルトの設定
-    }
-    this.unityView.sendMessageToUnity('ExternalConnect', 'ChengeMode', mode_name);
-  }
-
-  SendSelectItemToUnity(id: number): void {
-    const mode_name = this.GetModeName(location.hash);
-    this.unityView.sendMessageToUnity('ExternalConnect', 'SelectItemChange', mode_name, id);
-  }
-
-  GetModeName(templateUrl: string): string {
-
-    let mode_name = templateUrl + ''; //toString() と同じことしてる
-
-    mode_name = mode_name.replace('#!/', '')
-    mode_name = mode_name.replace('views/', '')
-    mode_name = mode_name.replace('.html', '')
-    return mode_name.trim();
-  }
-
 
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-input-members',
@@ -15,7 +16,8 @@ export class InputMembersComponent implements OnInit {
   page: number;
 
   constructor(private input: InputDataService,
-    private frame: FrameDataService) {
+    private frame: FrameDataService,
+    private unity: UnityConnectorService) {
     this.page = 1;
   }
 
@@ -69,7 +71,7 @@ export class InputMembersComponent implements OnInit {
           this.dataset[row] = member;
           console.log(hotInstance.render());
         }
-        this.frame.chengeData('member');
+        this.unity.chengeData('member');
       }
     }    
   }
