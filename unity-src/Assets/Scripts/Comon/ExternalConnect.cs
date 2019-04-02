@@ -8,8 +8,6 @@ using System.Runtime.InteropServices;
 
 
 
-
-
 [DefaultExecutionOrder(100)] //Start を最後に呼び出すため
 public class ExternalConnect : MonoBehaviour {
 	
@@ -61,19 +59,19 @@ public class ExternalConnect : MonoBehaviour {
   /// <summary> Htmlから Jsonデータが一式届く </summary>
   public void ReceiveData(string strJson)
   {
-      mainFrameObject.InputDataChenge(strJson);
+    mainFrameObject.InputDataChenge(strJson);
   }
 
   /// <summary> Htmlから 現在のモードのJsonデータが届く </summary>
   public void ReceiveModeData(string strJson)
   {
-      mainFrameObject.InputModeDataChenge(strJson);
+    mainFrameObject.InputModeDataChenge(strJson);
   }
 
   /// <summary> Htmlから キャプチャー画像の送付依頼がくる </summary>
   public void SendCapture()
   {
-      StartCoroutine(_Execute());
+    StartCoroutine(_Execute());
   }
 
   [DllImport("__Internal")]
@@ -90,18 +88,74 @@ public class ExternalConnect : MonoBehaviour {
   }
 
   /// <summary> Htmlから モードの変更通知がくる </summary>
-  public void ChengeMode(int inputModeType)
+  public void ChengeModeId(int inputModeType)
   {
     MainFrameManager.InputModeType i = (MainFrameManager.InputModeType)inputModeType;
     mainFrameObject.InputModeChange(i);
   }
 
-  /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>
-  /// <param name="strMode">描画モード名</param>
-  /// <param name="i">セレクトアイテムid</param>
-  public void SelectItemChange(string strMode, int i)
+  public void ChengeMode(string mode)
   {
-      mainFrameObject.SelectItemChange(i);
+    int inputModeType = 0;
+    switch (mode)
+    {
+      case "nodes":
+        inputModeType = 0;
+        break;
+      case "members":
+        inputModeType = 1;
+        break;
+      case "panels":
+        inputModeType = 2;
+        break;
+      case "fix_nodes":
+        inputModeType = 3;
+        break;
+      case "elements":
+        inputModeType = 4;
+        break;
+      case "joints":
+        inputModeType = 5;
+        break;
+      case "notice_points":
+        inputModeType = 6;
+        break;
+      case "fix_members":
+        inputModeType = 7;
+        break;
+      case "loads":
+        inputModeType = 8;
+        break;
+      case "fsec":
+        inputModeType = 9;
+        break;
+      case "comb_fsec":
+        inputModeType = 10;
+        break;
+      case "disg":
+        inputModeType = 11;
+        break;
+      case "comb_disg":
+        inputModeType = 12;
+        break;
+      case "reac":
+        inputModeType = 13;
+        break;
+      case "comb_reac":
+        inputModeType = 14;
+        break;
+      default:
+        return;
+    }
+    this.ChengeModeId(inputModeType);
+  }
+
+  /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>
+  /// <param name="i">セレクトアイテムid</param>
+  public void SelectItemChange(string id)
+  {
+    int i = int.Parse(id);
+    mainFrameObject.SelectItemChange(i);
   }
 
   #endregion

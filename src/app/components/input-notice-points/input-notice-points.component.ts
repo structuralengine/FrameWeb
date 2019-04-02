@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-input-notice-points',
@@ -16,8 +17,9 @@ export class InputNoticePointsComponent implements OnInit {
   rowHeaders: any[];
 
   constructor(private input: InputDataService,
-    private frame: FrameDataService) {
-
+    private frame: FrameDataService,
+    private unity: UnityConnectorService) {
+    
     this.dataset = new Array();
     this.page = 1;
     this.colums = new Array();
@@ -82,7 +84,7 @@ export class InputNoticePointsComponent implements OnInit {
           this.dataset[row] = notice_points;
           console.log(hotInstance.render());
         }
-        this.frame.chengeData('notice_points');
+        this.unity.chengeData('notice_points');
       }
     }
   }

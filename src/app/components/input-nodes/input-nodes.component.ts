@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 
 @Component({
@@ -16,7 +17,8 @@ export class InputNodesComponent implements OnInit {
   dataset3: any[];
   page: number;
 
-  constructor(private input: InputDataService) {
+  constructor(private input: InputDataService,
+    private unity: UnityConnectorService) {
     this.page = 1;
   }
 
@@ -53,11 +55,13 @@ export class InputNodesComponent implements OnInit {
     }
   }
 
-  // hotTableSettings = {
-  //   afterChange: (hotInstance, changes, source) => {
-  //     this.input.chengeNode();
-  //   }
-  // }
+  hotTableSettings = {
+    beforeChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-node');
+      }
+    }
+  }
 
 
 }

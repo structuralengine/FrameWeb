@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
-import { FrameDataService } from '../../providers/frame-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-input-load-name',
@@ -15,7 +15,7 @@ export class InputLoadNameComponent implements OnInit {
   rowHeaders: any[];
 
   constructor(private input: InputDataService,
-    private frame: FrameDataService) {
+    private unity: UnityConnectorService) {
     this.page = 1;
   }
 
@@ -44,7 +44,7 @@ export class InputLoadNameComponent implements OnInit {
 
     beforeChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.frame.chengeData('load_name');
+        this.unity.chengeData('load_name');
       }
     }
   }

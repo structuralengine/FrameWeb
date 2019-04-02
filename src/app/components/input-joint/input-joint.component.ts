@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
-import { FrameDataService } from '../../providers/frame-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-input-joint',
@@ -14,7 +14,7 @@ export class InputJointComponent implements OnInit {
   page: number;
 
   constructor(private input: InputDataService,
-    private frame: FrameDataService) {
+    private unity: UnityConnectorService) {
     this.dataset = new Array();
     this.page = 1;
   }
@@ -39,7 +39,7 @@ export class InputJointComponent implements OnInit {
   hotTableSettings = {
     beforeChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.frame.chengeData('joint');
+        this.unity.chengeData('joint');
       }
     }
   }

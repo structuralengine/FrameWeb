@@ -7,6 +7,7 @@ import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { UserInfoService } from '../../providers/user-info.service';
 import * as FileSaver from 'file-saver';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-menu',
@@ -24,7 +25,8 @@ export class MenuComponent implements OnInit {
     private app: AppComponent,
     private user: UserInfoService,
     private InputData: FrameDataService,
-    private http: Http) { 
+    private http: Http,
+    private unity: UnityConnectorService) { 
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
    }
@@ -37,6 +39,7 @@ export class MenuComponent implements OnInit {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.InputData.clear();
     this.app.isCalculated = false;
+    this.unity.chengeData();
   }
   
   //ファイルを開く
@@ -49,6 +52,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
+        this.unity.chengeData();
       })
       .catch(err => console.log(err));
   }
@@ -85,9 +89,8 @@ export class MenuComponent implements OnInit {
       return;
     }
 
-    const mode: number = 2; //インプットデータの生成モード
     const inputJson = 'inp_grid='
-      + this.InputData.getInputText(mode, this.user.loginUserName, this.user.loginPassword)
+      + this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword })
     
     console.log(inputJson);
 

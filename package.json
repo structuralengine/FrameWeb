@@ -1,8 +1,7 @@
 {
   "name": "frame-web-for-js",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "立体骨組構造解析ソフト",
-  "homepage": "http://structuralengine.com",
   "author": {
     "name": "sasaco",
     "email": "sasaicco@gmail.com"

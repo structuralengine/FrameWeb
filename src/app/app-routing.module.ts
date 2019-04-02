@@ -29,14 +29,14 @@ const routes: Routes = [
     { path: '', redirectTo: '/input-nodes', pathMatch: 'full' },
     { path: 'input-nodes', component: InputNodesComponent },
     { path: 'input-members', component: InputMembersComponent },
-    { path: 'input-fix-node', component: InputFixNodeComponent },
+    { path: 'input-fix_nodes', component: InputFixNodeComponent },
     { path: 'input-elements', component: InputElementsComponent },
-    { path: 'input-joint', component: InputJointComponent },
-    { path: 'input-notice-points', component: InputNoticePointsComponent },
-    { path: 'input-fix-member', component: InputFixMemberComponent },
+    { path: 'input-joints', component: InputJointComponent },
+    { path: 'input-notice_points', component: InputNoticePointsComponent },
+    { path: 'input-fix_members', component: InputFixMemberComponent },
 
     { path: 'input-load-name', component: InputLoadNameComponent },
-    { path: 'input-load', component: InputLoadComponent },
+    { path: 'input-loads', component: InputLoadComponent },
 
     { path: 'input-define', component: InputDefineComponent },
     { path: 'input-combine', component: InputCombineComponent },
@@ -46,13 +46,13 @@ const routes: Routes = [
     { path: 'result-reac', component: ResultReacComponent },
     { path: 'result-fsec', component: ResultFsecComponent },
 
-    { path: 'result-combine-disg', component: ResultCombineDisgComponent },
-    { path: 'result-combine-reac', component: ResultCombineReacComponent },
-    { path: 'result-combine-fsec', component: ResultCombineFsecComponent },
+    { path: 'result-comb_disg', component: ResultCombineDisgComponent },
+    { path: 'result-comb_reac', component: ResultCombineReacComponent },
+    { path: 'result-comb_fsec', component: ResultCombineFsecComponent },
 
-    { path: 'result-pickup-disg', component: ResultPickupDisgComponent },
-    { path: 'result-pickup-reac', component: ResultPickupReacComponent },
-    { path: 'result-pickup-fsec', component: ResultPickupFsecComponent }
+    { path: 'result-pic_disg', component: ResultPickupDisgComponent },
+    { path: 'result-pic_reac', component: ResultPickupReacComponent },
+    { path: 'result-pic_fsec', component: ResultPickupFsecComponent }
 
 ];
 
@@ -60,4 +60,7 @@ const routes: Routes = [
     imports: [RouterModule.forRoot(routes, {useHash: true})],
     exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule { 
+
+
+}

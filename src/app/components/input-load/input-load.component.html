@@ -1,7 +1,7 @@
 <div class="btn-group">
   <nav>
     <a routerLink="/input-load-name" routerLinkActive="selected-item" class="btn btn-outline-primary">荷重名称</a>
-    <a routerLink="/input-load" routerLinkActive="selected-item" class="btn btn-outline-primary">荷重強度</a>
+    <a routerLink="/input-loads" routerLinkActive="selected-item" class="btn btn-outline-primary">荷重強度</a>
   </nav>
 </div>
 
@@ -14,7 +14,13 @@
 
 
 <div class="datasheet">
-  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="900" [height]="500">
+  <hot-table class="hot" 
+  [data]="dataset" 
+  [colHeaders]="true" 
+  [rowHeaders]="true" 
+  [width]="900" 
+  [height]="500"
+  [settings]="hotTableSettings">
 
     <hot-column data="m1" title="部材1"></hot-column>
     <hot-column data="m2" title="部材2"></hot-column>
