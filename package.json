@@ -2,7 +2,6 @@
   "name": "frame-web-for-js",
   "version": "1.0.0",
   "description": "立体骨組構造解析ソフト",
-  "homepage": "./",
   "author": {
     "name": "sasaco",
     "email": "sasaicco@gmail.com"

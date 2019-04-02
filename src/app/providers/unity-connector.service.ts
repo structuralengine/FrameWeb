@@ -48,6 +48,10 @@ export class UnityConnectorService {
   public chengeData(mode: string = 'unity') {
     let strJson: string = this.frame.getInputText(mode)
     this.sendMessageToUnity('ExternalConnect', 'ReceiveModeData', strJson);
+
+    // Unity用 テストコード
+    const UNITY_TEST = { methodName: 'ReceiveModeData', strJson: strJson};
+    console.log(UNITY_TEST, 'color:#fff;background:#000;');
   }
 
   public ChengeMode(mode: string) {
@@ -108,12 +112,18 @@ export class UnityConnectorService {
     }
     this.inputMode = mode;
     this.sendMessageToUnity('ExternalConnect', 'ChengeMode', inputModeName);
+
+    // Unity用 テストコード
+    const UNITY_TEST = { methodName: 'ChengeMode', inputModeType: inputModeName };
+    console.log(UNITY_TEST, 'color:#fff;background:#000;');
   }
 
-  /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>
-  /// <param name="i">セレクトアイテムid</param>
   public SelectItemChange(id: string) {
     this.sendMessageToUnity('ExternalConnect', 'SelectItemChange', id);
+
+    // Unity用 テストコード
+    const UNITY_TEST = { methodName: 'SelectItemChange', id: id };
+    console.log(UNITY_TEST, 'color:#fff;background:#000;');
   }
 
   private sendMessageToUnity(objectName: string, methodName: string, messageValue: any = '') {

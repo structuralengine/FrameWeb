@@ -152,8 +152,9 @@ public class ExternalConnect : MonoBehaviour {
 
   /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>
   /// <param name="i">セレクトアイテムid</param>
-  public void SelectItemChange(int i)
+  public void SelectItemChange(string id)
   {
+    int i = int.Parse(id);
     mainFrameObject.SelectItemChange(i);
   }
 

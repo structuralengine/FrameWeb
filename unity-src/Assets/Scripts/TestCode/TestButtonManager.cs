@@ -75,8 +75,8 @@ public class TestButtonManager : MonoBehaviour
 
         case "ChengeMode":
           object output2 = objJson["inputModeType"];
-          int inputModeType = int.Parse(Json.Serialize(output2));
-          this.script.ChengeModeId(inputModeType);
+          string inputModeType = Json.Serialize(output2);
+          this.script.ChengeMode(inputModeType);
           break;
 
         case "ReceiveModeData":
@@ -92,9 +92,9 @@ public class TestButtonManager : MonoBehaviour
         case "SelectItemChange":
           //object output4 = objJson["strMode"];
           //string strMode = Json.Serialize(output4);
-          object output5 = objJson["i"];
-          int i = int.Parse(Json.Serialize(output5));
-          this.script.SelectItemChange( i);
+          object output5 = objJson["id"];
+          string id = Json.Serialize(output5);
+          this.script.SelectItemChange(id);
           break;
 
         default:
