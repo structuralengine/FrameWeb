@@ -82,7 +82,6 @@ export class UnityConnectorService {
       case '/input-fix_members':
         inputModeName = 'fix_members';
         break;
-      
       case '/input-load-name':
       case '/input-loads':
         inputModeName = 'loads';
