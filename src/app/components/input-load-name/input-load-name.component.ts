@@ -41,10 +41,6 @@ export class InputLoadNameComponent implements OnInit {
   }
 
   hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeData('load_name');
-      }
-    }
+
   }
 }

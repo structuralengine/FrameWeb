@@ -47,7 +47,9 @@ export class UnityConnectorService {
 
   // 入力の変更時の処理
   public chengeData(mode: string = 'unity') {
-    let strJson: string = this.frame.getInputText(mode)
+    let strJson: string = this.frame.getInputText(mode);
+    console.log("%c" + mode, 'color: green');
+    console.log("%c" + strJson, 'color: red');
     let funcName: string = (mode == 'unity') ? 'ReceiveData' : 'ReceiveModeData';
     this.sendMessageToUnity('ExternalConnect', funcName, strJson);
     try {

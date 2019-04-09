@@ -101,7 +101,7 @@ export class FrameDataService {
   private getNodeJson(mode: string = 'file') {
 
     let jsonData = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('nodes') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('nodes') < 0) {
       return jsonData;
     }
 
@@ -135,7 +135,7 @@ export class FrameDataService {
   private getFixNodeJson(mode: string = 'file') {
 
     let result = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('fix_nodes') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('fix_nodes') < 0) {
       return result;
     }
 
@@ -179,7 +179,7 @@ export class FrameDataService {
   private getMemberJson(mode: string = 'file') {
 
     let jsonData = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('members') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('members') < 0) {
       return jsonData;
     }
 
@@ -215,7 +215,7 @@ export class FrameDataService {
   private getElementJson(mode: string = 'file') {
 
     let result = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('elements') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('elements') < 0) {
       return result;
     }
 
@@ -265,7 +265,7 @@ export class FrameDataService {
   private getJointJson(mode: string = 'file') {
 
     let result = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('joints') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('joints') < 0) {
       return result;
     }
 
@@ -311,7 +311,7 @@ export class FrameDataService {
   private getNoticePointsJson(mode: string = 'file') {
 
     let result = new Array();
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('notice_points') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('notice_points') < 0) {
       return result;
     }
 
@@ -345,7 +345,7 @@ export class FrameDataService {
   private getFixMemberJson(mode: string = 'file') {
 
     let result = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('fix_members') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('fix_members') < 0) {
       return result;
     }
 
@@ -384,7 +384,7 @@ export class FrameDataService {
   private getLoadJson(mode: string = 'file') {
 
     let result = {};
-    if (mode.indexOf('unity-') > 0 && mode.indexOf('loads') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('loads') < 0) {
       return result;
     }
 
@@ -967,7 +967,6 @@ export class FrameDataService {
 
     const memberList: {} = this.getMemberJson('calc');
     if (Object.keys(memberList).length <= 0) {
-      console.log("return { ni: '', nj: '' }");
       return jsonData;
     }
     if (!(memberNo in memberList)) {

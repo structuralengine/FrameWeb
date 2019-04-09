@@ -363,7 +363,10 @@ public class webframe : Singleton<webframe>
   {
     float max_value = 0.0f;
     float min_value = float.MaxValue;
-
+    if (!ListElementData.ContainsKey(ElemtType))
+    {
+      return false;
+    }
     var targetElementData = ListElementData[ElemtType];
     foreach (int i in targetElementData.Keys)
     {

@@ -69,9 +69,8 @@ export class InputMembersComponent implements OnInit {
           const l: number = this.frame.getMemberLength(m);
           member['L'] = l;
           this.dataset[row] = member;
-          console.log(hotInstance.render());
         }
-        this.unity.chengeData('member');
+        this.unity.chengeData('unity-members');
       }
     }    
   }
