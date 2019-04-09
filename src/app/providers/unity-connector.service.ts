@@ -48,10 +48,12 @@ export class UnityConnectorService {
   // 入力の変更時の処理
   public chengeData(mode: string = 'unity') {
     let strJson: string = this.frame.getInputText(mode)
-    this.sendMessageToUnity('ExternalConnect', 'ReceiveModeData', strJson);
+    let funcName: string = (mode == 'unity') ? 'ReceiveData' : 'ReceiveModeData';
+    this.sendMessageToUnity('ExternalConnect', funcName, strJson);
     try {
       // Unity用 テストコード
-      ipcRenderer.sendSync('set_log_file', { methodName: 'ReceiveModeData', strJson: strJson });
+      const objJson = JSON.parse(strJson);
+      ipcRenderer.sendSync('set_log_file', { methodName: funcName, strJson: objJson });
     }catch{}
   }
 

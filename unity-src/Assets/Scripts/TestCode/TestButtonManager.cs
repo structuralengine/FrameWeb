@@ -66,7 +66,8 @@ public class TestButtonManager : MonoBehaviour
     {
       string methodName = objJson["methodName"].ToString();
 
-      switch (methodName){
+      switch (methodName)
+      {
         case "ReceiveData":
           object output1 = objJson["strJson"];
           string strJson1 = Json.Serialize(output1);
@@ -74,8 +75,7 @@ public class TestButtonManager : MonoBehaviour
           break;
 
         case "ChengeMode":
-          object output2 = objJson["inputModeType"];
-          string inputModeType = Json.Serialize(output2);
+          string inputModeType = objJson["inputModeType"].ToString();
           this.script.ChengeMode(inputModeType);
           break;
 
@@ -90,10 +90,7 @@ public class TestButtonManager : MonoBehaviour
           break;
 
         case "SelectItemChange":
-          //object output4 = objJson["strMode"];
-          //string strMode = Json.Serialize(output4);
-          object output5 = objJson["id"];
-          string id = Json.Serialize(output5);
+          string id = objJson["id"].ToString();
           this.script.SelectItemChange(id);
           break;
 

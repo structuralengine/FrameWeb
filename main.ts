@@ -122,8 +122,12 @@ function save_log_file() {
     let filePath: string = path.dirname(file);
     let fileName: string = path.basename(file);
     for (let i = 0; i < log.length; i++) {
-      const file_name = path.join(filePath, (i+1).toString()+ '_' + fileName);
-      fs.writeFile(file_name, JSON.stringify(log[i]), function (error) {
+      const file_name = path.join(filePath, (i + 1).toString() + '_' + fileName);
+      const strJson: string = JSON.stringify(log[i]);
+
+      console.log(strJson);
+
+      fs.writeFile(file_name, strJson, function (error) {
          if (error) {
            throw error
          }

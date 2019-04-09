@@ -59,7 +59,7 @@ export class InputNoticePointsComponent implements OnInit {
 
   hotTableSettings = {
 
-    AfterChange: (hotInstance, changes, source) => {
+    afterChange: (hotInstance, changes, source) => {
 
       if (changes != null) {
         for (let i = 0; changes.Length; i++) {
