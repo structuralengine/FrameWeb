@@ -46,7 +46,7 @@ export class InputMembersComponent implements OnInit {
 
   hotTableSettings = {
 
-    beforeChange: (hotInstance, changes, source) => {
+    afterChange: (hotInstance, changes, source) => {
 
       if (changes != null) {
         for (let i = 0; changes.Length; i++) {

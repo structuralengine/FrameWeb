@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,187 +6,203 @@ using System.Collections.Generic;
 
 public class PartsDispManager : MonoBehaviour
 {
-	public struct PartsDispStatus
-	{
-		public	string			id;
-		public	bool		enable;
-	}
-	
-
-	protected	static readonly Color	s_selectColor = new Color( 1.0f, 0.5f, 1.0f );
-	protected	static readonly Color	s_noSelectColor = new Color( 1.0f, 1.0f, 1.0f );
-
-	protected webframe	_webframe = null;
-    protected MainFrameManager _mainFrameManager = null;
+  public struct PartsDispStatus
+  {
+    public string id;
+    public bool enable;
+  }
 
 
-    /// <summary>
-    /// 
-    /// </summary>
-    protected class BlockWorkData {
-		public	GameObject		gameObject;
-		public	Transform		gameObjectTransform;
-		public	Transform		rootBlockTransform;
-		public	Renderer		renderer;
-		public	BlockData		blockData;
-		public	DirectionArrow	directionArrow;
-		public	MaterialPropertyBlock	materialPropertyBlock;
-		public	Mesh		mesh;
-	}
+  protected static readonly Color s_selectColor = new Color(1.0f, 0.5f, 1.0f);
+  protected static readonly Color s_noSelectColor = new Color(1.0f, 1.0f, 1.0f);
 
-	[SerializeField]
-	public GameObject			_blockPrefab = null;
-
-	protected Dictionary<string, BlockWorkData>	_blockWorkData = new Dictionary<string, BlockWorkData>();
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="statusBase"></param>
-	/// <returns></returns>
-	protected bool	SetBlockStatusCommon( PartsDispStatus partsDispStatus )
-	{
-        if (_blockWorkData.ContainsKey(partsDispStatus.id) == false) { 
-			return	false;
-		}
-
-		BlockWorkData	blockWorkData = _blockWorkData[partsDispStatus.id];
-
-		//	無効な場合
-		if( partsDispStatus.enable == false ){
-			if( blockWorkData.gameObject != null ) { 
-				if( blockWorkData.gameObject.activeSelf ){
-					blockWorkData.gameObject.SetActive( false );
-				}
-			}
-			return	false;
-		}
+  protected webframe _webframe = null;
+  protected MainFrameManager _mainFrameManager = null;
 
 
-		//	有効な場合
-		if( blockWorkData.gameObject == null ) { 
-			return	false;
-		}
+  /// <summary>
+  /// 
+  /// </summary>
+  protected class BlockWorkData
+  {
+    public GameObject gameObject;
+    public Transform gameObjectTransform;
+    public Transform rootBlockTransform;
+    public Renderer renderer;
+    public BlockData blockData;
+    public DirectionArrow directionArrow;
+    public MaterialPropertyBlock materialPropertyBlock;
+    public Mesh mesh;
+  }
 
-		if( !blockWorkData.gameObject.activeSelf ){
-			blockWorkData.gameObject.SetActive( true );
-		}
+  [SerializeField]
+  public GameObject _blockPrefab = null;
 
-		return	true;
-	}
+  protected Dictionary<string, BlockWorkData> _blockWorkData = new Dictionary<string, BlockWorkData>();
 
-
-	/// <summary>
-	/// パーツの作成の仮想関数
-	/// </summary>
-	public	virtual void	CreateParts()
-	{
-	}
-
-    /// <summary>
-    /// パーツの変更の仮想関数
-    /// </summary>
-    public virtual void ChengeParts()
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="statusBase"></param>
+  /// <returns></returns>
+  protected bool SetBlockStatusCommon(PartsDispStatus partsDispStatus)
+  {
+    if (_blockWorkData.ContainsKey(partsDispStatus.id) == false)
     {
-    }
-    
-
-    /// <summary>
-    /// 表示ブロックの設定の仮想関数
-    /// </summary>
-    public	virtual	void	SetBlockStatus( string id )
-	{
-	}
-
-
-	/// <summary> 表示ブロックの設定 </summary>
-	public	void SetBlockStatusAll()
-	{
-		foreach(string id in _blockWorkData.Keys) { 
-			SetBlockStatus( id );
-		}
-	}
-
-
-    /// <summary>ブロックの色を設定する </summary>
-    /// <param name="id">ブロックのID</param>
-    /// <param name="color">色</param>
-    public void SetPartsColor( string id, Color color )
-	{
-		BlockWorkData	blockWorkData = _blockWorkData[id];
-
-		blockWorkData.materialPropertyBlock.SetColor("_Color", color );
-		blockWorkData.renderer.SetPropertyBlock( blockWorkData.materialPropertyBlock );
-	}
-
-    /// <summary>JSに選択アイテムの変更を通知する </summary>
-    public virtual void SendSelectChengeMessage(int i)
-    {
-
+      return false;
     }
 
-    /// <summary> マウスの入力制御 </summary>
-    public virtual void	InputMouse()
-	{
-		if (Input.GetMouseButtonDown(0)) {
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit = new RaycastHit();
- 
-			if (Physics.Raycast(ray, out hit)){
-				GameObject	obj = hit.collider.gameObject;
+    BlockWorkData blockWorkData = _blockWorkData[partsDispStatus.id];
 
-                //	ブロックが選択された
-                {
-					BlockData	blockData;
-					blockData = obj.GetComponentInParent<BlockData>();
-					if( blockData != null ){
-                        ChengeForcuseBlock(blockData.id);
-                        SendSelectChengeMessage(blockData.id);
-                    }
-				}
-            }
-		}
-	}
-
-
-    /// <summary> ブロックの色を変更の仮想関数 </summary>
-    public virtual void ChengeForcuseBlock(int i )
+    //	無効な場合
+    if (partsDispStatus.enable == false)
     {
-
-    }
-
-    /// <summary> ブロックの色を変更 </summary>
-    /// <param name="id"></param>
-    public void ChengeForcuseBlock(string id)
-    {
-        foreach(string i in _blockWorkData.Keys)
+      if (blockWorkData.gameObject != null)
+      {
+        if (blockWorkData.gameObject.activeSelf)
         {
-            if ( i == id )
-                SetPartsColor(i, s_selectColor);
-            else
-                SetPartsColor(i, s_noSelectColor);
+          blockWorkData.gameObject.SetActive(false);
         }
+      }
+      return false;
     }
 
-    // Use this for initialization
-    void Awake()
+
+    //	有効な場合
+    if (blockWorkData.gameObject == null)
     {
-        try { 
-            _webframe = webframe.Instance;
-            _mainFrameManager = FindObjectOfType<MainFrameManager>();
-        }
-        catch (Exception e)
+      return false;
+    }
+
+    if (!blockWorkData.gameObject.activeSelf)
+    {
+      blockWorkData.gameObject.SetActive(true);
+    }
+
+    return true;
+  }
+
+
+  /// <summary>
+  /// パーツの作成の仮想関数
+  /// </summary>
+  public virtual void CreateParts()
+  {
+  }
+
+  /// <summary>
+  /// パーツの変更の仮想関数
+  /// </summary>
+  public virtual void ChengeParts()
+  {
+  }
+
+
+  /// <summary>
+  /// 表示ブロックの設定の仮想関数
+  /// </summary>
+  public virtual void SetBlockStatus(string id)
+  {
+  }
+
+
+  /// <summary> 表示ブロックの設定 </summary>
+  public void SetBlockStatusAll()
+  {
+    foreach (string id in _blockWorkData.Keys)
+    {
+      SetBlockStatus(id);
+    }
+  }
+
+
+  /// <summary>ブロックの色を設定する </summary>
+  /// <param name="id">ブロックのID</param>
+  /// <param name="color">色</param>
+  public void SetPartsColor(string id, Color color)
+  {
+    BlockWorkData blockWorkData = _blockWorkData[id];
+
+    blockWorkData.materialPropertyBlock.SetColor("_Color", color);
+    blockWorkData.renderer.SetPropertyBlock(blockWorkData.materialPropertyBlock);
+  }
+
+  /// <summary>JSに選択アイテムの変更を通知する </summary>
+  public virtual void SendSelectChengeMessage(int i)
+  {
+
+  }
+
+  /// <summary> マウスの入力制御 </summary>
+  public virtual void InputMouse()
+  {
+    if (Input.GetMouseButtonDown(0))
+    {
+      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+      RaycastHit hit = new RaycastHit();
+
+      if (Physics.Raycast(ray, out hit))
+      {
+        GameObject obj = hit.collider.gameObject;
+
+        //	ブロックが選択された
         {
-            Debug.Log("PartsDispManager Awake" + e.Message);
+          BlockData blockData;
+          blockData = obj.GetComponentInParent<BlockData>();
+          if (blockData != null)
+          {
+            ChengeForcuseBlock(blockData.id);
+            SendSelectChengeMessage(blockData.id);
+          }
         }
+      }
     }
+  }
 
-    void Start () {
 
+  /// <summary> ブロックの色を変更の仮想関数 </summary>
+  public virtual void ChengeForcuseBlock(int i)
+  {
+
+  }
+
+  /// <summary> ブロックの色を変更 </summary>
+  /// <param name="id"></param>
+  public void ChengeForcuseBlock(string id)
+  {
+    foreach (string i in _blockWorkData.Keys)
+    {
+      if (i == id)
+        SetPartsColor(i, s_selectColor);
+      else
+        SetPartsColor(i, s_noSelectColor);
     }
+  }
 
-    // Update is called once per frame
-    void Update () {
-	
-	}
+  // Use this for initialization
+  void Awake()
+  {
+    try
+    {
+      _webframe = webframe.Instance;
+      _mainFrameManager = FindObjectOfType<MainFrameManager>();
+    }
+    catch (Exception e)
+    {
+      Debug.Log("PartsDispManager Awake" + e.Message);
+    }
+  }
+
+  void Start()
+  {
+
+  }
+
+  // Update is called once per frame
+  void Update()
+  {
+
+  }
+
+
 }

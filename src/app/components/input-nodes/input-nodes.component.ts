@@ -34,7 +34,7 @@ export class InputNodesComponent implements OnInit {
     this.dataset2 = new Array()
     this.dataset3 = new Array()
 
-    const a1: number = (currentPage - 1) * InputNodesComponent.ROWS_COUNT + 1;
+    const a1: number = (currentPage - 1) * (InputNodesComponent.ROWS_COUNT*3) + 1;
     const a2: number = a1 + InputNodesComponent.ROWS_COUNT - 1;
     const b1: number = a2 + 1;
     const b2: number = b1 + InputNodesComponent.ROWS_COUNT - 1;
@@ -56,7 +56,7 @@ export class InputNodesComponent implements OnInit {
   }
 
   hotTableSettings = {
-    beforeChange: (hotInstance, changes, source) => {
+    afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
         this.unity.chengeData('unity-node');
       }

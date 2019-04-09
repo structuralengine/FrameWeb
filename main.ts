@@ -1,7 +1,8 @@
-import { app, Menu, BrowserWindow, screen, ipcMain, shell } from 'electron';
+import { app, Menu, BrowserWindow, screen, ipcMain, shell, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
+import { reject } from 'q';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -10,7 +11,7 @@ serve = args.some(val => val === '--serve');
 function createWindow() {
 
   const electronScreen = screen;
-  const size = electronScreen.getPrimaryDisplay().workAreaSize;//{ width: 1024, height: 848 };
+  const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
   // Create the browser window.
   win = new BrowserWindow({
@@ -38,7 +39,8 @@ function createWindow() {
       label: "メニュー",
       submenu: [
         { label: "Print", click: () => print_to_pdf() },
-        { label: "Debug", click: () => win.webContents.openDevTools() }
+        { label: "Debug", click: () => win.webContents.openDevTools() },
+        { label: "Save Log File", click: () => save_log_file() }
       ]
     }
   ];
@@ -85,18 +87,6 @@ try {
   // throw e;
 }
 
-
-
-// ローカルファイルにアクセスする ///////////////////////////////
-ipcMain.on('read-csv-file', function(event) {
-
-  const csvpath: string = path.join(__dirname, 'dist/assets/data.csv');
-  const csvstr:string = fs.readFileSync(csvpath, 'utf-8');
-  event.returnValue = csvstr;
-  
-});
-
-
 function print_to_pdf() :void {
 
   const pdfPath = path.join(__dirname, 'print.pdf')
@@ -111,3 +101,42 @@ function print_to_pdf() :void {
     })
   })
 }
+
+// ログを保持する ///////////////////////////////
+let log = new Array();
+ipcMain.on('set_log_file', function (event, arg) {
+  log.push(arg);
+  console.log(arg)
+  event.returnValue = null;
+});
+
+// ログをファイルに保存する ///////////////////////////////
+function save_log_file() {
+  const file = dialog.showSaveDialog(
+    {
+      title: "save",
+      filters: [{ name: "log file", extensions: ["json"] }]
+    }
+  );
+  if (file) {
+    let filePath: string = path.dirname(file);
+    let fileName: string = path.basename(file);
+    for (let i = 0; i < log.length; i++) {
+      const file_name = path.join(filePath, (i + 1).toString() + '_' + fileName);
+      const strJson: string = JSON.stringify(log[i]);
+
+      console.log(strJson);
+
+      fs.writeFile(file_name, strJson, function (error) {
+         if (error) {
+           throw error
+         }
+       })    
+     }
+  }
+  else {
+    reject();
+  }
+}
+
+export default save_log_file;

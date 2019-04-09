@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FrameDataService } from '../providers/frame-data.service';
+import { ipcRenderer } from 'electron';
 
 @Injectable({
   providedIn: 'root'
@@ -47,11 +48,13 @@ export class UnityConnectorService {
   // 入力の変更時の処理
   public chengeData(mode: string = 'unity') {
     let strJson: string = this.frame.getInputText(mode)
-    this.sendMessageToUnity('ExternalConnect', 'ReceiveModeData', strJson);
-
-    // Unity用 テストコード
-    const UNITY_TEST = { methodName: 'ReceiveModeData', strJson: strJson};
-    console.log(UNITY_TEST, 'color:#fff;background:#000;');
+    let funcName: string = (mode == 'unity') ? 'ReceiveData' : 'ReceiveModeData';
+    this.sendMessageToUnity('ExternalConnect', funcName, strJson);
+    try {
+      // Unity用 テストコード
+      const objJson = JSON.parse(strJson);
+      ipcRenderer.sendSync('set_log_file', { methodName: funcName, strJson: objJson });
+    }catch{}
   }
 
   public ChengeMode(mode: string) {
@@ -81,7 +84,6 @@ export class UnityConnectorService {
       case '/input-fix_members':
         inputModeName = 'fix_members';
         break;
-      
       case '/input-load-name':
       case '/input-loads':
         inputModeName = 'loads';
@@ -112,18 +114,18 @@ export class UnityConnectorService {
     }
     this.inputMode = mode;
     this.sendMessageToUnity('ExternalConnect', 'ChengeMode', inputModeName);
-
-    // Unity用 テストコード
-    const UNITY_TEST = { methodName: 'ChengeMode', inputModeType: inputModeName };
-    console.log(UNITY_TEST, 'color:#fff;background:#000;');
+    try {
+      // Unity用 テストコード
+      ipcRenderer.sendSync('set_log_file', { methodName: 'ChengeMode', inputModeType: inputModeName });
+    }catch{}
   }
 
   public SelectItemChange(id: string) {
     this.sendMessageToUnity('ExternalConnect', 'SelectItemChange', id);
-
+    try {
     // Unity用 テストコード
-    const UNITY_TEST = { methodName: 'SelectItemChange', id: id };
-    console.log(UNITY_TEST, 'color:#fff;background:#000;');
+      ipcRenderer.sendSync('set_log_file', { methodName: 'SelectItemChange', id: id });
+    } catch{ }
   }
 
   private sendMessageToUnity(objectName: string, methodName: string, messageValue: any = '') {
