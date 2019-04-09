@@ -58,7 +58,7 @@ export class InputNodesComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-node');
+        this.unity.chengeData('unity-nodes');
       }
     }
   }

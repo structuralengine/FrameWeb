@@ -250,7 +250,8 @@ public class ElementDispManager : PartsDispManager
     Vector3 pos_j = _webframe.listNodePoint[nodeJ];
 
     //	幅と高さを設定する
-    float _elementScale = ELEMENT_SCALE * _webframe.minNodeLangth / _webframe.maxI;
+    float MaxI = _webframe.maxI > 0 ? _webframe.maxI : 50;
+    float _elementScale = ELEMENT_SCALE * _webframe.minNodeLangth / MaxI;
     Vector3 scale;
     scale.x = _elementScale;
     scale.y = _elementScale;
@@ -261,36 +262,36 @@ public class ElementDispManager : PartsDispManager
 
       // 材料情報が有効かどうか調べる
       int e = memberData.e;
-      Dictionary<int, webframe.ElementData> ListElementData = _webframe.ListElementData[_webframe.ElemtType];
-
-      if (ListElementData == null)
+      if (_webframe.ListElementData.ContainsKey(_webframe.ElemtType))
       {   // 材料の設定が存在しなければ デフォルト値
-        return;
-      }
 
-      if (ListElementData.ContainsKey(e))
-      {
-        webframe.ElementData elementData = ListElementData[e];
-        float currentScale = Math.Max(elementData.Iz, elementData.Iy);
+        Dictionary<int, webframe.ElementData> ListElementData = _webframe.ListElementData[_webframe.ElemtType];
 
-        //	スケール値を計算
-        float z = elementData.Iz;
-        float y = elementData.Iy;
-        if (elementData.A > 0.0f)
-        {
-          z = (float)System.Math.Sqrt((double)(12.0f * elementData.Iz / elementData.A)) * _elementScale;
-          y = (float)System.Math.Sqrt((double)(12.0f * elementData.Iy / elementData.A)) * _elementScale;
-        }
 
-        if (elementData.Iz > elementData.Iy)
+        if (ListElementData.ContainsKey(e))
         {
-          scale.x = currentScale * _elementScale;
-          scale.y = currentScale * (y / z) * _elementScale;
-        }
-        else
-        {
-          scale.x = currentScale * (z / y) * _elementScale;
-          scale.y = currentScale * _elementScale;
+          webframe.ElementData elementData = ListElementData[e];
+          float currentScale = Math.Max(elementData.Iz, elementData.Iy);
+
+          //	スケール値を計算
+          float z = elementData.Iz;
+          float y = elementData.Iy;
+          if (elementData.A > 0.0f)
+          {
+            z = (float)System.Math.Sqrt((double)(12.0f * elementData.Iz / elementData.A)) * _elementScale;
+            y = (float)System.Math.Sqrt((double)(12.0f * elementData.Iy / elementData.A)) * _elementScale;
+          }
+
+          if (elementData.Iz > elementData.Iy)
+          {
+            scale.x = currentScale * _elementScale;
+            scale.y = currentScale * (y / z) * _elementScale;
+          }
+          else
+          {
+            scale.x = currentScale * (z / y) * _elementScale;
+            scale.y = currentScale * _elementScale;
+          }
         }
       }
     }
