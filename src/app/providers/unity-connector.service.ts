@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { FrameDataService } from '../providers/frame-data.service';
-import { ipcRenderer } from 'electron';
 
 @Injectable({
   providedIn: 'root'
@@ -52,11 +51,6 @@ export class UnityConnectorService {
     console.log("%c" + strJson, 'color: red');
     let funcName: string = (mode == 'unity') ? 'ReceiveData' : 'ReceiveModeData';
     this.sendMessageToUnity('ExternalConnect', funcName, strJson);
-    try {
-      // Unity用 テストコード
-      const objJson = JSON.parse(strJson);
-      ipcRenderer.sendSync('set_log_file', { methodName: funcName, strJson: objJson });
-    }catch{}
   }
 
   public ChengeMode(mode: string) {
@@ -116,25 +110,23 @@ export class UnityConnectorService {
     }
     this.inputMode = mode;
     this.sendMessageToUnity('ExternalConnect', 'ChengeMode', inputModeName);
-    try {
-      // Unity用 テストコード
-      ipcRenderer.sendSync('set_log_file', { methodName: 'ChengeMode', inputModeType: inputModeName });
-    }catch{}
   }
 
   public SelectItemChange(id: string) {
     this.sendMessageToUnity('ExternalConnect', 'SelectItemChange', id);
-    try {
-    // Unity用 テストコード
-      ipcRenderer.sendSync('set_log_file', { methodName: 'SelectItemChange', id: id });
-    } catch{ }
   }
 
   private sendMessageToUnity(objectName: string, methodName: string, messageValue: any = '') {
-    if (messageValue == '') {
-      this.unityInstance.SendMessage(objectName, methodName);
-    } else {
-      this.unityInstance.SendMessage(objectName, methodName, messageValue);
+    try {
+      if (messageValue == '') {
+        console.log('"%cthis.unityInstance.SendMessage(' + objectName + ', ' + methodName + ')', 'color: blue');
+        this.unityInstance.SendMessage(objectName, methodName);
+      } else {
+        console.log('%cthis.unityInstance.SendMessage(' + objectName + ', ' + methodName + ', ' + messageValue + ')', 'color: blue');
+        this.unityInstance.SendMessage(objectName, methodName, messageValue);
+      }
+    } catch{
+      console.log('sendMessageToUnityでエラー');
     }
   }
   // #endregion

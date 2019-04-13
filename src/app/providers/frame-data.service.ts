@@ -479,7 +479,8 @@ export class FrameDataService {
           }
         }
       }
-      load_name[i] = jsonData;
+      const load_id = (i + 1).toString();
+      load_name[load_id] = jsonData;
     }
     return load_name;
   }
@@ -562,7 +563,7 @@ export class FrameDataService {
         for (let j = 0; j < load2.length; j++) {
           const row: {} = load2[j];
           let item2 = {
-            m: row['m'], direction: row['direction'], mark: row['mark'],
+            m: row['m1'], direction: row['direction'], mark: row['mark'],
             L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
           };
           if (mode != 'calc') {
@@ -623,37 +624,43 @@ export class FrameDataService {
         load2[i] = row;
       }
     }
+
     // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
-    let i: number = 1
+    let i: number = 0
     let curNo: number  = -1
     let curPos: number  = 0
     do {
       let row = load2[i];
       if (row.m2 < 0) {
-        let newLoads = this.getMemberGroupLoad(row, curNo, curPos)
-        delete load2[i];
+        const reLoadsInfo = this.getMemberGroupLoad(row, curNo, curPos);
+        let newLoads = reLoadsInfo['loads'];
+        curNo = reLoadsInfo['curNo'];
+        curPos = reLoadsInfo['curPos'];
+        load2.splice(i, 1);
         for (let j = 0; j < newLoads.length; j++) {
-          load2.push(newLoads);
+          load2.push(newLoads[j]);
         }
       } else {
         i += 1;
       }
-    } while (i <= load2.length);
+    } while (i < load2.length);
 
     // 要素番号 m1 != m2 の場合の入力を分ける -----------------------
-    i = 1
+    i = 0
     do {
       let targetLoad = load2[i];
-      if (targetLoad.m1 < targetLoad.m2) {
+      let m1 = this.toNumber(targetLoad.m1);
+      let m2 = this.toNumber(targetLoad.m2);
+      if (m1 < m2) {
         let newLoads = this.getMemberRepeatLoad(targetLoad);
-        delete load2[i];
+        load2.splice(i, 1);
         for (let j = 0; j < newLoads.length; j++) {
           load2.push(newLoads);
         }
       } else {
         i = i + 1;
       }
-    } while (i <= load2.length);
+    } while (i < load2.length);
 
     // 距離 にマイナスが付いた場合の入力を直す -------------------
     curNo = -1
@@ -661,26 +668,23 @@ export class FrameDataService {
     for (let i = 0; i < load2.length; i++) {
       let targetLoad = load2[i];
       if (targetLoad.L1 < 0 || targetLoad.L2 < 0) {
-        let newLoads = this.setMemberLoadAddition(targetLoad, curNo, curPos);
-        delete load2[i];
+        const reLoadsInfo = this.setMemberLoadAddition(targetLoad, curNo, curPos);
+        let newLoads = reLoadsInfo['loads'];
+        curNo = reLoadsInfo['curNo'];
+        curPos = reLoadsInfo['curPos'];
+        load2.splice(i, 1);
         for (let j = 0; j < newLoads.length; j++) {
-          load2.push(newLoads);
+          load2.push(newLoads[j]);
         }
       }
     }
-
     return load2;
-
   }
 
   // 要素番号 m2 にマイナスが付いた場合の入力を分ける
   private getMemberGroupLoad(targetLoad: any, curNo: number, curPos: number): any {
 
-    let result = new Array();
-
-    let i: number; let j: number; let k: number;
-    let P1: number; let P2: number; let Po: number;
-    let L: number; let ll: number; let lo: number;
+    let result = {};
 
     // もともとの入力データを保存  . . . . . . . . . . . . . . . . . .
     let org_m1: number = Math.abs(targetLoad.m1);
@@ -690,7 +694,9 @@ export class FrameDataService {
     let m1: number = Math.abs(targetLoad.m1);
     let m2: number = Math.abs(targetLoad.m2);
     let L1: number = Math.abs(targetLoad.L1);
-    let L2: number;
+    
+    let P2: number; let Po: number;
+    let L: number; let ll: number; let lo: number;
 
     if (targetLoad.L1 < 0) {
       // 距離L1が加算モードで入力されている場合
@@ -718,7 +724,7 @@ export class FrameDataService {
     // L2の位置を確定する . . . . . . . . . . . . . . . . . . . . . .
     m1 = Math.abs(targetLoad.m1);
     m2 = Math.abs(targetLoad.m2);
-    L2 = Math.abs(targetLoad.L2);
+    let L2: number = Math.abs(targetLoad.L2);
 
     switch (targetLoad.mark) {
     case 1:
@@ -850,7 +856,7 @@ export class FrameDataService {
         lo = ll - L1 - L2; // 荷重載荷長
         Po = (targetLoad.P2 - targetLoad.P1) / lo;
         P2 = targetLoad.P1;
-        k = i;
+
         for (let j = m1; j <= m2; j++) {
 
           let newLoads = {};
@@ -887,12 +893,9 @@ export class FrameDataService {
     }
 
     // 戻り値を作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
-    for (let i = 0; i < loads.length; i++) {
-      result.push(loads[i]);
-    }
-
-    // 一応マイナスモードに戻して返す
-    targetLoad['m2'] = "-" + targetLoad.m2
+    result['loads'] = loads;
+    result['curNo'] = curNo;
+    result['curPos'] = curPos;
     return result;
   }
 
@@ -904,7 +907,6 @@ export class FrameDataService {
     let m1: number = Math.abs(targetLoad.m1);
     let m2: number = Math.abs(targetLoad.m2);
 
-    let j = 1;
     for (let i = m1; i <= m2; i++) {
       let newLoads = {};
       newLoads['direction'] = targetLoad.direction;
@@ -916,7 +918,6 @@ export class FrameDataService {
       newLoads['P1'] = targetLoad.P1;
       newLoads['P2'] = targetLoad.P2;
       result.push(newLoads);
-      j = j + 1;
     }
     return result;
   }
@@ -966,7 +967,8 @@ export class FrameDataService {
         curPos = 0;
       }
     }
-
+    let result = { 'loads': targetLoad, 'curNo': curNo, 'curPos': curPos };
+    return result;
   }
 
   private getDefineJson() {
@@ -1150,12 +1152,13 @@ export class FrameDataService {
   }
 
   private setLoadJson(jsonData: {}): void {
+
     if (!('load' in jsonData)) return;
     const json: {} = jsonData['load'];
 
-    let tmp_load1 = {};
-    let tmp_load2 = {};
     for (var index in json) {
+      let tmp_load1 = {};
+      let tmp_load2 = {};
       const item1: {} = json[index];
       let _rate: string = ('rate' in item1) ? item1['rate'] : '';
       let _symbol: string = ('symbol' in item1) ? item1['symbol'] : '';
@@ -1379,7 +1382,7 @@ export class FrameDataService {
   private getNodeNo(memberNo: string) {
     let jsonData = { ni: '', nj: '' };
 
-    const memberList: {} = this.getMemberJson('calc');
+    const memberList: {} = this.getMemberJson('unity-members');
     if (Object.keys(memberList).length <= 0) {
       return jsonData;
     }
@@ -1393,7 +1396,7 @@ export class FrameDataService {
   }
 
   private getNodePos(nodeNo: string) {
-    const nodeList: {} = this.getNodeJson('calc');
+    const nodeList: {} = this.getNodeJson('unity-nodes');
     if (Object.keys(nodeList).length <= 0) {
       return null;
     }
