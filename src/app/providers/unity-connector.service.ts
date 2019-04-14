@@ -119,10 +119,8 @@ export class UnityConnectorService {
   private sendMessageToUnity(objectName: string, methodName: string, messageValue: any = '') {
     try {
       if (messageValue == '') {
-        console.log('"%cthis.unityInstance.SendMessage(' + objectName + ', ' + methodName + ')', 'color: blue');
         this.unityInstance.SendMessage(objectName, methodName);
       } else {
-        console.log('%cthis.unityInstance.SendMessage(' + objectName + ', ' + methodName + ', ' + messageValue + ')', 'color: blue');
         this.unityInstance.SendMessage(objectName, methodName, messageValue);
       }
     } catch{

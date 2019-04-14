@@ -7,7 +7,15 @@
 
 <div class="pager">
   <div class="pager-title">タイプ</div>
-  <ngb-pagination class="ngb-pagination" [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+  <ngb-pagination class="ngb-pagination" 
+  [collectionSize]="collectionSize" 
+  [(page)]="page" 
+  [maxSize]="7" 
+  [rotate]="true" 
+  [ellipses]="false" 
+  [boundaryLinks]="true"
+  aria-label="Default pagination" 
+  (pageChange)="loadPage($event)">
   </ngb-pagination>
   <div class="load-name">{{load_name}}</div>
 </div>

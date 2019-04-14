@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InputDataService } from './input-data.service';
 import { ResultDataService } from './result-data.service';
+import { directiveCreate } from '@angular/core/src/render3/instructions';
 
 
 @Injectable({
@@ -971,43 +972,76 @@ export class FrameDataService {
     return result;
   }
 
+  // 有効な 荷重ケース数を調べる
+  public getLoadCaseCount(): number {
+    let list = new Array();
+    list.push(this.getLoadJson('file'));
+    list.push(this.getNodeLoadJson('file'));
+    list.push(this.getNodeLoadJson('file'));
+    let maxCase: number = 0;
+    for (let i = 0; i < list.length; i++){
+      let dict = list[i];
+      for (let load_id in dict) {
+        let load_no: number = this.toNumber(load_id);
+        if (maxCase < load_no) {
+          maxCase = load_no;
+        }
+      }
+    }
+    return maxCase;
+  }
+
   private getDefineJson() {
 
     let jsonData = {};
     for (let i = 0; i < this.input.define.length; i++) {
-      const key: string = (i + 1).toString();
       const row = this.input.define[i];
-      for (var j = 1; j <= InputDataService.DEFINE_CASE_COUNT; j++) {
-        const key = "C" + j;
-        if (!(key in row)) {
-          continue;
-        }
+      const id = row['row'];
+      let dict = {};
+      for (let key in row) {  
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          jsonData[key]= row;
+          dict[key]= row;
           break;
         }
       }
+      if (Object.keys(dict).length > 0) {
+        jsonData[id] = dict;
+      }
     }
     return jsonData;
+  }
+
+  // 有効な DEFINEケース数を調べる
+  public getDefineCaseCount(): number{
+
+    let maxCase: number = 0;
+    let dict = this.getDefineJson();
+    for (let row in dict) {
+      let id: number = this.toNumber(row);
+      if (maxCase < id) {
+        maxCase = id;
+      }
+    }
+    return maxCase;
   }
 
   private getCombineJson() {
 
     let jsonData = {};
     for (let i = 0; i < this.input.combine.length; i++) {
-      const key: string = (i + 1).toString();
       const row = this.input.combine[i];
-      for (var j = 1; j <= InputDataService.COMBINE_CASE_COUNT; j++) {
-        const key = "C" + j;
-        if (!(key in row)) {
-          continue;
-        }
+      const id = row['row'];
+      let dict = {};
+      for (let key in row) {
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          jsonData[key] = row;
+          dict[key] = row;
           break;
         }
+      }
+      if (Object.keys(dict).length > 0) {
+        jsonData[id] = dict;
       }
     }
     return jsonData;

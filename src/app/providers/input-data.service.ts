@@ -20,10 +20,8 @@ export class InputDataService {
     public load: any[] 
 
     public define: any[] 
-    static DEFINE_CASE_COUNT: number = 20;
 
     public combine: any[] 
-    static COMBINE_CASE_COUNT: number = 20;
 
     public pickup: any[] 
     static PICKUP_CASE_COUNT: number = 20;
@@ -291,7 +289,7 @@ export class InputDataService {
         return result;
     }
 
-    public getDefineDataColumns(row: number): any {
+    public getDefineDataColumns(row: number, col: number): any {
 
         let result: any = null;
 
@@ -306,7 +304,7 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i <= InputDataService.DEFINE_CASE_COUNT; i++) {
+            for (var i = 1; i <= col; i++) {
                 result["C" + i] = '';
             }
             this.define.push(result);
@@ -314,7 +312,7 @@ export class InputDataService {
         return result;
     }
 
-    public getCombineDataColumns(row: number): any {
+    public getCombineDataColumns(row: number, col: number): any {
 
         let result: any = null;
 
@@ -329,7 +327,7 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i <= InputDataService.COMBINE_CASE_COUNT; i++) {
+            for (var i = 1; i <= col; i++) {
                 result["C" + i] = '';
             }
             this.combine.push(result);

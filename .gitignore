@@ -47,3 +47,7 @@ package-lock.json
 # System Files
 .DS_Store
 Thumbs.db
+
+# Test
+/test
+/unity-src/Assets/Resources/Test
