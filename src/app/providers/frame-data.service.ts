@@ -121,11 +121,12 @@ export class FrameDataService {
         z = (z == null) ? 0 : z;
         item = { "x": x, "y": y, "z": z };
       } else {
-        for (var _key in row) {
-          if (_key != 'id') {
-            item[_key] = row[_key];
-          }
-        }
+        let strX: string = (x == null) ? "" : x.toFixed(3);
+        let strY: string = (y == null) ? "" : y.toFixed(3);
+        let strZ: string = (z == null) ? "" : z.toFixed(3);
+        item["x"] = strX;
+        item["y"] = strY;
+        item["z"] = strZ;
       }
       let key: string = row['id'];
       jsonData[key] = item;
@@ -998,7 +999,10 @@ export class FrameDataService {
       const row = this.input.define[i];
       const id = row['row'];
       let dict = {};
-      for (let key in row) {  
+      for (let key in row) { 
+        if (key == 'row') {
+          continue;
+        }
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
           dict[key]= row;
@@ -1032,41 +1036,53 @@ export class FrameDataService {
     for (let i = 0; i < this.input.combine.length; i++) {
       const row = this.input.combine[i];
       const id = row['row'];
-      let dict = {};
       for (let key in row) {
+        if (key == 'row') {
+          continue;
+        }
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          dict[key] = row;
+          jsonData[id] = row;
           break;
         }
       }
-      if (Object.keys(dict).length > 0) {
-        jsonData[id] = dict;
-      }
     }
     return jsonData;
+  }
+
+  // 有効な COMBINE ケース数を調べる
+  public getCombineCaseCount(): number {
+    let maxCase: number = 0;
+    let dict = this.getCombineJson();
+    for (let row in dict) {
+      let id: number = this.toNumber(row['row']);
+      if (maxCase < id) {
+        maxCase = id;
+      }
+    }
+    return maxCase;
   }
 
   private getPickUpJson() {
 
     let jsonData = [];
     for (let i = 0; i < this.input.pickup.length; i++) {
-      const key: string = (i + 1).toString();
       const row = this.input.pickup[i];
-      for (var j = 1; j <= InputDataService.PICKUP_CASE_COUNT; j++) {
-        const key = "C" + j;
-        if (!(key in row)) {
+      const id = row['row'];
+      for (let key in row) {
+        if (key == 'row') {
           continue;
         }
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          jsonData[key]=row;
+          jsonData[id] = row;
           break;
         }
       }
     }
     return jsonData;
   }
+
 
   // ファイルを読み込む
   public loadInputData(inputText: string): void {
@@ -1317,7 +1333,28 @@ export class FrameDataService {
       const json: {} = caseData['disg'];
       for (let n in json) {
         const item: {} = json[n];
-        let result = { id: n, dx: item['dx'], dy: item['dy'], dz: item['dz'], rx: item['rx'], ry: item['ry'], rz: item['rz'] };
+
+        let dx: number = this.toNumber(item['dx']);
+        let dy: number = this.toNumber(item['dy']);
+        let dz: number = this.toNumber(item['dz']);
+        let rx: number = this.toNumber(item['rx']);
+        let ry: number = this.toNumber(item['ry']);
+        let rz: number = this.toNumber(item['rz']);
+        dx = (dx == null) ? 0 : dx;      
+        dy = (dy == null) ? 0 : dy;      
+        dz = (dz == null) ? 0 : dz;      
+        rx = (rx == null) ? 0 : rx;
+        ry = (ry == null) ? 0 : ry;
+        rz = (rz == null) ? 0 : rz;      
+        let result = {
+          id: n,
+          dx: dx.toFixed(3),
+          dy: dy.toFixed(3),
+          dz: dz.toFixed(3),
+          rx: rx.toFixed(3),
+          ry: ry.toFixed(3),
+          rz: rz.toFixed(3)
+        };
         target.push(result);
       }
       this.result.disg[caseNo] = target;
@@ -1340,7 +1377,30 @@ export class FrameDataService {
       const json: {} = caseData['reac'];
       for (let n in json) {
         const item: {} = json[n];
-        let result = { id: n, tx: item['tx'], ty: item['ty'], tz: item['tz'], mx: item['mx'], my: item['my'], mz: item['mz'] };
+
+        let tx: number = this.toNumber(item['tx']);
+        let ty: number = this.toNumber(item['ty']);
+        let tz: number = this.toNumber(item['tz']);
+        let mx: number = this.toNumber(item['mx']);
+        let my: number = this.toNumber(item['my']);
+        let mz: number = this.toNumber(item['mz']);
+
+        tx = (tx == null) ? 0 : tx;
+        ty = (ty == null) ? 0 : ty;
+        tz = (tz == null) ? 0 : tz;
+        mx = (mx == null) ? 0 : mx;
+        my = (my == null) ? 0 : my;
+        mz = (mz == null) ? 0 : mz;
+
+        let result = {
+          id: n,
+          tx: tx.toFixed(2),
+          ty: ty.toFixed(2),
+          tz: tz.toFixed(2),
+          mx: mx.toFixed(2),
+          my: my.toFixed(2),
+          mz: mz.toFixed(2)
+        };
         target.push(result);
       }
       this.result.reac[caseNo] = target;
@@ -1379,7 +1439,30 @@ export class FrameDataService {
           counter++;
           const item: {} = js[p];
           row++;
-          result = { row: row, m: memberNo, n: ni, l: noticePoint, fx: item['fxi'], fy: item['fyi'], fz: item['fzi'], mx: item['mxi'], my: item['myi'], mz: item['mzi'] };
+          let fxi: number = this.toNumber(item['fxi']);
+          let fyi: number = this.toNumber(item['fyi']);
+          let fzi: number = this.toNumber(item['fzi']);
+          let mxi: number = this.toNumber(item['mxi']);
+          let myi: number = this.toNumber(item['myi']);
+          let mzi: number = this.toNumber(item['mzi']);
+          fxi = (fxi == null) ? 0 : fxi;
+          fyi = (fyi == null) ? 0 : fyi;
+          fzi = (fzi == null) ? 0 : fzi;
+          mxi = (mxi == null) ? 0 : mxi;
+          myi = (myi == null) ? 0 : myi;
+          mzi = (mzi == null) ? 0 : mzi;
+          result = {
+            row: row,
+            m: memberNo,
+            n: ni,
+            l: noticePoint.toFixed(3),
+            fx: fxi.toFixed(2),
+            fy: fyi.toFixed(2),
+            fz: fzi.toFixed(2),
+            mx: mxi.toFixed(2),
+            my: myi.toFixed(2),
+            mz: mzi.toFixed(2)
+          };
           target.push(result);
           memberNo = '';
           ni = '';
@@ -1388,7 +1471,30 @@ export class FrameDataService {
           }
           noticePoint += this.toNumber(item['L']);
           row++;
-          result = { row: row, m: '', n: nj, l: noticePoint, fx: item['fxj'], fy: item['fyj'], fz: item['fzj'], mx: item['mxj'], my: item['myj'], mz: item['mzj'] };
+          let fxj: number = this.toNumber(item['fxj']);
+          let fyj: number = this.toNumber(item['fyj']);
+          let fzj: number = this.toNumber(item['fzj']);
+          let mxj: number = this.toNumber(item['mxj']);
+          let myj: number = this.toNumber(item['myj']);
+          let mzj: number = this.toNumber(item['mzj']);
+          fxj = (fxj == null) ? 0 : fxj;
+          fyj = (fyj == null) ? 0 : fyj;
+          fzj = (fzj == null) ? 0 : fzj;
+          mxj = (mxj == null) ? 0 : mxj;
+          myj = (myj == null) ? 0 : myj;
+          mzj = (mzj == null) ? 0 : mzj;
+          result = {
+            row: row,
+            m: '',
+            n: nj,
+            l: noticePoint.toFixed(3),
+            fx: fxj.toFixed(2),
+            fy: fyj.toFixed(2),
+            fz: fzj.toFixed(2),
+            mx: mxj.toFixed(2),
+            my: myj.toFixed(2),
+            mz: mzj.toFixed(2)
+          };
           target.push(result);
         }
       }

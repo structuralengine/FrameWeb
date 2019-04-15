@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ResultDataService } from '../../providers/result-data.service';
 
 @Component({
   selector: 'app-result-combine-reac',
@@ -7,9 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ResultCombineReacComponent implements OnInit {
 
-  constructor() { }
+  dataset: any[];
+  page: number;
+
+  constructor(private result: ResultDataService) {
+    this.dataset = new Array();
+    this.page = 1;
+  }
 
   ngOnInit() {
+
+    for (var i = 0; i < this.result.REAC_ROWS_COUNT; i++) {
+      const reac = this.result.getReacColumns(this.page, i);
+      this.dataset.push(reac)
+    }
+
   }
 
 }

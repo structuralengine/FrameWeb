@@ -29,9 +29,9 @@ export class InputDefineComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.COLUMNS_COUNT = this.frame.getLoadCaseCount();
-    if (this.COLUMNS_COUNT <= 0) {
-      this.COLUMNS_COUNT = 10;
+    this.COLUMNS_COUNT = this.frame.getLoadCaseCount() * 2 + 1;
+    if (this.COLUMNS_COUNT <= 5) {
+      this.COLUMNS_COUNT = 5;
     }
     for (var i = 1; i <= this.COLUMNS_COUNT; i++) {
       this.defineColums.push("C" + i.toString());

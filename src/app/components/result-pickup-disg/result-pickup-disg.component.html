@@ -6,6 +6,13 @@
   </nav>
 </div>
 
-<p>
-  result-pickup-disg works!
-</p>
+<div class="datasheet">
+  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="500" [height]="500">
+    <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
+    <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
+    <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>
+    <hot-column data="rx" title="x軸回りの回転量" [readOnly]="true"></hot-column>
+    <hot-column data="ry" title="y軸回りの回転量" [readOnly]="true"></hot-column>
+    <hot-column data="rz" title="z軸回りの回転量" [readOnly]="true"></hot-column>
+  </hot-table>
+</div>

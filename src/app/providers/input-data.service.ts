@@ -20,11 +20,8 @@ export class InputDataService {
     public load: any[] 
 
     public define: any[] 
-
     public combine: any[] 
-
     public pickup: any[] 
-    static PICKUP_CASE_COUNT: number = 20;
 
     constructor() {
         this.clear();
@@ -305,7 +302,7 @@ export class InputDataService {
         if (result == null) {
             result = { row: row };
             for (var i = 1; i <= col; i++) {
-                result["C" + i] = '';
+                result["D" + i] = '';
             }
             this.define.push(result);
         }
@@ -327,15 +324,16 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i <= col; i++) {
+            for (var i = 1; i < col; i++) {
                 result["C" + i] = '';
             }
+            result["name"] = '';
             this.combine.push(result);
         }
         return result;
     }
 
-    public getPickUpDataColumns(row: number): any {
+    public getPickUpDataColumns(row: number, col: number): any {
 
         let result: any = null;
 
@@ -350,9 +348,10 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i <= InputDataService.PICKUP_CASE_COUNT; i++) {
+            for (var i = 1; i < col; i++) {
                 result["C" + i] = '';
             }
+            result["name"] = '';
             this.pickup.push(result);
         }
         return result;

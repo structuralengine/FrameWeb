@@ -28,16 +28,19 @@ export class InputCombineComponent implements OnInit {
   }
 
   ngOnInit() {
+    let head: string = 'D';
     this.COLUMNS_COUNT = this.frame.getDefineCaseCount();
     if (this.COLUMNS_COUNT <= 0) {
       this.COLUMNS_COUNT = this.frame.getLoadCaseCount();
+      head = 'C';
     }
-    if (this.COLUMNS_COUNT <= 0) {
-      this.COLUMNS_COUNT = 10;
+    if (this.COLUMNS_COUNT <= 5) {
+      this.COLUMNS_COUNT = 5;
     }
     for (var i = 1; i <= this.COLUMNS_COUNT; i++) {
-      this.combineColums.push("C" + i.toString());
+      this.combineColums.push(head + i.toString());
     }
+    this.combineColums.push('名称　　　　　　　　　　　　　　　　　');
     this.loadPage(1);
   }
 
@@ -52,7 +55,7 @@ export class InputCombineComponent implements OnInit {
     const a2: number = a1 + this.ROWS_COUNT - 1;
 
     for (var i = a1; i <= a2; i++) {
-      const combine = this.input.getCombineDataColumns(i, this.COLUMNS_COUNT);
+      const combine = this.input.getCombineDataColumns(i, this.COLUMNS_COUNT+1);
       this.combineData.push(combine);
       this.rowHeaders.push(i);
     }
