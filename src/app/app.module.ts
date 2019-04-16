@@ -35,6 +35,7 @@ import { UnityConnectorService } from './providers/unity-connector.service';
 
 import { MenuComponent } from './components/menu/menu.component';
 import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
+import { WaitDialogComponent } from './components/wait-dialog/wait-dialog.component';
 
 import { UnityComponent } from './unity/unity.component';
 
@@ -93,6 +94,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputMembersComponent,
     MenuComponent,
     LoginDialogComponent,
+    WaitDialogComponent,
     InputFixNodeComponent,
     InputElementsComponent,
     InputJointComponent,
@@ -114,7 +116,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ResultCombineFsecComponent
   ],
   entryComponents: [
-    LoginDialogComponent
+    LoginDialogComponent,
+    WaitDialogComponent
   ],
   providers: [
     ElectronService,

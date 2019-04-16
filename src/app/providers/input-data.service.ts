@@ -327,7 +327,6 @@ export class InputDataService {
             for (var i = 1; i < col; i++) {
                 result["C" + i] = '';
             }
-            result["name"] = '';
             this.combine.push(result);
         }
         return result;
@@ -351,7 +350,6 @@ export class InputDataService {
             for (var i = 1; i < col; i++) {
                 result["C" + i] = '';
             }
-            result["name"] = '';
             this.pickup.push(result);
         }
         return result;

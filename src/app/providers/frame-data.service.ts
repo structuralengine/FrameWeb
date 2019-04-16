@@ -18,11 +18,12 @@ export class FrameDataService {
     this.result.clear();
   }
 
-
-  // データを生成
+  ////////////////////////////////////////////////////////////////////////////////////
+  // データを生成 /////////////////////////////////////////////////////////////////////
   // mode file:ファイルに保存用データを生成
   //      unity: unity に送信用データを生成
   //      calc: 計算サーバーに送信用データを生成
+  ////////////////////////////////////////////////////////////////////////////////////
   public getInputText(mode: string = 'file', Properties = {}): string {
 
     let jsonData: {} = this.getInputJson(mode);
@@ -1083,8 +1084,9 @@ export class FrameDataService {
     return jsonData;
   }
 
-
-  // ファイルを読み込む
+  ////////////////////////////////////////////////////////////////////////////////////
+  // ファイルを読み込む ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
   public loadInputData(inputText: string): void {
     this.input.clear();
     const jsonData: {} = JSON.parse(inputText);
@@ -1245,10 +1247,14 @@ export class FrameDataService {
           let _m1: string = ('m1' in item3) ? item3['m1'] : '';
           let _m2: string = ('m2' in item3) ? item3['m2'] : '';
           let _L1: string = ('L1' in item3) ? item3['L1'] : '';
+
+          let _direction: string = ('direction' in item3) ? item3['direction'] : '';
+          let _mark: string = ('mark' in item3) ? item3['mark'] : '';
+
           let _L2: string = ('L2' in item3) ? item3['L2'] : '';
           let _P1: string = ('P1' in item3) ? item3['P1'] : '';
           let _P2: string = ('P2' in item3) ? item3['P2'] : '';
-          let result3 = { row: _row,  m1: _m1, m2: _m2, L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
+          let result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark,  L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
           tmp_load2[_row] = result3;
         }
       }
@@ -1261,6 +1267,8 @@ export class FrameDataService {
           let result3 = tmp_load2[row1];
           result2['m1'] = result3['m1'];
           result2['m2'] = result3['m2'];
+          result2['direction'] = result3['direction'];
+          result2['mark'] = result3['mark'];
           result2['L1'] = result3['L1'];
           result2['L2'] = result3['L2'];
           result2['P1'] = result3['P1'];
@@ -1276,16 +1284,16 @@ export class FrameDataService {
 
       this.input.load[index] = tmp_load;
     }
-
-
   }
 
   private setDefineJson(jsonData: {}): void {
     if (!('define' in jsonData)) return;
     const json: {} = jsonData['define'];
     for (let index in json) {
+      if (index == null) {
+        continue;
+      }
       let result: {} = json[index];
-      result['row'] = index;
       this.input.define.push(result);
     }
   }
@@ -1294,8 +1302,10 @@ export class FrameDataService {
     if (!('combine' in jsonData)) return;
     const json: {} = jsonData['combine'];
     for (let index in json) {
+      if (index == null) {
+        continue;
+      }
       let result: {} = json[index];
-      result['row'] = index;
       this.input.combine.push(result);
     }
   }
@@ -1304,19 +1314,25 @@ export class FrameDataService {
     if (!('pickup' in jsonData)) return;
     const json: {} = jsonData['pickup'];
     for (let index in json) {
+      if (index == null) {
+        continue;
+      }
       let result: {} = json[index];
-      result['row'] = index;
       this.input.pickup.push(result);
     }
   }
 
-  // 計算結果を読み込む
+  ////////////////////////////////////////////////////////////////////////////////////
+  // 計算結果を読み込む ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
   public loadResultData(resultText: string): void{
     this.result.clear();
     const jsonData: {} = JSON.parse(resultText);
+    // 基本ケース
     this.setDisgJson(jsonData);
     this.setReacJson(jsonData);
     this.setFsecJson(jsonData);
+    // 組み合わせケースは result-data で集計する
   }
 
   private setDisgJson(jsonData: {}): void {
@@ -1503,6 +1519,11 @@ export class FrameDataService {
     }
     this.result.FSEC_ROWS_COUNT = max_row;
   }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Helper 関数 /////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
 
   // 文字列string を数値にする
   private toNumber(num: string): number {
