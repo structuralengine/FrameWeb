@@ -1,6 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Router, NavigationEnd } from "@angular/router";
+
+import { ElectronService } from './providers/electron.service';
+import { TranslateService } from '@ngx-translate/core';
+import { AppConfig } from '../environments/environment';
 
 import { UnityConnectorService } from './providers/unity-connector.service';
 
@@ -18,6 +23,8 @@ export class AppComponent {
   isCalculated: boolean;
 
   constructor(platformLocation: PlatformLocation,
+    public electronService: ElectronService,
+    private translate: TranslateService,
     private _router: Router,
     private unityConnector: UnityConnectorService ) {
     
@@ -25,7 +32,18 @@ export class AppComponent {
     this.baseUrl = location.origin + location.pathname;
     console.log('baseUrl', this.baseUrl);
 
-        // ページが遷移した時の処理
+    translate.setDefaultLang('en');
+    console.log('AppConfig', AppConfig);
+    
+    if (electronService.isElectron()) {
+      console.log('Mode electron');
+      console.log('Electron ipcRenderer', electronService.ipcRenderer);
+      console.log('NodeJS childProcess', electronService.childProcess);
+    } else {
+      console.log('Mode web');
+    }
+
+    // ページが遷移した時の処理
     this._router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.unityConnector.ChengeMode(event.url);
