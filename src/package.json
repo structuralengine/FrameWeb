@@ -1,8 +1,0 @@
-{
-  "name": "frame-web-for-js",
-  "productName": "FRAME WEB FOR JS",
-  "version": "1.0.0",
-  "main": "main.js",
-  "description": "立体骨組構造解析ソフト",
-  "author": "株式会社 ささこう"
-}

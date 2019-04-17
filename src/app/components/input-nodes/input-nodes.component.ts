@@ -55,7 +55,17 @@ export class InputNodesComponent implements OnInit {
     }
   }
 
-  hotTableSettings = {
+  hotTableSettings1 = {
+    beforeChange: (source, changes) => {
+      try {
+        for (var i = 0; i < changes.length; i++) {
+          let value: number = this.toNumber(changes[i][3]);
+          changes[i][3] = value.toFixed(3);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },   
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
         this.unity.chengeData('unity-nodes');
@@ -63,5 +73,54 @@ export class InputNodesComponent implements OnInit {
     }
   }
 
+  hotTableSettings2 = {
+    beforeChange: (source, changes) => {
+      try {
+        for (var i = 0; i < changes.length; i++) {
+          let value: number = this.toNumber(changes[i][3]);
+          changes[i][3] = value.toFixed(3);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-nodes');
+      }
+    }
+  }
+
+  hotTableSettings3 = {
+    beforeChange: (source, changes) => {
+      try {
+        for (var i = 0; i < changes.length; i++) {
+          let value: number = this.toNumber(changes[i][3]);
+          changes[i][3] = value.toFixed(3);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-nodes');
+      }
+    }
+  }
+  
+  // 文字列string を数値にする
+  private toNumber(num: string): number {
+    let result: number = null;
+    try {
+      let tmp: string = num.toString().trim();
+      if (tmp.length > 0) {
+        result = ((n: number) => isNaN(n) ? null : n)(+tmp);
+      }
+    } catch{
+      result = null;
+    }
+    return result;
+  }
 
 }

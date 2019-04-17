@@ -8,12 +8,10 @@ import { ResultDataService } from '../../providers/result-data.service';
 })
 export class ResultFsecComponent implements OnInit {
 
-  result: ResultDataService;
   dataset: any[];
   page: number;
 
-  constructor(private ResultData: ResultDataService) {
-    this.result = ResultData;
+  constructor(private result: ResultDataService) {
     this.dataset = new Array();
     this.page = 1;
   }

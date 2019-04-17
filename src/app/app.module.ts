@@ -1,6 +1,3 @@
-import 'zone.js/dist/zone-mix';
-import 'reflect-metadata';
-import '../polyfills';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,11 +10,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 
-// NG Translate
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
-import { ElectronService } from './providers/electron.service';
 
 import { WebviewDirective } from './directives/webview.directive';
 
@@ -35,6 +27,7 @@ import { UnityConnectorService } from './providers/unity-connector.service';
 
 import { MenuComponent } from './components/menu/menu.component';
 import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
+import { WaitDialogComponent } from './components/wait-dialog/wait-dialog.component';
 
 import { UnityComponent } from './unity/unity.component';
 
@@ -60,11 +53,6 @@ import { ResultPickupReacComponent } from './components/result-pickup-reac/resul
 import { ResultPickupFsecComponent } from './components/result-pickup-fsec/result-pickup-fsec.component';
 import { ResultCombineFsecComponent } from './components/result-combine-fsec/result-combine-fsec.component';
 
-// AoT requires an exported function for factories
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
-
 @NgModule({
   imports: [
     BrowserModule,
@@ -75,13 +63,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppRoutingModule,
     DragDropModule,
     BrowserAnimationsModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (HttpLoaderFactory),
-        deps: [HttpClient]
-      }
-    }),
     NgbModule.forRoot(),
     HotTableModule
   ],
@@ -93,6 +74,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputMembersComponent,
     MenuComponent,
     LoginDialogComponent,
+    WaitDialogComponent,
     InputFixNodeComponent,
     InputElementsComponent,
     InputJointComponent,
@@ -114,10 +96,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     ResultCombineFsecComponent
   ],
   entryComponents: [
-    LoginDialogComponent
+    LoginDialogComponent,
+    WaitDialogComponent
   ],
   providers: [
-    ElectronService,
     FrameDataService,
     InputDataService,
     ResultDataService,

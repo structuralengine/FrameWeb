@@ -4,6 +4,8 @@ import { AppComponent } from '../../app.component';
 import { Http, Headers } from '@angular/http';
 
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
+import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
+
 import { UserInfoService } from '../../providers/user-info.service';
 import * as FileSaver from 'file-saver';
 import { FrameDataService } from '../../providers/frame-data.service';
@@ -56,6 +58,7 @@ export class MenuComponent implements OnInit {
       })
       .catch(err => console.log(err));
   }
+
   private fileToText(file): any {
     const reader = new FileReader();
     reader.readAsText(file);
@@ -89,6 +92,8 @@ export class MenuComponent implements OnInit {
       return;
     }
 
+    const modalRef = this.modalService.open(WaitDialogComponent);
+
     const inputJson = 'inp_grid='
       + this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword })
     
@@ -101,20 +106,22 @@ export class MenuComponent implements OnInit {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json'
       })
-    })
-      .subscribe(
+    }).subscribe(
         response => {
           // 通信成功時の処理（成功コールバック）
           console.log('通信成功!!');
           this.InputData.loadResultData(response.text());
           this.app.isCalculated = true;
+          modalRef.close();
         },
         error => {
           // 通信失敗時の処理（失敗コールバック）
           this.app.isCalculated = false;
           console.log(error.statusText);
+          modalRef.close();
         }
-      );
+    );
+
   }
 
   // 印刷

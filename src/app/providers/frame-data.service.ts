@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { InputDataService } from './input-data.service';
 import { ResultDataService } from './result-data.service';
-import { templateJitUrl } from '@angular/compiler';
+import { directiveCreate } from '@angular/core/src/render3/instructions';
+
 
 @Injectable({
   providedIn: 'root'
@@ -12,16 +13,17 @@ export class FrameDataService {
     private result: ResultDataService) {
   }
 
-  public clear(): void{
+  public clear(): void {
     this.input.clear();
     this.result.clear();
   }
 
-
-  // データを生成
+  ////////////////////////////////////////////////////////////////////////////////////
+  // データを生成 /////////////////////////////////////////////////////////////////////
   // mode file:ファイルに保存用データを生成
   //      unity: unity に送信用データを生成
   //      calc: 計算サーバーに送信用データを生成
+  ////////////////////////////////////////////////////////////////////////////////////
   public getInputText(mode: string = 'file', Properties = {}): string {
 
     let jsonData: {} = this.getInputJson(mode);
@@ -114,17 +116,18 @@ export class FrameDataService {
         continue;
       }
       let item = {};
-      if (mode =='calc') {
+      if (mode == 'calc') {
         x = (x == null) ? 0 : x;
         y = (y == null) ? 0 : y;
         z = (z == null) ? 0 : z;
         item = { "x": x, "y": y, "z": z };
       } else {
-        for (var _key in row) {
-          if (_key != 'id') {
-            item[_key] = row[_key];
-          }
-        }
+        let strX: string = (x == null) ? "" : x.toFixed(3);
+        let strY: string = (y == null) ? "" : y.toFixed(3);
+        let strZ: string = (z == null) ? "" : z.toFixed(3);
+        item["x"] = strX;
+        item["y"] = strY;
+        item["z"] = strZ;
       }
       let key: string = row['id'];
       jsonData[key] = item;
@@ -155,7 +158,7 @@ export class FrameDataService {
           && rx == null && ry == null && rz == null) {
           continue;
         }
-        if (mode =='calc') {
+        if (mode == 'calc') {
           n = (n == null) ? 0 : n;
           tx = (tx == null) ? 0 : tx;
           ty = (ty == null) ? 0 : ty;
@@ -193,7 +196,7 @@ export class FrameDataService {
         continue;
       }
       let item = {};
-      if (mode =='calc') {
+      if (mode == 'calc') {
         ni = (ni == null) ? 0 : ni;
         nj = (nj == null) ? 0 : nj;
         e = (e == null) ? 0 : e;
@@ -362,7 +365,7 @@ export class FrameDataService {
         if (m == null && tx == null && ty == null && tz == null && tr == null) {
           continue;
         }
-        if (mode =='calc') {
+        if (mode == 'calc') {
           m = (m == null) ? 0 : m;
           tx = (tx == null) ? 0 : tx;
           ty = (ty == null) ? 0 : ty;
@@ -388,6 +391,62 @@ export class FrameDataService {
       return result;
     }
 
+    // 荷重基本設定
+    let load_name = this.getLoadNameJson(mode);
+
+    // 節点荷重データ
+    let load_node = this.getNodeLoadJson(mode);
+
+    // 要素荷重データ
+    let load_member = this.getMemberLoadJson(mode);
+    
+    // 合成する
+    if (mode == 'file') {
+      for (let load_id in load_name) {
+        let jsonData = load_name[load_id];
+        if (load_id in load_node) {
+          jsonData['load_node'] = load_node[load_id];
+          delete load_node[load_id];
+        }
+        if (load_id in load_member) {
+          jsonData['load_member'] = load_member[load_id];
+          delete load_member[load_id];
+        }
+        result[load_id] = jsonData;
+        delete load_name[load_id];
+      }
+    }
+    for (let load_id in load_node) {
+      let jsonData = {};
+      if (load_id in load_name) {
+        jsonData = load_name[load_id];
+      } else {
+        jsonData = { fix_node: 1, fix_member: 1, element: 1, joint: 1 }
+      }
+      jsonData['load_node'] = load_node[load_id];
+      if (load_id in load_member) {
+        jsonData['load_member'] = load_member[load_id];
+        delete load_member[load_id];
+      }
+      result[load_id] = jsonData;
+      delete load_name[load_id];
+    }
+    for (let load_id in load_member) {
+      let jsonData = {};
+      if (load_id in load_name) {
+        jsonData = load_name[load_id];
+      } else {
+        jsonData = { fix_node: 1, fix_member: 1, element: 1, joint: 1 }
+      }
+      jsonData['load_member'] = load_member[load_id];
+      result[load_id] = jsonData;
+      delete load_member[load_id];
+    }
+    return result;
+  }
+
+  // 荷重基本データ
+  private getLoadNameJson(mode: string = 'file'): any {
     let load_name = {};
     for (let i = 0; i < this.input.load_name.length; i++) {
       const tmp = this.input.load_name[i];
@@ -410,7 +469,7 @@ export class FrameDataService {
       }
 
       let jsonData = {};
-      if (mode=='calc') {
+      if (mode == 'calc') {
         fix_node = (fix_node == null) ? 1 : fix_node;
         fix_member = (fix_member == null) ? 1 : fix_member;
         element = (element == null) ? 1 : element;
@@ -423,11 +482,16 @@ export class FrameDataService {
           }
         }
       }
-      load_name[i] = jsonData;
+      const load_id = (i + 1).toString();
+      load_name[load_id] = jsonData;
     }
+    return load_name;
+  }
 
-    // 節点荷重データ
+  // 節点荷重データ
+  private getNodeLoadJson(mode: string = 'file'): any {
     let load_node = {};
+
     for (let load_id in this.input.load) {
 
       let tmp_node = new Array();
@@ -465,152 +529,554 @@ export class FrameDataService {
         load_node[load_id] = tmp_node;
       }
     }
+    return load_node;
+  }
 
-    // 要素荷重データ
+  // 要素荷重データ
+  private getMemberLoadJson(mode: string = 'file'): any {
     let load_member = {};
     for (let load_id in this.input.load) {
-
+      let load1: any[] = this.input.load[load_id];
+      if (load1.length == 0) {
+        continue;
+      }
       let tmp_member = new Array();
-
-      let load: any[] = this.input.load[load_id];
-      for (let j = 0; j < load.length; j++) {
-        const row: {} = load[j];
-        let r = row['row'];
-        let m1 = this.toNumber(row['m1']);
-        let m2 = this.toNumber(row['m2']);
-        let direction: string = row['direction'];
-        let mark = this.toNumber(row['mark']);
-        let L1 = this.toNumber(row['L1']);
-        let L2 = this.toNumber(row['L2']);
-        let P1 = this.toNumber(row['P1']);
-        let P2 = this.toNumber(row['P2']);
-        if ((m1 != null || m2 != null) && direction != '' && mark != null
-          && (L1 != null || L2 != null || P1 != null || P2 != null)) {
-
-          let item1 = {};
-          if (mode == 'calc') {
-            direction = direction.trim();
-            L1 = (L1 == null) ? 0 : L1;
-            L2 = (L2 == null) ? 0 : L2;
-            P1 = (P1 == null) ? 0 : P1;
-            P2 = (P2 == null) ? 0 : P2;
-            //m1, m2 の変換処理をすること sasa
-            item1 = { m: m1, direction: direction, mark: mark, L1: L1, L2: L2, P1: P1, P2: P2 };
-          } else {
-            item1 = {
-              row: r, m1: row['m1'], m2: row['m2'], direction: row['direction'], mark: row['mark'],
+      if (mode == 'file') {
+        for (let j = 0; j < load1.length; j++) {
+          const row: {} = load1[j];
+          let m1 = this.toNumber(row['m1']);
+          let m2 = this.toNumber(row['m2']);
+          let direction: string = row['direction'];
+          let mark = this.toNumber(row['mark']);
+          let L1 = this.toNumber(row['L1']);
+          let L2 = this.toNumber(row['L2']);
+          let P1 = this.toNumber(row['P1']);
+          let P2 = this.toNumber(row['P2']);
+          if ((m1 != null || m2 != null) && direction != '' && mark != null
+            && (L1 != null || L2 != null || P1 != null || P2 != null)) {
+            let item1 = {
+              row: row['row'], m1: row['m1'], m2: row['m2'], direction: row['direction'], mark: row['mark'],
               L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
             };
+            tmp_member.push(item1);
           }
-          tmp_member.push(item1);
+        }
+      } else {
+        let load2: any[] = this.reMemberLoads(load1);
+        for (let j = 0; j < load2.length; j++) {
+          const row: {} = load2[j];
+          let item2 = {
+            m: row['m1'], direction: row['direction'], mark: row['mark'],
+            L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
+          };
+          if (mode != 'calc') {
+            item2['row'] = row['row'];
+          }
+          tmp_member.push(item2);
         }
       }
       if (tmp_member.length > 0) {
         load_member[load_id] = tmp_member;
       }
     }
+    return load_member;
+  }
+
+  private reMemberLoads(load1: any[]): any {
+
+    // 有効な行を選別する
+    let load2 = new Array();
+    for (let i = 0; i < load1.length; i++) {
+      const row: {} = load1[i];
+      let r = row['row'];
+      let m1 = this.toNumber(row['m1']);
+      let m2 = this.toNumber(row['m2']);
+      let direction: string = row['direction'];
+      let mark = this.toNumber(row['mark']);
+      let L1 = this.toNumber(row['L1']);
+      let L2 = this.toNumber(row['L2']);
+      let P1 = this.toNumber(row['P1']);
+      let P2 = this.toNumber(row['P2']);
+      if ((m1 != null || m2 != null) && direction != '' && mark != null
+        && (L1 != null || L2 != null || P1 != null || P2 != null)) {
+
+        m1 = (m1 == null) ? 0 : m1;
+        m2 = (m2 == null) ? 0 : m2;
+        
+        direction = direction.trim();
+        L1 = (L1 == null) ? 0 : L1;
+        L2 = (L2 == null) ? 0 : L2;
+        P1 = (P1 == null) ? 0 : P1;
+        P2 = (P2 == null) ? 0 : P2;
+        let item2 = { row: r, m1: m1, m2: m2, direction: direction, mark: mark, L1: L1, L2: L2, P1: P1, P2: P2 };
+        load2.push(item2);
+      }
+    }
+    if (load2.length == 0) {
+      return new Array();
+    }
+    // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
+    for (let i = 0; i < load2.length; i++) {
+      let row = load2[i];
+      if (row.m1 == 0) {
+        row.m1 = row.m2;
+        load2[i] = row;
+      }
+      if (row.m2 == 0) {
+        row.m2 = row.m1;
+        load2[i] = row;
+      }
+    }
+
+    // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
+    let i: number = 0
+    let curNo: number  = -1
+    let curPos: number  = 0
+    do {
+      let row = load2[i];
+      if (row.m2 < 0) {
+        const reLoadsInfo = this.getMemberGroupLoad(row, curNo, curPos);
+        let newLoads = reLoadsInfo['loads'];
+        curNo = reLoadsInfo['curNo'];
+        curPos = reLoadsInfo['curPos'];
+        load2.splice(i, 1);
+        for (let j = 0; j < newLoads.length; j++) {
+          load2.push(newLoads[j]);
+        }
+      } else {
+        i += 1;
+      }
+    } while (i < load2.length);
+
+    // 要素番号 m1 != m2 の場合の入力を分ける -----------------------
+    i = 0
+    do {
+      let targetLoad = load2[i];
+      let m1 = this.toNumber(targetLoad.m1);
+      let m2 = this.toNumber(targetLoad.m2);
+      if (m1 < m2) {
+        let newLoads = this.getMemberRepeatLoad(targetLoad);
+        load2.splice(i, 1);
+        for (let j = 0; j < newLoads.length; j++) {
+          load2.push(newLoads);
+        }
+      } else {
+        i = i + 1;
+      }
+    } while (i < load2.length);
+
+    // 距離 にマイナスが付いた場合の入力を直す -------------------
+    curNo = -1
+    curPos = 0
+    for (let i = 0; i < load2.length; i++) {
+      let targetLoad = load2[i];
+      if (targetLoad.L1 < 0 || targetLoad.L2 < 0) {
+        const reLoadsInfo = this.setMemberLoadAddition(targetLoad, curNo, curPos);
+        let newLoads = reLoadsInfo['loads'];
+        curNo = reLoadsInfo['curNo'];
+        curPos = reLoadsInfo['curPos'];
+        load2.splice(i, 1);
+        for (let j = 0; j < newLoads.length; j++) {
+          load2.push(newLoads[j]);
+        }
+      }
+    }
+    return load2;
+  }
+
+  // 要素番号 m2 にマイナスが付いた場合の入力を分ける
+  private getMemberGroupLoad(targetLoad: any, curNo: number, curPos: number): any {
+
+    let result = {};
+
+    // もともとの入力データを保存  . . . . . . . . . . . . . . . . . .
+    let org_m1: number = Math.abs(targetLoad.m1);
+    let org_m2: number = Math.abs(targetLoad.m2);
+
+    // L1の位置を確定する . . . . . . . . . . . . . . . . . . . . . .
+    let m1: number = Math.abs(targetLoad.m1);
+    let m2: number = Math.abs(targetLoad.m2);
+    let L1: number = Math.abs(targetLoad.L1);
     
-    // 合成する
-    if (mode == 'file'){
-      for (let load_id in load_name) {
-        let jsonData = load_name[load_id];
-        if (load_id in load_node) {
-          jsonData['load_node'] = load_node[load_id];
-          delete load_node[load_id];
-        }
-        if (load_id in load_member) {
-          jsonData['load_member'] = load_member[load_id];
-          delete load_member[load_id];
-        }
-        result[load_id] = jsonData;
-        delete load_name[load_id];
+    let P2: number; let Po: number;
+    let L: number; let ll: number; let lo: number;
+
+    if (targetLoad.L1 < 0) {
+      // 距離L1が加算モードで入力されている場合
+      if( m1 <= curNo && curNo <= m2 ){
+        m1 = curNo;
+        L1 = curPos + L1;
+        targetLoad.m1 = m1;
+        targetLoad.L1 = L1;
       }
     }
-    for (let load_id in load_node) {
-      let jsonData = {};
-      if (load_id in load_name) {
-          jsonData = load_name[load_id];
+
+    for (let j = m1; j <= m2; j++){
+      let L = this.getMemberLength(j.toString());
+      if (L1 > L) {
+        L1 = L1 - L;
+        targetLoad.m1 = j + 1;
+        targetLoad.L1 = L1;
       } else {
-        jsonData = { fix_node: 1, fix_member: 1, element: 1, joint: 1 }
+        break;
       }
-      jsonData['load_node'] = load_node[load_id];
-      if (load_id in load_member) {
-        jsonData['load_member'] = load_member[load_id];
-        delete load_member[load_id];
-      }
-      result[load_id] = jsonData;
-      delete load_name[load_id];
     }
-    for (let load_id in load_member) {
-      let jsonData = {};
-      if (load_id in load_name) {
-        jsonData = load_name[load_id];
-      } else {
-        jsonData = { fix_node: 1, fix_member: 1, element: 1, joint: 1 }
+    curNo = targetLoad.m1
+    curPos = targetLoad.L1
+
+    // L2の位置を確定する . . . . . . . . . . . . . . . . . . . . . .
+    m1 = Math.abs(targetLoad.m1);
+    m2 = Math.abs(targetLoad.m2);
+    let L2: number = Math.abs(targetLoad.L2);
+
+    switch (targetLoad.mark) {
+    case 1:
+    case 11:
+      if (targetLoad.L2 < 0) {
+        L2 = L1 + L2
       }
-      jsonData['load_member'] = load_member[load_id];
-      result[load_id] = jsonData;
-      delete load_member[load_id];
+      for (let j = m1; j <= m2; j++) {
+        L = this.getMemberLength(j.toString());
+        if (L2 > L) {
+          L2 = L2 - L;
+          targetLoad.m2 = j + 1;
+          targetLoad.L2 = L2;
+        } else {
+          break;
+        }
+      }
+      curNo = Math.abs(targetLoad.m2);
+      curPos = targetLoad.L2;
+      break;
+    
+    default:
+      if (targetLoad.L2 < 0) {
+        // 連続部材の全長さLLを計算する
+        ll = 0
+        for (let j = m1; j <= m2; j++) {
+          ll = ll + this.getMemberLength(j.toString());
+        }
+        L2 = ll - (curPos + L2)
+        if (L2 < 0) {
+          L2 = 0;
+        }
+        targetLoad.m2 = m2;
+        targetLoad.L2 = L2
+      }
+      for (let j = m2; j >= org_m1; j--) {
+        L = this.getMemberLength(j.toString());
+        if (L2 > L) {
+          L2 = L2 - L;
+          targetLoad.m2 = j - 1;
+          targetLoad.L2 = L2
+        } else {
+          break;
+        }
+      }
+      curNo = Math.abs(targetLoad.m2);
+      curPos = L - targetLoad.L2;
+      break;
+    }
+
+    // ちょうど j端 になったら次の部材の 距離0(ゼロ) とする
+    if (curPos >= L - 0.0001) {
+      if (org_m2 > curNo) {
+        curNo = curNo + 1
+        curPos = 0
+      }
+    }
+
+    // 部材を連続して入力データを作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
+    let loads = new Array();
+    m1 = Math.abs(targetLoad.m1);
+    m2 = Math.abs(targetLoad.m2);
+
+    // 連続部材の全長さLLを計算する
+    ll = 0
+    for (let j = m1; j <= m2; j++) {
+      ll = ll + this.getMemberLength(j.toString());
+    }
+    L1 = targetLoad.L1;
+    L2 = targetLoad.L2;
+
+    switch (targetLoad.mark) {
+      case 1:
+      case 11:
+        if (m1 = m2) {
+          let newLoads = {};
+          newLoads['direction'] = targetLoad.direction;
+          newLoads['mark'] = targetLoad.mark;
+          newLoads['m1'] = m1;
+          newLoads['m2'] = m2;
+          newLoads['L1'] = targetLoad.L1;
+          newLoads['L2'] = targetLoad.L2;
+          newLoads['P1'] = targetLoad.P1;
+          newLoads['P2'] = targetLoad.P2;
+          loads.push(newLoads);
+
+        } else {
+          let newLoads1 = {};
+          newLoads1['direction'] = targetLoad.direction;
+          newLoads1['mark'] = targetLoad.mark;
+          newLoads1['m1'] = m1;
+          newLoads1['m2'] = m1;
+          newLoads1['L1'] = targetLoad.L1;
+          newLoads1['L2'] = 0;
+          newLoads1['P1'] = targetLoad.P1;
+          newLoads1['P2'] = 0;
+          loads.push(newLoads1);
+
+          let newLoads2 = {};
+          newLoads2['direction'] = targetLoad.direction;
+          newLoads2['mark'] = targetLoad.mark;
+          newLoads2['m1'] = m2;
+          newLoads2['m2'] = m2;
+          newLoads2['L1'] = targetLoad.L2;
+          newLoads2['L2'] = 0;
+          newLoads2['P1'] = targetLoad.P2;
+          newLoads2['P2'] = 0;
+          loads.push(newLoads2);
+        }
+        break;
+      case 9:
+        for (let j = m1; j <= m2; j++) {
+
+          let newLoads = {};
+          newLoads['direction'] = targetLoad.direction;
+          newLoads['mark'] = targetLoad.mark;
+          newLoads['m1'] = j.toString();
+          newLoads['m2'] = j.toString();
+          newLoads['L1'] = 0;
+          newLoads['L2'] = 0;
+          newLoads['P1'] = targetLoad.P1;
+          newLoads['P2'] = targetLoad.P1;
+          loads.push(newLoads);
+        }
+        break;
+      
+      default:
+        // 中間値を計算
+        lo = ll - L1 - L2; // 荷重載荷長
+        Po = (targetLoad.P2 - targetLoad.P1) / lo;
+        P2 = targetLoad.P1;
+
+        for (let j = m1; j <= m2; j++) {
+
+          let newLoads = {};
+          newLoads['direction'] = targetLoad.direction;
+          newLoads['mark'] = targetLoad.mark;
+
+          newLoads['m1'] = j.toString();
+          newLoads['m2'] = j.toString();
+          L = this.getMemberLength(newLoads['m1']);  // 要素長
+          switch (j) {
+            case m1:
+              L = L - L1;
+              break;
+            case m2:
+              L = L - L2;
+              break;
+          }
+          newLoads['L1'] = 0;
+          newLoads['L2'] = 0;
+          newLoads['P1'] = P2;
+          P2 = P2 + Po * L;
+          newLoads['P2'] = P2;
+
+          if (j == m1) {
+            newLoads['L1'] = targetLoad.L1;
+            newLoads['P1'] = targetLoad.P1;
+          }
+          if (j == m2) {
+            newLoads['L2'] = targetLoad.L2;
+            newLoads['P2'] = targetLoad.P2;
+          }
+          loads.push(newLoads);
+        }
+    }
+
+    // 戻り値を作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
+    result['loads'] = loads;
+    result['curNo'] = curNo;
+    result['curPos'] = curPos;
+    return result;
+  }
+
+  // 要素番号 m1 != m2 の場合の入力を分ける
+  private getMemberRepeatLoad (targetLoad: any) :any{
+
+    let result = new Array();
+
+    let m1: number = Math.abs(targetLoad.m1);
+    let m2: number = Math.abs(targetLoad.m2);
+
+    for (let i = m1; i <= m2; i++) {
+      let newLoads = {};
+      newLoads['direction'] = targetLoad.direction;
+      newLoads['m1'] = i;
+      newLoads['m2'] = i;
+      newLoads['L1'] = targetLoad.L1;
+      newLoads['L2'] = targetLoad.L2;
+      newLoads['mark'] = targetLoad.mark;
+      newLoads['P1'] = targetLoad.P1;
+      newLoads['P2'] = targetLoad.P2;
+      result.push(newLoads);
     }
     return result;
+  }
+
+  //距離 L2 にマイナスが付いた場合の入力を分ける
+  private setMemberLoadAddition(targetLoad: any, curNo: number, curPos: number): any {
+
+    let L: number; let ll: number;
+
+    let m1: number = Math.abs(targetLoad.m1);
+    let m2: number = Math.abs(targetLoad.m2);
+    let L1: number = Math.abs(targetLoad.L1);
+    let L2: number = Math.abs(targetLoad.L2);
+
+    if (targetLoad.L1 < 0) {
+      //距離L1が加算モードで入力されている場合
+      if (m1 <= curNo && curNo <= m2) {
+        m1 = curNo;
+        L1 = curPos + L1;
+        targetLoad.m1 = m1;
+        targetLoad.L1 = L1;
+      }
+      curNo = targetLoad.m1
+      curPos = targetLoad.L1
+    }
+
+    if (targetLoad.L2 < 0) {
+      // 連続部材の全長さLLを計算する
+      ll = 0
+      for (let j = m1; j <= m2; j++) {
+        ll = ll + this.getMemberLength(j.toString());
+      }
+      L2 = ll - (curPos + L2);
+      if (L2 < 0) {
+        L2 = 0;
+      }
+      targetLoad.m2 = Math.sign(targetLoad.m2) * m2;
+      targetLoad.L2 = L2
+      L = this.getMemberLength(m2.toString());
+      curNo = Math.abs(targetLoad.m2);
+      curPos = L - targetLoad.L2
+    }
+
+    if (curPos >= L - 0.0001) {
+      if(m2 > curNo){
+        curNo = curNo + 1;
+        curPos = 0;
+      }
+    }
+    let result = { 'loads': targetLoad, 'curNo': curNo, 'curPos': curPos };
+    return result;
+  }
+
+  // 有効な 荷重ケース数を調べる
+  public getLoadCaseCount(): number {
+    let list = new Array();
+    list.push(this.getLoadJson('file'));
+    list.push(this.getNodeLoadJson('file'));
+    list.push(this.getNodeLoadJson('file'));
+    let maxCase: number = 0;
+    for (let i = 0; i < list.length; i++){
+      let dict = list[i];
+      for (let load_id in dict) {
+        let load_no: number = this.toNumber(load_id);
+        if (maxCase < load_no) {
+          maxCase = load_no;
+        }
+      }
+    }
+    return maxCase;
   }
 
   private getDefineJson() {
 
     let jsonData = {};
     for (let i = 0; i < this.input.define.length; i++) {
-      const key: string = (i + 1).toString();
       const row = this.input.define[i];
-      for (var j = 1; j <= InputDataService.DEFINE_CASE_COUNT; j++) {
-        const key = "C" + j;
-        if (!(key in row)) {
+      const id = row['row'];
+      let dict = {};
+      for (let key in row) { 
+        if (key == 'row') {
           continue;
         }
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          jsonData[key]= row;
+          dict[key]= row;
           break;
         }
       }
+      if (Object.keys(dict).length > 0) {
+        jsonData[id] = dict;
+      }
     }
     return jsonData;
+  }
+
+  // 有効な DEFINEケース数を調べる
+  public getDefineCaseCount(): number{
+
+    let maxCase: number = 0;
+    let dict = this.getDefineJson();
+    for (let row in dict) {
+      let id: number = this.toNumber(row);
+      if (maxCase < id) {
+        maxCase = id;
+      }
+    }
+    return maxCase;
   }
 
   private getCombineJson() {
 
     let jsonData = {};
     for (let i = 0; i < this.input.combine.length; i++) {
-      const key: string = (i + 1).toString();
       const row = this.input.combine[i];
-      for (var j = 1; j <= InputDataService.COMBINE_CASE_COUNT; j++) {
-        const key = "C" + j;
-        if (!(key in row)) {
+      const id = row['row'];
+      for (let key in row) {
+        if (key == 'row') {
           continue;
         }
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          jsonData[key] = row;
+          jsonData[id] = row;
           break;
         }
       }
     }
     return jsonData;
+  }
+
+  // 有効な COMBINE ケース数を調べる
+  public getCombineCaseCount(): number {
+    let maxCase: number = 0;
+    let dict = this.getCombineJson();
+    for (let row in dict) {
+      let id: number = this.toNumber(row['row']);
+      if (maxCase < id) {
+        maxCase = id;
+      }
+    }
+    return maxCase;
   }
 
   private getPickUpJson() {
 
     let jsonData = [];
     for (let i = 0; i < this.input.pickup.length; i++) {
-      const key: string = (i + 1).toString();
       const row = this.input.pickup[i];
-      for (var j = 1; j <= InputDataService.PICKUP_CASE_COUNT; j++) {
-        const key = "C" + j;
-        if (!(key in row)) {
+      const id = row['row'];
+      for (let key in row) {
+        if (key == 'row') {
           continue;
         }
         const tmp = this.toNumber(row[key]);
         if (tmp != null) {
-          jsonData[key]=row;
+          jsonData[id] = row;
           break;
         }
       }
@@ -618,7 +1084,9 @@ export class FrameDataService {
     return jsonData;
   }
 
-  // ファイルを読み込む
+  ////////////////////////////////////////////////////////////////////////////////////
+  // ファイルを読み込む ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
   public loadInputData(inputText: string): void {
     this.input.clear();
     const jsonData: {} = JSON.parse(inputText);
@@ -736,12 +1204,13 @@ export class FrameDataService {
   }
 
   private setLoadJson(jsonData: {}): void {
+
     if (!('load' in jsonData)) return;
     const json: {} = jsonData['load'];
 
-    let tmp_load1 = {};
-    let tmp_load2 = {};
     for (var index in json) {
+      let tmp_load1 = {};
+      let tmp_load2 = {};
       const item1: {} = json[index];
       let _rate: string = ('rate' in item1) ? item1['rate'] : '';
       let _symbol: string = ('symbol' in item1) ? item1['symbol'] : '';
@@ -778,10 +1247,14 @@ export class FrameDataService {
           let _m1: string = ('m1' in item3) ? item3['m1'] : '';
           let _m2: string = ('m2' in item3) ? item3['m2'] : '';
           let _L1: string = ('L1' in item3) ? item3['L1'] : '';
+
+          let _direction: string = ('direction' in item3) ? item3['direction'] : '';
+          let _mark: string = ('mark' in item3) ? item3['mark'] : '';
+
           let _L2: string = ('L2' in item3) ? item3['L2'] : '';
           let _P1: string = ('P1' in item3) ? item3['P1'] : '';
           let _P2: string = ('P2' in item3) ? item3['P2'] : '';
-          let result3 = { row: _row,  m1: _m1, m2: _m2, L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
+          let result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark,  L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
           tmp_load2[_row] = result3;
         }
       }
@@ -794,6 +1267,8 @@ export class FrameDataService {
           let result3 = tmp_load2[row1];
           result2['m1'] = result3['m1'];
           result2['m2'] = result3['m2'];
+          result2['direction'] = result3['direction'];
+          result2['mark'] = result3['mark'];
           result2['L1'] = result3['L1'];
           result2['L2'] = result3['L2'];
           result2['P1'] = result3['P1'];
@@ -809,16 +1284,16 @@ export class FrameDataService {
 
       this.input.load[index] = tmp_load;
     }
-
-
   }
 
   private setDefineJson(jsonData: {}): void {
     if (!('define' in jsonData)) return;
     const json: {} = jsonData['define'];
     for (let index in json) {
+      if (index == null) {
+        continue;
+      }
       let result: {} = json[index];
-      result['row'] = index;
       this.input.define.push(result);
     }
   }
@@ -827,8 +1302,10 @@ export class FrameDataService {
     if (!('combine' in jsonData)) return;
     const json: {} = jsonData['combine'];
     for (let index in json) {
+      if (index == null) {
+        continue;
+      }
       let result: {} = json[index];
-      result['row'] = index;
       this.input.combine.push(result);
     }
   }
@@ -837,19 +1314,25 @@ export class FrameDataService {
     if (!('pickup' in jsonData)) return;
     const json: {} = jsonData['pickup'];
     for (let index in json) {
+      if (index == null) {
+        continue;
+      }
       let result: {} = json[index];
-      result['row'] = index;
       this.input.pickup.push(result);
     }
   }
 
-  // 計算結果を読み込む
+  ////////////////////////////////////////////////////////////////////////////////////
+  // 計算結果を読み込む ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
   public loadResultData(resultText: string): void{
     this.result.clear();
     const jsonData: {} = JSON.parse(resultText);
+    // 基本ケース
     this.setDisgJson(jsonData);
     this.setReacJson(jsonData);
     this.setFsecJson(jsonData);
+    // 組み合わせケースは result-data で集計する
   }
 
   private setDisgJson(jsonData: {}): void {
@@ -866,7 +1349,28 @@ export class FrameDataService {
       const json: {} = caseData['disg'];
       for (let n in json) {
         const item: {} = json[n];
-        let result = { id: n, dx: item['dx'], dy: item['dy'], dz: item['dz'], rx: item['rx'], ry: item['ry'], rz: item['rz'] };
+
+        let dx: number = this.toNumber(item['dx']);
+        let dy: number = this.toNumber(item['dy']);
+        let dz: number = this.toNumber(item['dz']);
+        let rx: number = this.toNumber(item['rx']);
+        let ry: number = this.toNumber(item['ry']);
+        let rz: number = this.toNumber(item['rz']);
+        dx = (dx == null) ? 0 : dx;      
+        dy = (dy == null) ? 0 : dy;      
+        dz = (dz == null) ? 0 : dz;      
+        rx = (rx == null) ? 0 : rx;
+        ry = (ry == null) ? 0 : ry;
+        rz = (rz == null) ? 0 : rz;      
+        let result = {
+          id: n,
+          dx: dx.toFixed(3),
+          dy: dy.toFixed(3),
+          dz: dz.toFixed(3),
+          rx: rx.toFixed(3),
+          ry: ry.toFixed(3),
+          rz: rz.toFixed(3)
+        };
         target.push(result);
       }
       this.result.disg[caseNo] = target;
@@ -889,7 +1393,30 @@ export class FrameDataService {
       const json: {} = caseData['reac'];
       for (let n in json) {
         const item: {} = json[n];
-        let result = { id: n, tx: item['tx'], ty: item['ty'], tz: item['tz'], mx: item['mx'], my: item['my'], mz: item['mz'] };
+
+        let tx: number = this.toNumber(item['tx']);
+        let ty: number = this.toNumber(item['ty']);
+        let tz: number = this.toNumber(item['tz']);
+        let mx: number = this.toNumber(item['mx']);
+        let my: number = this.toNumber(item['my']);
+        let mz: number = this.toNumber(item['mz']);
+
+        tx = (tx == null) ? 0 : tx;
+        ty = (ty == null) ? 0 : ty;
+        tz = (tz == null) ? 0 : tz;
+        mx = (mx == null) ? 0 : mx;
+        my = (my == null) ? 0 : my;
+        mz = (mz == null) ? 0 : mz;
+
+        let result = {
+          id: n,
+          tx: tx.toFixed(2),
+          ty: ty.toFixed(2),
+          tz: tz.toFixed(2),
+          mx: mx.toFixed(2),
+          my: my.toFixed(2),
+          mz: mz.toFixed(2)
+        };
         target.push(result);
       }
       this.result.reac[caseNo] = target;
@@ -928,7 +1455,30 @@ export class FrameDataService {
           counter++;
           const item: {} = js[p];
           row++;
-          result = { row: row, m: memberNo, n: ni, l: noticePoint, fx: item['fxi'], fy: item['fyi'], fz: item['fzi'], mx: item['mxi'], my: item['myi'], mz: item['mzi'] };
+          let fxi: number = this.toNumber(item['fxi']);
+          let fyi: number = this.toNumber(item['fyi']);
+          let fzi: number = this.toNumber(item['fzi']);
+          let mxi: number = this.toNumber(item['mxi']);
+          let myi: number = this.toNumber(item['myi']);
+          let mzi: number = this.toNumber(item['mzi']);
+          fxi = (fxi == null) ? 0 : fxi;
+          fyi = (fyi == null) ? 0 : fyi;
+          fzi = (fzi == null) ? 0 : fzi;
+          mxi = (mxi == null) ? 0 : mxi;
+          myi = (myi == null) ? 0 : myi;
+          mzi = (mzi == null) ? 0 : mzi;
+          result = {
+            row: row,
+            m: memberNo,
+            n: ni,
+            l: noticePoint.toFixed(3),
+            fx: fxi.toFixed(2),
+            fy: fyi.toFixed(2),
+            fz: fzi.toFixed(2),
+            mx: mxi.toFixed(2),
+            my: myi.toFixed(2),
+            mz: mzi.toFixed(2)
+          };
           target.push(result);
           memberNo = '';
           ni = '';
@@ -937,7 +1487,30 @@ export class FrameDataService {
           }
           noticePoint += this.toNumber(item['L']);
           row++;
-          result = { row: row, m: '', n: nj, l: noticePoint, fx: item['fxj'], fy: item['fyj'], fz: item['fzj'], mx: item['mxj'], my: item['myj'], mz: item['mzj'] };
+          let fxj: number = this.toNumber(item['fxj']);
+          let fyj: number = this.toNumber(item['fyj']);
+          let fzj: number = this.toNumber(item['fzj']);
+          let mxj: number = this.toNumber(item['mxj']);
+          let myj: number = this.toNumber(item['myj']);
+          let mzj: number = this.toNumber(item['mzj']);
+          fxj = (fxj == null) ? 0 : fxj;
+          fyj = (fyj == null) ? 0 : fyj;
+          fzj = (fzj == null) ? 0 : fzj;
+          mxj = (mxj == null) ? 0 : mxj;
+          myj = (myj == null) ? 0 : myj;
+          mzj = (mzj == null) ? 0 : mzj;
+          result = {
+            row: row,
+            m: '',
+            n: nj,
+            l: noticePoint.toFixed(3),
+            fx: fxj.toFixed(2),
+            fy: fyj.toFixed(2),
+            fz: fzj.toFixed(2),
+            mx: mxj.toFixed(2),
+            my: myj.toFixed(2),
+            mz: mzj.toFixed(2)
+          };
           target.push(result);
         }
       }
@@ -946,6 +1519,11 @@ export class FrameDataService {
     }
     this.result.FSEC_ROWS_COUNT = max_row;
   }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Helper 関数 /////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
 
   // 文字列string を数値にする
   private toNumber(num: string): number {
@@ -965,7 +1543,7 @@ export class FrameDataService {
   private getNodeNo(memberNo: string) {
     let jsonData = { ni: '', nj: '' };
 
-    const memberList: {} = this.getMemberJson('calc');
+    const memberList: {} = this.getMemberJson('unity-members');
     if (Object.keys(memberList).length <= 0) {
       return jsonData;
     }
@@ -979,7 +1557,7 @@ export class FrameDataService {
   }
 
   private getNodePos(nodeNo: string) {
-    const nodeList: {} = this.getNodeJson('calc');
+    const nodeList: {} = this.getNodeJson('unity-nodes');
     if (Object.keys(nodeList).length <= 0) {
       return null;
     }

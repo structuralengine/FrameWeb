@@ -7,7 +7,6 @@
 /app-builds
 /release
 main.js
-src/**/*.js
 *.js.map
 print.pdf
 
@@ -48,3 +47,7 @@ package-lock.json
 # System Files
 .DS_Store
 Thumbs.db
+
+# Test
+/test
+/unity-src/Assets/Resources/Test

@@ -32,7 +32,7 @@ export class InputFixNodeComponent implements OnInit {
     this.dataset = new Array();
 
     for (var i = 1; i <= InputFixNodeComponent.ROWS_COUNT; i++) {
-      const fix_node = this.input.getFixNodeColumns(i, this.page);
+      const fix_node = this.input.getFixNodeColumns(this.page, i);
       this.dataset.push(fix_node)
     }
 
