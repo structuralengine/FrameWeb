@@ -566,8 +566,13 @@ export class FrameDataService {
         for (let j = 0; j < load2.length; j++) {
           const row: {} = load2[j];
           let item2 = {
-            m: row['m1'], direction: row['direction'], mark: row['mark'],
-            L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
+            m: row['m1'],
+            direction: row['direction'],
+            mark: row['mark'],
+            L1: this.toNumber(row['L1'], 3),
+            L2: this.toNumber(row['L2'], 3),
+            P1: this.toNumber(row['P1'], 2),
+            P2: this.toNumber(row['P2'], 2)
           };
           if (mode != 'calc') {
             item2['row'] = row['row'];
@@ -604,11 +609,11 @@ export class FrameDataService {
         m2 = (m2 == null) ? 0 : m2;
         
         direction = direction.trim();
-        L1 = (L1 == null) ? 0 : L1;
+        let sL1: string = (L1 == null) ? "0" : row['L1'].toString();
         L2 = (L2 == null) ? 0 : L2;
         P1 = (P1 == null) ? 0 : P1;
         P2 = (P2 == null) ? 0 : P2;
-        let item2 = { row: r, m1: m1, m2: m2, direction: direction, mark: mark, L1: L1, L2: L2, P1: P1, P2: P2 };
+        let item2 = { row: r, m1: m1, m2: m2, direction: direction, mark: mark, L1: sL1, L2: L2, P1: P1, P2: P2 };
         load2.push(item2);
       }
     }
@@ -670,7 +675,8 @@ export class FrameDataService {
     curPos = 0
     for (let i = 0; i < load2.length; i++) {
       let targetLoad = load2[i];
-      if (targetLoad.L1 < 0 || targetLoad.L2 < 0) {
+      let sL1: string = targetLoad.L1.toString();
+      if (sL1.indexOf('-') >= 0 || targetLoad.L2 < 0) {
         const reLoadsInfo = this.setMemberLoadAddition(targetLoad, curNo, curPos);
         let newLoads = reLoadsInfo['loads'];
         curNo = reLoadsInfo['curNo'];
@@ -696,18 +702,19 @@ export class FrameDataService {
     // L1の位置を確定する . . . . . . . . . . . . . . . . . . . . . .
     let m1: number = Math.abs(targetLoad.m1);
     let m2: number = Math.abs(targetLoad.m2);
-    let L1: number = Math.abs(targetLoad.L1);
+    let L1: number = Math.abs(this.toNumber(targetLoad.L1));
     
     let P2: number; let Po: number;
     let L: number; let ll: number; let lo: number;
 
-    if (targetLoad.L1 < 0) {
+    let sL1: string = targetLoad.L1.toString();
+    if (sL1.indexOf('-') >= 0 ) {
       // 距離L1が加算モードで入力されている場合
       if( m1 <= curNo && curNo <= m2 ){
         m1 = curNo;
         L1 = curPos + L1;
         targetLoad.m1 = m1;
-        targetLoad.L1 = L1;
+        targetLoad.L1 = L1.toString();
       }
     }
 
@@ -716,13 +723,13 @@ export class FrameDataService {
       if (L1 > L) {
         L1 = L1 - L;
         targetLoad.m1 = j + 1;
-        targetLoad.L1 = L1;
+        targetLoad.L1 = L1.toString();
       } else {
         break;
       }
     }
-    curNo = targetLoad.m1
-    curPos = targetLoad.L1
+    curNo = targetLoad.m1;
+    curPos = this.toNumber(targetLoad.L1);
 
     // L2の位置を確定する . . . . . . . . . . . . . . . . . . . . . .
     m1 = Math.abs(targetLoad.m1);
@@ -796,7 +803,7 @@ export class FrameDataService {
     for (let j = m1; j <= m2; j++) {
       ll = ll + this.getMemberLength(j.toString());
     }
-    L1 = targetLoad.L1;
+    L1 = this.toNumber(targetLoad.L1);
     L2 = targetLoad.L2;
 
     switch (targetLoad.mark) {
@@ -846,7 +853,7 @@ export class FrameDataService {
           newLoads['mark'] = targetLoad.mark;
           newLoads['m1'] = j.toString();
           newLoads['m2'] = j.toString();
-          newLoads['L1'] = 0;
+          newLoads['L1'] = "0";
           newLoads['L2'] = 0;
           newLoads['P1'] = targetLoad.P1;
           newLoads['P2'] = targetLoad.P1;
@@ -877,7 +884,7 @@ export class FrameDataService {
               L = L - L2;
               break;
           }
-          newLoads['L1'] = 0;
+          newLoads['L1'] = "0";
           newLoads['L2'] = 0;
           newLoads['P1'] = P2;
           P2 = P2 + Po * L;
@@ -935,16 +942,17 @@ export class FrameDataService {
     let L1: number = Math.abs(targetLoad.L1);
     let L2: number = Math.abs(targetLoad.L2);
 
-    if (targetLoad.L1 < 0) {
+    let sL1: string = targetLoad.L1.toString();
+    if (sL1.indexOf('-') >= 0) {
       //距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
         L1 = curPos + L1;
         targetLoad.m1 = m1;
-        targetLoad.L1 = L1;
+        targetLoad.L1 = L1.toString();
       }
-      curNo = targetLoad.m1
-      curPos = targetLoad.L1
+      curNo = targetLoad.m1;
+      curPos = this.toNumber(targetLoad.L1);
     }
 
     if (targetLoad.L2 < 0) {
@@ -1526,7 +1534,7 @@ export class FrameDataService {
   ////////////////////////////////////////////////////////////////////////////////////
 
   // 文字列string を数値にする
-  private toNumber(num: string): number {
+  private toNumber(num: string, digit:number = null): number {
     let result: number = null;
     try {
       let tmp: string = num.toString().trim();
@@ -1535,6 +1543,10 @@ export class FrameDataService {
       }
     } catch{
       result = null;
+    }
+    if (digit != null) {
+      const dig: number = 10 ** digit;
+      result = Math.round(result * dig) / dig;
     }
     return result;
   }
