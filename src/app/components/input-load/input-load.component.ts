@@ -24,14 +24,13 @@ export class InputLoadComponent implements OnInit {
 
   ngOnInit() {
     let n: number = this.frame.getLoadCaseCount();
-    console.log(n);
     n += 5;
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
+    if (currentPage != this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();

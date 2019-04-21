@@ -6,8 +6,16 @@
   </nav>
 </div>
 
+<div class="pager">
+  <div class="pager-title">タイプ</div>
+  <ngb-pagination class="ngb-pagination" [collectionSize]="collectionSize" [(page)]="page" [maxSize]="7" [rotate]="true"
+    [ellipses]="false" [boundaryLinks]="true" aria-label="Default pagination" (pageChange)="loadPage($event)">
+  </ngb-pagination>
+  <div class="load-name">{{load_name}}</div>
+</div>
+
 <div class="datasheet">
-  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="500" [height]="500">
+  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="true" [width]="800" [height]="500">
     <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
     <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
     <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>

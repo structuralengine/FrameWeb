@@ -17,7 +17,8 @@
   [data]="combineData" 
   [colHeaders]="true" 
   [rowHeaders]="rowHeaders" 
-  [height]="500">
-    <hot-column *ngFor="let c of combineColums;" [data]="c" [title]="c"></hot-column>
+  [height]="500"
+  [settings]="hotTableSettings">
+    <hot-column *ngFor="let c of combineColums; index as i" [data]="c" [title]="combineTitles[i]"></hot-column>
   </hot-table>
 </div>
