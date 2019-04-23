@@ -563,7 +563,7 @@ public class webframe : Singleton<webframe>
   #endregion
 
   #region バネデータ
-
+	public int FixMemberType = 1;
   public partial class FixMemberData
   {
     public double tx = 0.0;
@@ -581,7 +581,7 @@ public class webframe : Singleton<webframe>
 
   public Dictionary<int, Dictionary<int, FixMemberData>> ListFixMember = new Dictionary<int, Dictionary<int, FixMemberData>>();
 
-  /// <summary> 支点データを読み込む </summary>
+  /// <summary> バネデータを読み込む </summary>
   public void SetFixMember(Dictionary<string, object> objJson)
   {
     try
@@ -642,6 +642,16 @@ public class webframe : Singleton<webframe>
       Debug.Log(e.Message);
     }
   }
+
+	/// <summary>
+	/// 使用するバネリストを取得する（＝FixMemberTypeで指定した配列を取得）
+	/// </summary>
+	/// <returns>Dictionary[int, FixMemberData]</returns>
+	public Dictionary<int, FixMemberData> GetFixMemberUseList () {
+		if (!ListFixMember.ContainsKey ( FixMemberType )) return null;
+		return ListFixMember[FixMemberType];
+	}
+
 
   #endregion
 
@@ -734,6 +744,7 @@ public class webframe : Singleton<webframe>
   #endregion
 
   #region 荷重データ
+  public int LoadType = 1;
 
   public partial class LoadData
   {
@@ -887,6 +898,16 @@ public class webframe : Singleton<webframe>
       Debug.Log(e.Message);
     }
   }
+
+	/// <summary>
+	/// 使用する荷重データを取得する
+	/// </summary>
+	/// <returns>Dictionary[int, FixMemberData]</returns>
+	public LoadData GetLoadUseData () {
+		if (!ListLoadData.ContainsKey ( LoadType )) return null;
+		return ListLoadData[LoadType];
+	}
+
 
   #endregion
 
