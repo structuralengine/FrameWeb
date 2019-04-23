@@ -472,7 +472,7 @@ public class webframe : Singleton<webframe>
   #endregion
 
   #region 支点データ
-
+  public int FixNodeType = 1;
   public partial class FixNodeData
   {
     public double tx = 0.0;

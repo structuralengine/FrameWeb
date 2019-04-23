@@ -18,17 +18,25 @@ public class CameraController : MonoBehaviour
 	Transform		_chacheTransform;
 	Vector3			_oldPos;			// マウスの位置を保存する変数
 
+  [SerializeField]
+  RuntimeSceneGizmo.SceneGizmoRenderer gizmoRenderer;
 
-	/// <summary>
-	///	注視点オブジェクトが未設定の場合、新規に生成する 
-	/// </summary>
-	/// <param name="name"></param>
-	void setupFocusObject(string name)
+  /// <summary>
+  ///	注視点オブジェクトが未設定の場合、新規に生成する 
+  /// </summary>
+  /// <param name="name"></param>
+  void setupFocusObject(string name)
 	{
 		_focusObj = new GameObject(name);
+    _focusObj.AddComponent<RuntimeSceneGizmo.CameraGizmoListener>();
+    _focusObj.AddComponent<RuntimeSceneGizmo.CameraMovement>();
 		_focusTransform = _focusObj.transform;
 		_focusTransform.position = Vector3.zero;
-	}
+
+    gizmoRenderer.OnComponentClicked.AddListener((a) => 
+      _focusObj.GetComponent<RuntimeSceneGizmo.CameraGizmoListener>().OnGizmoComponentClicked(a)
+    );
+  }
 
 
 
@@ -284,7 +292,7 @@ public class CameraController : MonoBehaviour
 		_chacheTransform.parent = _focusTransform;
 
 		// カメラの方向ベクトル(ローカルのZ方向)を注視点オブジェクトに向ける
-		_chacheTransform.LookAt(_focusTransform.position);
+//		_chacheTransform.LookAt(_focusTransform.position);
 	}
 
 

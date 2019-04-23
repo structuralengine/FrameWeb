@@ -8,9 +8,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 473834}
-  - component: {fileID: 11479510}
+  - component: {fileID: 114158645905025458}
   m_Layer: 0
-  m_Name: NodeDispMananager
+  m_Name: FixNodeDispMananager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,18 +29,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &11479510
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 112840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08188e5b4e22a5b46b2730d46ac9f3fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _blockPrefab: {fileID: 155912, guid: 2b5d9379beee144fb9ca4198b661f788, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -52,3 +40,21 @@ Prefab:
   m_SourcePrefab: {fileID: 0}
   m_RootGameObject: {fileID: 112840}
   m_IsPrefabAsset: 1
+--- !u!114 &114158645905025458
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 112840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cefa3f99743e03c4fbcbc4c51883e703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockPrefab: {fileID: 155912, guid: 723385a5005b14d3dbb9c8b5cd1644da, type: 2}
+  FixNodeType: 1
+  _prefabs:
+  - {fileID: 155912, guid: 723385a5005b14d3dbb9c8b5cd1644da, type: 2}
+  - {fileID: 1422121669003362, guid: f98383d50b5e940b19c7b0b1f90c9ae7, type: 2}
+  - {fileID: 1409061095325610, guid: 1b1bbde7fa94e4d0fba4dc2a38ce0115, type: 2}
+  - {fileID: 1419830304880242, guid: 221cc9dbef1ec4ffdb6d38e2287d5ee5, type: 2}

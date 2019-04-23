@@ -11,10 +11,22 @@ public class FixNodeDispManager : PartsDispManager
 	float	_maxFixNodeLangth = 0.0f;
 	float	_fixnodeScale = 1.0f;
 
-    /// <summary>ブロックの初期値を設定する </summary>
-    /// <param name="_blockWorkData"></param>
-    /// <param name="data_id"> データID </param>
-    private void InitBlock(ref BlockWorkData blockWorkData, int data_id, string block_id)
+  public enum DispType
+  {
+    Block,
+    Line,
+  }
+
+  private DispType _dispType = DispType.Line;
+
+	[SerializeField]
+	private GameObject[] _prefabs;
+
+
+  /// <summary>ブロックの初期値を設定する </summary>
+  /// <param name="_blockWorkData"></param>
+  /// <param name="data_id"> データID </param>
+  private void InitBlock(ref BlockWorkData blockWorkData, int data_id, string block_id)
     {
         blockWorkData.gameObjectTransform = blockWorkData.gameObject.transform;
         blockWorkData.rootBlockTransform = blockWorkData.gameObjectTransform.Find("Root");
@@ -72,8 +84,64 @@ public class FixNodeDispManager : PartsDispManager
             // 新しいオブジェクトを生成する
             foreach (int i in _webframe.ListFixNode.Keys)
             {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                base._blockWorkData.Add(GetBlockID(i), blockWorkData);
+				if (!_webframe.ListFixNode[_webframe.FixNodeType].ContainsKey(i)) continue;
+
+				var list = _webframe.ListFixNode[_webframe.FixNodeType][i];
+				double tx = list.tx;
+				double ty = list.ty;
+				double tz = list.tz;
+				double rx = list.rx;
+				double ry = list.ry;
+				double rz = list.rz;
+
+				// データ入力パターンと図形描画に従い、パターンに応じて表示させる図形を変更する
+
+				// ------------------------------------
+				// t系に1が入っている場合に描画するモデル
+				// ------------------------------------
+				if ((tx == 1 && ty == 0 && tz == 0) ||
+					(tx == 0 && ty == 1 && tz == 0) ||
+					(tx == 0 && ty == 0 && tz == 1) ||
+					(tx == 1 && ty == 1 && tz == 0) ||
+					(tx == 0 && ty == 1 && tz == 1) ||
+					(tx == 1 && ty == 0 && tz == 1))
+				{
+
+					_blockPrefab = _prefabs[0];
+				}
+				// ------------------------------------
+
+
+				// ------------------------------------
+				// r系に1が入っている場合に描画するモデル
+				// ------------------------------------
+				if ((rx == 1 && ry == 0 && rz == 0) ||
+					(rx == 0 && ry == 1 && rz == 0) ||
+					(rx == 0 && ry == 0 && rz == 1) ||
+					(rx == 1 && ry == 1 && rz == 0) ||
+					(rx == 0 && ry == 1 && rz == 1) ||
+					(rx == 1 && ry == 0 && rz == 1) ||
+					(rx == 1 && ry == 1 && rz == 1)) {
+					_blockPrefab = _prefabs[1];
+				}
+				// ------------------------------------
+
+				// ------------------------------------
+				// t系の値が1以外の場合
+				// TODO:「1以外」とすると 0 も含まれてしまい、上で設定したものが上書きされる恐れがあるため「0以外」も含めています。
+				if ( (tx != 0 && tx != 1) || (ty != 0 && ty != 1) || (tz != 0 && tz != 1)) {
+					_blockPrefab = _prefabs[2];
+				}
+
+				// ------------------------------------
+				// r系の値が1以外の場合
+				// TODO:「1以外」とすると 0 も含まれてしまい、上で設定したものが上書きされる恐れがあるため「0以外」も含めています。
+				if ( (rx != 0 && rx != 1) || (ry != 0 && ry != 1) || (rz != 0 && rz != 1)) {
+					_blockPrefab = _prefabs[3];
+				}
+
+				blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
+				base._blockWorkData.Add(GetBlockID(i), blockWorkData);
             }
 
             // 新しいオブジェクトのプロパティを設定する
@@ -173,24 +241,26 @@ public class FixNodeDispManager : PartsDispManager
     {
         base.ChengeForcuseBlock(this.GetBlockID(i));
     }
-
+ 
 
     /// <summary> ブロックのステータスを変更 </summary>
     public override void SetBlockStatus( string id )
-	{
+    {
+
         if (!base._blockWorkData.ContainsKey(id))
             return;
 
-        webframe.FixNodeData fixnodePoint = _webframe.ListFixNode[0][GetDataID(id)];
+        int i = GetDataID(id);
+		webframe.FixNodeData fixnodePoint = _webframe.ListFixNode[i][i];
 
-		PartsDispManager.PartsDispStatus partsDispStatus;
+        PartsDispManager.PartsDispStatus partsDispStatus;
 
-		partsDispStatus.id	  = id;
-		partsDispStatus.enable = true;
+        partsDispStatus.id	  = id;
+        partsDispStatus.enable = true;
 
-		if( base.SetBlockStatusCommon(partsDispStatus) == false ) {
-			return;
-		}
+        if( base.SetBlockStatusCommon(partsDispStatus) == false ) {
+            return;
+        }
 
         //	表示に必要なパラメータを用意する
         BlockWorkData blockWorkData = base._blockWorkData[id];
@@ -198,6 +268,100 @@ public class FixNodeDispManager : PartsDispManager
         //	姿勢を設定
         blockWorkData.gameObjectTransform.position = new Vector3((float)fixnodePoint.tx, (float)fixnodePoint.ty, (float)fixnodePoint.tz);
         blockWorkData.gameObjectTransform.localScale = new Vector3(_fixnodeScale, _fixnodeScale, _fixnodeScale);
+
+		double tx = fixnodePoint.tx;
+		double ty = fixnodePoint.ty;
+		double tz = fixnodePoint.tz;
+		double rx = fixnodePoint.rx;
+		double ry = fixnodePoint.ry;
+		double rz = fixnodePoint.rz;
+
+		float x = 0f;
+		float y = 0f;
+		float z = 0f;
+
+		// ------------------------------------
+		// t系に1が入っている場合の描画
+		// ------------------------------------
+		if ((tx == 1 && ty == 0 && tz == 0) || (tx != 0 && tx != 1)) {
+			x = 0f;
+			y = 0f;
+			z = 90f;
+		}
+		if ((tx == 0 && ty == 1 && tz == 0) || (ty != 0 && ty != 1)) {
+			x = 0f;
+			y = 90f;
+			z = 0f;
+		}
+		if ((tx == 0 && ty == 0 && tz == 1) || (tz != 0 && tz != 1)) {
+			x = -90f;
+			y = 0f;
+			z = 0f;
+		}
+
+		if (tx == 1 && ty == 1 && tz == 0) {
+			x = 90f;
+			y = 90f;
+			z = 0f;
+		}
+		if (tx == 0 && ty == 1 && tz == 1) {
+			x = 0f;
+			y = 90f;
+			z = 90f;
+		}
+		if (tx == 1 && ty == 0 && tz == 1) {
+			x = 90f;
+			y = 0f;
+			z = 90f;
+		}
+		// ------------------------------------
+
+
+		// ------------------------------------
+		// r系に1が入っている場合の描画
+		// ------------------------------------
+		if ((rx == 1 && ry == 0 && rz == 0) || (rx != 0 && rx != 1)) {
+			x = 90f;
+			y = 0f;
+			z = 0f;
+		}
+		if ((rx == 0 && ry == 1 && rz == 0) || (ry != 0 && ry != 1)) {
+			x = 0f;
+			y = 90f;
+			z = 0f;
+		}
+		if ((rx == 0 && ry == 0 && rz == 1) || (rz != 0 && rz != 1)) {
+			x = 0f;
+			y = 0f;
+			z = 90f;
+		}
+
+		if ((rx == 1 && ry == 1 && rz == 0) || ( (rx != 0 && rx != 1) && (ry != 0 && ry != 1) )) {
+			x = 90f;
+			y = 90f;
+			z = 0f;
+		}
+		if ((rx == 0 && ry == 1 && rz == 1) || ( (ry != 0 && ry != 1) && (rz != 0 && rz != 1) )) {
+			x = 0f;
+			y = 90f;
+			z = 90f;
+		}
+		if ((rx == 1 && ry == 0 && rz == 1) || ( (rx != 0 && rx != 1) && (rz != 0 && rz != 1) )) {
+			x = 90f;
+			y = 0f;
+			z = 90f;
+		}
+		if ((rx == 1 && ry == 1 && rz == 1) || ( (rx != 0 && rx != 1) && (ry != 0 && ry != 1) && (rz != 0 && rz != 1) )) {
+			x = 90f;
+			y = 90f;
+			z = 90f;
+		}
+		// ------------------------------------
+		blockWorkData.gameObjectTransform.localRotation = Quaternion.Euler(x, y, z);
+
+
+//		blockWorkData.directionArrow.SetArrowDirection (blockWorkData.gameObjectTransform.position, Quaternion.identity, blockWorkData.gameObjectTransform.localScale);
+//		blockWorkData.directionArrow.EnableRenderer (true);
     }
 
 
@@ -275,4 +439,18 @@ public class FixNodeDispManager : PartsDispManager
 
         return	true;
 	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	public void ChangeDispMode(DispType dispType) {
+		if (_dispType == dispType)
+		{
+			return;
+		}
+
+		_dispType = dispType;
+		SetBlockStatusAll();
+	}
+
 }
