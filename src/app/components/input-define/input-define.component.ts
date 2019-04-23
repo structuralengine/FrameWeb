@@ -41,7 +41,7 @@ export class InputDefineComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
+    if (currentPage != this.page) {
       this.page = currentPage;
     }
     this.defineData = new Array();
@@ -57,4 +57,12 @@ export class InputDefineComponent implements OnInit {
     }
   }
 
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.frame.isCombinePickupChenge = true;
+      }
+    }
+  }
+  
 }

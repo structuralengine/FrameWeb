@@ -20,7 +20,8 @@
   [data]="defineData" 
   [colHeaders]="true"
   [rowHeaders]="rowHeaders" 
-  [height]="500">
+  [height]="500"
+  [settings]="hotTableSettings">
     <hot-column *ngFor="let c of defineColums;" [data]="c" [title]="c"></hot-column>
   </hot-table>
 </div>

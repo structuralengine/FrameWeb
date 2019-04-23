@@ -14,6 +14,7 @@ export class InputPickupComponent implements OnInit {
   page: number;
   pickupData: any[];
   pickupColums: any[];
+  pickupTitles: any[];
   rowHeaders: any[];
 
   constructor(private input: InputDataService,
@@ -22,6 +23,7 @@ export class InputPickupComponent implements OnInit {
     this.page = 1;
     this.pickupData = new Array();
     this.pickupColums = new Array();
+    this.pickupTitles = new Array();
     this.rowHeaders = new Array();
 
   }
@@ -36,13 +38,15 @@ export class InputPickupComponent implements OnInit {
     }
     for (var i = 1; i <= this.COLUMNS_COUNT; i++) {
       this.pickupColums.push("C" + i.toString());
+      this.pickupTitles.push("C" + i.toString());
     }
-    this.pickupColums.push("名称　　　　　　　　　　　　　　　　　");
+    this.pickupColums.push("name");
+    this.pickupTitles.push("名称　　　　　　　　　　　　　　");
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
+    if (currentPage != this.page) {
       this.page = currentPage;
     }
     this.pickupData = new Array();
@@ -55,6 +59,14 @@ export class InputPickupComponent implements OnInit {
       const pickup = this.input.getPickUpDataColumns(i, this.COLUMNS_COUNT+1);
       this.pickupData.push(pickup);
       this.rowHeaders.push(i);
+    }
+  }
+  
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.frame.isCombinePickupChenge = true;
+      }
     }
   }
 

@@ -99,7 +99,7 @@ export class MenuComponent implements OnInit {
     
     console.log(inputJson);
 
-    const url = 'http://structuralengine.com/FrameWeb/api/Web_Api.py';
+    const url = 'https://structuralengine.com/FrameWeb/api/Web_Api.py';
 
     this.http.post(url, inputJson, {
       headers: new Headers({
@@ -110,7 +110,8 @@ export class MenuComponent implements OnInit {
         response => {
           // 通信成功時の処理（成功コールバック）
           console.log('通信成功!!');
-          this.InputData.loadResultData(response.text());
+        this.InputData.loadResultData(response.text());
+        this.loadResultData(response.text());
           this.app.isCalculated = true;
           modalRef.close();
         },
@@ -121,7 +122,11 @@ export class MenuComponent implements OnInit {
           modalRef.close();
         }
     );
+  }
 
+  private loadResultData(resultText: string): void {
+    this.user.loadResultData(resultText);
+    this.userPoint = this.user.purchase_value.toString();
   }
 
   // 印刷

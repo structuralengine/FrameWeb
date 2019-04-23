@@ -9,6 +9,8 @@ import { directiveCreate } from '@angular/core/src/render3/instructions';
 })
 export class FrameDataService {
 
+  isCombinePickupChenge: boolean;
+
   constructor(private input: InputDataService,
     private result: ResultDataService) {
   }
@@ -16,6 +18,7 @@ export class FrameDataService {
   public clear(): void {
     this.input.clear();
     this.result.clear();
+    this.isCombinePickupChenge = true;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +42,7 @@ export class FrameDataService {
 
   private getInputJson(mode: string) {
     let jsonData = {};
-    
+
     const node: {} = this.getNodeJson(mode);
     if (Object.keys(node).length > 0) {
       jsonData['node'] = node;
@@ -399,7 +402,7 @@ export class FrameDataService {
 
     // 要素荷重データ
     let load_member = this.getMemberLoadJson(mode);
-    
+
     // 合成する
     if (mode == 'file') {
       for (let load_id in load_name) {
@@ -486,6 +489,25 @@ export class FrameDataService {
       load_name[load_id] = jsonData;
     }
     return load_name;
+  }
+
+  public getLoadName(currentPage: number): string {
+
+    if (currentPage < 1) {
+      return "";
+    }
+    if (currentPage > this.input.load_name.length) {
+      return "";
+    }
+
+    let i = currentPage - 1;
+    const tmp = this.input.load_name[i];
+
+    let result: string = '';
+    if ('name' in tmp) {
+      result = tmp['name'];
+    }
+    return result;
   }
 
   // 節点荷重データ
@@ -607,7 +629,7 @@ export class FrameDataService {
 
         m1 = (m1 == null) ? 0 : m1;
         m2 = (m2 == null) ? 0 : m2;
-        
+
         direction = direction.trim();
         let sL1: string = (L1 == null) ? "0" : row['L1'].toString();
         L2 = (L2 == null) ? 0 : L2;
@@ -635,8 +657,8 @@ export class FrameDataService {
 
     // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
     let i: number = 0
-    let curNo: number  = -1
-    let curPos: number  = 0
+    let curNo: number = -1
+    let curPos: number = 0
     do {
       let row = load2[i];
       if (row.m2 < 0) {
@@ -703,14 +725,14 @@ export class FrameDataService {
     let m1: number = Math.abs(targetLoad.m1);
     let m2: number = Math.abs(targetLoad.m2);
     let L1: number = Math.abs(this.toNumber(targetLoad.L1));
-    
+
     let P2: number; let Po: number;
     let L: number; let ll: number; let lo: number;
 
     let sL1: string = targetLoad.L1.toString();
-    if (sL1.indexOf('-') >= 0 ) {
+    if (sL1.indexOf('-') >= 0) {
       // 距離L1が加算モードで入力されている場合
-      if( m1 <= curNo && curNo <= m2 ){
+      if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
         L1 = curPos + L1;
         targetLoad.m1 = m1;
@@ -718,7 +740,7 @@ export class FrameDataService {
       }
     }
 
-    for (let j = m1; j <= m2; j++){
+    for (let j = m1; j <= m2; j++) {
       let L = this.getMemberLength(j.toString());
       if (L1 > L) {
         L1 = L1 - L;
@@ -737,52 +759,52 @@ export class FrameDataService {
     let L2: number = Math.abs(targetLoad.L2);
 
     switch (targetLoad.mark) {
-    case 1:
-    case 11:
-      if (targetLoad.L2 < 0) {
-        L2 = L1 + L2
-      }
-      for (let j = m1; j <= m2; j++) {
-        L = this.getMemberLength(j.toString());
-        if (L2 > L) {
-          L2 = L2 - L;
-          targetLoad.m2 = j + 1;
-          targetLoad.L2 = L2;
-        } else {
-          break;
+      case 1:
+      case 11:
+        if (targetLoad.L2 < 0) {
+          L2 = L1 + L2
         }
-      }
-      curNo = Math.abs(targetLoad.m2);
-      curPos = targetLoad.L2;
-      break;
-    
-    default:
-      if (targetLoad.L2 < 0) {
-        // 連続部材の全長さLLを計算する
-        ll = 0
         for (let j = m1; j <= m2; j++) {
-          ll = ll + this.getMemberLength(j.toString());
+          L = this.getMemberLength(j.toString());
+          if (L2 > L) {
+            L2 = L2 - L;
+            targetLoad.m2 = j + 1;
+            targetLoad.L2 = L2;
+          } else {
+            break;
+          }
         }
-        L2 = ll - (curPos + L2)
-        if (L2 < 0) {
-          L2 = 0;
-        }
-        targetLoad.m2 = m2;
-        targetLoad.L2 = L2
-      }
-      for (let j = m2; j >= org_m1; j--) {
-        L = this.getMemberLength(j.toString());
-        if (L2 > L) {
-          L2 = L2 - L;
-          targetLoad.m2 = j - 1;
+        curNo = Math.abs(targetLoad.m2);
+        curPos = targetLoad.L2;
+        break;
+
+      default:
+        if (targetLoad.L2 < 0) {
+          // 連続部材の全長さLLを計算する
+          ll = 0
+          for (let j = m1; j <= m2; j++) {
+            ll = ll + this.getMemberLength(j.toString());
+          }
+          L2 = ll - (curPos + L2)
+          if (L2 < 0) {
+            L2 = 0;
+          }
+          targetLoad.m2 = m2;
           targetLoad.L2 = L2
-        } else {
-          break;
         }
-      }
-      curNo = Math.abs(targetLoad.m2);
-      curPos = L - targetLoad.L2;
-      break;
+        for (let j = m2; j >= org_m1; j--) {
+          L = this.getMemberLength(j.toString());
+          if (L2 > L) {
+            L2 = L2 - L;
+            targetLoad.m2 = j - 1;
+            targetLoad.L2 = L2
+          } else {
+            break;
+          }
+        }
+        curNo = Math.abs(targetLoad.m2);
+        curPos = L - targetLoad.L2;
+        break;
     }
 
     // ちょうど j端 になったら次の部材の 距離0(ゼロ) とする
@@ -860,7 +882,7 @@ export class FrameDataService {
           loads.push(newLoads);
         }
         break;
-      
+
       default:
         // 中間値を計算
         lo = ll - L1 - L2; // 荷重載荷長
@@ -910,7 +932,7 @@ export class FrameDataService {
   }
 
   // 要素番号 m1 != m2 の場合の入力を分ける
-  private getMemberRepeatLoad (targetLoad: any) :any{
+  private getMemberRepeatLoad(targetLoad: any): any {
 
     let result = new Array();
 
@@ -973,7 +995,7 @@ export class FrameDataService {
     }
 
     if (curPos >= L - 0.0001) {
-      if(m2 > curNo){
+      if (m2 > curNo) {
         curNo = curNo + 1;
         curPos = 0;
       }
@@ -987,9 +1009,9 @@ export class FrameDataService {
     let list = new Array();
     list.push(this.getLoadJson('file'));
     list.push(this.getNodeLoadJson('file'));
-    list.push(this.getNodeLoadJson('file'));
+    list.push(this.getMemberLoadJson('file'));
     let maxCase: number = 0;
-    for (let i = 0; i < list.length; i++){
+    for (let i = 0; i < list.length; i++) {
       let dict = list[i];
       for (let load_id in dict) {
         let load_no: number = this.toNumber(load_id);
@@ -1001,59 +1023,72 @@ export class FrameDataService {
     return maxCase;
   }
 
-  private getDefineJson() {
+  private getDefineJson(mode: string = 'file') {
 
     let jsonData = {};
     for (let i = 0; i < this.input.define.length; i++) {
+      let data = {};
       const row = this.input.define[i];
       const id = row['row'];
-      let dict = {};
-      for (let key in row) { 
-        if (key == 'row') {
-          continue;
-        }
-        const tmp = this.toNumber(row[key]);
-        if (tmp != null) {
-          dict[key]= row;
-          break;
+      let flg: boolean = false;
+      for (let key in row) {
+        if (key == 'row' || key == 'name') {
+          if (mode == 'file') {
+            data[key] = row[key];
+          }
+        } else {
+          const value = row[key];
+          if (this.toNumber(value) != null) {
+            flg = true;
+            if (mode != 'file') {
+              key = key.replace('C', '').replace('D', '');
+            }
+            data[key] = value;
+          }
         }
       }
-      if (Object.keys(dict).length > 0) {
-        jsonData[id] = dict;
+      if (flg == true) {
+        jsonData[id] = data;
       }
     }
     return jsonData;
   }
 
   // 有効な DEFINEケース数を調べる
-  public getDefineCaseCount(): number{
-
-    let maxCase: number = 0;
+  public getDefineCaseCount(): number {
     let dict = this.getDefineJson();
-    for (let row in dict) {
-      let id: number = this.toNumber(row);
-      if (maxCase < id) {
-        maxCase = id;
-      }
-    }
-    return maxCase;
+    return Object.keys(dict).length;
   }
 
-  private getCombineJson() {
+  private getCombineJson(mode: string = 'file') {
 
     let jsonData = {};
     for (let i = 0; i < this.input.combine.length; i++) {
+      let data = {};
       const row = this.input.combine[i];
       const id = row['row'];
+      let flg: boolean = false;
       for (let key in row) {
-        if (key == 'row') {
-          continue;
+        if (key == 'row' || key == 'name') {
+          if (mode == 'file') {
+            data[key] = row[key];
+          }
+        } else {
+          const value = row[key];
+          const num = this.toNumber(value);
+          if (num != null) {
+            flg = true;
+            if (mode != 'file') {
+              key = key.replace('C', '').replace('D', '');
+              data[key] = num;
+            } else {
+              data[key] = value;
+            }
+          }
         }
-        const tmp = this.toNumber(row[key]);
-        if (tmp != null) {
-          jsonData[id] = row;
-          break;
-        }
+      }
+      if (flg == true) {
+        jsonData[id] = data;
       }
     }
     return jsonData;
@@ -1061,35 +1096,83 @@ export class FrameDataService {
 
   // 有効な COMBINE ケース数を調べる
   public getCombineCaseCount(): number {
-    let maxCase: number = 0;
     let dict = this.getCombineJson();
-    for (let row in dict) {
-      let id: number = this.toNumber(row['row']);
-      if (maxCase < id) {
-        maxCase = id;
-      }
-    }
-    return maxCase;
+    return Object.keys(dict).length;
   }
 
-  private getPickUpJson() {
+  public getCombineName(currentPage: number): string {
 
-    let jsonData = [];
+    if (currentPage < 1) {
+      return "";
+    }
+    if (currentPage > this.input.combine.length) {
+      return "";
+    }
+
+    let i = currentPage - 1;
+    const tmp = this.input.combine[i];
+
+    let result: string = '';
+    if ('name' in tmp) {
+      result = tmp['name'];
+    }
+    return result;
+  }
+
+  private getPickUpJson(mode: string = 'file') {
+
+    let jsonData = {};
     for (let i = 0; i < this.input.pickup.length; i++) {
+      let data = {};
       const row = this.input.pickup[i];
       const id = row['row'];
+      let flg: boolean = false;
       for (let key in row) {
-        if (key == 'row') {
-          continue;
+        if (key == 'row' || key == 'name') {
+          if (mode == 'file') {
+            data[key] = row[key];
+          }
+        } else {
+          const value = row[key];
+          if (this.toNumber(value) != null) {
+            flg = true;
+            if (mode != 'file') {
+              key = key.replace('C', '').replace('D', '');
+            }
+            data[key] = value;
+          }
         }
-        const tmp = this.toNumber(row[key]);
-        if (tmp != null) {
-          jsonData[id] = row;
-          break;
-        }
+      }
+      if (flg == true) {
+        jsonData[id] = data;
       }
     }
     return jsonData;
+  }
+
+  public getPickUpName(currentPage: number): string {
+
+    if (currentPage < 1) {
+      return "";
+    }
+    if (currentPage > this.input.pickup.length) {
+      return "";
+    }
+
+    let i = currentPage - 1;
+    const tmp = this.input.pickup[i];
+
+    let result: string = '';
+    if ('name' in tmp) {
+      result = tmp['name'];
+    }
+    return result;
+  }
+
+  // 有効な PICKUP ケース数を調べる
+  public getPickupCaseCount(): number {
+    let dict = this.getPickUpJson();
+    return Object.keys(dict).length;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -1262,7 +1345,7 @@ export class FrameDataService {
           let _L2: string = ('L2' in item3) ? item3['L2'] : '';
           let _P1: string = ('P1' in item3) ? item3['P1'] : '';
           let _P2: string = ('P2' in item3) ? item3['P2'] : '';
-          let result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark,  L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
+          let result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark, L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
           tmp_load2[_row] = result3;
         }
       }
@@ -1333,25 +1416,116 @@ export class FrameDataService {
   ////////////////////////////////////////////////////////////////////////////////////
   // 計算結果を読み込む ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////
-  public loadResultData(resultText: string): void{
+  public loadResultData(resultText: string): void {
     this.result.clear();
     const jsonData: {} = JSON.parse(resultText);
     // 基本ケース
     this.setDisgJson(jsonData);
     this.setReacJson(jsonData);
     this.setFsecJson(jsonData);
-    // 組み合わせケースは result-data で集計する
+    // 組み合わせケース
+    this.CombinePickup();
   }
+
+  public CombinePickup(): void {
+
+    if (this.isCombinePickupChenge = false) {
+      return;
+    }
+    const load = this.getLoadNameJson('calc');
+    const define = this.getDefineJson('calc');
+    const combine = this.getCombineJson('calc');
+    const pickup = this.getPickUpJson('calc');
+
+    // define を集計
+    let defList = {};
+    if (Object.keys(define).length > 0) {
+      for (let defNo in define) {
+        let d: object = define[defNo];
+        let defines = new Array();
+        for (let dKey in d) {
+          defines.push(d[dKey]);
+        }
+        defList[defNo] = defines;
+      }
+    } else {
+      for (let caseNo in load) {
+        defList[caseNo] = new Array(caseNo);
+      }
+    }
+
+    // combine を集計
+    let combList = {};
+    for (let combNo in combine) {
+      let target: object = combine[combNo];
+      let combines = new Array([]);
+      for (let defNo in target) {
+        if (!(defNo in defList)) continue; //なければ飛ばす
+        let def = defList[defNo];
+        let defKeys = Object.keys(def);
+        // defineNo が複数あった場合に配列を複製する
+        if (defKeys.length > 1) {
+          let count: number = combines.length;
+          for (let i = 0; i < count; i++) {
+            let base = combines[i];
+            for (let j = 1; j < defKeys.length; j++) {
+              combines.push(base.slice(0, base.length));
+            }
+          } 
+        }
+        // 組み合わせにケース番号を登録する
+        let coef = target[defNo]
+        let j: number = 0;
+        for (let i = 0; i < combines.length; i++) {
+          let caseNo: string = def[defKeys[j]];
+          if (caseNo.indexOf('-') >= 0) {
+            caseNo = caseNo.replace('-', '');
+            coef = -1 * coef;
+          }
+          combines[i].push({ caseNo: caseNo, coef: coef });
+          j++;
+          if (j == defKeys.length) j = 0;
+        }
+      }
+      combList[combNo] = combines;
+    }
+
+    
+    // pickup を集計
+    let pickList = {};
+    for (let pickNo in pickup) {
+      let p: object = pickup[pickNo];
+      let combines = new Array();
+      for (let pKey in p) {
+        const comNo: string = p[pKey];
+        if (!(comNo in combList)) continue; //なければ飛ばす
+        combines.push(combList[comNo]);
+      }
+      pickList[pickNo] = combines;
+    }
+
+    this.setDisgCombineJson(combList);
+    this.setReacCombineJson(combList);
+    this.setFsecCombineJson(combList);
+    this.setDisgPickupJson(pickList);
+    this.setReacPickupJson(pickList);
+    this.setFsecPickupJson(pickList);
+
+    this.isCombinePickupChenge = false;
+
+
+  }
+  
 
   private setDisgJson(jsonData: {}): void {
     let max_row: number = 0;
     for (let caseNo in jsonData) {
       let target = new Array();
       const caseData: {} = jsonData[caseNo];
-      if (typeof(caseData)!='object') {
+      if (typeof (caseData) != 'object') {
         continue;
       }
-      if (!('disg' in caseData)) { 
+      if (!('disg' in caseData)) {
         continue;
       }
       const json: {} = caseData['disg'];
@@ -1364,12 +1538,12 @@ export class FrameDataService {
         let rx: number = this.toNumber(item['rx']);
         let ry: number = this.toNumber(item['ry']);
         let rz: number = this.toNumber(item['rz']);
-        dx = (dx == null) ? 0 : dx;      
-        dy = (dy == null) ? 0 : dy;      
-        dz = (dz == null) ? 0 : dz;      
+        dx = (dx == null) ? 0 : dx;
+        dy = (dy == null) ? 0 : dy;
+        dz = (dz == null) ? 0 : dz;
         rx = (rx == null) ? 0 : rx;
         ry = (ry == null) ? 0 : ry;
-        rz = (rz == null) ? 0 : rz;      
+        rz = (rz == null) ? 0 : rz;
         let result = {
           id: n,
           dx: dx.toFixed(3),
@@ -1454,15 +1628,15 @@ export class FrameDataService {
         const js: {} = json[m];
 
         let result = {};
+        let old = {};
         const node = this.getNodeNo(memberNo)
         let ni: string = node['ni'];
-        let nj: string;
+        let nj: string = "";
         let counter: number = 0;
         const data_length: number = Object.keys(js).length;
         for (let p in js) {
           counter++;
           const item: {} = js[p];
-          row++;
           let fxi: number = this.toNumber(item['fxi']);
           let fyi: number = this.toNumber(item['fyi']);
           let fzi: number = this.toNumber(item['fzi']);
@@ -1476,7 +1650,6 @@ export class FrameDataService {
           myi = (myi == null) ? 0 : myi;
           mzi = (mzi == null) ? 0 : mzi;
           result = {
-            row: row,
             m: memberNo,
             n: ni,
             l: noticePoint.toFixed(3),
@@ -1487,14 +1660,19 @@ export class FrameDataService {
             my: myi.toFixed(2),
             mz: mzi.toFixed(2)
           };
-          target.push(result);
+          if (!this.objectEquals(old, result)) {
+            Object.assign(old, result);
+            row++;
+            result['row'] = row;
+            target.push(result);
+          }
+
           memberNo = '';
           ni = '';
           if (counter == data_length) {
             nj = node['nj'];
           }
           noticePoint += this.toNumber(item['L']);
-          row++;
           let fxj: number = this.toNumber(item['fxj']);
           let fyj: number = this.toNumber(item['fyj']);
           let fzj: number = this.toNumber(item['fzj']);
@@ -1508,7 +1686,6 @@ export class FrameDataService {
           myj = (myj == null) ? 0 : myj;
           mzj = (mzj == null) ? 0 : mzj;
           result = {
-            row: row,
             m: '',
             n: nj,
             l: noticePoint.toFixed(3),
@@ -1519,7 +1696,13 @@ export class FrameDataService {
             my: myj.toFixed(2),
             mz: mzj.toFixed(2)
           };
-          target.push(result);
+          if (!this.objectEquals(old, result)) {
+            Object.assign(old, result);
+            row++;
+            result['row'] = row;
+            target.push(result);
+          }
+
         }
       }
       this.result.fsec[caseNo] = target;
@@ -1528,13 +1711,80 @@ export class FrameDataService {
     this.result.FSEC_ROWS_COUNT = max_row;
   }
 
+  private setDisgCombineJson(combList: any): void {
+
+    for (let combNo in combList) {
+      let combines: any[] = combList[combNo];
+      for (let i = 0; i < combines.length; i++){
+        let com = combines[i];
+        for (let j = 0; j < com.length; j++) {
+          let caseInfo = com[j];
+
+          let disgs: any[] = this.result.disg[caseInfo.caseNo];
+          for (let i = 0; i < disgs.length; i++){
+            let result = disgs[i];
+
+
+          }
+
+
+          console.log(caseInfo.caseNo + caseInfo.coef);
+
+
+
+        }
+      }
+    }
+  }
+
+  private setReacCombineJson(combList: any): void {
+  }
+
+  private setFsecCombineJson(combList: any): void {
+  }
+
+  private setDisgPickupJson(pickList: any): void {
+  }
+
+  private setReacPickupJson(pickList: any): void {
+  }
+
+  private setFsecPickupJson(pickList: any): void {
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////
   // Helper 関数 /////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////
+  private objectEquals(a: any, b: any): boolean {
+
+    if (a === b) {
+      // 同一インスタンスならtrueを返す
+      return true;
+    }
+
+    // 比較対象双方のキー配列を取得する（順番保証のためソートをかける）
+    let aKeys = Object.keys(a).sort();
+    let bKeys = Object.keys(b).sort();
+
+    // 比較対象同士のキー配列を比較する
+    if (aKeys.toString() !== bKeys.toString()) {
+      // キーが違う場合はfalse
+      return false;
+    }
+
+    // 値をすべて調べる。
+    let wrongIndex = aKeys.findIndex(function (value) {
+      // 注意！これは等価演算子で正常に比較できるもののみを対象としています。
+      // つまり、ネストされたObjectやArrayなどには対応していないことに注意してください。
+      return a[value] !== b[value];
+    });
+
+    // 合致しないvalueがなければ、trueを返す。
+    return wrongIndex === -1;
+  }
 
   // 文字列string を数値にする
-  private toNumber(num: string, digit:number = null): number {
+  private toNumber(num: string, digit: number = null): number {
     let result: number = null;
     try {
       let tmp: string = num.toString().trim();
@@ -1580,7 +1830,7 @@ export class FrameDataService {
     return node;
   }
 
-  public getMemberLength(memberNo: string): any{
+  public getMemberLength(memberNo: string): any {
     const node: {} = this.getNodeNo(memberNo);
     const ni: string = node['ni'];
     const nj: string = node['nj'];
@@ -1599,9 +1849,9 @@ export class FrameDataService {
     const yj: number = jPos['y'];
     const zj: number = jPos['z'];
 
-    const result: number = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2 );
+    const result: number = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2);
     return result;
-    
+
   }
 
 }

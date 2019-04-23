@@ -20,13 +20,17 @@
     </div>
   </div>
 
-  <div class="col text-right">
+  <div class="col">
     <div *ngIf="!loggedIn" class="d-inline-block">
       <button (click)="logIn()" class="btn btn-outline-primary">ログイン</button>
     </div>
     <div *ngIf="loggedIn" class="d-inline-block">
-      {{loginUserName}}さん！あなたの保有ポイントは{{userPoint}}ポイントです
-      <button (click)="logOut()" class="btn btn-outline-primary">ログアウト</button>
+      <div class="logout-button">
+        <button (click)="logOut()" class="btn btn-outline-primary">ログアウト</button>
+      </div>
+      <div class="welcome-message">
+        {{loginUserName}}さん！あなたの保有ポイントは{{userPoint}}ポイントです
+      </div>
     </div>
   </div>
 

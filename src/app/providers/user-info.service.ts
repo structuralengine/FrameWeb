@@ -22,4 +22,13 @@ export class UserInfoService {
     this.purchase_value = -1;
     this.loggedIn = false;
   }
+
+  // 計算結果情報から ユーザーポイントを更新する
+  public loadResultData(resultText: string): void {
+    const jsonData: {} = JSON.parse(resultText);
+    if ('new_points' in jsonData) {
+      this.purchase_value = jsonData['new_points'];
+    }
+  }
+
 }
