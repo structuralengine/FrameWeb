@@ -24,7 +24,7 @@ export class InputLoadNameComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
+    if (currentPage != this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();

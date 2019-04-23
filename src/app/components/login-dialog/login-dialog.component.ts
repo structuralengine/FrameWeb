@@ -32,7 +32,7 @@ export class LoginDialogComponent implements OnInit {
 
     this.connecting = true;
 
-    const url = 'http://structuralengine.com/my-module/get_points_balance.php?id=' + this.loginUserName + '&ps=' + this.loginPassword;
+    const url = 'https://structuralengine.com/my-module/get_points_balance.php?id=' + this.loginUserName + '&ps=' + this.loginPassword;
 
     this.http.get(url, {
       headers: new Headers({

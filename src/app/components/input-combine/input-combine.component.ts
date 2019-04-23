@@ -15,6 +15,7 @@ export class InputCombineComponent implements OnInit {
   page: number;
   combineData: any[];
   combineColums: any[];
+  combineTitles: any[];
   rowHeaders: any[];
 
   constructor(private input: InputDataService,
@@ -23,6 +24,7 @@ export class InputCombineComponent implements OnInit {
     this.page = 1;
     this.combineData = new Array();
     this.combineColums = new Array();
+    this.combineTitles = new Array();
     this.rowHeaders = new Array();
 
   }
@@ -38,14 +40,16 @@ export class InputCombineComponent implements OnInit {
       this.COLUMNS_COUNT = 5;
     }
     for (var i = 1; i <= this.COLUMNS_COUNT; i++) {
-      this.combineColums.push(head + i.toString());
+      this.combineColums.push('C' + i.toString());
+      this.combineTitles.push(head + i.toString());
     }
-    this.combineColums.push('名称　　　　　　　　　　　　　　　　　');
+    this.combineColums.push('name');
+    this.combineTitles.push('名称　　　　　　　　　　　　　　');
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
+    if (currentPage != this.page) {
       this.page = currentPage;
     }
     this.combineData = new Array();
@@ -61,4 +65,12 @@ export class InputCombineComponent implements OnInit {
     }
   }
 
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.frame.isCombinePickupChenge = true;
+      }
+    }
+  }
+  
 }

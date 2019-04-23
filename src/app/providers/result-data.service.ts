@@ -1,17 +1,27 @@
 import { Injectable } from '@angular/core';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class ResultDataService {
 
-  public disg: any;
   public DISG_ROWS_COUNT: number;
-  public reac: any;
   public REAC_ROWS_COUNT: number;
-  public fsec: any;
   public FSEC_ROWS_COUNT: number;
+
+  public disg: any;
+  public reac: any;
+  public fsec: any;
   
+  public disgCombine: any;
+  public reacCombine: any;
+  public fsecCombine: any;
+
+  public disgPickup: any;
+  public reacPickup: any;
+  public fsecPickup: any;
+
   constructor() {
     this.clear();
   }
@@ -20,6 +30,14 @@ export class ResultDataService {
     this.disg = {};
     this.reac = {};
     this.fsec = {};
+
+    this.disgCombine = {};
+    this.reacCombine = {};
+    this.fsecCombine = {};
+    
+    this.disgPickup = {};
+    this.reacPickup = {};
+    this.fsecPickup = {};
   }
 
 
@@ -36,6 +54,20 @@ export class ResultDataService {
     let result = target[index];
     return result;
   }
+  
+  public getConbineDisgColumns(typNo: number, index: number, mode: string): any {
+
+    let target: any = null;
+
+    // タイプ番号を探す
+    if (!this.disg[typNo]) {
+      target = new Array();
+    } else {
+      target = this.disg[typNo];
+    }
+    let result = target[index];
+    return result;
+   }
 
   public getReacColumns(typNo: number, index: number): any {
 
@@ -81,5 +113,7 @@ export class ResultDataService {
 
     return result;
   }
+
+
 
 }
