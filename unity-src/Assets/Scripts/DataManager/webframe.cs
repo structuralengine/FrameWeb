@@ -8,18 +8,18 @@ using SystemUtility;
 /// <summary> 描画モード </summary>
 public enum InputPanelLabel
 {
-  Node,               //	節点
-  Member,             //	要素
-  NoticePoints,       //　着目点
-  Element,            //　材料
-  Panel,              //	パネル
-  FixNode,            //　支点
-  FixMember,          //　バネ
-  Joint,              //　結合
-  Load,               //　荷重
-  Disg,               //　変位量
-  Reac,               //　反力
-  Fsec,               //　断面力
+    Node,               //	節点
+    Member,             //	要素
+    Panel,              //	パネル
+    FixNode,            //　支点
+    Element,            //　材料
+    Joint,              //　結合
+    NoticePoints,       //　着目点
+    FixMember,          //　バネ
+    Load,               //　荷重
+    Fsec,               //　断面力
+    Disg,               //　変位量
+    Reac,               //　反力
 
   Max,
 

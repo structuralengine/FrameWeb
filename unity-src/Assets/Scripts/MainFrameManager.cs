@@ -23,11 +23,8 @@ public class MainFrameManager : MonoBehaviour
     fix_members,
     loads,
     fsec,
-    comb_fsec,
     disg,
-    comb_disg,
-    reac,
-    comb_reac
+    reac
   }
 
   webframe _webframe = null;
@@ -230,17 +227,14 @@ public class MainFrameManager : MonoBehaviour
         break;
 
       case InputModeType.fsec:
-      case InputModeType.comb_fsec:
         result = InputPanelLabel.Fsec;
         break;
 
       case InputModeType.disg:
-      case InputModeType.comb_disg:
         result = InputPanelLabel.Disg;
         break;
 
       case InputModeType.reac:
-      case InputModeType.comb_reac:
         result = InputPanelLabel.Reac;
         break;
 

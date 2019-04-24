@@ -82,7 +82,7 @@ public class FixNodeDispManager : PartsDispManager
             base._blockWorkData.Clear();
 
             // 新しいオブジェクトを生成する
-            foreach (int i in _webframe.ListFixNode.Keys)
+            foreach (int i in _webframe.ListFixNode[_webframe.FixNodeType].Keys)
             {
 				if (!_webframe.ListFixNode[_webframe.FixNodeType].ContainsKey(i)) continue;
 
@@ -145,7 +145,7 @@ public class FixNodeDispManager : PartsDispManager
             }
 
             // 新しいオブジェクトのプロパティを設定する
-            foreach ( int i in _webframe.ListFixNode.Keys)
+            foreach ( int i in _webframe.ListFixNode[_webframe.FixNodeType].Keys)
             {
                 blockWorkData = base._blockWorkData[GetBlockID(i)];
                 InitBlock(ref blockWorkData, i, GetBlockID(i));
