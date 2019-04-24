@@ -9,7 +9,7 @@ public class FixNodeDispManager : PartsDispManager
 	const	float	FIXNODE_SCALE = 0.02f;
 
 	float	_maxFixNodeLangth = 0.0f;
-	float	_fixnodeScale = 1.0f;
+	float	_fixnodeScale = 0.4f;
 
   public enum DispType
   {
@@ -251,7 +251,7 @@ public class FixNodeDispManager : PartsDispManager
             return;
 
         int i = GetDataID(id);
-		webframe.FixNodeData fixnodePoint = _webframe.ListFixNode[i][i];
+		webframe.FixNodeData fixnodePoint = _webframe.ListFixNode[_webframe.FixNodeType][i];
 
         PartsDispManager.PartsDispStatus partsDispStatus;
 
@@ -266,7 +266,8 @@ public class FixNodeDispManager : PartsDispManager
         BlockWorkData blockWorkData = base._blockWorkData[id];
 
         //	姿勢を設定
-        blockWorkData.gameObjectTransform.position = new Vector3((float)fixnodePoint.tx, (float)fixnodePoint.ty, (float)fixnodePoint.tz);
+        //blockWorkData.gameObjectTransform.position = new Vector3((float)fixnodePoint.tx, (float)fixnodePoint.ty, (float)fixnodePoint.tz);
+        blockWorkData.gameObjectTransform.position = _webframe.listNodePoint[i]; 
         blockWorkData.gameObjectTransform.localScale = new Vector3(_fixnodeScale, _fixnodeScale, _fixnodeScale);
 
 		double tx = fixnodePoint.tx;
