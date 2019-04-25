@@ -55,17 +55,25 @@ export class ResultDataService {
     return result;
   }
   
-  public getConbineDisgColumns(typNo: number, index: number, mode: string): any {
+  public getCombineDisgColumns(combNo: number, index: number, mode: string): any {
 
-    let target: any = null;
-
-    // タイプ番号を探す
-    if (!this.disg[typNo]) {
-      target = new Array();
+    // 組み合わせを探す
+    let target1: any = null;
+    if (!this.disgCombine[combNo]) {
+      target1 = new Array();
     } else {
-      target = this.disg[typNo];
+      target1 = this.disgCombine[combNo];
     }
-    let result = target[index];
+
+    // 着目項目を探す
+    let target2: any = null;
+    if (!target1[mode]) {
+      target2 = new Array();
+    } else {
+      target2 = target1[mode];
+    }
+
+    let result = target2[index];
     return result;
    }
 

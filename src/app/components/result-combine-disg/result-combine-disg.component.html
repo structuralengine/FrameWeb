@@ -14,15 +14,17 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<div class="datasheet">
-  <div class="conbine-title">x方向の移動量最大</div>
-  <hot-table class="hot" [data]="datasetXmax" [colHeaders]="true" [rowHeaders]="true" >
+<br/>
+
+<div class="datasheet" *ngFor="let r of KEYS; index as i" >
+  <div class="conbine-title">{{TITLES[i]}}</div>
+  <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="true" >
     <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
     <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
     <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>
     <hot-column data="rx" title="x軸回りの回転量" [readOnly]="true"></hot-column>
     <hot-column data="ry" title="y軸回りの回転量" [readOnly]="true"></hot-column>
     <hot-column data="rz" title="z軸回りの回転量" [readOnly]="true"></hot-column>
-    <hot-column data="combine" title="組み合わせ" [readOnly]="true"></hot-column>
+    <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
   </hot-table>
 </div>
