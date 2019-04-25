@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { InputDataService } from './input-data.service';
 import { ResultDataService } from './result-data.service';
 import { directiveCreate } from '@angular/core/src/render3/instructions';
+import { Content } from '@angular/compiler/src/render3/r3_ast';
+import { CATCH_STACK_VAR } from '@angular/compiler/src/output/output_ast';
 
 
 @Injectable({
@@ -1418,7 +1420,12 @@ export class FrameDataService {
   ////////////////////////////////////////////////////////////////////////////////////
   public loadResultData(resultText: string): void {
     this.result.clear();
-    const jsonData: {} = JSON.parse(resultText);
+    let jsonData: {} = null;
+    try {
+      jsonData = JSON.parse(resultText);
+    } catch (e) {
+      return;
+    }
     // 基本ケース
     this.setDisgJson(jsonData);
     this.setReacJson(jsonData);
@@ -1471,7 +1478,7 @@ export class FrameDataService {
             for (let j = 1; j < defKeys.length; j++) {
               combines.push(base.slice(0, base.length));
             }
-          } 
+          }
         }
         // 組み合わせにケース番号を登録する
         let coef = target[defNo]
@@ -1490,7 +1497,7 @@ export class FrameDataService {
       combList[combNo] = combines;
     }
 
-    
+
     // pickup を集計
     let pickList = {};
     for (let pickNo in pickup) {
@@ -1499,7 +1506,7 @@ export class FrameDataService {
       for (let pKey in p) {
         const comNo: string = p[pKey];
         if (!(comNo in combList)) continue; //なければ飛ばす
-        combines.push(combList[comNo]);
+        combines.push(comNo);
       }
       pickList[pickNo] = combines;
     }
@@ -1512,10 +1519,7 @@ export class FrameDataService {
     this.setFsecPickupJson(pickList);
 
     this.isCombinePickupChenge = false;
-
-
   }
-  
 
   private setDisgJson(jsonData: {}): void {
     let max_row: number = 0;
@@ -1713,43 +1717,357 @@ export class FrameDataService {
 
   private setDisgCombineJson(combList: any): void {
 
-    for (let combNo in combList) {
-      let combines: any[] = combList[combNo];
-      for (let i = 0; i < combines.length; i++){
-        let com = combines[i];
-        for (let j = 0; j < com.length; j++) {
-          let caseInfo = com[j];
+    try {
 
-          let disgs: any[] = this.result.disg[caseInfo.caseNo];
-          for (let i = 0; i < disgs.length; i++){
-            let result = disgs[i];
+      //combineのループ
+      for (let combNo in combList) {
+        let resultDisg = { dx_max: {}, dx_min: {}, dy_max: {}, dy_min: {}, dz_max: {}, dz_min: {}, rx_max: {}, rx_min: {}, ry_max: {}, ry_min: {}, rz_max: {}, rz_min: {} };
 
+        //defineのループ
+        let combines: any[] = combList[combNo];
+        for (let i = 0; i < combines.length; i++) {
+          let combineDisg = { dx: {}, dy: {}, dz: {}, rx: {}, ry: {}, rz: {} };
 
+          // 基本ケースのループ
+          let com = combines[i];
+          for (let j = 0; j < com.length; j++) {
+            let caseInfo = com[j];
+
+            if (!(caseInfo.caseNo in this.result.disg)) {
+              continue;
+            }
+            //節点番号のループ
+            let disgs: any[] = this.result.disg[caseInfo.caseNo];
+            for (let i = 0; i < disgs.length; i++) {
+              let result: {} = disgs[i];
+              const id = result['id'];
+
+              // dx, dy … のループ
+              for (let key1 in combineDisg) {
+                let value = combineDisg[key1];
+                let temp: {} = (id in value) ? value[id] : { id: id, dx: 0, dy: 0, dz: 0, rx: 0, ry: 0, rz: 0, case: '' };
+
+                // x, y, z, 変位, 回転角 のループ
+                for (let key2 in result) {
+                  if (key2 == 'id') continue;
+                  temp[key2] += caseInfo.coef * result[key2];
+                }
+                temp['case'] += "+" + caseInfo.caseNo.toString();
+                value[id] = temp;
+                combineDisg[key1] = value;
+              }
+            }
           }
 
-
-          console.log(caseInfo.caseNo + caseInfo.coef);
-
-
+          // dx, dy … のループ
+          const k: string[] = ["_max", "_min"];
+          for (let key1 in combineDisg) {
+            for (let n = 0; n < k.length; n++) {
+              let key2: string;
+              key2 = key1 + k[n];
+              const old = resultDisg[key2];
+              const current = combineDisg[key1];
+              // 節点番号のループ
+              for (let id in current) {
+                if (!(id in old)) {
+                  old[id] = current[id];
+                  resultDisg[key2] = old;
+                  continue;
+                }
+                const target = current[id];
+                let comparison = old[id]
+                if ((n == 0 && comparison[key1] < target[key1])
+                  || (n > 0 && comparison[key1] > target[key1])) {
+                  old[id] = target;
+                  resultDisg[key2] = old;
+                }
+              }
+            }
+          }
 
         }
+        this.result.disgCombine[combNo] = resultDisg;
       }
+    } catch (e) {
+      console.log(e);
     }
   }
 
   private setReacCombineJson(combList: any): void {
+
+    try {
+
+      //combineのループ
+      for (let combNo in combList) {
+        let resultReac = { tx_max: {}, tx_min: {}, ty_max: {}, ty_min: {}, tz_max: {}, tz_min: {}, mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {} };
+
+        //defineのループ
+        let combines: any[] = combList[combNo];
+        for (let i = 0; i < combines.length; i++) {
+          let combineReac = { tx: {}, ty: {}, tz: {}, mx: {}, my: {}, mz: {} };
+
+          // 基本ケースのループ
+          let com = combines[i];
+          for (let j = 0; j < com.length; j++) {
+            let caseInfo = com[j];
+
+            if (!(caseInfo.caseNo in this.result.disg)) {
+              continue;
+            }
+            //節点番号のループ
+            let Reacs: any[] = this.result.reac[caseInfo.caseNo];
+            for (let i = 0; i < Reacs.length; i++) {
+              let result: {} = Reacs[i];
+              const id = result['id'];
+
+              // dx, dy … のループ
+              for (let key1 in combineReac) {
+                let value = combineReac[key1];
+                let temp: {} = (id in value) ? value[id] : { id: id, tx: 0, ty: 0, tz: 0, mx: 0, my: 0, mz: 0, case: '' };
+
+                // x, y, z, 変位, 回転角 のループ
+                for (let key2 in result) {
+                  if (key2 == 'id') continue;
+                  temp[key2] += caseInfo.coef * result[key2];
+                }
+                temp['case'] += "+" + caseInfo.caseNo.toString();
+                value[id] = temp;
+                combineReac[key1] = value;
+              }
+            }
+          }
+
+          // dx, dy … のループ
+          const k: string[] = ["_max", "_min"];
+          for (let key1 in combineReac) {
+            for (let n = 0; n < k.length; n++) {
+              let key2: string;
+              key2 = key1 + k[n];
+              const old = resultReac[key2];
+              const current = combineReac[key1];
+              // 節点番号のループ
+              for (let id in current) {
+                if (!(id in old)) {
+                  old[id] = current[id];
+                  resultReac[key2] = old;
+                  continue;
+                }
+                const target = current[id];
+                let comparison = old[id]
+                if ((n == 0 && comparison[key1] < target[key1])
+                  || (n > 0 && comparison[key1] > target[key1])) {
+                  old[id] = target;
+                  resultReac[key2] = old;
+                }
+              }
+            }
+          }
+        }
+        this.result.reacCombine[combNo] = resultReac;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private setFsecCombineJson(combList: any): void {
+
+    try {
+
+      //combineのループ
+      for (let combNo in combList) {
+        let resultFsec = { fx_max: {}, fx_min: {}, fy_max: {}, fy_min: {}, fz_max: {}, fz_min: {}, mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {} };
+
+        //defineのループ
+        let combines: any[] = combList[combNo];
+        for (let i = 0; i < combines.length; i++) {
+          let combineFsec = { fx: {}, fy: {}, fz: {}, mx: {}, my: {}, mz: {} };
+
+          // 基本ケースのループ
+          let com = combines[i];
+          for (let j = 0; j < com.length; j++) {
+            let caseInfo = com[j];
+
+            if (!(caseInfo.caseNo in this.result.fsec)) {
+              continue;
+            }
+            //節点番号のループ
+            let Fsecs: any[] = this.result.fsec[caseInfo.caseNo];
+            for (let i = 0; i < Fsecs.length; i++) {
+              let result: {} = Fsecs[i];
+              const row = result['row'];
+
+              // dx, dy … のループ
+              for (let key1 in combineFsec) {
+                let value = combineFsec[key1];
+                let temp: {} = (row in value) ? value[row] : { row: row, fx: 0, fy: 0, fz: 0, mx: 0, my: 0, mz: 0, case: '' };
+
+                // x, y, z, 変位, 回転角 のループ
+                for (let key2 in result) {
+                  if (key2 == 'row') continue;
+                  if (key2 == 'm' || key2 == 'n' || key2 == 'l') {
+                    temp[key2] = result[key2];
+                    continue;
+                  }
+                  temp[key2] += caseInfo.coef * result[key2];
+                }
+                temp['case'] += "+" + caseInfo.caseNo.toString();
+                value[row] = temp;
+                combineFsec[key1] = value;
+              }
+            }
+          }
+
+          // dx, dy … のループ
+          const k: string[] = ["_max", "_min"];
+          for (let key1 in combineFsec) {
+            for (let n = 0; n < k.length; n++) {
+              let key2: string;
+              key2 = key1 + k[n];
+              const old = resultFsec[key2];
+              const current = combineFsec[key1];
+              // 節点番号のループ
+              for (let id in current) {
+                if (!(id in old)) {
+                  old[id] = current[id];
+                  resultFsec[key2] = old;
+                  continue;
+                }
+                const target = current[id];
+                let comparison = old[id]
+                if ((n == 0 && comparison[key1] < target[key1])
+                  || (n > 0 && comparison[key1] > target[key1])) {
+                  old[id] = target;
+                  resultFsec[key2] = old;
+                }
+              }
+            }
+          }
+
+        }
+        this.result.fsecCombine[combNo] = resultFsec;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private setDisgPickupJson(pickList: any): void {
+    try {
+      //pickupのループ
+      for (let pickNo in pickList) {
+        let combines: any[] = pickList[pickNo];
+        let tmp: {} = null;
+        for (let i = 0; i < combines.length; i++) {
+          const combNo: string = combines[i];
+          const com = this.result.disgCombine[combNo];
+          if (tmp == null) {
+            tmp = com;
+            continue;
+          }
+          for (let k in com) {
+            const key = k.split('_');
+            const target = com[k];
+            const comparison = tmp[k];
+            for (let id in comparison) {
+              let a = comparison[id];
+              let b = target[id];
+              if (key[1] == 'max') {
+                if (b[key[0]] > a[key[0]]) {
+                  tmp[k] = com[k];
+                }
+              } else {
+                if (b[key[0]] < a[key[0]]) {
+                  tmp[k] = com[k];
+                }
+              }
+            }
+          }
+        }
+        this.result.disgPickup[pickNo] = tmp;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private setReacPickupJson(pickList: any): void {
+    try {
+      //pickupのループ
+      for (let pickNo in pickList) {
+        let combines: any[] = pickList[pickNo];
+        let tmp: {} = null;
+        for (let i = 0; i < combines.length; i++) {
+          const combNo: string = combines[i];
+          const com = this.result.reacCombine[combNo];
+          if (tmp == null) {
+            tmp = com;
+            continue;
+          }
+          for (let k in com) {
+            const key = k.split('_');
+            const target = com[k];
+            const comparison = tmp[k];
+            for (let id in comparison) {
+              let a = comparison[id];
+              let b = target[id];
+              if (key[1] == 'max') {
+                if (b[key[0]] > a[key[0]]) {
+                  tmp[k] = com[k];
+                }
+              } else {
+                if (b[key[0]] < a[key[0]]) {
+                  tmp[k] = com[k];
+                }
+              }
+            }
+          }
+        }
+        this.result.reacPickup[pickNo] = tmp;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private setFsecPickupJson(pickList: any): void {
+    try {
+      //pickupのループ
+      for (let pickNo in pickList) {
+        let combines: any[] = pickList[pickNo];
+        let tmp: {} = null;
+        for (let i = 0; i < combines.length; i++) {
+          const combNo: string = combines[i];
+          const com = this.result.fsecCombine[combNo];
+          if (tmp == null) {
+            tmp = com;
+
+            continue;
+          }
+          for (let k in com) {
+            const key = k.split('_');
+            const target = com[k];
+            const comparison = tmp[k];
+            for (let id in comparison) {
+              let a = comparison[id];
+              let b = target[id];
+              if (key[1] == 'max') {
+                if (b[key[0]] > a[key[0]]) {
+                  tmp[k] = com[k];
+                }
+              } else {
+                if (b[key[0]] < a[key[0]]) {
+                  tmp[k] = com[k];
+                }
+              }
+            }
+          }
+        }
+        this.result.fsecPickup[pickNo] = tmp;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
