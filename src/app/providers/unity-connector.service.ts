@@ -45,6 +45,12 @@ export class UnityConnectorService {
   // #region unity にメッセージを送る
 
   // 入力の変更時の処理
+  public sendResultData() {
+    let strJson: string = this.frame.getResultText();
+    console.log("%c" + strJson, 'color: magenta');
+    this.sendMessageToUnity('ExternalConnect', 'ReceiveData', strJson);
+  }
+
   public chengeData(mode: string = 'unity') {
     let strJson: string = this.frame.getInputText(mode);
     console.log("%c" + mode, 'color: green');
@@ -123,8 +129,9 @@ export class UnityConnectorService {
       } else {
         this.unityInstance.SendMessage(objectName, methodName, messageValue);
       }
-    } catch{
+    } catch(e){
       console.log('sendMessageToUnityでエラー');
+      console.log(e);
     }
   }
   // #endregion

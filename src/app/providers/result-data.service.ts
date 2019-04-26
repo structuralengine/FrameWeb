@@ -77,6 +77,28 @@ export class ResultDataService {
     return result;
    }
 
+  public getPickupDisgColumns(combNo: number, index: number, mode: string): any {
+
+    // 組み合わせを探す
+    let target1: any = null;
+    if (!this.disgPickup[combNo]) {
+      target1 = new Array();
+    } else {
+      target1 = this.disgPickup[combNo];
+    }
+
+    // 着目項目を探す
+    let target2: any = null;
+    if (!target1[mode]) {
+      target2 = new Array();
+    } else {
+      target2 = target1[mode];
+    }
+
+    let result = target2[index];
+    return result;
+  }
+
   public getReacColumns(typNo: number, index: number): any {
 
     let target: any = null;
@@ -88,6 +110,50 @@ export class ResultDataService {
       target = this.reac[typNo];
     }
     let result = target[index];
+    return result;
+  }
+
+  public getCombineReacColumns(combNo: number, index: number, mode: string): any {
+
+    // 組み合わせを探す
+    let target1: any = null;
+    if (!this.reacCombine[combNo]) {
+      target1 = new Array();
+    } else {
+      target1 = this.reacCombine[combNo];
+    }
+
+    // 着目項目を探す
+    let target2: any = null;
+    if (!target1[mode]) {
+      target2 = new Array();
+    } else {
+      target2 = target1[mode];
+    }
+
+    let result = target2[index];
+    return result;
+  }
+
+  public getPickupReacColumns(combNo: number, index: number, mode: string): any {
+
+    // 組み合わせを探す
+    let target1: any = null;
+    if (!this.reacPickup[combNo]) {
+      target1 = new Array();
+    } else {
+      target1 = this.reacPickup[combNo];
+    }
+
+    // 着目項目を探す
+    let target2: any = null;
+    if (!target1[mode]) {
+      target2 = new Array();
+    } else {
+      target2 = target1[mode];
+    }
+
+    let result = target2[index];
     return result;
   }
 
@@ -122,6 +188,48 @@ export class ResultDataService {
     return result;
   }
 
+  public getCombineFsecColumns(combNo: number, index: number, mode: string): any {
 
+    // 組み合わせを探す
+    let target1: any = null;
+    if (!this.fsecCombine[combNo]) {
+      target1 = new Array();
+    } else {
+      target1 = this.fsecCombine[combNo];
+    }
+
+    // 着目項目を探す
+    let target2: any = null;
+    if (!target1[mode]) {
+      target2 = new Array();
+    } else {
+      target2 = target1[mode];
+    }
+
+    let result = target2[index];
+    return result;
+  }
+
+  public getPickupFsecColumns(combNo: number, index: number, mode: string): any {
+
+    // 組み合わせを探す
+    let target1: any = null;
+    if (!this.fsecPickup[combNo]) {
+      target1 = new Array();
+    } else {
+      target1 = this.fsecPickup[combNo];
+    }
+
+    // 着目項目を探す
+    let target2: any = null;
+    if (!target1[mode]) {
+      target2 = new Array();
+    } else {
+      target2 = target1[mode];
+    }
+
+    let result = target2[index];
+    return result;
+  }
 
 }

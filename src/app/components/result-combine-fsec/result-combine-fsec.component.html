@@ -14,16 +14,20 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<div class="datasheet">
-  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="false" [width]="1100" [height]="500">
+<br />
+
+<div class="datasheet" *ngFor="let r of KEYS; index as i">
+  <div class="conbine-title">{{TITLES[i]}}</div>
+  <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="false">
     <hot-column data="m" title="部材No" [readOnly]="true"></hot-column>
     <hot-column data="n" title="節点No" [readOnly]="true"></hot-column>
     <hot-column data="l" title="着目位置" [readOnly]="true"></hot-column>
     <hot-column data="fx" title="軸方向力" [readOnly]="true"></hot-column>
-    <hot-column data="fy" title="y軸方向のせん断力" [readOnly]="true"></hot-column>
-    <hot-column data="fz" title="z軸方向のせん断力" [readOnly]="true"></hot-column>
+    <hot-column data="fy" title="y方向のせん断力" [readOnly]="true"></hot-column>
+    <hot-column data="fz" title="z方向のせん断力" [readOnly]="true"></hot-column>
     <hot-column data="mx" title="ねじりモーメント" [readOnly]="true"></hot-column>
     <hot-column data="my" title="y軸回りの曲げモーメント" [readOnly]="true"></hot-column>
     <hot-column data="mz" title="z軸回りの曲げモーメント" [readOnly]="true"></hot-column>
+    <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
   </hot-table>
 </div>

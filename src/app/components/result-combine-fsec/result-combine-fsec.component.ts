@@ -9,6 +9,9 @@ import { ResultDataService } from '../../providers/result-data.service';
 })
 export class ResultCombineFsecComponent implements OnInit {
 
+  KEYS = ['fx_max', 'fx_min', 'fy_max', 'fy_min', 'fz_max', 'fz_min', 'mx_max', 'mx_min', 'my_max', 'my_min', 'mz_max', 'mz_min'];
+  TITLES = ['軸方向力 最大', '軸方向力 最小', 'y方向のせん断力 最大', 'y方向のせん断力 最小', 'z方向のせん断力 最大', 'z方向のせん断力 最小', 'ねじりモーメント 最大', 'ねじりモーメント 最小', 'y軸回りの曲げモーメント 最大', 'y軸回りの曲げモーメント力 最小', 'z軸回りの曲げモーメント 最大', 'z軸回りの曲げモーメント 最小'];
+
   dataset: any[];
   page: number;
   load_name: string;
@@ -30,11 +33,13 @@ export class ResultCombineFsecComponent implements OnInit {
     if (currentPage != this.page) {
       this.page = currentPage;
     }
-    this.dataset = new Array();
-    for (var i = 1; i <= this.result.FSEC_ROWS_COUNT; i++) {
-      const reac = this.result.getFsecColumns(this.page, i);
-      this.dataset.push(reac)
+    for (let i = 0; i < this.KEYS.length; i++) {
+      this.dataset[i] = new Array();
+      for (var j = 1; j <= this.result.FSEC_ROWS_COUNT; j++) {
+        const fsec = this.result.getCombineFsecColumns(this.page, j, this.KEYS[i]);
+        this.dataset[i].push(fsec)
+      }
+      this.load_name = this.frame.getCombineName(currentPage);
     }
-    this.load_name = this.frame.getCombineName(currentPage);
   }
 }

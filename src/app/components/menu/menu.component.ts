@@ -17,7 +17,7 @@ import { UnityConnectorService } from '../../providers/unity-connector.service';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
-  
+
   loginUserName: string;
   userPoint: string;
   loggedIn: boolean;
@@ -28,22 +28,22 @@ export class MenuComponent implements OnInit {
     private user: UserInfoService,
     private InputData: FrameDataService,
     private http: Http,
-    private unity: UnityConnectorService) { 
+    private unity: UnityConnectorService) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
-   }
+  }
 
   ngOnInit() {
   }
 
   // 新規作成
-  renew(): void{
+  renew(): void {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.InputData.clear();
     this.app.isCalculated = false;
     this.unity.chengeData();
   }
-  
+
   //ファイルを開く
   open(evt) {
     const file = evt.target.files[0];
@@ -73,18 +73,18 @@ export class MenuComponent implements OnInit {
   }
 
   // ファイルを保存
-  save(): void{
+  save(): void {
     const inputJson: string = this.InputData.getInputText();
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
     if (this.fileName.length == 0) {
       this.fileName = "frameWebForJS.json"
     }
-    FileSaver.saveAs(blob, this.fileName); 
+    FileSaver.saveAs(blob, this.fileName);
   }
 
   // 計算
-  calcrate(): void{
-    
+  calcrate(): void {
+
     if (this.user.loggedIn == false) {
       this.logIn();
     }
@@ -96,7 +96,7 @@ export class MenuComponent implements OnInit {
 
     const inputJson = 'inp_grid='
       + this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword })
-    
+
     console.log(inputJson);
 
     const url = 'https://structuralengine.com/FrameWeb/api/Web_Api.py';
@@ -107,20 +107,21 @@ export class MenuComponent implements OnInit {
         'Accept': 'application/json'
       })
     }).subscribe(
-        response => {
-          // 通信成功時の処理（成功コールバック）
-          console.log('通信成功!!');
+      response => {
+        // 通信成功時の処理（成功コールバック）
+        console.log('通信成功!!');
         this.InputData.loadResultData(response.text());
         this.loadResultData(response.text());
-          this.app.isCalculated = true;
-          modalRef.close();
-        },
-        error => {
-          // 通信失敗時の処理（失敗コールバック）
-          this.app.isCalculated = false;
-          console.log(error.statusText);
-          modalRef.close();
-        }
+        this.app.isCalculated = true;
+        this.unity.sendResultData();
+        modalRef.close();
+      },
+      error => {
+        // 通信失敗時の処理（失敗コールバック）
+        this.app.isCalculated = false;
+        console.log(error.statusText);
+        modalRef.close();
+      }
     );
   }
 
@@ -130,8 +131,8 @@ export class MenuComponent implements OnInit {
   }
 
   // 印刷
-  print(): void{
-    
+  print(): void {
+
   }
 
   // ログイン関係 
@@ -145,7 +146,7 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  logOut(): void{
+  logOut(): void {
     this.loggedIn = false;
     this.user.clear();
   }

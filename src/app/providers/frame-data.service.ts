@@ -1177,6 +1177,29 @@ export class FrameDataService {
     return Object.keys(dict).length;
   }
 
+  public getResultText(): string {
+
+    let jsonData= {};
+
+    jsonData['disg'] = this.getDisgJson();
+    jsonData['reac'] = this.getReacJson();
+    jsonData['fsec'] = this.getFsecJson();
+
+    let result: string = JSON.stringify(jsonData);
+    return result;
+  }
+
+  private getDisgJson(): object {
+    return this.result.disg;
+  }
+
+  private getReacJson(): object {
+    return this.result.reac;
+  }
+
+  private getFsecJson(): object {
+    return this.result.fsec;
+  }
   ////////////////////////////////////////////////////////////////////////////////////
   // ファイルを読み込む ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////
