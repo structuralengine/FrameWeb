@@ -51,7 +51,7 @@ public class webframe : Singleton<webframe>
             float x = ComonFunctions.ConvertToSingle(node2["x"]);
             float y = ComonFunctions.ConvertToSingle(node2["y"]);
             float z = ComonFunctions.ConvertToSingle(node2["z"]);
-            Vector3 xyz = new Vector3(x, y, z);
+            Vector3 xyz = new Vector3(x, -y, z); // Unity 左手系 → FrameWeb 右手系 なので y にマイナスを乗ずる
             int id = int.Parse(key);
             this.listNodePoint.Add(id, xyz);
           }

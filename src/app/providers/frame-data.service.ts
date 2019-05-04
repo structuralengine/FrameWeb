@@ -743,7 +743,7 @@ export class FrameDataService {
     }
 
     for (let j = m1; j <= m2; j++) {
-      let L = this.getMemberLength(j.toString());
+      let L: number = this.getMemberLength(j.toString());
       if (L1 > L) {
         L1 = L1 - L;
         targetLoad.m1 = j + 1;
@@ -2171,17 +2171,17 @@ export class FrameDataService {
     return node;
   }
 
-  public getMemberLength(memberNo: string): any {
+  public getMemberLength(memberNo: string): number {
     const node: {} = this.getNodeNo(memberNo);
     const ni: string = node['ni'];
     const nj: string = node['nj'];
     if (ni == '' || nj == '') {
-      return '';
+      return null
     }
     const iPos = this.getNodePos(ni)
     const jPos = this.getNodePos(nj)
     if (iPos == null || jPos == null) {
-      return '';
+      return null
     }
     const xi: number = iPos['x'];
     const yi: number = iPos['y'];

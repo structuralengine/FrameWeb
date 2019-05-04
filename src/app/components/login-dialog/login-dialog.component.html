@@ -13,19 +13,24 @@
     <label for="loginPassword">パスワード</label>
     <input type="password" class="form-control" [(ngModel)]="loginPassword" placeholder="Password">
   </div>
+<!-- 
   <div class="form-check">
     <input type="checkbox" class="form-check-input" [(ngModel)]="rememberCheck">
     <label class="form-check-label" for="rememberCheck">
       ログイン状態を保持する
     </label>
   </div>
+   -->
   <div *ngIf="loginError">
     {{errorMessage}}
   </div>
 </div>
 <div class="modal-footer">
   <div *ngIf="connecting">
-    <img src="../../assets/img/loading.gif" />
+    <!-- <img src="../../assets/img/loading.gif" /> -->
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
   </div>
   <button class="btn btn-outline-success" (click)="onClick()">ログイン</button>
   <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>

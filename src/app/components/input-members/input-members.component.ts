@@ -39,11 +39,7 @@ export class InputMembersComponent implements OnInit {
       const m: string = member['id'];
       if (m != '') {
         let l: any = this.frame.getMemberLength(m);
-        if (l == '') {
-          member['L'] = l;          
-        } else {
-          member['L'] = l.toFixed(3);
-        }
+        member['L'] = (l != null) ? l.toFixed(3) : l;          
       }
       this.dataset.push(member)
     }
@@ -72,8 +68,10 @@ export class InputMembersComponent implements OnInit {
               continue;
             }
             const l: number = this.frame.getMemberLength(m);
-            this.dataset[row]['L'] = l.toFixed(3);
-            hotInstance.render();
+            if (l != null) {
+              this.dataset[row]['L'] = l.toFixed(3);
+              hotInstance.render();
+            }
           }
         } catch (e) {
           console.log(e);

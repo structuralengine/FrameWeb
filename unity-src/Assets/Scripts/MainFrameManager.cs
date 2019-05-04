@@ -109,18 +109,14 @@ public class MainFrameManager : MonoBehaviour
 
     PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
 
+    if (partsDispWork == null)
+        return;
     if (partsDispWork.partsGameObject == null)
-    {
-      return;
-    }
+        return;
     if (partsDispWork.partsGameObject.activeSelf == false)
-    {
-      return;
-    }
+        return;
     if (partsDispWork.partsDispManager == null)
-    {
-      return;
-    }
+        return;
 
     partsDispWork.partsDispManager.InputMouse();
   }

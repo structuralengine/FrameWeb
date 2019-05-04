@@ -48,7 +48,8 @@ export class InputNoticePointsComponent implements OnInit {
       let notice_points = this.input.getNoticePointsColumns(i);
       const m: string = notice_points['m'];
       if (m != '') {
-        notice_points['len'] = this.frame.getMemberLength(m);
+        const l: number = this.frame.getMemberLength(m); 
+        notice_points['len'] = (l != null) ? l : '';
       }
       this.dataset.push(notice_points);
       this.rowHeaders.push(i);
@@ -80,7 +81,7 @@ export class InputNoticePointsComponent implements OnInit {
             continue;
           }
           const l: number = this.frame.getMemberLength(m);
-          notice_points['len'] = l;
+          notice_points['len'] = (l != null) ? l : '';
           this.dataset[row] = notice_points;
           console.log(hotInstance.render());
         }
