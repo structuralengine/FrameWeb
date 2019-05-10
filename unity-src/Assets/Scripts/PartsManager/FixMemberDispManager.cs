@@ -9,7 +9,8 @@ using UnityEngine;
 /// </summary>
 public class FixMemberDispManager : PartsDispManager {
 	const float FIX_MEMBER_SCALE = 0.000001f;
-	Vector3 PADDING = new Vector3(3.0f,0.0f,0.0f);	//パーツの間隔
+	const float DISTANCE = 0.5f;	//部材からの距離
+	const float PADDING = 1.0f;	//パーツの間隔
 
   	/// <summary>ブロックの初期値を設定する </summary>
 	/// <param name="blockWorkData"></param>
@@ -75,8 +76,6 @@ public class FixMemberDispManager : PartsDispManager {
 			foreach (int i in _webframe.GetFixMemberUseList ().Keys) {
 				blockWorkData = base._blockWorkData[GetBlockID ( i )];
 				InitBlock ( ref blockWorkData, i, GetBlockID ( i ) );
-				// 座標変更
-				SetBlockStatus (GetBlockID(i));
 			}
 
 		} catch (Exception e) {
@@ -134,8 +133,6 @@ public class FixMemberDispManager : PartsDispManager {
 			foreach (int i in _webframe.GetFixMemberUseList ().Keys) {
 				blockWorkData = base._blockWorkData[GetBlockID ( i )];
 				InitBlock ( ref blockWorkData, i, GetBlockID ( i ) );
-				// 座標変更
-				SetBlockStatus ( GetBlockID ( i ) );
 			}
 
 		} catch (Exception e) {
@@ -176,25 +173,63 @@ public class FixMemberDispManager : PartsDispManager {
 		int myId = GetDataID ( id );
 		if (_webframe.ListMemberData.ContainsKey(myId)) {
 			// 対象のMember取得
+			Transform member = GameObject.Find ( "Member[" + myId + "]/Root" ).transform;
 			webframe.MemberData myMember = _webframe.ListMemberData[myId];
-			Vector3 pos = _webframe.listNodePoint[myMember.ni];
+			Vector3 niPos = _webframe.listNodePoint[myMember.ni];
+			Vector3 njPos = _webframe.listNodePoint[myMember.nj];
+			Vector3 ijVector = njPos - niPos;
+
+			BlockWorkData blockWorkData = base._blockWorkData[id];
+			Transform part = blockWorkData.rootBlockTransform;
 
 			// 自分のパラメータ取得
 			webframe.FixMemberData fixMemberData = _webframe.GetFixMemberUseList ()[GetDataID ( id )];
 
-			// 位置を指定
-			BlockWorkData blockWorkData = base._blockWorkData[id];
-			blockWorkData.gameObjectTransform.position = pos;
+			// 最初の場所指定
+			SetMemberPart ( part, member, fixMemberData, niPos );
+			float baseScale = part.localScale.y;
 
-			// 大きさを指定（最低1にする）
-			Vector3 size = Vector3.one;
-			size.x = Mathf.Clamp ( (float)fixMemberData.tx * FIX_MEMBER_SCALE, 0.1f, float.PositiveInfinity );
-			size.y = Mathf.Clamp ( (float)fixMemberData.ty * FIX_MEMBER_SCALE, 0.1f, float.PositiveInfinity );
-			size.z = Mathf.Clamp ( (float)fixMemberData.tz * FIX_MEMBER_SCALE, 0.1f, float.PositiveInfinity );
-			blockWorkData.gameObjectTransform.localScale = size;
+			// 何個作る？
+			int count = (int)(ijVector.magnitude / (PADDING + baseScale) );
+			Vector3 beforePos = niPos;
+			for (int i = 1; i < count; i++) {
+				Transform partChild = Instantiate ( part, blockWorkData.rootBlockTransform.parent );
+				beforePos = niPos + ijVector.normalized * ((PADDING + baseScale) * i);
+				SetMemberPart ( partChild, member, fixMemberData, beforePos );
+			}
+
+			// 最後に１個作る（直近と近すぎていた場合は作らない）
+			Vector3 lastPos = njPos - ijVector.normalized * baseScale;
+			if ((lastPos - beforePos).sqrMagnitude > 1.0f) {
+				Transform partLast = Instantiate ( part, blockWorkData.rootBlockTransform.parent );
+				SetMemberPart ( partLast, member, fixMemberData, lastPos );
+			}
 		}
 	}
 
+	/// <summary>
+	/// バネの１パーツの位置と大きさを指定する
+	/// </summary>
+	/// <param name="part">１バネ分のTransform</param>
+	/// <param name="member">対象MemberのTransform</param>
+	/// <param name="fixMemberData">fixMemberData</param>
+	/// <param name="pos">Member上の位置</param>
+	private void SetMemberPart (Transform part, Transform member, webframe.FixMemberData fixMemberData, Vector3 pos) {
+		// 位置
+		pos += member.up * DISTANCE;
+		part.position = pos;
+
+		// 大きさを指定（最低値設定）
+		Vector3 size = Vector3.one;
+		size.x = Mathf.Clamp ( (float)fixMemberData.tx * FIX_MEMBER_SCALE, 0.5f, float.PositiveInfinity );
+		size.y = Mathf.Clamp ( (float)fixMemberData.ty * FIX_MEMBER_SCALE, 0.5f, float.PositiveInfinity );
+		size.z = Mathf.Clamp ( (float)fixMemberData.tz * FIX_MEMBER_SCALE, 0.5f, float.PositiveInfinity );
+		part.localScale = size;
+
+		// 倒す
+		part.rotation = member.rotation;
+		part.Rotate ( 0, -90.0f, -90.0f );
+	}
 
   	/// <summary>JSに選択アイテムの変更を通知する </summary>
 	public override void SendSelectChengeMessage (int i) {
