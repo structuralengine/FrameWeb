@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class FixNodeDispManager : PartsDispManager
 {
-	const	float	FIXNODE_SCALE = 0.02f;
+	const	float	FIXNODE_SCALE = 0.5f;
 
 	float	_maxFixNodeLangth = 0.0f;
 	float	_fixnodeScale = 0.4f;
@@ -268,7 +268,8 @@ public class FixNodeDispManager : PartsDispManager
         //	姿勢を設定
         //blockWorkData.gameObjectTransform.position = new Vector3((float)fixnodePoint.tx, (float)fixnodePoint.ty, (float)fixnodePoint.tz);
         blockWorkData.gameObjectTransform.position = _webframe.listNodePoint[i]; 
-        blockWorkData.gameObjectTransform.localScale = new Vector3(_fixnodeScale, _fixnodeScale, _fixnodeScale);
+		float nodeScale = ((_webframe.maxNodeLangth <= 0) ? 1 : _webframe.minNodeLangth) * FIXNODE_SCALE;
+		blockWorkData.gameObjectTransform.localScale = new Vector3(nodeScale, nodeScale, nodeScale);
 
 		double tx = fixnodePoint.tx;
 		double ty = fixnodePoint.ty;
