@@ -8,7 +8,12 @@ using UnityEngine;
 /// 荷重（ノード）の表示を管理するクラス
 /// </summary>
 public class LoadDispManager : PartsDispManager {
-	const float TRIANGLE_HEIGHT = 0.4f;	//矢印の三角形部分の高さ。この長さ分、矢印の棒部分を短くする
+	public GameObject memberPrefab;	//Member用プレハブ
+
+	const float TRIANGLE_HEIGHT = 0.4f; //矢印の三角形部分の高さ。この長さ分、矢印の棒部分を短くする
+	const float MEMBER_PADDING = 0.4f;	//Memberの矢印の間隔
+
+	int nodeCount = 0;	//使用するLoadNodeの数。ID計算で使用する。
 
   	/// <summary>ブロックの初期値を設定する </summary>
 	/// <param name="blockWorkData"></param>
@@ -62,23 +67,14 @@ public class LoadDispManager : PartsDispManager {
 			}
 			base._blockWorkData.Clear ();
 
-			// 新しいオブジェクトを生成する
-			foreach (KeyValuePair<int, webframe.LoadData> item in _webframe.ListLoadData) {
-				for (int i = 0; i < item.Value.load_node.Count; i++) {
-					blockWorkData = new BlockWorkData { gameObject = Instantiate ( _blockPrefab ) };
-					base._blockWorkData.Add ( GetBlockID ( i, true ), blockWorkData );
-				}
-			}
+			//Node個数指定
+			nodeCount = _webframe.GetLoadUseData ().load_node.Count;
 
-			// 新しいオブジェクトのプロパティを設定する
-			int objIndex = 0;
-			foreach (webframe.LoadNodeData i in _webframe.GetLoadUseData ().load_node) {
-				blockWorkData = base._blockWorkData[GetBlockID ( objIndex, true )];
-				InitBlock ( ref blockWorkData, objIndex, GetBlockID ( objIndex, true ) );
-				// 座標変更
-				SetBlockStatus ( GetBlockID ( objIndex, true ) );
-
-				objIndex++;
+			// 新しいオブジェクトを生成・プロパティを設定
+			for (int i = 0; i < nodeCount + _webframe.GetLoadUseData ().load_member.Count; i++) {
+				blockWorkData = new BlockWorkData { gameObject = Instantiate ( (i < nodeCount) ? _blockPrefab : memberPrefab ) };
+				base._blockWorkData.Add ( GetBlockID ( i, (i<nodeCount) ), blockWorkData );
+				InitBlock ( ref blockWorkData, i, GetBlockID ( i, (i < nodeCount) ) );
 			}
 
 		} catch (Exception e) {
@@ -124,24 +120,14 @@ public class LoadDispManager : PartsDispManager {
 			}
 			base._blockWorkData.Clear ();
 
+			//Node個数指定
+			nodeCount = _webframe.GetLoadUseData ().load_node.Count;
 
-			// 新しいオブジェクトを生成する
-			foreach (KeyValuePair<int, webframe.LoadData> item in _webframe.ListLoadData) {
-				for (int i = 0; i < item.Value.load_node.Count; i++) {
-					blockWorkData = new BlockWorkData { gameObject = Instantiate ( _blockPrefab ) };
-					base._blockWorkData.Add ( GetBlockID ( i, true ), blockWorkData );
-				}
-			}
-
-			// 新しいオブジェクトのプロパティを設定する
-			int objIndex = 0;
-			foreach (webframe.LoadNodeData i in _webframe.GetLoadUseData ().load_node) {
-				blockWorkData = base._blockWorkData[GetBlockID ( objIndex, true )];
-				InitBlock ( ref blockWorkData, objIndex, GetBlockID ( objIndex, true ) );
-				// 座標変更
-				SetBlockStatus ( GetBlockID ( objIndex, true ) );
-
-				objIndex++;
+			// 新しいオブジェクトを生成・プロパティを設定
+			for (int i = 0; i < nodeCount + _webframe.GetLoadUseData ().load_member.Count; i++) {
+				blockWorkData = new BlockWorkData { gameObject = Instantiate ( (i < nodeCount) ? _blockPrefab : memberPrefab ) };
+				base._blockWorkData.Add ( GetBlockID ( i, (i < nodeCount) ), blockWorkData );
+				InitBlock ( ref blockWorkData, i, GetBlockID ( i, (i < nodeCount) ) );
 			}
 
 		} catch (Exception e) {
@@ -175,7 +161,6 @@ public class LoadDispManager : PartsDispManager {
 		if (!base._blockWorkData.ContainsKey ( id ))
 			return;
 		
-
 		PartsDispStatus partsDispStatus;
 		partsDispStatus.id = id;
 		partsDispStatus.enable = true;
@@ -199,7 +184,8 @@ public class LoadDispManager : PartsDispManager {
 		if (IsNode(id)) {
 			SetNode ( blockNum, blockWorkData );
 		} else {
-			
+			blockNum -= nodeCount;	//Node個数分引く
+			SetMember ( blockNum, blockWorkData );
 		}
 	}
 
@@ -226,8 +212,8 @@ public class LoadDispManager : PartsDispManager {
 
 			// 大きさ指定：棒オブジェクトのみリサイズする。矢印の頭部分があるので、それを引いた分の大きさを計算する。
 			try {
-				blockWorkData.gameObjectTransform.Find ( "Root/Arrow" ).transform.localScale = new Vector3 ( 1, 1, target.magnitude - TRIANGLE_HEIGHT );
-				blockWorkData.gameObjectTransform.Find ( "Root/Circle" ).gameObject.SetActive ( false );
+				blockWorkData.rootBlockTransform.Find ( "Arrow" ).transform.localScale = new Vector3 ( 1, 1, target.magnitude - TRIANGLE_HEIGHT );
+				blockWorkData.rootBlockTransform.Find ( "Circle" ).gameObject.SetActive ( false );
 			} catch (Exception ex) {
 				Debug.LogError ( ex );
 			}
@@ -239,14 +225,117 @@ public class LoadDispManager : PartsDispManager {
 
 			// 表示オブジェクト指定
 			try {
-				blockWorkData.gameObjectTransform.Find ( "Root/Arrow" ).gameObject.SetActive ( false );
-				blockWorkData.gameObjectTransform.Find ( "Root/Triangle" ).gameObject.SetActive ( false );
+				blockWorkData.rootBlockTransform.Find ( "Arrow" ).gameObject.SetActive ( false );
+				blockWorkData.rootBlockTransform.Find ( "Triangle" ).gameObject.SetActive ( false );
 			} catch (Exception ex) {
 				Debug.LogError ( ex );
 			}
 		}
 	}
 
+	/// <summary>
+	/// 荷重Memberのステータス変更
+	/// </summary>
+	/// <param name="id">対象オブジェクトのID</param>
+	/// <param name="blockWorkData">対象オブジェクトのBlockWorkData</param>
+	private void SetMember (int id, BlockWorkData blockWorkData) {
+		// パラメータ取得
+		webframe.LoadMemberData loadMemberData = _webframe.GetLoadUseData ().load_member[id];
+
+		// 矢印のベースとなるオブジェクト
+		Transform part = blockWorkData.rootBlockTransform.Find ( "MemberPart" );
+		Transform stick = blockWorkData.rootBlockTransform.Find ( "Stick" );
+
+		// 基本位置指定：IをRoot位置とする
+		Vector3 niPos = _webframe.listNodePoint[_webframe.ListMemberData[loadMemberData.m].ni];
+		Vector3 njPos = _webframe.listNodePoint[_webframe.ListMemberData[loadMemberData.m].nj];
+		Vector3 ijVector = njPos - niPos;	//IからJに向けたベクトル
+		blockWorkData.gameObjectTransform.position = niPos;
+
+		// MARK 1
+		if (loadMemberData.mark == 1){
+			// P1の場所指定
+			part.position = ijVector.normalized * (float)loadMemberData.L1;
+
+			// P2作成
+			Transform part2 = Instantiate ( part, blockWorkData.rootBlockTransform );
+			part2.position = ijVector.normalized * (float)loadMemberData.L2;
+
+			// 向きと大きさ指定
+			SetMemberPart ( part, loadMemberData, 0.0f );
+			SetMemberPart ( part2, loadMemberData, 1.0f );
+
+			// 繋ぐ棒消す
+			stick.gameObject.SetActive ( false );
+
+		// MARK 2
+		} else {
+			// P1の場所指定
+			part.position = ijVector.normalized * (float)loadMemberData.L1;
+			Vector3 startPos = SetMemberPart ( part, loadMemberData, 0.0f);
+
+			// 何個作る？
+			int count = (int)((ijVector.magnitude - (float)loadMemberData.L1 - (float)loadMemberData.L2) / MEMBER_PADDING);
+			for (int i = 1; i < count; i++) {	//0位置はP1なので、1からスタート
+				Transform partChild = Instantiate ( part, blockWorkData.rootBlockTransform );
+				partChild.position = ijVector.normalized * ((float)loadMemberData.L1 + i*MEMBER_PADDING);
+				SetMemberPart ( partChild, loadMemberData, 1.0f / (float)count * (float)i );
+			}
+
+			// P2作成
+			Transform part2 = Instantiate ( part, blockWorkData.rootBlockTransform );
+			part2.position = ijVector.normalized * (ijVector.magnitude - (float)loadMemberData.L2);
+			Vector3 endPos = SetMemberPart ( part2, loadMemberData, 1.0f );
+
+			// 棒繋ぐ
+			stick.localScale = new Vector3(1,1, (startPos - endPos).magnitude);
+			stick.position = startPos;
+			stick.LookAt ( endPos );
+		}
+	}
+
+	/// <summary>
+	/// Memberの１パーツの大きさを設定する
+	/// </summary>
+	/// <param name="part">パーツ（１矢印分）</param>
+	/// <param name="loadMemberData">対象のLoadMemberData</param>
+	/// <param name="scaleFactor">大きさ係数（0=P1, 1=P2, 0.5=P1とP2の中間50%）</param>
+	private Vector3 SetMemberPart(Transform part, webframe.LoadMemberData loadMemberData, float scaleFactor) {
+		float scale = Mathf.Lerp ( (float)loadMemberData.P1, (float)loadMemberData.P2, scaleFactor );
+
+		// 向きと大きさ指定
+		if (loadMemberData.direction == "r") {
+			// ねじりの場合
+			// 大きさ
+			part.Find ( "Circle" ).transform.localScale = new Vector3 ( scale, scale, 1 );
+
+			// 矢印消す
+			part.Find ( "Arrow" ).gameObject.SetActive ( false );
+			part.Find ( "Triangle" ).gameObject.SetActive ( false );
+			return Vector3.zero;
+
+		} else {
+			// 矢印の場合
+			// 大きさ
+			part.Find ( "Arrow" ).transform.localScale = new Vector3 ( 1, 1, scale - TRIANGLE_HEIGHT );
+
+			// 向き
+			Transform member = GameObject.Find ( "Member[" + loadMemberData.m + "]/Root" ).transform;
+			Vector3 target = Vector3.zero;
+			if (loadMemberData.direction == "x") target = member.right;
+			if (loadMemberData.direction == "y") target = member.up;
+			if (loadMemberData.direction == "z") target = member.forward;
+			if (loadMemberData.direction == "gx") target = Vector3.right;
+			if (loadMemberData.direction == "gy") target = Vector3.up;
+			if (loadMemberData.direction == "gz") target = Vector3.forward;
+			part.LookAt ( part.position + target );
+
+			// 円消す
+			part.Find ( "Circle" ).gameObject.SetActive ( false );
+
+			return part.position + target * scale;
+		}
+	}
 
   	/// <summary>JSに選択アイテムの変更を通知する </summary>
 	public override void SendSelectChengeMessage (int i) {
