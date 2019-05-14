@@ -190,15 +190,20 @@ public class MainFrameManager : MonoBehaviour
                         else
                             n.ChangeDispMode(NodeDispManager.DispType.Dot);
                         break;
+
                     case InputModeType.Member:
                         //	要素は非表示にせずに表示モードを切り替える
-                        MemberDispManager m = _partsDispWorks[i].partsDispManager as MemberDispManager;
-                        if (label == InputModeType.Member)
-                            m.ChangeDispMode(MemberDispManager.DispType.Block);
-                        else if (label == InputModeType.Element)
+                        if (label == InputModeType.Element)
                             _partsDispWorks[i].partsGameObject.SetActive(false);
                         else
-                            m.ChangeDispMode(MemberDispManager.DispType.Line);
+                        {
+                            _partsDispWorks[i].partsGameObject.SetActive(true);
+                            MemberDispManager m = _partsDispWorks[i].partsDispManager as MemberDispManager;
+                            if (label == InputModeType.Member)
+                                m.ChangeDispMode(MemberDispManager.DispType.Block);
+                            else
+                                m.ChangeDispMode(MemberDispManager.DispType.Line);
+                        }
                         break;
                     default:
                         _partsDispWorks[i].partsGameObject.SetActive((InputModeType)i == label);
