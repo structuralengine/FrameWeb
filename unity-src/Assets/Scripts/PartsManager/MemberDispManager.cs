@@ -8,49 +8,15 @@ using SystemUtility;
 
 public class MemberDispManager : PartsDispManager
 {
-    static readonly Color s_lineTypeBlockColor = new Color(0.8f, 0.0f, 0.0f);
-    const float ELEMENT_SCALE = 0.6f;
-
+    static readonly Color s_lineTypeBlockColor = Color.black;
 
     public enum DispType
     {
         Block,
-        Line,
+        Line
     }
 
     private DispType _dispType = DispType.Line;
-
-
-    /// <summary>ブロックの初期値を設定する </summary>
-    /// <param name="_blockWorkData"></param>
-    /// <param name="data_id"> データID </param>
-    private void InitBlock(ref BlockWorkData blockWorkData, int data_id, string block_id)
-    {
-        blockWorkData.gameObjectTransform = blockWorkData.gameObject.transform;
-        blockWorkData.rootBlockTransform = blockWorkData.gameObjectTransform.Find("Root");
-        blockWorkData.blockData = blockWorkData.gameObject.GetComponentInChildren<BlockData>();
-        blockWorkData.blockData.id = data_id;
-        blockWorkData.directionArrow = blockWorkData.gameObject.GetComponentInChildren<DirectionArrow>();
-        blockWorkData.renderer = blockWorkData.gameObject.GetComponentInChildren<Renderer>();
-        if (blockWorkData.renderer == null)
-            return;
-        blockWorkData.renderer.sharedMaterial = Instantiate(blockWorkData.renderer.sharedMaterial);
-        blockWorkData.materialPropertyBlock = new MaterialPropertyBlock();
-        blockWorkData.materialPropertyBlock.SetColor("_Color", Color.white);
-        blockWorkData.renderer.SetPropertyBlock(blockWorkData.materialPropertyBlock);
-
-        blockWorkData.gameObject.name = block_id;
-        blockWorkData.gameObjectTransform.parent = this.gameObject.transform;
-        blockWorkData.gameObject.SetActive(false);
-
-        //	メシュの取得
-        MeshFilter meshFileter;
-        meshFileter = blockWorkData.gameObject.GetComponentInChildren<MeshFilter>();
-        if (meshFileter != null)
-        {
-            blockWorkData.mesh = meshFileter.mesh;
-        }
-    }
 
     /// <summary>
     /// パーツを作成する
@@ -83,14 +49,9 @@ public class MemberDispManager : PartsDispManager
             foreach (int i in _webframe.ListMemberData.Keys)
             {
                 blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                base._blockWorkData.Add(GetBlockID(i), blockWorkData);
-            }
-
-            // 新しいオブジェクトのプロパティを設定する
-            foreach (int i in _webframe.ListMemberData.Keys)
-            {
-                blockWorkData = base._blockWorkData[GetBlockID(i)];
-                InitBlock(ref blockWorkData, i, GetBlockID(i));
+                string id = GetBlockID(i);
+                base.InitBlock(ref blockWorkData, i, GetBlockID(i));
+                base._blockWorkData.Add(id, blockWorkData);
             }
         }
         catch (Exception e)
@@ -147,7 +108,7 @@ public class MemberDispManager : PartsDispManager
                 {
                     // 新しいオブジェクトを生成する
                     blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                    InitBlock(ref blockWorkData, i, id);
+                    base.InitBlock(ref blockWorkData, i, id);
                     base._blockWorkData.Add(id, blockWorkData);
                 }
                 // 座標を修正する
@@ -244,50 +205,13 @@ public class MemberDispManager : PartsDispManager
         Vector3 pos_i = _webframe.listNodePoint[nodeI];
         Vector3 pos_j = _webframe.listNodePoint[nodeJ];
 
-        Vector3 scale = new Vector3(0.1f, 0.1f, length);
-
+        float Line_scale = _webframe.MemberLineScale();
+        Vector3 scale = new Vector3(Line_scale, Line_scale, length);
         if (_dispType == DispType.Block)
         {
             //	幅と高さを設定する
-            float MaxI = _webframe.maxI > 0 ? _webframe.maxI : 50;
-            float _elementScale = ELEMENT_SCALE * _webframe.minNodeLangth / MaxI;
-            scale.x = _elementScale;
-            scale.y = _elementScale;
+            scale = _webframe.ElementBlockScale(memberData.e);
             scale.z = length;
-
-
-            // 材料情報が有効かどうか調べる
-            int e = memberData.e;
-            if (_webframe.ListElementData.ContainsKey(_webframe.ElemtType))
-            {   // 材料の設定が存在しなければ デフォルト値
-                Dictionary<int, webframe.ElementData> ListElementData = _webframe.ListElementData[_webframe.ElemtType];
-
-                if (ListElementData.ContainsKey(e))
-                {
-                    webframe.ElementData elementData = ListElementData[e];
-                    float currentScale = Math.Max(elementData.Iz, elementData.Iy);
-
-                    //	スケール値を計算
-                    float z = elementData.Iz;
-                    float y = elementData.Iy;
-                    if (elementData.A > 0.0f)
-                    {
-                        z = (float)System.Math.Sqrt((double)(12.0f * elementData.Iz / elementData.A)) * _elementScale;
-                        y = (float)System.Math.Sqrt((double)(12.0f * elementData.Iy / elementData.A)) * _elementScale;
-                    }
-
-                    if (elementData.Iz > elementData.Iy)
-                    {
-                        scale.x = currentScale * _elementScale;
-                        scale.y = currentScale * (y / z) * _elementScale;
-                    }
-                    else
-                    {
-                        scale.x = currentScale * (z / y) * _elementScale;
-                        scale.y = currentScale * _elementScale;
-                    }
-                }
-            }
         }
 
         //	姿勢を設定
@@ -302,10 +226,9 @@ public class MemberDispManager : PartsDispManager
         {
             if (_dispType == DispType.Block)
             {
-
                 Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
                 Vector3 arrowCenter = Vector3.Lerp(pos_i, pos_j, 0.5f);
-                Vector3 arrowSize = new Vector3(1.0f, 1.0f, length * 0.25f);
+                Vector3 arrowSize = new Vector3(Line_scale/2, Line_scale/2, length * 0.25f);
 
                 blockWorkData.directionArrow.SetArrowDirection(arrowCenter, rotate, arrowSize);
                 blockWorkData.directionArrow.EnableRenderer(enabled);
@@ -318,23 +241,9 @@ public class MemberDispManager : PartsDispManager
 
 
         //	色の指定
-        Color color;
-
-        if (_dispType == DispType.Block)
-        {
-            color = s_noSelectColor;
-        }
-        else
-        {
-            color = s_lineTypeBlockColor;
-        }
-        foreach (string j in base._blockWorkData.Keys)
-        {
-            base.SetPartsColor(j, color);
-            this.SetAllowStatus(j, false);
-        }
-
-        // 厚みを設定
+        Color color = (_dispType == DispType.Block) ? s_noSelectColor : s_lineTypeBlockColor;
+        base.SetPartsColor(id, color);
+        this.SetAllowStatus(id, false);
 
 
     }

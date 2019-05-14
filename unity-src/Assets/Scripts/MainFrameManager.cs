@@ -11,347 +11,275 @@ using UnityEditor;
 /// </summary>
 public class MainFrameManager : MonoBehaviour
 {
-  public enum InputModeType
-  {
-    nodes,
-    members,
-    panels,
-    fix_nodes,
-    elements,
-    joints,
-    notice_points,
-    fix_members,
-    loads,
-    fsec,
-    disg,
-    reac
-  }
 
-  webframe _webframe = null;
+    FrameDataService _webframe = null;
 
-  #region 表示モード制御用
+    #region 表示モード制御用
 
-  private InputPanelLabel inputMode = InputPanelLabel.None;
+    private InputModeType inputMode = InputModeType.None;
 
-  //	表示用ワークバッファ
-  class PartsDispWork
-  {
-    public GameObject partsGameObject;
-    public PartsDispManager partsDispManager;
-  }
-
-  [SerializeField]
-  GameObject[] _dispPrefabs = new GameObject[(int)InputPanelLabel.Max];
-
-  PartsDispWork[] _partsDispWorks = new PartsDispWork[(int)InputPanelLabel.Max];
-
-
-  /// <summary>
-  /// 表示用オブジェクトのインスタンス化
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="dispObject"></param>
-  /// <param name="dispManager"></param>
-  void InstantiateDispPrefab(out PartsDispWork partsDispWork, GameObject baseObject)
-  {
-    partsDispWork = new PartsDispWork();
-    if (baseObject == null)
+    //	表示用ワークバッファ
+    class PartsDispWork
     {
-      return;
+        public GameObject partsGameObject;
+        public PartsDispManager partsDispManager;
     }
 
-    partsDispWork.partsGameObject = Instantiate(baseObject) as GameObject;
-    partsDispWork.partsGameObject.transform.parent = this.gameObject.transform;
+    [SerializeField]
+    GameObject[] _dispPrefabs = new GameObject[(int)InputModeType.Max];
 
-    partsDispWork.partsDispManager = partsDispWork.partsGameObject.GetComponent<PartsDispManager>();
-  }
+    PartsDispWork[] _partsDispWorks = new PartsDispWork[(int)InputModeType.Max];
 
-  /// <summary>
-  /// プレハブをインスタンス化
-  /// </summary>
-  void InstantiatePrefab()
-  {
-    int i;
 
-    for (i = 0; i < _partsDispWorks.Length; i++)
+    /// <summary>
+    /// 表示用オブジェクトのインスタンス化
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="dispObject"></param>
+    /// <param name="dispManager"></param>
+    void InstantiateDispPrefab(out PartsDispWork partsDispWork, GameObject baseObject)
     {
-      InstantiateDispPrefab(out _partsDispWorks[i], _dispPrefabs[i]);
-    }
-  }
+        partsDispWork = new PartsDispWork();
+        if (baseObject == null)
+        {
+            return;
+        }
 
-  /// <summary> 初期化 </summary>
-  void Start()
-  {
+        partsDispWork.partsGameObject = Instantiate(baseObject) as GameObject;
+        partsDispWork.partsGameObject.transform.parent = this.gameObject.transform;
+
+        partsDispWork.partsDispManager = partsDispWork.partsGameObject.GetComponent<PartsDispManager>();
+    }
+
+    /// <summary>
+    /// プレハブをインスタンス化
+    /// </summary>
+    void InstantiatePrefab()
+    {
+        int i;
+
+        for (i = 0; i < _partsDispWorks.Length; i++)
+        {
+            InstantiateDispPrefab(out _partsDispWorks[i], _dispPrefabs[i]);
+        }
+    }
+
+    /// <summary> 初期化 </summary>
+    void Start()
+    {
 #if !UNITY_EDITOR && UNITY_WEBGL
         WebGLInput.captureAllKeyboardInput = false;
 #endif
 
-    this._webframe = webframe.Instance;
+        this._webframe = FrameDataService.Instance;
 
-    //	描画マネージャを起動する
-    InstantiatePrefab();
+        //	描画マネージャを起動する
+        InstantiatePrefab();
 
-  }
-
-  #endregion
-
-  #region マウスの制御
-
-  /// <summary>
-  /// マウスの制御
-  /// </summary>
-  void InputMouse()
-  {
-    if (this.inputMode == InputPanelLabel.None)
-    {
-      return;
     }
 
-    PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
+    #endregion
 
-    if (partsDispWork == null)
-        return;
-    if (partsDispWork.partsGameObject == null)
-        return;
-    if (partsDispWork.partsGameObject.activeSelf == false)
-        return;
-    if (partsDispWork.partsDispManager == null)
-        return;
+    #region マウスの制御
 
-    partsDispWork.partsDispManager.InputMouse();
-  }
-
-
-  /// <summary>
-  /// 
-  /// </summary>
-  void Update()
-  {
-    InputMouse();
-  }
-
-  #endregion
-
-  #region 描画パーツの表示制御
-
-  /// <summary>
-  /// 描画パーツの作成
-  /// </summary>
-  public void CreateParts()
-  {
-    //	パーツの作成
-    for (int i = 0; i < _partsDispWorks.Length; i++)
+    /// <summary>
+    /// マウスの制御
+    /// </summary>
+    void InputMouse()
     {
-      if (_partsDispWorks[i].partsDispManager == null)
-      {
-        continue;
-      }
-      _partsDispWorks[i].partsDispManager.CreateParts();
-      //if ((InputPanelLabel)i != InputPanelLabel.Member){          // 要素は常に表示             
-      //    _partsDispWorks[i].partsGameObject.SetActive(true);    // 最初は全部無効にしておく
-      //}
-    }
-  }
-
-  /// <summary> 全部のブロックのプロパティを初期化する </summary>
-  public void SetAllBlockStatus()
-  {
-    //	全て設定する
-    for (int i = 0; i < _partsDispWorks.Length; i++)
-    {
-
-      if (_partsDispWorks[i].partsDispManager == null)
-        continue;
-
-      _partsDispWorks[i].partsDispManager.SetBlockStatusAll();
-    }
-  }
-
-  #endregion
-
-  #region  JavaScript から 表示モードの変更通知が来た 
-
-  public void InputModeChange(InputModeType inputModeType)
-  {
-    InputPanelLabel ModeId = GetModeId(inputModeType);
-    if (this.inputMode != ModeId)
-    {
-      this.SetActiveDispManager(ModeId);
-      this.inputMode = ModeId;
-    }
-  }
-
-  private InputPanelLabel GetModeId(InputModeType inputModeType)
-  {
-    InputPanelLabel result = InputPanelLabel.Node;
-    switch (inputModeType)
-    {
-      case InputModeType.nodes:
-        result = InputPanelLabel.Node;
-        break;
-
-      case InputModeType.members:
-        result = InputPanelLabel.Member;
-        break;
-
-      case InputModeType.panels:
-        result = InputPanelLabel.Panel;
-        break;
-
-      case InputModeType.fix_nodes:
-        result = InputPanelLabel.FixNode;
-        break;
-
-      case InputModeType.elements:
-        result = InputPanelLabel.Element;
-        break;
-
-      case InputModeType.joints:
-        result = InputPanelLabel.Joint;
-        break;
-
-      case InputModeType.notice_points:
-        result = InputPanelLabel.NoticePoints;
-        break;
-
-      case InputModeType.fix_members:
-        result = InputPanelLabel.FixMember;
-        break;
-
-      case InputModeType.loads:
-        result = InputPanelLabel.Load;
-        break;
-
-      case InputModeType.fsec:
-        result = InputPanelLabel.Fsec;
-        break;
-
-      case InputModeType.disg:
-        result = InputPanelLabel.Disg;
-        break;
-
-      case InputModeType.reac:
-        result = InputPanelLabel.Reac;
-        break;
-
-      default:
-        result = InputPanelLabel.None;
-        break;
-    }
-    return result;
-  }
-
-  /// <summary>
-  /// アクティブな表示モードを切り替える
-  /// </summary>
-  /// <param name="label"></param>
-
-  public void SetActiveDispManager(InputPanelLabel label)
-  {
-    Debug.Log(string.Format("Unity 表示モードを切り替えます:{0}", label));
-
-    try
-    {
-      for (int i = 0; i < _partsDispWorks.Length; i++)
-      {
-        if (_partsDispWorks[i] == null)
-          continue;
-        if (_partsDispWorks[i].partsGameObject == null)
-          continue;
-        if ((InputPanelLabel)i == InputPanelLabel.Member)
+        if (this.inputMode == InputModeType.None)
         {
-          //	要素の時は非表示にせずに表示モードを切り替える
-          MemberDispManager m = _partsDispWorks[i].partsDispManager as MemberDispManager;
-
-          if (label == InputPanelLabel.Member)
-            m.ChangeDispMode(MemberDispManager.DispType.Block);
-          else if (label != InputPanelLabel.Element)
-            m.ChangeDispMode(MemberDispManager.DispType.Line);
-          else _partsDispWorks[i].partsGameObject.SetActive(false);
+            return;
         }
-        else
+
+        PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
+
+        if (partsDispWork == null)
+            return;
+        if (partsDispWork.partsGameObject == null)
+            return;
+        if (partsDispWork.partsGameObject.activeSelf == false)
+            return;
+        if (partsDispWork.partsDispManager == null)
+            return;
+
+        partsDispWork.partsDispManager.InputMouse();
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void Update()
+    {
+        InputMouse();
+    }
+
+    #endregion
+
+    #region 描画パーツの表示制御
+
+    /// <summary>
+    /// 描画パーツの作成
+    /// </summary>
+    public void CreateParts()
+    {
+        //	パーツの作成
+        for (int i = 0; i < _partsDispWorks.Length; i++)
         {
-          _partsDispWorks[i].partsGameObject.SetActive((InputPanelLabel)i == label);
+            if (_partsDispWorks[i].partsDispManager == null)
+                continue;
+
+            _partsDispWorks[i].partsDispManager.CreateParts();
+
         }
-      }
     }
-    catch (Exception e)
+
+    /// <summary> 全部のブロックのプロパティを初期化する </summary>
+    public void SetAllBlockStatus()
     {
-      Debug.Log("MainFrameManager SetActiveDispManager エラー!!");
-      Debug.Log(e.Message);
+        //	全て設定する
+        for (int i = 0; i < _partsDispWorks.Length; i++)
+        {
+
+            if (_partsDispWorks[i].partsDispManager == null)
+                continue;
+
+            _partsDispWorks[i].partsDispManager.SetBlockStatusAll();
+        }
     }
-  }
 
-  #endregion
+    #endregion
 
-  #region JavaScript から インプットデータ の変更通知が来た 
+    #region  JavaScript から 表示モードの変更通知が来た 
 
-
-  public void InputDataChenge(string json)
-  {
-    // jsonデータを読み込みます
-    this._webframe.SetData(json);
-
-    // ゲームオブジェクトを生成します。
-    this.CreateParts();
-
-    // 生成したオブジェクトのステータスを初期化します。
-    this._webframe.CalcNodeBlockScale();
-    this.SetAllBlockStatus();
-
-    // 表示モードが不明な場合
-    if (this.inputMode == InputPanelLabel.None)
+    public void InputModeChange(InputModeType ModeId)
     {
-      // 表示モードを問い合わせます。
-      ExternalConnect.SendAngular("GetInputMode");
+        if (this.inputMode != ModeId)
+        {
+            this.SetActiveDispManager(ModeId);
+            this.inputMode = ModeId;
+        }
     }
-  }
 
-  /// <summary> JavaScript から インプットデータ の変更通知が来た </summary>
-  public void InputModeDataChenge(string json)
-  {
-    if (this.inputMode == InputPanelLabel.None)
+
+    /// <summary>
+    /// アクティブな表示モードを切り替える
+    /// </summary>
+    /// <param name="label"></param>
+
+    public void SetActiveDispManager(InputModeType label)
     {
-      ExternalConnect.SendAngular("GetInputMode");
-      return;
+        Debug.Log(string.Format("Unity 表示モードを切り替えます:{0}", label));
+
+        try
+        {
+            for (int i = 0; i < _partsDispWorks.Length; i++)
+            {
+                if (_partsDispWorks[i] == null)
+                    continue;
+                if (_partsDispWorks[i].partsGameObject == null)
+                    continue;
+                switch ((InputModeType)i)
+                {
+                    case InputModeType.Node:
+                        //	格点は非表示にせずに表示モードを切り替える
+                        NodeDispManager n = _partsDispWorks[i].partsDispManager as NodeDispManager;
+                        if (label == InputModeType.Node)
+                            n.ChangeDispMode(NodeDispManager.DispType.Block);
+                        else
+                            n.ChangeDispMode(NodeDispManager.DispType.Dot);
+                        break;
+                    case InputModeType.Member:
+                        //	要素は非表示にせずに表示モードを切り替える
+                        MemberDispManager m = _partsDispWorks[i].partsDispManager as MemberDispManager;
+                        if (label == InputModeType.Member)
+                            m.ChangeDispMode(MemberDispManager.DispType.Block);
+                        else if (label == InputModeType.Element)
+                            _partsDispWorks[i].partsGameObject.SetActive(false);
+                        else
+                            m.ChangeDispMode(MemberDispManager.DispType.Line);
+                        break;
+                    default:
+                        _partsDispWorks[i].partsGameObject.SetActive((InputModeType)i == label);
+                        break;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log("MainFrameManager SetActiveDispManager エラー!!");
+            Debug.Log(e.Message);
+        }
     }
 
+    #endregion
 
-    // jsonデータを読み込みます
-    this._webframe.SetData(json);
+    #region JavaScript から インプットデータ の変更通知が来た 
 
-    // ゲームオブジェクトを変更します。
-    PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
 
-    if (partsDispWork.partsDispManager == null)
-      return;
-
-    partsDispWork.partsDispManager.ChengeParts();
-
-    // 節点に変更があった場合 他のオブジェクトに影響する
-    if (this.inputMode == InputPanelLabel.Node)
+    public void InputDataChenge(string json)
     {
-      this._webframe.CalcNodeBlockScale();
-      this.SetAllBlockStatus();
+        // jsonデータを読み込みます
+        this._webframe.SetData(json);
+
+        // ゲームオブジェクトを生成します。
+        this.CreateParts();
+
+        // 生成したオブジェクトのステータスを初期化します。
+        this.SetAllBlockStatus();
+
+        // 表示モードが不明な場合
+        if (this.inputMode == InputModeType.None)
+        {
+            // 表示モードを問い合わせます。
+            ExternalConnect.SendAngular("GetInputMode");
+        }
     }
-  }
 
-  #endregion
-
-  #region JavaScript から Active Item の変更通知が来た 
-
-  public void SelectItemChange(int i)
-  {
-    if (this.inputMode == InputPanelLabel.None)
+    /// <summary> JavaScript から インプットデータ の変更通知が来た </summary>
+    public void InputModeDataChenge(string json)
     {
-      ExternalConnect.SendAngular("GetInputMode");
-      return;
+        if (this.inputMode == InputModeType.None)
+        {
+            ExternalConnect.SendAngular("GetInputMode");
+            return;
+        }
+
+        // jsonデータを読み込みます
+        this._webframe.SetData(json);
+
+        // ゲームオブジェクトを変更します。
+        PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
+
+        if (partsDispWork.partsDispManager == null)
+            return;
+
+        partsDispWork.partsDispManager.ChengeParts();
+
+        // 節点に変更があった場合 他のオブジェクトに影響する
+        if (this.inputMode == InputModeType.Node)
+        {
+            this.SetAllBlockStatus();
+        }
     }
 
-    PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
-    partsDispWork.partsDispManager.ChengeForcuseBlock(i);
-  }
+    #endregion
 
-  #endregion
+    #region JavaScript から Active Item の変更通知が来た 
+
+    public void SelectItemChange(int i)
+    {
+        if (this.inputMode == InputModeType.None)
+        {
+            ExternalConnect.SendAngular("GetInputMode");
+            return;
+        }
+
+        PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
+        partsDispWork.partsDispManager.ChengeForcuseBlock(i);
+    }
+
+    #endregion
 
 }

@@ -5,41 +5,8 @@ using System.Collections.Generic;
 using SystemUtility;
 
 
-
 public class PanelDispManager : PartsDispManager
 {
-
-    /// <summary>ブロックの初期値を設定する </summary>
-    /// <param name="_blockWorkData"></param>
-    /// <param name="data_id"> データID </param>
-    private void InitBlock(ref BlockWorkData blockWorkData, int data_id, string block_id)
-    {
-        blockWorkData.gameObjectTransform = blockWorkData.gameObject.transform;
-        blockWorkData.rootBlockTransform = blockWorkData.gameObjectTransform.Find("Root");
-        blockWorkData.blockData = blockWorkData.gameObject.GetComponentInChildren<BlockData>();
-        blockWorkData.blockData.id = data_id;
-        blockWorkData.directionArrow = blockWorkData.gameObject.GetComponentInChildren<DirectionArrow>();
-        blockWorkData.renderer = blockWorkData.gameObject.GetComponentInChildren<Renderer>();
-        if (blockWorkData.renderer == null)
-            return;
-        blockWorkData.renderer.sharedMaterial = Instantiate(blockWorkData.renderer.sharedMaterial);
-        blockWorkData.materialPropertyBlock = new MaterialPropertyBlock();
-        blockWorkData.materialPropertyBlock.SetColor("_Color", Color.white);
-        blockWorkData.renderer.SetPropertyBlock(blockWorkData.materialPropertyBlock);
-
-        blockWorkData.gameObject.name = block_id;
-        blockWorkData.gameObjectTransform.parent = this.gameObject.transform;
-        blockWorkData.gameObject.SetActive(false);
-
-        //	メシュの取得
-        MeshFilter meshFileter;
-        meshFileter = blockWorkData.gameObject.GetComponentInChildren<MeshFilter>();
-        if (meshFileter != null)
-        {
-            blockWorkData.mesh = meshFileter.mesh;
-        }
-    }
-
     /// <summary>
     /// パーツを作成する
     /// </summary>
@@ -70,14 +37,9 @@ public class PanelDispManager : PartsDispManager
             foreach (int i in _webframe.ListPanelData.Keys)
             {
                 blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                base._blockWorkData.Add(GetBlockID(i), blockWorkData);
-            }
-
-            // 新しいオブジェクトのプロパティを設定する
-            foreach (int i in _webframe.ListPanelData.Keys)
-            {
-                blockWorkData = base._blockWorkData[GetBlockID(i)];
-                InitBlock(ref blockWorkData, i, GetBlockID(i));
+                string id = GetBlockID(i);
+                base.InitBlock(ref blockWorkData, i, id);
+                base._blockWorkData.Add(id, blockWorkData);
             }
         }
         catch (Exception e)
@@ -132,7 +94,7 @@ public class PanelDispManager : PartsDispManager
                 {
                     // 新しいオブジェクトを生成する
                     blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                    InitBlock(ref blockWorkData, i, id);
+                    base.InitBlock(ref blockWorkData, i, id);
                     base._blockWorkData.Add(id, blockWorkData);
                 }
                 // 座標を修正する

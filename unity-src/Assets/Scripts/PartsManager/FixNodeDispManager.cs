@@ -23,39 +23,6 @@ public class FixNodeDispManager : PartsDispManager
 	private GameObject[] _prefabs;
 
 
-  /// <summary>ブロックの初期値を設定する </summary>
-  /// <param name="_blockWorkData"></param>
-  /// <param name="data_id"> データID </param>
-  private void InitBlock(ref BlockWorkData blockWorkData, int data_id, string block_id)
-    {
-        blockWorkData.gameObjectTransform = blockWorkData.gameObject.transform;
-        blockWorkData.rootBlockTransform = blockWorkData.gameObjectTransform.Find("Root");
-        blockWorkData.blockData = blockWorkData.gameObject.GetComponentInChildren<BlockData>();
-        blockWorkData.blockData.id = data_id;
-        blockWorkData.directionArrow = blockWorkData.gameObject.GetComponentInChildren<DirectionArrow>();
-        blockWorkData.renderer = blockWorkData.gameObject.GetComponentInChildren<Renderer>();
-        if (blockWorkData.renderer == null)
-            return;
-
-        blockWorkData.renderer.sharedMaterial = Instantiate(blockWorkData.renderer.sharedMaterial);
-        blockWorkData.materialPropertyBlock = new MaterialPropertyBlock();
-        blockWorkData.materialPropertyBlock.SetColor("_Color", Color.white);
-        blockWorkData.renderer.SetPropertyBlock(blockWorkData.materialPropertyBlock);
-
-        blockWorkData.gameObject.name = block_id;
-        blockWorkData.gameObjectTransform.parent = this.gameObject.transform;
-        blockWorkData.gameObject.SetActive(false);
-
-        //	メシュの取得
-        MeshFilter meshFileter;
-        meshFileter = blockWorkData.gameObject.GetComponentInChildren<MeshFilter>();
-        if (meshFileter != null)
-        {
-            blockWorkData.mesh = meshFileter.mesh;
-        }
-
-    }
-
     /// <summary>
     /// パーツを作成する
     /// </summary>
@@ -148,7 +115,7 @@ public class FixNodeDispManager : PartsDispManager
             foreach ( int i in _webframe.ListFixNode[_webframe.FixNodeType].Keys)
             {
                 blockWorkData = base._blockWorkData[GetBlockID(i)];
-                InitBlock(ref blockWorkData, i, GetBlockID(i));
+                base.InitBlock(ref blockWorkData, i, GetBlockID(i));
             }
         }
         catch (Exception e)
@@ -190,9 +157,6 @@ public class FixNodeDispManager : PartsDispManager
                 base._blockWorkData.Remove(id);
             }
 
-            // 円のスケールを再計算する
-            //CalcFixNodeBlockScale(); ・・・後でやるのでコメントアウト
-
             // 新しいブロックを生成する
             foreach (int i in _webframe.ListFixNode.Keys)
             {
@@ -200,11 +164,9 @@ public class FixNodeDispManager : PartsDispManager
                 if (!base._blockWorkData.ContainsKey(id)){
                     // 新しいオブジェクトを生成する
                     blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                    InitBlock(ref blockWorkData, i, id);
+                    base.InitBlock(ref blockWorkData, i, id);
                     base._blockWorkData.Add(id, blockWorkData);
                 }
-                // 座標を修正する
-                //SetBlockStatus(id); ・・・後でやるのでコメントアウト
             }
         }
         catch (Exception e)
@@ -266,12 +228,11 @@ public class FixNodeDispManager : PartsDispManager
         BlockWorkData blockWorkData = base._blockWorkData[id];
 
         //	姿勢を設定
-        //blockWorkData.gameObjectTransform.position = new Vector3((float)fixnodePoint.tx, (float)fixnodePoint.ty, (float)fixnodePoint.tz);
         blockWorkData.gameObjectTransform.position = _webframe.listNodePoint[i]; 
-		float nodeScale = ((_webframe.maxNodeLangth <= 0) ? 1 : _webframe.minNodeLangth) * FIXNODE_SCALE;
-		blockWorkData.gameObjectTransform.localScale = new Vector3(nodeScale, nodeScale, nodeScale);
+        blockWorkData.gameObjectTransform.localScale = _webframe.NodeBlockScale; 
 
-		double tx = fixnodePoint.tx;
+
+        double tx = fixnodePoint.tx;
 		double ty = fixnodePoint.ty;
 		double tz = fixnodePoint.tz;
 		double rx = fixnodePoint.rx;
@@ -361,9 +322,6 @@ public class FixNodeDispManager : PartsDispManager
 		// ------------------------------------
 		blockWorkData.gameObjectTransform.localRotation = Quaternion.Euler(x, y, z);
 
-
-//		blockWorkData.directionArrow.SetArrowDirection (blockWorkData.gameObjectTransform.position, Quaternion.identity, blockWorkData.gameObjectTransform.localScale);
-//		blockWorkData.directionArrow.EnableRenderer (true);
     }
 
 
