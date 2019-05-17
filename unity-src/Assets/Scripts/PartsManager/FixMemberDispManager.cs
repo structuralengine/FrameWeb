@@ -27,10 +27,10 @@ public class FixMemberDispManager : PartsDispManager
                 {
                     Destroy(base._blockWorkData[id].renderer.sharedMaterial);
                     Destroy(base._blockWorkData[id].gameObject);
-                    base._blockWorkData.Remove(id);
                 }
                 catch { }
             }
+            base._blockWorkData.Clear();
 
             // 新しいオブジェクトを生成する
             foreach (int i in _webframe.ListFixMember.Keys)

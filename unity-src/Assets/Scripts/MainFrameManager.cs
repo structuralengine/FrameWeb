@@ -267,6 +267,10 @@ public class MainFrameManager : MonoBehaviour
         {
             this.SetAllBlockStatus();
         }
+        else
+        {
+            partsDispWork.partsDispManager.SetBlockStatusAll();
+        }
     }
 
     #endregion
