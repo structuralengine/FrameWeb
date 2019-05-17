@@ -28,11 +28,11 @@ public enum InputModeType
 
 
 /// <summary> 骨組応答解析データ </summary>
-public class webframe //: Singleton<webframe>
+public class FrameWeb //: Singleton<webframe>
 {
     #region 格点データ
 
-    public Dictionary<int, Vector3> listNodePoint = new Dictionary<int, Vector3>();
+    public Dictionary<string, Vector3> listNodePoint = new Dictionary<string, Vector3>();
 
     /// <summary> 格点データを読み込む </summary>
     private bool SetNodePoint(Dictionary<string, object> objJson)
@@ -54,8 +54,7 @@ public class webframe //: Singleton<webframe>
                         float y = ComonFunctions.ConvertToSingle(node2["y"]);
                         float z = ComonFunctions.ConvertToSingle(node2["z"]);
                         Vector3 xyz = new Vector3(x, -y, z); // Unity 左手系 → FrameWeb 右手系 なので y にマイナスを乗ずる
-                        int id = int.Parse(key);
-                        this.listNodePoint.Add(id, xyz);
+                        this.listNodePoint.Add(key, xyz);
                     }
                     catch
                     {
@@ -79,11 +78,11 @@ public class webframe //: Singleton<webframe>
 
     public class MemberData
     {
-        public int ni = 0;  //	節点番号ｉ
-        public int nj = 0;  //	節点番号ｊ
-        public int e = 0;   //	Element番号
+        public string ni = "0";  //	節点番号ｉ
+        public string nj = "0";  //	節点番号ｊ
+        public string e = "0";   //	Element番号
         public float cg = 0F;   //	コードアングル
-        public MemberData(int _ni, int _nj, int _e, float _cg = 0F)
+        public MemberData(string _ni, string _nj, string _e, float _cg = 0F)
         {
             this.ni = _ni;
             this.nj = _nj;
@@ -93,7 +92,7 @@ public class webframe //: Singleton<webframe>
 
     }
 
-    public Dictionary<int, MemberData> ListMemberData = new Dictionary<int, MemberData>();
+    public Dictionary<string, MemberData> ListMemberData = new Dictionary<string, MemberData>();
 
     /// <summary> 要素データを読み込む </summary>
     private bool SetMemberData(Dictionary<string, object> objJson)
@@ -111,15 +110,14 @@ public class webframe //: Singleton<webframe>
                     try
                     {
                         Dictionary<string, object> member2 = member1[key] as Dictionary<string, object>;
-                        int id = int.Parse(key);
-                        int i = ComonFunctions.ConvertToInt(member2["ni"]);
-                        int j = ComonFunctions.ConvertToInt(member2["nj"]);
-                        int e = ComonFunctions.ConvertToInt(member2["e"], 1);
+                        string i = member2["ni"].ToString(); 
+                        string j = member2["nj"].ToString(); 
+                        string e = member2["e"].ToString(); 
                         if (this.listNodePoint.ContainsKey(i)
                             && this.listNodePoint.ContainsKey(j))
                         {
                             MemberData ex = new MemberData(i, j, e);
-                            this.ListMemberData.Add(id, ex);
+                            this.ListMemberData.Add(key, ex);
                         }
                     }
                     catch
@@ -142,7 +140,19 @@ public class webframe //: Singleton<webframe>
 
     #region 着目点データ
 
-    public Dictionary<int, List<float>> ListNoticePoint = new Dictionary<int, List<float>>();
+    public class NoticePointData
+    {
+        public string m = "0"; // 構成節点No1
+        List<float> Points = new List<float>();
+
+        public NoticePointData(string _M, List<float> _Points)
+        {
+            this.m = _M;
+            this.Points = _Points;
+        }
+    }
+
+    public Dictionary<int, NoticePointData> ListNoticePoint = new Dictionary<int, NoticePointData>();
 
     /// <summary> 着目点データを読み込む </summary>
     private bool SetNoticePoint(Dictionary<string, object> objJson)
@@ -159,8 +169,9 @@ public class webframe //: Singleton<webframe>
                 {
                     try
                     {
-                        int id = ComonFunctions.ConvertToInt(tmp["m"]);
-                        if (this.ListMemberData.ContainsKey(id))
+                        int id = ComonFunctions.ConvertToInt(tmp["row"]);
+                        string m = tmp["m"].ToString();
+                        if (this.ListMemberData.ContainsKey(m))
                         {
                             List<object> pos1 = tmp["Points"] as List<object>;
                             List<float> pos2 = new List<float>();
@@ -173,7 +184,7 @@ public class webframe //: Singleton<webframe>
                                         pos2.Add(pos);
                                 }
                             }
-                            this.ListNoticePoint.Add(id, pos2);
+                            this.ListNoticePoint.Add(id, new NoticePointData(m, pos2));
                         }
                     }
                     catch
@@ -194,7 +205,7 @@ public class webframe //: Singleton<webframe>
 
     #endregion
 
-    #region 断面データ
+    #region 材料データ
     public int ElemtType = 1;
 
     public partial class ElementData
@@ -220,7 +231,7 @@ public class webframe //: Singleton<webframe>
         }
     }
 
-    public Dictionary<int, Dictionary<int, ElementData>> ListElementData = new Dictionary<int, Dictionary<int, ElementData>>();
+    protected Dictionary<int, Dictionary<string, ElementData>> _ListElementData = new Dictionary<int, Dictionary<string, ElementData>>();
 
     /// <summary> 属性データを読み込む </summary>
     private bool SetElementData(Dictionary<string, object> objJson)
@@ -230,19 +241,19 @@ public class webframe //: Singleton<webframe>
         {
             if (objJson.ContainsKey("element"))
             {
-                this.ListElementData.Clear();
+                this._ListElementData.Clear();
 
                 Dictionary<string, object> element1 = objJson["element"] as Dictionary<string, object>;
                 foreach (string key1 in element1.Keys)
                 {
-                    Dictionary<int, ElementData> tmp = new Dictionary<int, ElementData>();
+                    Dictionary<string, ElementData> tmp = new Dictionary<string, ElementData>();
                     try
                     {
+                        int typ = int.Parse(key1);
+
                         Dictionary<string, object> element2 = element1[key1] as Dictionary<string, object>;
-                        int id = int.Parse(key1);
                         foreach (string key2 in element2.Keys)
                         {
-                            int type_no = int.Parse(key2);
                             Dictionary<string, object> element3 = element2[key2] as Dictionary<string, object>;
                             float E = ComonFunctions.ConvertToSingle(element3["E"]);
                             float G = ComonFunctions.ConvertToSingle(element3["G"]);
@@ -252,9 +263,9 @@ public class webframe //: Singleton<webframe>
                             float Iz = ComonFunctions.ConvertToSingle(element3["Iz"]);
                             float Iy = ComonFunctions.ConvertToSingle(element3["Iy"]);
                             ElementData e = new ElementData(E, G, Xp, A, J, Iz, Iy);
-                            tmp.Add(type_no, e);
+                            tmp.Add(key2, e);
                         }
-                        this.ListElementData.Add(id, tmp);
+                        this._ListElementData.Add(typ, tmp);
                     }
                     catch
                     {
@@ -278,12 +289,12 @@ public class webframe //: Singleton<webframe>
 
     public class PanelData
     {
-        public int no1 = 0; // 構成節点No1
-        public int no2 = 0; // 構成節点No2
-        public int no3 = 0; // 構成節点No3
-        public int e = 0;   // Element番号
+        public string no1 = "0"; // 構成節点No1
+        public string no2 = "0"; // 構成節点No2
+        public string no3 = "0"; // 構成節点No3
+        public string e = "0";   // Element番号
 
-        public PanelData(int _no1, int _no2, int _no3, int _e)
+        public PanelData(string _no1, string _no2, string _no3, string _e)
         {
             this.no1 = _no1;
             this.no2 = _no2;
@@ -292,7 +303,7 @@ public class webframe //: Singleton<webframe>
         }
     }
 
-    public Dictionary<int, PanelData> ListPanelData = new Dictionary<int, PanelData>();
+    public Dictionary<string, PanelData> ListPanelData = new Dictionary<string, PanelData>();
 
     /// <summary> パネルデータを読み込む </summary>
     private bool SetPanelData(Dictionary<string, object> objJson)
@@ -310,17 +321,16 @@ public class webframe //: Singleton<webframe>
                     try
                     {
                         Dictionary<string, object> panel2 = panel1[key] as Dictionary<string, object>;
-                        int id = int.Parse(key);
-                        int n1 = ComonFunctions.ConvertToInt(panel2["no1"]);
-                        int n2 = ComonFunctions.ConvertToInt(panel2["no2"]);
-                        int n3 = ComonFunctions.ConvertToInt(panel2["no3"]);
-                        int e = ComonFunctions.ConvertToInt(panel2["e"], 1);
+                        string n1 = panel2["no1"].ToString();
+                        string n2 = panel2["no2"].ToString();
+                        string n3 = panel2["no3"].ToString();
+                        string e = panel2["e"].ToString();
                         if (this.listNodePoint.ContainsKey(n1)
                             && this.listNodePoint.ContainsKey(n2)
                             && this.listNodePoint.ContainsKey(n3))
                         {
                             PanelData ex = new PanelData(n1, n2, n3, e);
-                            this.ListPanelData.Add(id, ex);
+                            this.ListPanelData.Add(key, ex);
                         }
                     }
                     catch
@@ -346,14 +356,16 @@ public class webframe //: Singleton<webframe>
 
     public partial class FixNodeData
     {
+        public string n = "0";
         public double tx = 0.0;
         public double ty = 0.0;
         public double tz = 0.0;
         public double rx = 0.0;
         public double ry = 0.0;
         public double rz = 0.0;
-        public FixNodeData(double _tx, double _ty, double _tz, double _rx, double _ry, double _rz)
+        public FixNodeData(string _n, double _tx, double _ty, double _tz, double _rx, double _ry, double _rz)
         {
+            this.n = _n;
             this.tx = _tx;
             this.ty = _ty;
             this.tz = _tz;
@@ -388,9 +400,10 @@ public class webframe //: Singleton<webframe>
                         {
                             Dictionary<string, object> fix_node3 = fn as Dictionary<string, object>;
 
-                            int id = Convert.ToInt32(fix_node3["n"]);
+                            int id = ComonFunctions.ConvertToInt(fix_node3["row"]);
+                            string n = fix_node3["n"].ToString();
 
-                            if (this.listNodePoint.ContainsKey(id) == false)
+                            if (this.listNodePoint.ContainsKey(n) == false)
                                 continue;
 
                             double tx = ComonFunctions.ConvertToDouble(fix_node3["tx"]);
@@ -400,21 +413,8 @@ public class webframe //: Singleton<webframe>
                             double ry = ComonFunctions.ConvertToDouble(fix_node3["ry"]);
                             double rz = ComonFunctions.ConvertToDouble(fix_node3["rz"]);
 
-                            FixNodeData ex = new FixNodeData(tx, ty, tz, rx, ry, rz);
-                            if (tmp.ContainsKey(id) == true)
-                            {
-                                ex.tx += tmp[id].tx;
-                                ex.ty += tmp[id].ty;
-                                ex.tz += tmp[id].tz;
-                                ex.rx += tmp[id].rx;
-                                ex.ry += tmp[id].ry;
-                                ex.rz += tmp[id].rz;
-                                tmp[id] = ex;
-                            }
-                            else
-                            {
-                                tmp.Add(id, ex);
-                            }
+                            FixNodeData ex = new FixNodeData(n, tx, ty, tz, rx, ry, rz);
+                            tmp.Add(id, ex);
                         }
                         this.ListFixNode.Add(typ, tmp);
                     }
@@ -441,12 +441,14 @@ public class webframe //: Singleton<webframe>
 
     public partial class FixMemberData
     {
+        public string m = "0";
         public double tx = 0.0;
         public double ty = 0.0;
         public double tz = 0.0;
         public double tr = 0.0;
-        public FixMemberData(double _tx, double _ty, double _tz, double _tr)
+        public FixMemberData(string _m, double _tx, double _ty, double _tz, double _tr)
         {
+            this.m = _m;
             this.tx = _tx;
             this.ty = _ty;
             this.tz = _tz;
@@ -479,9 +481,10 @@ public class webframe //: Singleton<webframe>
                         {
                             Dictionary<string, object> fix_member3 = fm as Dictionary<string, object>;
 
-                            int id = ComonFunctions.ConvertToInt(fix_member3["m"]);
+                            int id = ComonFunctions.ConvertToInt(fix_member3["row"]);
+                            string m = fix_member3["m"].ToString();
 
-                            if (this.ListMemberData.ContainsKey(id) == false)
+                            if (this.ListMemberData.ContainsKey(m) == false)
                                 continue;
 
                             double tx = ComonFunctions.ConvertToDouble(fix_member3["tx"]);
@@ -489,19 +492,8 @@ public class webframe //: Singleton<webframe>
                             double tz = ComonFunctions.ConvertToDouble(fix_member3["tz"]);
                             double tr = ComonFunctions.ConvertToDouble(fix_member3["tr"]);
 
-                            FixMemberData ex = new FixMemberData(tx, ty, tz, tr);
-                            if (tmp.ContainsKey(id) == true)
-                            {
-                                ex.tx += tmp[id].tx;
-                                ex.ty += tmp[id].ty;
-                                ex.tz += tmp[id].tz;
-                                ex.tr += tmp[id].tr;
-                                tmp[id] = ex;
-                            }
-                            else
-                            {
-                                tmp.Add(id, ex);
-                            }
+                            FixMemberData ex = new FixMemberData(m, tx, ty, tz, tr);
+                            tmp.Add(id, ex);
                         }
                         this._ListFixMember.Add(typ, tmp);
                     }
@@ -529,14 +521,16 @@ public class webframe //: Singleton<webframe>
 
     public partial class JointData
     {
+        string m = "0";
         public int xi = 1;
         public int yi = 1;
         public int zi = 1;
         public int xj = 1;
         public int yj = 1;
         public int zj = 1;
-        public JointData(int _xi, int _yi, int _zi, int _xj, int _yj, int _zj)
+        public JointData(string _m, int _xi, int _yi, int _zi, int _xj, int _yj, int _zj)
         {
+            this.m = _m;
             this.xi = _xi;
             this.yi = _yi;
             this.zi = _zi;
@@ -572,9 +566,10 @@ public class webframe //: Singleton<webframe>
                         {
                             Dictionary<string, object> joint3 = jo as Dictionary<string, object>;
 
-                            int id = ComonFunctions.ConvertToInt(joint3["m"]);
+                            int id = ComonFunctions.ConvertToInt(joint3["row"]);
+                            string m = joint3["m"].ToString();
 
-                            if (this.ListMemberData.ContainsKey(id) == false)
+                            if (this.ListMemberData.ContainsKey(m) == false)
                                 continue;
 
                             int xi = ComonFunctions.ConvertToInt(joint3["xi"]);
@@ -584,15 +579,8 @@ public class webframe //: Singleton<webframe>
                             int yj = ComonFunctions.ConvertToInt(joint3["yj"]);
                             int zj = ComonFunctions.ConvertToInt(joint3["zj"]);
 
-                            JointData ex = new JointData(xi, yi, zi, xj, yj, zj);
-                            if (tmp.ContainsKey(id) == true)
-                            {
-                                tmp[id] = ex;
-                            }
-                            else
-                            {
-                                tmp.Add(id, ex);
-                            }
+                            JointData ex = new JointData(m, xi, yi, zi, xj, yj, zj);
+                            tmp.Add(id, ex);
                         }
                         this.ListJointData.Add(typ, tmp);
                     }
@@ -630,14 +618,14 @@ public class webframe //: Singleton<webframe>
 
     public partial class LoadNodeData
     {
-        public int n = 0;
+        public string n = "0";
         public double tx = 0.0;
         public double ty = 0.0;
         public double tz = 0.0;
         public double rx = 0.0;
         public double ry = 0.0;
         public double rz = 0.0;
-        public LoadNodeData(int _n, double _tx, double _ty, double _tz, double _rx, double _ry, double _rz)
+        public LoadNodeData(string _n, double _tx, double _ty, double _tz, double _rx, double _ry, double _rz)
         {
             this.n = _n;
             this.tx = _tx;
@@ -651,14 +639,14 @@ public class webframe //: Singleton<webframe>
 
     public partial class LoadMemberData
     {
-        public int m = 0;
+        public string m = "0";
         public string direction = "";
         public int mark = 0;
         public double L1 = 0.0;
         public double L2 = 0.0;
         public double P1 = 0.0;
         public double P2 = 0.0;
-        public LoadMemberData(int _m, string _direction, int _mark, double _L1, double _L2, double _P1, double _P2)
+        public LoadMemberData(string _m, string _direction, int _mark, double _L1, double _L2, double _P1, double _P2)
         {
             this.m = _m;
             this.direction = _direction;
@@ -702,7 +690,7 @@ public class webframe //: Singleton<webframe>
                             List<object> load3 = load2["load_node"] as List<object>;
                             foreach (Dictionary<string, object> ln in load3)
                             {
-                                int id = ComonFunctions.ConvertToInt(ln["n"]);
+                                string id = ln["n"].ToString();
 
                                 if (this.listNodePoint.ContainsKey(id) == false)
                                     continue;
@@ -735,7 +723,7 @@ public class webframe //: Singleton<webframe>
                             List<object> load3 = load2["load_member"] as List<object>;
                             foreach (Dictionary<string, object> lm in load3)
                             {
-                                int id = ComonFunctions.ConvertToInt(lm["m"]);
+                                string id = lm["m"].ToString();
 
                                 if (this.ListMemberData.ContainsKey(id) == false)
                                     continue;
@@ -795,7 +783,7 @@ public class webframe //: Singleton<webframe>
             this.rz = _rz;
         }
     }
-    public Dictionary<int, DisgData> ListDisgData = new Dictionary<int, DisgData>();
+    public Dictionary<string, DisgData> ListDisgData = new Dictionary<string, DisgData>();
 
     /// <summary> 変位量データを読み込む </summary>
     private bool SetDisgData(Dictionary<string, object> objJson)
@@ -814,9 +802,7 @@ public class webframe //: Singleton<webframe>
                     {
                         Dictionary<string, object> disg2 = disg1[key] as Dictionary<string, object>;
 
-                        int id = int.Parse(key);
-
-                        if (this.listNodePoint.ContainsKey(id))
+                        if (this.listNodePoint.ContainsKey(key))
                         {
                             double dx = ComonFunctions.ConvertToDouble(disg2["dx"]);
                             double dy = ComonFunctions.ConvertToDouble(disg2["dy"]);
@@ -826,7 +812,7 @@ public class webframe //: Singleton<webframe>
                             double rz = ComonFunctions.ConvertToDouble(disg2["rz"]);
 
                             DisgData ex = new DisgData(dx, dy, dz, rx, ry, rz);
-                            this.ListDisgData.Add(id, ex);
+                            this.ListDisgData.Add(key, ex);
                         }
                     }
                     catch
@@ -867,7 +853,7 @@ public class webframe //: Singleton<webframe>
             this.mz = _mz;
         }
     }
-    public Dictionary<int, ReacData> ListReacData = new Dictionary<int, ReacData>();
+    public Dictionary<string, ReacData> ListReacData = new Dictionary<string, ReacData>();
 
     /// <summary> 反力データを読み込む </summary>
     private bool SetReacData(Dictionary<string, object> objJson)
@@ -886,9 +872,7 @@ public class webframe //: Singleton<webframe>
                     {
                         Dictionary<string, object> reac2 = reac1[key] as Dictionary<string, object>;
 
-                        int id = int.Parse(key);
-
-                        if (this.listNodePoint.ContainsKey(id))
+                        if (this.listNodePoint.ContainsKey(key))
                         {
                             double tx = ComonFunctions.ConvertToDouble(reac2["tx"]);
                             double ty = ComonFunctions.ConvertToDouble(reac2["ty"]);
@@ -898,7 +882,7 @@ public class webframe //: Singleton<webframe>
                             double mz = ComonFunctions.ConvertToDouble(reac2["mz"]);
 
                             ReacData ex = new ReacData(tx, ty, tz, mx, my, mz);
-                            this.ListReacData.Add(id, ex);
+                            this.ListReacData.Add(key, ex);
                         }
                     }
                     catch

@@ -1,73 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using SystemUtility;
 using UnityEngine;
-
 
 /// <summary>
 /// バネの表示を管理するクラス
 /// </summary>
 public class FixMemberDispManager : PartsDispManager
 {
-    const float FIX_MEMBER_SCALE = 0.000001f;
-    const float DISTANCE = 0.5f;    //部材からの距離
-    const float PADDING = 1.0f; //パーツの間隔
-
     /// <summary>
     /// パーツを作成する
     /// </summary>
     public override void CreateParts()
     {
-        if (_webframe == null)
-        {
-            Debug.Log("FixMemberDispManager _webframe == null");
-            return;
-        }
-
-        try
-        {
-            BlockWorkData blockWorkData;
-
-            // 前のオブジェクトを消す
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                try
-                {
-                    Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                    Destroy(base._blockWorkData[id].gameObject);
-                }
-                catch { }
-            }
-            base._blockWorkData.Clear();
-
-            if (_webframe.ListFixMember == null) return;
-
-            // 新しいオブジェクトを生成する
-            foreach (int i in _webframe.ListFixMember.Keys)
-            {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                string id = GetBlockID(i);
-                base.InitBlock(ref blockWorkData, i, id);
-                base._blockWorkData.Add(id, blockWorkData);
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log("FixMemberDispManager CreateNodes" + e.Message);
-        }
-    }
-
-    /// <summary>
-    /// パーツを変更する
-    /// </summary>
-    public override void ChengeParts()
-    {
-        if (_webframe == null)
-        {
-            Debug.Log("FixMemberDispManager _webframe == null");
-            return;
-        }
-
         try
         {
             BlockWorkData blockWorkData;
@@ -76,163 +22,104 @@ public class FixMemberDispManager : PartsDispManager
             List<string> DeleteKeys = new List<string>();
             foreach (string id in base._blockWorkData.Keys)
             {
-                int i = GetDataID(id);
-                if (!_webframe.listNodePoint.ContainsKey(i))
-                {
-                    try
-                    {
-                        Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                        Destroy(base._blockWorkData[id].gameObject);
-                    }
-                    catch { }
-                    finally
-                    {
-                        DeleteKeys.Add(id);
-                    }
-                }
+                if (!_webframe.ListMemberData.ContainsKey(id))
+                    DeleteKeys.Add(id);
             }
-            foreach (string id in DeleteKeys)
-            {
-                base._blockWorkData.Remove(id);
-            }
-
             // 前のオブジェクトを消す
-            foreach (string id in base._blockWorkData.Keys)
+            foreach (string id in DeleteKeys)
             {
                 try
                 {
                     Destroy(base._blockWorkData[id].renderer.sharedMaterial);
                     Destroy(base._blockWorkData[id].gameObject);
+                    base._blockWorkData.Remove(id);
                 }
                 catch { }
             }
-            base._blockWorkData.Clear();
-
-            if (_webframe.ListFixMember == null) return;
 
             // 新しいオブジェクトを生成する
-            foreach (int i in _webframe.ListFixMember.Keys)
+            foreach (string id in _webframe.ListMemberData.Keys)
             {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                string id = GetBlockID(i);
-                base.InitBlock(ref blockWorkData, i, id);
-                base._blockWorkData.Add(id, blockWorkData);
+                int i = ComonFunctions.ConvertToInt(id);
+                if (!base._blockWorkData.ContainsKey(id))
+                {
+                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                    base.InitBlock(ref blockWorkData, i, id);
+                    base._blockWorkData.Add(id, blockWorkData);
+                }
             }
         }
         catch (Exception e)
         {
-            Debug.Log("FixMemberDispManager CreateNodes" + e.Message);
+            Debug.Log("FixMemberDispManager CreateMembers" + e.Message);
         }
     }
 
-
-    /// <summary> ブロックのIDを取得 </summary>
-    /// <param name="i"></param>
-    private string GetBlockID(int i)
+    /// <summary>JSに選択アイテムの変更を通知する </summary>
+    public override void SendSelectChengeMessage(int inputID)
     {
-        return "FixMember[" + i + "]";
+        ExternalConnect.SendAngularSelectItemChenge(inputID);
     }
-    /// <summary> データのIDを取得 </summary>
-    /// <param name="id"></param>
-    private int GetDataID(string id)
+
+    /// <summary> ブロックの色を変更 </summary>
+    public override void ChengeForcuseBlock(int i)
     {
-        string s1 = id.Replace("FixMember[", "");
-        string s2 = s1.Replace("]", "");
-        return int.Parse(s2);
+        string id = i.ToString();
+        base.ChengeForcuseBlock(id);
     }
 
 
-    /// <summary> ブロックのステータスを変更 </summary>
+    /// <summary>
+    /// 
+    /// </summary>
     public override void SetBlockStatus(string id)
     {
         if (!base._blockWorkData.ContainsKey(id))
             return;
 
+        FrameWeb.MemberData memberData = _webframe.ListMemberData[id];
+
+        BlockWorkData blockWorkData;
+
+        // 節点が有効かどうか調べる
+        string nodeI = memberData.ni;
+        string nodeJ = memberData.nj;
+
+        float length = 0.0f;
 
         PartsDispStatus partsDispStatus;
         partsDispStatus.id = id;
-        partsDispStatus.enable = true;
+        partsDispStatus.enable = _webframe.GetNodeLength(nodeI, nodeJ, out length);
 
         if (base.SetBlockStatusCommon(partsDispStatus) == false)
         {
             return;
         }
 
-        // 対象のMember取得
-        int myId = GetDataID(id);
-        if (_webframe.ListMemberData.ContainsKey(myId))
-        {
-            // 対象のMember取得
-            Transform member = GameObject.Find("Member[" + myId + "]/Root").transform;
-            webframe.MemberData myMember = _webframe.ListMemberData[myId];
-            Vector3 niPos = _webframe.listNodePoint[myMember.ni];
-            Vector3 njPos = _webframe.listNodePoint[myMember.nj];
-            Vector3 ijVector = njPos - niPos;
+        //	表示に必要なパラメータを用意する
+        Vector3 pos_i = _webframe.listNodePoint[nodeI];
+        Vector3 pos_j = _webframe.listNodePoint[nodeJ];
 
-            BlockWorkData blockWorkData = base._blockWorkData[id];
-            Transform part = blockWorkData.rootBlockTransform;
+        float Line_scale = _webframe.MemberLineScale();
+        Vector3 scale = new Vector3(Line_scale, Line_scale, length);
 
-            // 自分のパラメータ取得
-            webframe.FixMemberData fixMemberData = _webframe.ListFixMember[GetDataID(id)];
+        //	幅と高さを設定する
+        scale = _webframe.ElementBlockScale(memberData.e);
+        scale.z = length;
 
-            // 最初の場所指定
-            SetMemberPart(part, member, fixMemberData, niPos);
-            float baseScale = part.localScale.y;
+        //	姿勢を設定
+        blockWorkData = base._blockWorkData[id];
 
-            // 何個作る？
-            int count = (int)(ijVector.magnitude / (PADDING + baseScale));
-            Vector3 beforePos = niPos;
-            for (int i = 1; i < count; i++)
-            {
-                Transform partChild = Instantiate(part, blockWorkData.rootBlockTransform.parent);
-                beforePos = niPos + ijVector.normalized * ((PADDING + baseScale) * i);
-                SetMemberPart(partChild, member, fixMemberData, beforePos);
-            }
+        blockWorkData.rootBlockTransform.position = pos_i;
+        blockWorkData.rootBlockTransform.LookAt(pos_j);
+        blockWorkData.rootBlockTransform.localScale = scale;
 
-            // 最後に１個作る（直近と近すぎていた場合は作らない）
-            Vector3 lastPos = njPos - ijVector.normalized * baseScale;
-            if ((lastPos - beforePos).sqrMagnitude > 1.0f)
-            {
-                Transform partLast = Instantiate(part, blockWorkData.rootBlockTransform.parent);
-                SetMemberPart(partLast, member, fixMemberData, lastPos);
-            }
-        }
+
+
+        //	色の指定
+        base.SetPartsColor(id, s_noSelectColor);
+
     }
 
-    /// <summary>
-    /// バネの１パーツの位置と大きさを指定する
-    /// </summary>
-    /// <param name="part">１バネ分のTransform</param>
-    /// <param name="member">対象MemberのTransform</param>
-    /// <param name="fixMemberData">fixMemberData</param>
-    /// <param name="pos">Member上の位置</param>
-    private void SetMemberPart(Transform part, Transform member, webframe.FixMemberData fixMemberData, Vector3 pos)
-    {
-        // 位置
-        pos += member.up * DISTANCE;
-        part.position = pos;
 
-        // 大きさを指定（最低値設定）
-        Vector3 size = Vector3.one;
-        size.x = Mathf.Clamp((float)fixMemberData.tx * FIX_MEMBER_SCALE, 0.5f, float.PositiveInfinity);
-        size.y = Mathf.Clamp((float)fixMemberData.ty * FIX_MEMBER_SCALE, 0.5f, float.PositiveInfinity);
-        size.z = Mathf.Clamp((float)fixMemberData.tz * FIX_MEMBER_SCALE, 0.5f, float.PositiveInfinity);
-        part.localScale = size;
-
-        // 倒す
-        part.rotation = member.rotation;
-        part.Rotate(0, -90.0f, -90.0f);
-    }
-
-    /// <summary>JSに選択アイテムの変更を通知する </summary>
-    public override void SendSelectChengeMessage(int i)
-    {
-        ExternalConnect.SendAngularSelectItemChenge(i);
-    }
-
-    /// <summary> ブロックの色を変更 </summary>
-    public override void ChengeForcuseBlock(int i)
-    {
-        base.ChengeForcuseBlock(this.GetBlockID(i));
-    }
 }

@@ -12,11 +12,6 @@ public class PanelDispManager : PartsDispManager
     /// </summary>
     public	override void	CreateParts()
 	{
-        if ( _webframe == null ) {
-            Debug.Log("PanelDispManager _webframe == null");
-            return;
-		}
-
         try
         {
             BlockWorkData blockWorkData;
@@ -34,10 +29,10 @@ public class PanelDispManager : PartsDispManager
             base._blockWorkData.Clear();
 
             // 新しいオブジェクトを生成する
-            foreach (int i in _webframe.ListPanelData.Keys)
+            foreach (string id in _webframe.ListPanelData.Keys)
             {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                string id = GetBlockID(i);
+                int i = ComonFunctions.ConvertToInt(id);
+                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
                 base.InitBlock(ref blockWorkData, i, id);
                 base._blockWorkData.Add(id, blockWorkData);
             }
@@ -46,82 +41,6 @@ public class PanelDispManager : PartsDispManager
         {
             Debug.Log(" PanelDispManager CreatePanels" + e.Message);
         }
-    }
-
-    /// <summary>
-    /// パーツを変更する
-    /// </summary>
-    public override void ChengeParts()
-    {
-        if (_webframe == null)
-        {
-            Debug.Log("PanelDispManager _webframe == null");
-            return;
-        }
-
-        try
-        {
-            BlockWorkData blockWorkData;
-
-            // データに無いブロックは消す
-            List<string> DeleteKeys = new List<string>();
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                int i = GetDataID(id);
-                if (!_webframe.ListPanelData.ContainsKey(i))
-                {
-                    try
-                    {
-                        Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                        Destroy(base._blockWorkData[id].gameObject);
-                    }
-                    catch { }
-                    finally
-                    {
-                        DeleteKeys.Add(id);
-                    }
-                }
-            }
-            foreach (string id in DeleteKeys){
-                base._blockWorkData.Remove(id);
-            }
-
-            // 新しいブロックを生成する
-            foreach (int i in _webframe.ListPanelData.Keys)
-            {
-                string id = GetBlockID(i);
-                if (!base._blockWorkData.ContainsKey(id))
-                {
-                    // 新しいオブジェクトを生成する
-                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                    base.InitBlock(ref blockWorkData, i, id);
-                    base._blockWorkData.Add(id, blockWorkData);
-                }
-                // 座標を修正する
-                SetBlockStatus(id);
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log("PanelDispManager ChengeParts" + e.Message);
-        }
-    }
-
-
-    /// <summary> ブロックのIDを取得 </summary>
-    /// <param name="i"></param>
-    private string GetBlockID(int i)
-    {
-        return "Panel[" + i + "]";
-    }
-    
-    /// <summary> データのIDを取得 </summary>
-    /// <param name="id"></param>
-    private int GetDataID(string id)
-    {
-        string s1 = id.Replace("Panel[", "");
-        string s2 = s1.Replace("]", "");
-        return int.Parse(s2);
     }
 
     /// <summary>JSに選択アイテムの変更を通知する </summary>
@@ -133,7 +52,7 @@ public class PanelDispManager : PartsDispManager
     /// <summary> ブロックの色を変更 </summary>
     public override void ChengeForcuseBlock(int i)
     {
-        base.ChengeForcuseBlock(this.GetBlockID(i));
+        base.ChengeForcuseBlock(i.ToString());
     }
 
     /// <summary>
@@ -144,21 +63,19 @@ public class PanelDispManager : PartsDispManager
         if (!base._blockWorkData.ContainsKey(id))
             return;
 
-        int i = GetDataID(id);
-
-        webframe.PanelData panelData = _webframe.ListPanelData[i];
-        Dictionary<int, Vector3> ListNodeData = _webframe.listNodePoint;
+        FrameWeb.PanelData panelData = _webframe.ListPanelData[id];
+        Dictionary<string, Vector3> ListNodeData = _webframe.listNodePoint;
 
         PartsDispStatus	partsDispStatus;
 
 		//	パネルの有効をチェック
-		List<int>	nodeNo = new List<int>();
+		List<string>	nodeNo = new List<string>();
 
 		partsDispStatus.id = id;
 		partsDispStatus.enable = false;
 
-        int[] nodeNos = { panelData.no1, panelData.no2, panelData.no3 };
-        foreach(int no in nodeNos)
+        string[] nodeNos = { panelData.no1, panelData.no2, panelData.no3 };
+        foreach(string no in nodeNos)
         {
             if (ListNodeData.ContainsKey(no))
             {
@@ -210,14 +127,14 @@ public class PanelDispManager : PartsDispManager
 	/// 
 	/// </summary>
 	/// <param name="search_node"></param>
-	public	void CheckNodeAndUpdateStatus( int search_node )
+	public	void CheckNodeAndUpdateStatus( string search_node )
 	{
-        Dictionary<int, webframe.PanelData> listPanelData = _webframe.ListPanelData;
+        Dictionary<string, FrameWeb.PanelData> listPanelData = _webframe.ListPanelData;
 
-        foreach (int i in listPanelData.Keys) {
+        foreach (string id in listPanelData.Keys) {
             bool UpdateFlg = false;
-            int[] nodeNos = { listPanelData[i].no1, listPanelData[i].no2, listPanelData[i].no3 };
-            foreach (int nodeNo in nodeNos) { 
+            string[] nodeNos = { listPanelData[id].no1, listPanelData[id].no2, listPanelData[id].no3 };
+            foreach (string nodeNo in nodeNos) { 
 				if( nodeNo == search_node ) {
                     UpdateFlg = true;
                     break;
@@ -226,7 +143,7 @@ public class PanelDispManager : PartsDispManager
 			if( UpdateFlg == false ) {		//	同じのが見つからなかったため更新する必要はない
 				continue;
 			}
-			SetBlockStatus(GetBlockID(i));
+			SetBlockStatus(id);
 		}
 	}
 	

@@ -2,12 +2,10 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using SystemUtility;
 
 public class NodeDispManager : PartsDispManager
 {
-    static readonly Color s_DotTypeBlockColor = Color.black;
-
     public enum DispType
     {
         Block,
@@ -21,35 +19,42 @@ public class NodeDispManager : PartsDispManager
     /// </summary>
     public override void CreateParts()
     {
-        if (_webframe == null)
-        {
-            Debug.Log("NodeDispManager _webframe == null");
-            return;
-        }
-
         try
         {
             BlockWorkData blockWorkData;
 
-            // 前のオブジェクトを消す
+            // データに無いブロックは消す
+            List<string> DeleteKeys = new List<string>();
             foreach (string id in base._blockWorkData.Keys)
+            {
+                if (!_webframe.listNodePoint.ContainsKey(id))
+                    DeleteKeys.Add(id);
+            }
+
+
+            // 前のオブジェクトを消す
+            foreach (string id in DeleteKeys)
             {
                 try
                 {
                     Destroy(base._blockWorkData[id].renderer.sharedMaterial);
                     Destroy(base._blockWorkData[id].gameObject);
+                    base._blockWorkData.Remove(id);
                 }
                 catch { }
             }
-            base._blockWorkData.Clear();
+
 
             // 新しいオブジェクトを生成する
-            foreach (int i in _webframe.listNodePoint.Keys)
+            foreach (string id in _webframe.listNodePoint.Keys)
             {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                string id = GetBlockID(i);
-                base.InitBlock(ref blockWorkData, i, id);
-                base._blockWorkData.Add(id, blockWorkData);
+                if (!base._blockWorkData.ContainsKey(id))
+                {
+                    int i = ComonFunctions.ConvertToInt(id);
+                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                    base.InitBlock(ref blockWorkData, i, id);
+                    base._blockWorkData.Add(id, blockWorkData);
+                }
             }
 
         }
@@ -59,91 +64,17 @@ public class NodeDispManager : PartsDispManager
         }
     }
 
-    /// <summary>
-    /// パーツを変更する
-    /// </summary>
-    public override void ChengeParts()
-    {
-        if (_webframe == null)
-        {
-            Debug.Log("NodeDispManager _webframe == null");
-            return;
-        }
-
-        try
-        {
-            BlockWorkData blockWorkData;
-
-            // データに無いブロックは消す
-            List<string> DeleteKeys = new List<string>();
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                int i = GetDataID(id);
-                if (!_webframe.listNodePoint.ContainsKey(i))
-                {
-                    try
-                    {
-                        Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                        Destroy(base._blockWorkData[id].gameObject);
-                    }
-                    catch { }
-                    finally
-                    {
-                        DeleteKeys.Add(id);
-                    }
-                }
-            }
-            foreach (string id in DeleteKeys)
-            {
-                base._blockWorkData.Remove(id);
-            }
-
-            // 新しいブロックを生成する
-            foreach (int i in _webframe.listNodePoint.Keys)
-            {
-                string id = GetBlockID(i);
-                if (!base._blockWorkData.ContainsKey(id))
-                {
-                    // 新しいオブジェクトを生成する
-                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                    base.InitBlock(ref blockWorkData, i, id);
-                    base._blockWorkData.Add(id, blockWorkData);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log("NodeDispManager ChengeParts" + e.Message);
-        }
-    }
-
-
-    /// <summary> ブロックのIDを取得 </summary>
-    /// <param name="i"></param>
-    private string GetBlockID(int i)
-    {
-        return "Node[" + i + "]";
-    }
-
-    /// <summary> データのIDを取得 </summary>
-    /// <param name="id"></param>
-    private int GetDataID(string id)
-    {
-        string s1 = id.Replace("Node[", "");
-        string s2 = s1.Replace("]", "");
-        return int.Parse(s2);
-    }
 
     /// <summary>JSに選択アイテムの変更を通知する </summary>
-    public override void SendSelectChengeMessage(int inputID)
+    public override void SendSelectChengeMessage(int row)
     {
-        ExternalConnect.SendAngularSelectItemChenge(inputID);
+        ExternalConnect.SendAngularSelectItemChenge(row);
     }
 
     /// <summary> ブロックの色を変更 </summary>
     public override void ChengeForcuseBlock(int i)
     {
-        base.ChengeForcuseBlock(this.GetBlockID(i));
+        base.ChengeForcuseBlock(i.ToString());
     }
 
 
@@ -153,7 +84,7 @@ public class NodeDispManager : PartsDispManager
         if (!base._blockWorkData.ContainsKey(id))
             return;
 
-        Vector3 nodePoint = _webframe.listNodePoint[GetDataID(id)];
+        Vector3 nodePoint = _webframe.listNodePoint[id];
 
         PartsDispManager.PartsDispStatus partsDispStatus;
 
@@ -174,7 +105,7 @@ public class NodeDispManager : PartsDispManager
 
         //	色の指定
         //	色の指定
-        Color color = (_dispType == DispType.Block) ? s_noSelectColor : s_DotTypeBlockColor;
+        Color color = (_dispType == DispType.Block) ? s_noSelectColor : s_lineTypeBlockColor;
         base.SetPartsColor(id, color);
 
     }

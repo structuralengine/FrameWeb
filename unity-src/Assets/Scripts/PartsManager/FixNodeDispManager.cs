@@ -28,12 +28,11 @@ public class FixNodeDispManager : PartsDispManager
     /// </summary>
     public override void	CreateParts()
 	{
-        if ( _webframe == null ) {
-            Debug.Log("FixNodeDispManager _webframe == null");
-            return;
-		}
+        // データの状況によって 生成するパーツの 個数が変わる本DispManbager は
+        // SetBlockStatusAll でパーツの生成を行う
 
-        try { 
+        try
+        { 
             BlockWorkData blockWorkData;
 
             // 前のオブジェクトを消す
@@ -61,8 +60,8 @@ public class FixNodeDispManager : PartsDispManager
 				double ry = list.ry;
 				double rz = list.rz;
 
-				// データ入力パターンと図形描画に従い、パターンに応じて表示させる図形を変更する
-
+                // データ入力パターンと図形描画に従い、パターンに応じて表示させる図形を変更する
+                int blockIndex = 0;
 				// ------------------------------------
 				// t系に1が入っている場合に描画するモデル
 				// ------------------------------------
@@ -74,7 +73,7 @@ public class FixNodeDispManager : PartsDispManager
 					(tx == 1 && ty == 0 && tz == 1))
 				{
 
-					_blockPrefab = _prefabs[0];
+                    blockIndex = 0;
 				}
 				// ------------------------------------
 
@@ -89,25 +88,28 @@ public class FixNodeDispManager : PartsDispManager
 					(rx == 0 && ry == 1 && rz == 1) ||
 					(rx == 1 && ry == 0 && rz == 1) ||
 					(rx == 1 && ry == 1 && rz == 1)) {
-					_blockPrefab = _prefabs[1];
-				}
+                    blockIndex = 1;
+
+                }
 				// ------------------------------------
 
 				// ------------------------------------
 				// t系の値が1以外の場合
 				// TODO:「1以外」とすると 0 も含まれてしまい、上で設定したものが上書きされる恐れがあるため「0以外」も含めています。
 				if ( (tx != 0 && tx != 1) || (ty != 0 && ty != 1) || (tz != 0 && tz != 1)) {
-					_blockPrefab = _prefabs[2];
-				}
+                    blockIndex = 2;
+
+                }
 
 				// ------------------------------------
 				// r系の値が1以外の場合
 				// TODO:「1以外」とすると 0 も含まれてしまい、上で設定したものが上書きされる恐れがあるため「0以外」も含めています。
 				if ( (rx != 0 && rx != 1) || (ry != 0 && ry != 1) || (rz != 0 && rz != 1)) {
-					_blockPrefab = _prefabs[3];
-				}
+                    blockIndex = 3;
 
-				blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
+                }
+
+				blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[blockIndex]) };
 				base._blockWorkData.Add(GetBlockID(i), blockWorkData);
             }
 
@@ -121,57 +123,6 @@ public class FixNodeDispManager : PartsDispManager
         catch (Exception e)
         {
             Debug.Log("FixNodeDispManager CreateFixNodes" + e.Message);
-        }
-    }
-
-    /// <summary>
-    /// パーツを変更する
-    /// </summary>
-    public override void ChengeParts()
-    {
-        if (_webframe == null)
-        {
-            Debug.Log("FixNodeDispManager _webframe == null");
-            return;
-        }
-
-        try {
-            BlockWorkData blockWorkData;
-
-            // データに無いブロックは消す
-            List<string> DeleteKeys = new List<string>();
-            foreach (string id in base._blockWorkData.Keys){
-                int i = GetDataID(id);
-                if (!_webframe.ListFixNode.ContainsKey(i)){
-                    try {
-                        Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                        Destroy(base._blockWorkData[id].gameObject);
-                    }
-                    catch {}
-                    finally {
-                        DeleteKeys.Add(id);
-                    }
-                }
-            }
-            foreach( string id in DeleteKeys){
-                base._blockWorkData.Remove(id);
-            }
-
-            // 新しいブロックを生成する
-            foreach (int i in _webframe.ListFixNode.Keys)
-            {
-                string id = GetBlockID(i);
-                if (!base._blockWorkData.ContainsKey(id)){
-                    // 新しいオブジェクトを生成する
-                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab) };
-                    base.InitBlock(ref blockWorkData, i, id);
-                    base._blockWorkData.Add(id, blockWorkData);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log("FixNodeDispManager ChengeParts" + e.Message);
         }
     }
 
@@ -213,7 +164,7 @@ public class FixNodeDispManager : PartsDispManager
             return;
 
         int i = GetDataID(id);
-		webframe.FixNodeData fixnodePoint = _webframe.ListFixNode[_webframe.FixNodeType][i];
+		FrameWeb.FixNodeData fixnodePoint = _webframe.ListFixNode[_webframe.FixNodeType][i];
 
         PartsDispManager.PartsDispStatus partsDispStatus;
 
@@ -228,7 +179,7 @@ public class FixNodeDispManager : PartsDispManager
         BlockWorkData blockWorkData = base._blockWorkData[id];
 
         //	姿勢を設定
-        blockWorkData.gameObjectTransform.position = _webframe.listNodePoint[i]; 
+        blockWorkData.gameObjectTransform.position = _webframe.listNodePoint[id]; 
         blockWorkData.gameObjectTransform.localScale = _webframe.NodeBlockScale; 
 
 
@@ -328,7 +279,7 @@ public class FixNodeDispManager : PartsDispManager
     /// <summary> 接点を表示するためのサイズの計算をする </summary>
     public bool CalcFixNodeBlockScale( int search_fixnode=-1 )
 	{
-        Dictionary<int, webframe.FixNodeData> ListFixNode = _webframe.ListFixNode[0];
+        Dictionary<int, FrameWeb.FixNodeData> ListFixNode = _webframe.ListFixNode[0];
 		Vector3	startPos, endPos, disVec;
 		float	max_length = 0.0f;
 		float	length = 0.0f;

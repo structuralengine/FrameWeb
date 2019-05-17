@@ -260,7 +260,7 @@ public class MainFrameManager : MonoBehaviour
         if (partsDispWork.partsDispManager == null)
             return;
 
-        partsDispWork.partsDispManager.ChengeParts();
+        partsDispWork.partsDispManager.CreateParts();
 
         // 節点に変更があった場合 他のオブジェクトに影響する
         if (this.inputMode == InputModeType.Node)

@@ -108,7 +108,7 @@ export class FrameDataService {
   private getNodeJson(mode: string = 'file') {
 
     let jsonData = {};
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('nodes') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('-nodes') < 0) {
       return jsonData;
     }
 
@@ -187,7 +187,7 @@ export class FrameDataService {
   private getMemberJson(mode: string = 'file') {
 
     let jsonData = {};
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('members') < 0) {
+    if (mode.indexOf('unity-') >= 0 && mode.indexOf('-members') < 0) {
       return jsonData;
     }
 
@@ -1200,6 +1200,8 @@ export class FrameDataService {
   private getFsecJson(): object {
     return this.result.fsec;
   }
+
+  
   ////////////////////////////////////////////////////////////////////////////////////
   // ファイルを読み込む ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////

@@ -15,6 +15,7 @@ public class PartsDispManager : MonoBehaviour
 
     protected static readonly Color s_selectColor = new Color(1.0f, 0.5f, 1.0f);
     protected static readonly Color s_noSelectColor = new Color(1.0f, 1.0f, 1.0f);
+    protected static readonly Color s_lineTypeBlockColor = Color.black;
 
     protected FrameDataService _webframe = null;
     protected MainFrameManager _mainFrameManager = null;
@@ -36,7 +37,7 @@ public class PartsDispManager : MonoBehaviour
     }
 
     [SerializeField]
-    public GameObject _blockPrefab = null;
+    public GameObject[] _blockPrefab = null;
 
     protected Dictionary<string, BlockWorkData> _blockWorkData = new Dictionary<string, BlockWorkData>();
 
@@ -118,12 +119,6 @@ public class PartsDispManager : MonoBehaviour
     {
     }
 
-    /// <summary>
-    /// パーツの変更の仮想関数
-    /// </summary>
-    public virtual void ChengeParts()
-    {
-    }
 
 
     /// <summary>
@@ -135,7 +130,7 @@ public class PartsDispManager : MonoBehaviour
 
 
     /// <summary> 表示ブロックの設定 </summary>
-    public void SetBlockStatusAll()
+    public virtual void SetBlockStatusAll()
     {
         foreach (string id in _blockWorkData.Keys)
         {

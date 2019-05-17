@@ -21,12 +21,6 @@ public class LoadDispManager : PartsDispManager
     /// </summary>
     public override void CreateParts()
     {
-        if (_webframe == null)
-        {
-            Debug.Log("LoadDispManager _webframe == null");
-            return;
-        }
-
         try
         {
             BlockWorkData blockWorkData;
@@ -49,79 +43,9 @@ public class LoadDispManager : PartsDispManager
             // 新しいオブジェクトを生成・プロパティを設定
             for (int i = 0; i < nodeCount + _webframe.ListLoadData.load_member.Count; i++)
             {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate((i < nodeCount) ? _blockPrefab : memberPrefab) };
+                blockWorkData = new BlockWorkData { gameObject = Instantiate((i < nodeCount) ? _blockPrefab[0] : memberPrefab) };
                 base._blockWorkData.Add(GetBlockID(i, (i < nodeCount)), blockWorkData);
                 base.InitBlock(ref blockWorkData, i, GetBlockID(i, (i < nodeCount)));
-            }
-
-        }
-        catch (Exception e)
-        {
-            Debug.Log("LoadDispManager CreateNodes" + e.Message);
-        }
-    }
-
-    /// <summary>
-    /// パーツを変更する
-    /// </summary>
-    public override void ChengeParts()
-    {
-        if (_webframe == null)
-        {
-            Debug.Log("LoadDispManager _webframe == null");
-            return;
-        }
-
-        try
-        {
-            BlockWorkData blockWorkData;
-
-            // データに無いブロックは消す
-            List<string> DeleteKeys = new List<string>();
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                int i = GetDataID(id);
-                if (!_webframe.listNodePoint.ContainsKey(i))
-                {
-                    try
-                    {
-                        Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                        Destroy(base._blockWorkData[id].gameObject);
-                    }
-                    catch { }
-                    finally
-                    {
-                        DeleteKeys.Add(id);
-                    }
-                }
-            }
-            foreach (string id in DeleteKeys)
-            {
-                base._blockWorkData.Remove(id);
-            }
-
-            // 前のオブジェクトを消す
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                try
-                {
-                    Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                    Destroy(base._blockWorkData[id].gameObject);
-                }
-                catch { }
-            }
-            base._blockWorkData.Clear();
-
-            //Node個数指定
-            nodeCount = _webframe.ListLoadData.load_node.Count;
-
-            // 新しいオブジェクトを生成・プロパティを設定
-            for (int i = 0; i < nodeCount + _webframe.ListLoadData.load_member.Count; i++)
-            {
-                blockWorkData = new BlockWorkData { gameObject = Instantiate((i < nodeCount) ? _blockPrefab : memberPrefab) };
-                string id = GetBlockID(i, (i < nodeCount));
-                base._blockWorkData.Add(id, blockWorkData);
-                base.InitBlock(ref blockWorkData, i, id);
             }
 
         }
@@ -203,7 +127,7 @@ public class LoadDispManager : PartsDispManager
     private void SetNode(int id, BlockWorkData blockWorkData)
     {
         // パラメータ取得
-        webframe.LoadNodeData loadNodeData = _webframe.ListLoadData.load_node[id];
+        FrameWeb.LoadNodeData loadNodeData = _webframe.ListLoadData.load_node[id];
 
         // 位置指定（どのNodeに付くか）
         Vector3 pos = _webframe.listNodePoint[loadNodeData.n];
@@ -257,7 +181,7 @@ public class LoadDispManager : PartsDispManager
     private void SetMember(int id, BlockWorkData blockWorkData)
     {
         // パラメータ取得
-        webframe.LoadMemberData loadMemberData = _webframe.ListLoadData.load_member[id];
+        FrameWeb.LoadMemberData loadMemberData = _webframe.ListLoadData.load_member[id];
 
         // 矢印のベースとなるオブジェクト
         Transform part = blockWorkData.rootBlockTransform.Find("MemberPart");
@@ -321,7 +245,7 @@ public class LoadDispManager : PartsDispManager
     /// <param name="part">パーツ（１矢印分）</param>
     /// <param name="loadMemberData">対象のLoadMemberData</param>
     /// <param name="scaleFactor">大きさ係数（0=P1, 1=P2, 0.5=P1とP2の中間50%）</param>
-    private Vector3 SetMemberPart(Transform part, webframe.LoadMemberData loadMemberData, float scaleFactor)
+    private Vector3 SetMemberPart(Transform part, FrameWeb.LoadMemberData loadMemberData, float scaleFactor)
     {
         float scale = Mathf.Lerp((float)loadMemberData.P1, (float)loadMemberData.P2, scaleFactor);
 
