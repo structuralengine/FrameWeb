@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RotatingSpringMaterial
+  m_Name: HrizonalSpringMaterial
   m_Shader: {fileID: 4800000, guid: ec5738fbe2d6e68489b65346fabd81e3, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 83b4d82f0273e0d4181560866ee80822, type: 3}
+        m_Texture: {fileID: 2800000, guid: 1a49a65cf97b27c4cb4cfa7495a412a8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

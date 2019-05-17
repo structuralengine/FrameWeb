@@ -12,21 +12,16 @@ public class FixMemberDispManager : PartsDispManager
     /// <summary>
     /// パーツを作成する
     /// </summary>
-    public override void CreateParts()
+    /// <remarks>
+    /// データの状況によって 生成するパーツの 個数が変わる本DispManbager は
+    /// CreateParts ではなく SetBlockStatusAll でパーツの生成を行う
+    /// </remarks>
+    public override void SetBlockStatusAll()
     {
         try
         {
-            BlockWorkData blockWorkData;
-
-            // データに無いブロックは消す
-            List<string> DeleteKeys = new List<string>();
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                if (!_webframe.ListMemberData.ContainsKey(id))
-                    DeleteKeys.Add(id);
-            }
             // 前のオブジェクトを消す
-            foreach (string id in DeleteKeys)
+            foreach (string id in base._blockWorkData.Keys)
             {
                 try
                 {
@@ -38,14 +33,42 @@ public class FixMemberDispManager : PartsDispManager
             }
 
             // 新しいオブジェクトを生成する
-            foreach (string id in _webframe.ListMemberData.Keys)
+            foreach (int i in _webframe.ListFixMember.Keys)
             {
-                int i = ComonFunctions.ConvertToInt(id);
-                if (!base._blockWorkData.ContainsKey(id))
+                FrameWeb.FixMemberData fm = _webframe.ListFixMember[i];
+                FrameWeb.MemberData memberData = _webframe.ListMemberData[fm.m];
+
+                if (fm.tx > 0)
                 {
-                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-                    base.InitBlock(ref blockWorkData, i, id);
-                    base._blockWorkData.Add(id, blockWorkData);
+                    string id = i.ToString() + "tx"; // これから作成するブロックの id
+                    BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.SetTxBlockStatus(ref blockWorkData, memberData, fm.tx)) continue;
+                    this.AddWorkData(id, blockWorkData);
+                }
+                if (fm.ty > 0)
+                {
+                    string id = i.ToString() + "ty"; // これから作成するブロックの id
+                    BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.SetTyBlockStatus(ref blockWorkData, memberData, fm.ty)) continue;
+                    this.AddWorkData(id, blockWorkData);
+                }
+                if (fm.tz > 0)
+                {
+                    string id = i.ToString() + "tz"; // これから作成するブロックの id
+                    BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.SetTzBlockStatus(ref blockWorkData, memberData, fm.tz)) continue;
+                    this.AddWorkData(id, blockWorkData);
+                }
+                if (fm.tr > 0)
+                {
+                    string id = i.ToString() + "tr"; // これから作成するブロックの id
+                    BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
+                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.SetTrBlockStatus(ref blockWorkData, memberData, fm.tr)) continue;
+                    this.AddWorkData(id, blockWorkData);
                 }
             }
         }
@@ -54,6 +77,155 @@ public class FixMemberDispManager : PartsDispManager
             Debug.Log("FixMemberDispManager CreateMembers" + e.Message);
         }
     }
+
+    /// <summary>
+    /// 基本的な、ブロックの登録などを行う
+    /// </summary>
+    /// <remarks>
+    /// この CreateParts は base クラスの override ではない.
+    /// 呼び出しのタイミングは、 SetBlockStatusAll関数から呼ばれます。
+    /// </remarks>
+    private bool CreateParts(int i, string id, FrameWeb.MemberData memberData, ref BlockWorkData blockWorkData)
+    {
+        base.InitBlock(ref blockWorkData, i, id);
+
+        // 節点が有効かどうか調べる
+        string nodeI = memberData.ni;
+        string nodeJ = memberData.nj;
+
+        float length = 0.0f;
+
+        //	表示に必要なパラメータを用意する
+        Vector3 pos_i = _webframe.listNodePoint[nodeI];
+        Vector3 pos_j = _webframe.listNodePoint[nodeJ];
+
+        if (!_webframe.GetNodeLength(nodeI, nodeJ, out length))
+        {
+            return false;
+        }
+
+        //	幅と高さを設定する
+        Vector3 scale = new Vector3(1, 1, length);
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
+
+        //	姿勢を設定
+        blockWorkData.rootBlockTransform.position = pos_i;
+        blockWorkData.rootBlockTransform.LookAt(pos_j);
+        blockWorkData.rootBlockTransform.localScale = scale;
+
+        //	色の指定
+        Color color = s_noSelectColor;
+        blockWorkData.materialPropertyBlock.SetColor("_Color", color);
+        blockWorkData.renderer.SetPropertyBlock(blockWorkData.materialPropertyBlock);
+
+        //ブロックの矢印を設定する
+        Vector3 arrowCenter = Vector3.Lerp(pos_i, pos_j, 0.5f);
+        Vector3 arrowSize = new Vector3(length * 0.25f, length * 0.25f, length * 0.25f);
+        blockWorkData.directionArrow.SetArrowDirection(arrowCenter, rotate, arrowSize);
+        blockWorkData.directionArrow.EnableRenderer(true);
+
+        return true;
+
+    }
+
+    private bool SetTxBlockStatus(ref BlockWorkData blockWorkData, FrameWeb.MemberData memberData, double value)
+    {
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.back);
+
+        float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "tx");
+
+        Vector3 scale = blockWorkData.rootBlockTransform.localScale;
+        scale.x = L;
+        scale.y = L;
+        float Tiling = Mathf.Floor(scale.z / L);
+
+        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
+        blockWorkData.rootBlockTransform.rotation = rotate;
+        blockWorkData.rootBlockTransform.localScale = scale;
+
+
+        return true;
+    }
+
+    private bool SetTyBlockStatus(ref BlockWorkData blockWorkData, FrameWeb.MemberData memberData, double value)
+    {
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.left);
+
+        float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "ty");
+
+        Vector3 scale = blockWorkData.rootBlockTransform.localScale;
+        scale.x = L;
+        scale.y = L;
+        float Tiling = Mathf.Floor(scale.z / L);
+
+        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
+        blockWorkData.rootBlockTransform.rotation = rotate;
+        blockWorkData.rootBlockTransform.localScale = scale;
+
+
+        return true;
+    }
+
+    private bool SetTzBlockStatus(ref BlockWorkData blockWorkData, FrameWeb.MemberData memberData, double value)
+    {
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
+
+        float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "tz");
+
+        Vector3 scale = blockWorkData.rootBlockTransform.localScale;
+        scale.x = L;
+        scale.y = L;
+        float Tiling = Mathf.Floor(scale.z / L);
+
+        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
+        blockWorkData.rootBlockTransform.rotation = rotate;
+        blockWorkData.rootBlockTransform.localScale = scale;
+
+        return true;
+    }
+
+    private bool SetTrBlockStatus(ref BlockWorkData blockWorkData, FrameWeb.MemberData memberData, double value)
+    {
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i);
+        rotate.x += 90;
+
+        float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "tr");
+
+        Vector3 scale = blockWorkData.rootBlockTransform.localScale;
+        scale.x = L;
+        scale.y = scale.z;
+        scale.z = L;
+        float Tiling = Mathf.Floor(scale.y / L);
+
+        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
+        blockWorkData.rootBlockTransform.rotation = rotate;
+        blockWorkData.rootBlockTransform.localScale = scale;
+
+        return true;
+    }
+
+    private void AddWorkData(string id, BlockWorkData blockWorkData)
+    {
+        base._blockWorkData.Add(id, blockWorkData);
+
+        PartsDispStatus partsDispStatus;
+        partsDispStatus.id = id;
+        partsDispStatus.enable = true;
+
+        if (base.SetBlockStatusCommon(partsDispStatus) == false)
+        {
+            return;
+        }
+    }
+
 
     /// <summary>JSに選択アイテムの変更を通知する </summary>
     public override void SendSelectChengeMessage(int inputID)
@@ -65,61 +237,10 @@ public class FixMemberDispManager : PartsDispManager
     public override void ChengeForcuseBlock(int i)
     {
         string id = i.ToString();
-        base.ChengeForcuseBlock(id);
+        base.ChengeForcuseBlock(id + "tx");
+        base.ChengeForcuseBlock(id + "ty");
+        base.ChengeForcuseBlock(id + "tz");
+        base.ChengeForcuseBlock(id + "tr");
     }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public override void SetBlockStatus(string id)
-    {
-        if (!base._blockWorkData.ContainsKey(id))
-            return;
-
-        FrameWeb.MemberData memberData = _webframe.ListMemberData[id];
-
-        BlockWorkData blockWorkData;
-
-        // 節点が有効かどうか調べる
-        string nodeI = memberData.ni;
-        string nodeJ = memberData.nj;
-
-        float length = 0.0f;
-
-        PartsDispStatus partsDispStatus;
-        partsDispStatus.id = id;
-        partsDispStatus.enable = _webframe.GetNodeLength(nodeI, nodeJ, out length);
-
-        if (base.SetBlockStatusCommon(partsDispStatus) == false)
-        {
-            return;
-        }
-
-        //	表示に必要なパラメータを用意する
-        Vector3 pos_i = _webframe.listNodePoint[nodeI];
-        Vector3 pos_j = _webframe.listNodePoint[nodeJ];
-
-        float Line_scale = _webframe.MemberLineScale();
-        Vector3 scale = new Vector3(Line_scale, Line_scale, length);
-
-        //	幅と高さを設定する
-        scale = _webframe.ElementBlockScale(memberData.e);
-        scale.z = length;
-
-        //	姿勢を設定
-        blockWorkData = base._blockWorkData[id];
-
-        blockWorkData.rootBlockTransform.position = pos_i;
-        blockWorkData.rootBlockTransform.LookAt(pos_j);
-        blockWorkData.rootBlockTransform.localScale = scale;
-
-
-
-        //	色の指定
-        base.SetPartsColor(id, s_noSelectColor);
-
-    }
-
 
 }

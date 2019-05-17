@@ -123,12 +123,12 @@ public class FrameDataService : FrameWeb
                 Vector3 endPos = listNodePoint[j];
                 Vector3 disVec = endPos - startPos;
                 float length = Vector3.Dot(disVec, disVec);     //	高速化のためsqrtはしない
-                max_length = Math.Max(max_length, length);
-                min_length = Math.Min(min_length, length);
+                max_length = Mathf.Max(max_length, length);
+                min_length = Mathf.Min(min_length, length);
             }
         }
-        this.maxNodeDistance = (float)System.Math.Sqrt(max_length);
-        this.minNodeDistance = (float)System.Math.Sqrt(min_length);
+        this.maxNodeDistance = Mathf.Sqrt(max_length);
+        this.minNodeDistance = Mathf.Sqrt(min_length);
         this.NodeScale = ((this.minNodeDistance <= 0) ? 1 : this.minNodeDistance) * NODESCALE;
     }
 
@@ -176,8 +176,8 @@ public class FrameDataService : FrameWeb
             float _y = elm.Iy;
             if (elm.A > 0.0f)
             {
-                _z = (float)System.Math.Sqrt((double)(12.0f * elm.Iz / elm.A));
-                _y = (float)System.Math.Sqrt((double)(12.0f * elm.Iy / elm.A));
+                _z = Mathf.Sqrt(12.0f * elm.Iz / elm.A);
+                _y = Mathf.Sqrt(12.0f * elm.Iy / elm.A);
             }
             float z = elm.Iz * (_z / _y); //* elm.E;
             float y = elm.Iy * (_y / _z); //* elm.E;
@@ -199,17 +199,17 @@ public class FrameDataService : FrameWeb
         foreach (string id in dict_scale.Keys)
         {
             Vector2 elm = dict_scale[id];
-            elm.x = (float)Sigmoid(elm.x - Median) * MaxSize;
-            elm.y = (float)Sigmoid(elm.y - Median) * MaxSize;
+            elm.x = Sigmoid(elm.x - Median) * MaxSize;
+            elm.y = Sigmoid(elm.y - Median) * MaxSize;
             this.ElementScale.Add(id, elm);
         }
 
         return true;
     }
 
-    private double Sigmoid(double x)
+    private float Sigmoid(float x)
     {
-        return 1.0 / (1.0 + Math.Exp(-x));
+        return 1.0f / (1.0f + Mathf.Exp(-x));
     }
 
     /// <summary>

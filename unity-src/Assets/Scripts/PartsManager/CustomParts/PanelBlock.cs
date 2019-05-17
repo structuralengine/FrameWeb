@@ -271,20 +271,20 @@ public class PanelBlock : MonoBehaviour
 		}
 		if (sign1 == 0 || sign1 == 7 || sign2 == 0 || sign2 == 7) {
 			// 全dist1 == 0の場合は同一平面衝突の可能性がある
-			if (System.Math.Abs(dist1[0]) >= 0.00001f || System.Math.Abs(dist1[1]) >= 0.00001f || System.Math.Abs(dist1[2]) >= 0.00001f) {
+			if (Mathf.Abs(dist1[0]) >= 0.00001f || Mathf.Abs(dist1[1]) >= 0.00001f || Mathf.Abs(dist1[2]) >= 0.00001f) {
 				return false;
 			}
 			// 三角ポリゴンの頂点を軸並行平面へ投影
 			Vector2[]	t1_2D = new Vector2[3];
 			Vector2[]	t2_2D = new Vector2[3];
 
-			if (System.Math.Abs(N1.x) >= System.Math.Abs(N1.y) && System.Math.Abs(N1.x) >= System.Math.Abs(N1.z)) {
+			if (Mathf.Abs(N1.x) >= Mathf.Abs(N1.y) && Mathf.Abs(N1.x) >= Mathf.Abs(N1.z)) {
 				// YZ平面
 				for ( i = 0; i < 3; i++) {
 					t1_2D[i].x = t1[i].y; t1_2D[i].y = t1[i].z;
 					t2_2D[i].x = t2[i].y; t2_2D[i].y = t2[i].z;
 				}
-			} else if (System.Math.Abs(N1.y) >= System.Math.Abs(N1.z)) {
+			} else if (Mathf.Abs(N1.y) >= Mathf.Abs(N1.z)) {
 				// XZ平面
 				for ( i = 0; i < 3; i++) {
 					t1_2D[i].x = t1[i].x; t1_2D[i].y = t1[i].z;

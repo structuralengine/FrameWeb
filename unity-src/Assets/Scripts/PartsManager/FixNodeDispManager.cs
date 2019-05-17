@@ -333,7 +333,7 @@ public class FixNodeDispManager : PartsDispManager
 			}
 		}
 
-		max_length = (float)System.Math.Sqrt( max_length );
+		max_length = Mathf.Sqrt( max_length );
 		if( _maxFixNodeLangth == max_length ) {
 			return	false;
 		}
