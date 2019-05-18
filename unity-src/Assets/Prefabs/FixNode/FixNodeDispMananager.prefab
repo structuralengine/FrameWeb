@@ -1,21 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &100100000
-Prefab:
-  m_ObjectHideFlags: 1
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications: []
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1061609309749012}
-  m_IsPrefabAsset: 1
 --- !u!1 &1061609309749012
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4651057222202804}
@@ -29,9 +19,10 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &4651057222202804
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1061609309749012}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -42,9 +33,10 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114792475283783018
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1061609309749012}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -52,12 +44,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blockPrefab:
-  - {fileID: 155912, guid: 723385a5005b14d3dbb9c8b5cd1644da, type: 2}
-  - {fileID: 1422121669003362, guid: f98383d50b5e940b19c7b0b1f90c9ae7, type: 2}
-  - {fileID: 1409061095325610, guid: 1b1bbde7fa94e4d0fba4dc2a38ce0115, type: 2}
-  - {fileID: 1419830304880242, guid: 221cc9dbef1ec4ffdb6d38e2287d5ee5, type: 2}
+  - {fileID: 155912, guid: 723385a5005b14d3dbb9c8b5cd1644da, type: 3}
+  - {fileID: 1422121669003362, guid: f98383d50b5e940b19c7b0b1f90c9ae7, type: 3}
+  - {fileID: 1409061095325610, guid: 1b1bbde7fa94e4d0fba4dc2a38ce0115, type: 3}
+  - {fileID: 1419830304880242, guid: 221cc9dbef1ec4ffdb6d38e2287d5ee5, type: 3}
   _prefabs:
-  - {fileID: 155912, guid: 723385a5005b14d3dbb9c8b5cd1644da, type: 2}
-  - {fileID: 1422121669003362, guid: f98383d50b5e940b19c7b0b1f90c9ae7, type: 2}
-  - {fileID: 1409061095325610, guid: 1b1bbde7fa94e4d0fba4dc2a38ce0115, type: 2}
-  - {fileID: 1419830304880242, guid: 221cc9dbef1ec4ffdb6d38e2287d5ee5, type: 2}
+  - {fileID: 678783566802390080, guid: 723385a5005b14d3dbb9c8b5cd1644da, type: 3}
