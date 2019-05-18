@@ -195,20 +195,29 @@ public class FixMemberDispManager : PartsDispManager
         Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
         Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i);
-        rotate.x += 90;
 
         float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "tr");
-
         Vector3 scale = blockWorkData.rootBlockTransform.localScale;
         scale.x = L;
-        scale.y = scale.z;
-        scale.z = L;
-        float Tiling = Mathf.Floor(scale.y / L);
+        scale.y = L;
+        float Tiling = Mathf.Floor(scale.z / L);
 
         blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
         blockWorkData.rootBlockTransform.rotation = rotate;
         blockWorkData.rootBlockTransform.localScale = scale;
 
+        /*
+                rotate.x += 90;
+                Vector3 scale = blockWorkData.rootBlockTransform.localScale;
+                scale.x = L;
+                scale.y = scale.z;
+                scale.z = L;
+                float Tiling = Mathf.Floor(scale.y / L);
+
+                blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
+                blockWorkData.rootBlockTransform.rotation = rotate;
+                blockWorkData.rootBlockTransform.localScale = scale;
+        */
         return true;
     }
 
