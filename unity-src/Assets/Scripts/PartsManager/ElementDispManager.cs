@@ -143,7 +143,7 @@ public class ElementDispManager : PartsDispManager
         //	方向矢印の表示
         if (blockWorkData.directionArrow != null)
         {
-            float Line_scale = _webframe.MemberLineScale();
+            float Line_scale = _webframe.MemberLineScale;
 
             Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
             Vector3 arrowCenter = Vector3.Lerp(pos_i, pos_j, 0.5f);
@@ -162,29 +162,4 @@ public class ElementDispManager : PartsDispManager
         this.SetAllowStatus(id, false);
     }
 
-    /*
-    /// <summary>
-    /// 指定された節点と一致するブロックを設定する
-    /// </summary>
-    /// <param name="search_node"></param>
-    public void CheckNodeAndUpdateStatus(string search_node)
-    {
-        Dictionary<string, FrameWeb.MemberData> ListMemberData = _webframe.ListMemberData;
-
-        foreach (string id in ListMemberData.Keys)
-        {
-            string nodeI = ListMemberData[id].ni;
-            string nodeJ = ListMemberData[id].nj;
-
-            float length = 0.0f;
-            if (_webframe.GetNodeLength(nodeI, nodeJ, out length) == false)
-                continue;
-            if (search_node != nodeI && search_node != nodeJ)
-            {
-                continue;       //	関わっていないので無視
-            }
-            this.SetBlockStatus(id);
-        }
-    }
-    */
 }

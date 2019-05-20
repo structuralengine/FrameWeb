@@ -144,9 +144,12 @@ public class FrameDataService : FrameWeb
 
     #region 要素(Member) に関する部分
 
-    public float MemberLineScale()
+    public float MemberLineScale
     {
-        return this.NodeScale / 5;
+        get
+        {
+            return this.NodeScale / 5;
+        }
     }
 
     #endregion
@@ -161,7 +164,7 @@ public class FrameDataService : FrameWeb
         }
 
         // 最大の大きさを決定する
-        var MaxSize = minNodeDistance * ELEMENTSCALE;
+        var MaxSize = this.NodeScale * ELEMENTSCALE;
 
         //
         Dictionary<string, Vector2> dict_scale = new Dictionary<string, Vector2>();
@@ -228,7 +231,7 @@ public class FrameDataService : FrameWeb
         }
         else
         {   // 材料の設定が存在しなければ デフォルト値
-            float MinSize = this.MemberLineScale();
+            float MinSize = this.MemberLineScale;
             result = new Vector2(MinSize, MinSize);
         }
 
@@ -289,7 +292,7 @@ public class FrameDataService : FrameWeb
         if (ListFixMember.ContainsKey(id))
         {
             // 最大の大きさを決定する
-            var MaxSize = minNodeDistance * MEMBERSPRINGSCALE;
+            var MaxSize = this.NodeScale * MEMBERSPRINGSCALE;
 
             // バネ値に応じて大きさを決定する
             FixMemberData fm = this.ListFixMember[id];
@@ -331,7 +334,32 @@ public class FrameDataService : FrameWeb
             return base._ListFixMember[FixMemberType];
         }
     }
-    #endregion  
+    #endregion
+
+    #region 支点(FixNode)に関する部分
+
+    public float FixNodeBlockScale
+    {
+        get
+        {
+            return this.NodeScale * 1.5f;
+        }
+    }
+
+    /// <summary>
+    /// 使用する支点リストを取得する（＝FixNodeTypeで指定した配列を取得）
+    /// </summary>
+    /// <returns>Dictionary[int, FixNodeData]</returns>
+    public Dictionary<int, FixNodeData> ListFixNode
+    {
+        get
+        {
+            if (!base._ListFixNode.ContainsKey(FixNodeType))
+                return new Dictionary<int, FixNodeData>();
+            return base._ListFixNode[FixNodeType];
+        }
+    }
+    #endregion
 
     /// <summary>
     /// 使用する荷重データを取得する

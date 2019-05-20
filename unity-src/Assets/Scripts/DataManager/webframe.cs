@@ -375,7 +375,7 @@ public class FrameWeb //: Singleton<webframe>
         }
     }
 
-    public Dictionary<int, Dictionary<int, FixNodeData>> ListFixNode = new Dictionary<int, Dictionary<int, FixNodeData>>();
+    protected Dictionary<int, Dictionary<int, FixNodeData>> _ListFixNode = new Dictionary<int, Dictionary<int, FixNodeData>>();
 
     /// <summary> 支点データを読み込む </summary>
     private bool SetFixNode(Dictionary<string, object> objJson)
@@ -385,7 +385,7 @@ public class FrameWeb //: Singleton<webframe>
         {
             if (objJson.ContainsKey("fix_node"))
             {
-                this.ListFixNode.Clear();
+                this._ListFixNode.Clear();
 
                 Dictionary<string, object> fix_node1 = objJson["fix_node"] as Dictionary<string, object>;
                 foreach (string key1 in fix_node1.Keys)
@@ -416,7 +416,7 @@ public class FrameWeb //: Singleton<webframe>
                             FixNodeData ex = new FixNodeData(n, tx, ty, tz, rx, ry, rz);
                             tmp.Add(id, ex);
                         }
-                        this.ListFixNode.Add(typ, tmp);
+                        this._ListFixNode.Add(typ, tmp);
                     }
                     catch
                     {
@@ -456,7 +456,7 @@ public class FrameWeb //: Singleton<webframe>
         }
     }
 
-    public Dictionary<int, Dictionary<int, FixMemberData>> _ListFixMember = new Dictionary<int, Dictionary<int, FixMemberData>>();
+    protected Dictionary<int, Dictionary<int, FixMemberData>> _ListFixMember = new Dictionary<int, Dictionary<int, FixMemberData>>();
 
     /// <summary> バネデータを読み込む </summary>
     private bool SetFixMember(Dictionary<string, object> objJson)

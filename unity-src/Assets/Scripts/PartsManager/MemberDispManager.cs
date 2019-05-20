@@ -128,7 +128,7 @@ public class MemberDispManager : PartsDispManager
         Vector3 pos_i = _webframe.listNodePoint[nodeI];
         Vector3 pos_j = _webframe.listNodePoint[nodeJ];
 
-        float Line_scale = _webframe.MemberLineScale();
+        float Line_scale = _webframe.MemberLineScale;
         Vector3 scale = new Vector3(Line_scale, Line_scale, length);
         if (_dispType == DispType.Block)
         {

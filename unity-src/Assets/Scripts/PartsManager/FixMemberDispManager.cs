@@ -36,13 +36,14 @@ public class FixMemberDispManager : PartsDispManager
             foreach (int i in _webframe.ListFixMember.Keys)
             {
                 FrameWeb.FixMemberData fm = _webframe.ListFixMember[i];
+                if (!_webframe.ListMemberData.ContainsKey(fm.m)) continue;
                 FrameWeb.MemberData memberData = _webframe.ListMemberData[fm.m];
 
                 if (fm.tx > 0)
                 {
                     string id = i.ToString() + "tx"; // これから作成するブロックの id
                     BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.CreateFixMemberParts(i, id, memberData, ref blockWorkData)) continue;
                     if (!this.SetTxBlockStatus(ref blockWorkData, memberData, fm.tx)) continue;
                     this.AddWorkData(id, blockWorkData);
                 }
@@ -50,7 +51,7 @@ public class FixMemberDispManager : PartsDispManager
                 {
                     string id = i.ToString() + "ty"; // これから作成するブロックの id
                     BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.CreateFixMemberParts(i, id, memberData, ref blockWorkData)) continue;
                     if (!this.SetTyBlockStatus(ref blockWorkData, memberData, fm.ty)) continue;
                     this.AddWorkData(id, blockWorkData);
                 }
@@ -58,7 +59,7 @@ public class FixMemberDispManager : PartsDispManager
                 {
                     string id = i.ToString() + "tz"; // これから作成するブロックの id
                     BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.CreateFixMemberParts(i, id, memberData, ref blockWorkData)) continue;
                     if (!this.SetTzBlockStatus(ref blockWorkData, memberData, fm.tz)) continue;
                     this.AddWorkData(id, blockWorkData);
                 }
@@ -66,7 +67,7 @@ public class FixMemberDispManager : PartsDispManager
                 {
                     string id = i.ToString() + "tr"; // これから作成するブロックの id
                     BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
-                    if (!this.CreateParts(i, id, memberData, ref blockWorkData)) continue;
+                    if (!this.CreateFixMemberParts(i, id, memberData, ref blockWorkData)) continue;
                     if (!this.SetTrBlockStatus(ref blockWorkData, memberData, fm.tr)) continue;
                     this.AddWorkData(id, blockWorkData);
                 }
@@ -81,11 +82,7 @@ public class FixMemberDispManager : PartsDispManager
     /// <summary>
     /// 基本的な、ブロックの登録などを行う
     /// </summary>
-    /// <remarks>
-    /// この CreateParts は base クラスの override ではない.
-    /// 呼び出しのタイミングは、 SetBlockStatusAll関数から呼ばれます。
-    /// </remarks>
-    private bool CreateParts(int i, string id, FrameWeb.MemberData memberData, ref BlockWorkData blockWorkData)
+    private bool CreateFixMemberParts(int i, string id, FrameWeb.MemberData memberData, ref BlockWorkData blockWorkData)
     {
         base.InitBlock(ref blockWorkData, i, id);
 
@@ -206,18 +203,6 @@ public class FixMemberDispManager : PartsDispManager
         blockWorkData.rootBlockTransform.rotation = rotate;
         blockWorkData.rootBlockTransform.localScale = scale;
 
-        /*
-                rotate.x += 90;
-                Vector3 scale = blockWorkData.rootBlockTransform.localScale;
-                scale.x = L;
-                scale.y = scale.z;
-                scale.z = L;
-                float Tiling = Mathf.Floor(scale.y / L);
-
-                blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
-                blockWorkData.rootBlockTransform.rotation = rotate;
-                blockWorkData.rootBlockTransform.localScale = scale;
-        */
         return true;
     }
 
