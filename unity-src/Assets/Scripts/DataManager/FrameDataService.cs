@@ -342,7 +342,7 @@ public class FrameDataService : FrameWeb
     {
         get
         {
-            return this.NodeScale * 1.5f;
+            return this.NodeScale * 2f;
         }
     }
 
@@ -359,6 +359,43 @@ public class FrameDataService : FrameWeb
             return base._ListFixNode[FixNodeType];
         }
     }
+    #endregion
+
+    #region 結合(Joint)に関する部分
+
+    public float JointBlockScale
+    {
+        get
+        {
+            return this.NodeScale * 2f;
+        }
+    }
+
+    /// <summary>
+    /// 使用する支点リストを取得する（＝FixNodeTypeで指定した配列を取得）
+    /// </summary>
+    /// <returns>Dictionary[int, FixNodeData]</returns>
+    public Dictionary<int, JointData> ListJointData
+    {
+        get
+        {
+            if (!base._ListJointData.ContainsKey(JointType))
+                return new Dictionary<int, JointData>();
+            return base._ListJointData[JointType];
+        }
+    }
+    #endregion
+
+    #region 着目点(NoticePoint)に関する部分
+
+    public float NoticePointBlockScale
+    {
+        get
+        {
+            return this.NodeScale * 1.5f;
+        }
+    }
+
     #endregion
 
     /// <summary>

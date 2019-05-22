@@ -33,75 +33,85 @@ public class FixNodeDispManager : PartsDispManager
             foreach (int i in _webframe.ListFixNode.Keys)
             {
                 FrameWeb.FixNodeData fn = _webframe.ListFixNode[i];
-                if (!_webframe.ListMemberData.ContainsKey(fn.n)) continue;
+                if (!_webframe.listNodePoint.ContainsKey(fn.n)) continue;
                 Vector3 nodeData = _webframe.listNodePoint[fn.n];
 
+                var tmp = fn.Clone();
                 foreach (var target in new string[] { "xy", "zy", "xz" })
                 {
                     double Tx = 0, Ty = 0, Rz = 0;
                     switch (target)
                     {
                         case "xy":
-                            Ty = fn.ty;
-                            Tx = fn.tx;
-                            Rz = fn.rz;
+                            Ty = tmp.ty;
+                            Tx = tmp.tx;
+                            Rz = tmp.rz;
+                            tmp.ty = 0;
+                            tmp.tx = 0;
+                            tmp.rz = 0;
                             break;
                         case "zy":
-                            Ty = fn.ty;
-                            Tx = fn.tz;
-                            Rz = fn.rx;
+                            Ty = tmp.ty;
+                            Tx = tmp.tz;
+                            Rz = tmp.rx;
+                            tmp.ty = 0;
+                            tmp.tz = 0;
+                            tmp.rx = 0;
                             break;
                         case "xz":
-                            Ty = fn.tz;
-                            Tx = fn.tx;
-                            Rz = fn.ry;
+                            Ty = tmp.tz;
+                            Tx = tmp.tx;
+                            Rz = tmp.ry;
+                            tmp.tz = 0;
+                            tmp.tx = 0;
+                            tmp.ry = 0;
                             break;
                     }
                     if (Ty == 1 && Tx == 1 && Rz == 1)
                     {// 固定(fix)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "fix" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[4]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     else if (Ty == 1 && Tx == 1 && Rz == 0)
                     {// ピン(pin)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "pin" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     else if (Rz == 1 && (Ty != 1 || Tx != 1))
                     {// 回転固定(fixR)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "fixR" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[3]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     else if (Tx == 1 && (Ty != 1 || Rz != 1))
                     {// ローラー(roller)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "rollerX" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     else if (Ty == 1 && (Tx != 1 || Rz != 1))
                     {// ローラー(roller)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "rollerY" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData, 90f)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     else if (Ty == 0 && Tx == 1 && Rz == 1)
                     {// 回転ローラー(fixR_roller)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "fixR_rollerY" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     else if (Ty == 1 && Tx == 0 && Rz == 1)
                     {// 回転ローラー(fixR_roller)支点を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "fixR_rollerX" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData, 90f)) continue;
                         this.AddWorkData(id, blockWorkData);
@@ -109,21 +119,21 @@ public class FixNodeDispManager : PartsDispManager
 
                     if (Tx != 0 && Tx != 1)
                     {// 鉛直バネ(spring)を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "springX" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[5]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData, 90f)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     if (Ty != 0 && Ty != 1)
                     {// 鉛直バネ(spring)を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "springY" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[5]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
                     }
                     if (Rz != 0 && Rz != 1)
                     {// 鉛直バネ(spring)を描く条件
-                        string id = i.ToString() + target; // これから作成するブロックの id
+                        string id = i.ToString() + "springR" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[6]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
                         this.AddWorkData(id, blockWorkData);
@@ -148,9 +158,9 @@ public class FixNodeDispManager : PartsDispManager
         Vector3 scale = new Vector3(_webframe.FixNodeBlockScale, _webframe.FixNodeBlockScale, _webframe.FixNodeBlockScale);
         Quaternion rotate = Quaternion.Euler(0f, 0f, rotate90);
         if (id.IndexOf("zy") >= 0)
-            rotate = Quaternion.Euler(rotate90, 90f, 0f);
+            rotate = Quaternion.Euler(90f, 0f, 0f); 
         else if (id.IndexOf("xz") >= 0)
-            rotate = Quaternion.Euler(90f, rotate90, 0f);
+            rotate = Quaternion.Euler(0f, 90f, 0f);
 
         //	姿勢を設定
         blockWorkData.rootBlockTransform.position = position;

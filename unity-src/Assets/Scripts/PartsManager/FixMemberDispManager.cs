@@ -84,22 +84,20 @@ public class FixMemberDispManager : PartsDispManager
     /// </summary>
     private bool CreateFixMemberParts(int i, string id, FrameWeb.MemberData memberData, ref BlockWorkData blockWorkData)
     {
-        base.InitBlock(ref blockWorkData, i, id);
-
         // 節点が有効かどうか調べる
         string nodeI = memberData.ni;
         string nodeJ = memberData.nj;
 
-        float length = 0.0f;
-
         //	表示に必要なパラメータを用意する
-        Vector3 pos_i = _webframe.listNodePoint[nodeI];
-        Vector3 pos_j = _webframe.listNodePoint[nodeJ];
-
-        if (!_webframe.GetNodeLength(nodeI, nodeJ, out length))
+        float length = 0.0f;
+        if (!_webframe.GetNodeLength(nodeI, nodeJ, out length)) 
         {
             return false;
         }
+        Vector3 pos_i = _webframe.listNodePoint[nodeI];
+        Vector3 pos_j = _webframe.listNodePoint[nodeJ];
+
+        base.InitBlock(ref blockWorkData, i, id);
 
         //	幅と高さを設定する
         Vector3 scale = new Vector3(1, 1, length);

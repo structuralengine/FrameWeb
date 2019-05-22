@@ -142,12 +142,12 @@ public class FrameWeb //: Singleton<webframe>
 
     public class NoticePointData
     {
-        public string m = "0"; // 構成節点No1
-        List<float> Points = new List<float>();
+        public string m = "0";
+        public List<float> Points = new List<float>();
 
-        public NoticePointData(string _M, List<float> _Points)
+        public NoticePointData(string _m, List<float> _Points)
         {
-            this.m = _M;
+            this.m = _m;
             this.Points = _Points;
         }
     }
@@ -373,6 +373,12 @@ public class FrameWeb //: Singleton<webframe>
             this.ry = _ry;
             this.rz = _rz;
         }
+
+        public FixNodeData Clone()
+        {
+            FixNodeData result = new FixNodeData(this.n, this.tx, this.ty, this.tz, this.rx, this.ry, this.rz);
+            return result;
+        }
     }
 
     protected Dictionary<int, Dictionary<int, FixNodeData>> _ListFixNode = new Dictionary<int, Dictionary<int, FixNodeData>>();
@@ -518,10 +524,11 @@ public class FrameWeb //: Singleton<webframe>
     #endregion
 
     #region 結合データ
+    public int JointType = 1;
 
     public partial class JointData
     {
-        string m = "0";
+        public string m = "0";
         public int xi = 1;
         public int yi = 1;
         public int zi = 1;
@@ -540,7 +547,7 @@ public class FrameWeb //: Singleton<webframe>
         }
     }
 
-    public Dictionary<int, Dictionary<int, JointData>> ListJointData = new Dictionary<int, Dictionary<int, JointData>>();
+    protected Dictionary<int, Dictionary<int, JointData>> _ListJointData = new Dictionary<int, Dictionary<int, JointData>>();
 
     /// <summary> 支点データを読み込む </summary>
     private bool SetJointData(Dictionary<string, object> objJson)
@@ -550,7 +557,7 @@ public class FrameWeb //: Singleton<webframe>
         {
             if (objJson.ContainsKey("joint"))
             {
-                this.ListJointData.Clear();
+                this._ListJointData.Clear();
 
                 Dictionary<string, object> joint1 = objJson["joint"] as Dictionary<string, object>;
 
@@ -582,7 +589,7 @@ public class FrameWeb //: Singleton<webframe>
                             JointData ex = new JointData(m, xi, yi, zi, xj, yj, zj);
                             tmp.Add(id, ex);
                         }
-                        this.ListJointData.Add(typ, tmp);
+                        this._ListJointData.Add(typ, tmp);
                     }
                     catch
                     {
