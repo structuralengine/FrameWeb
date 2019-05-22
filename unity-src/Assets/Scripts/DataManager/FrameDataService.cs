@@ -342,7 +342,7 @@ public class FrameDataService : FrameWeb
     {
         get
         {
-            return this.NodeScale * 2f;
+            return this.NodeScale * 3f;
         }
     }
 

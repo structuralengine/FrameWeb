@@ -142,7 +142,7 @@ public class FrameWeb //: Singleton<webframe>
 
     public class NoticePointData
     {
-        public string m = "0";
+        public string m;
         public List<float> Points = new List<float>();
 
         public NoticePointData(string _m, List<float> _Points)

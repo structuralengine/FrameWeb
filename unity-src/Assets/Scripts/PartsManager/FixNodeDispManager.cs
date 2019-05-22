@@ -132,7 +132,7 @@ public class FixNodeDispManager : PartsDispManager
                         this.AddWorkData(id, blockWorkData);
                     }
                     if (Rz != 0 && Rz != 1)
-                    {// 鉛直バネ(spring)を描く条件
+                    {// 回転バネ(springR)を描く条件
                         string id = i.ToString() + "springR" + target; // これから作成するブロックの id
                         BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[6]) };
                         if (!this.CreateFixNodeParts(i, id, nodeData, ref blockWorkData)) continue;
