@@ -9,6 +9,21 @@ using UnityEngine;
 /// </summary>
 public class FixMemberDispManager : PartsDispManager
 {
+    public override void CreateParts()
+    {
+        // 前のオブジェクトを消す
+        foreach (string id in base._blockWorkData.Keys)
+        {
+            try
+            {
+                Destroy(base._blockWorkData[id].renderer.sharedMaterial);
+                Destroy(base._blockWorkData[id].gameObject);
+            }
+            catch { }
+        }
+        base._blockWorkData.Clear();
+    }
+
     /// <summary>
     /// パーツを作成する
     /// </summary>
@@ -20,18 +35,6 @@ public class FixMemberDispManager : PartsDispManager
     {
         try
         {
-            // 前のオブジェクトを消す
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                try
-                {
-                    Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                    Destroy(base._blockWorkData[id].gameObject);
-                }
-                catch { }
-            }
-            base._blockWorkData.Clear();
-
             // 新しいオブジェクトを生成する
             foreach (int i in _webframe.ListFixMember.Keys)
             {
@@ -82,7 +85,12 @@ public class FixMemberDispManager : PartsDispManager
     /// <summary>
     /// 基本的な、ブロックの登録などを行う
     /// </summary>
-    private bool CreateFixMemberParts(int i, string id, FrameWeb.MemberData memberData, ref BlockWorkData blockWorkData)
+    private bool CreateFixMemberParts(
+        int i,
+        string id, 
+        FrameWeb.MemberData memberData,
+        ref BlockWorkData blockWorkData
+        )
     {
         // 節点が有効かどうか調べる
         string nodeI = memberData.ni;
@@ -101,7 +109,7 @@ public class FixMemberDispManager : PartsDispManager
 
         //	幅と高さを設定する
         Vector3 scale = new Vector3(1, 1, length);
-        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i);
 
         //	姿勢を設定
         blockWorkData.rootBlockTransform.position = pos_i;
@@ -125,9 +133,13 @@ public class FixMemberDispManager : PartsDispManager
 
     private bool SetTxBlockStatus(ref BlockWorkData blockWorkData, FrameWeb.MemberData memberData, double value)
     {
+        Transform part = blockWorkData.rootBlockTransform.transform;
+
         Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.back);
+        Transform member = blockWorkData.rootBlockTransform.transform;
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, member.up);
+        //Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.back);
 
         float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "tx");
 
@@ -148,7 +160,9 @@ public class FixMemberDispManager : PartsDispManager
     {
         Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.left);
+        Transform member = blockWorkData.rootBlockTransform.transform;
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, member.right);
+        //Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.left);
 
         float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "ty");
 
@@ -169,7 +183,9 @@ public class FixMemberDispManager : PartsDispManager
     {
         Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
+        Transform member = blockWorkData.rootBlockTransform.transform;
+        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, member.forward);
+        //Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, Vector3.forward);
 
         float L = _webframe.FixMemberBlockScale(blockWorkData.blockData.id, "tz");
 

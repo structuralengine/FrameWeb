@@ -25,7 +25,6 @@ public class FrameDataService : FrameWeb
     }
     #endregion
 
-
     #region 物体の大きさを制御する変数
 
     private float NODESCALE = 0.3f;
@@ -44,37 +43,10 @@ public class FrameDataService : FrameWeb
     private float MEMBERSPRINGSCALE = 0.8f;
     private double[] maxMemberSpring;
 
+    private float LOADSCALE = 0.8f;
+    private double[] maxLoadValue;
+
     #endregion
-
-    public void SetData(string strJson)
-    {
-        var OnChengeList = base._SetData(strJson);
-
-        // 節点データが変わったら _maxNodeLangth, _minNodeLangth を再計算
-        if (OnChengeList[(int)InputModeType.Node] == true)
-        {
-            this.maxNodeDistance = -1f;
-            this.minNodeDistance = -1f;
-            this.NodeScale = -1f;
-            this.SetNodeBlockScale();
-        }
-
-        // 材料データが変わったら _maxInertia, _minInertia を再計算
-        if (OnChengeList[(int)InputModeType.Element] == true)
-        {
-            this.maxInertia = -1f;
-            this.minInertia = -1f;
-            this.SetElementInertia();
-        }
-
-        // 分布バネデータが変わったら maxMemberSpring を再計算
-        if (OnChengeList[(int)InputModeType.FixMember] == true)
-        {
-            this.maxMemberSpring = new double[4] { 0.0, 0.0, 0.0, 0.0 };
-            this.SetMemberSpringScale();
-        }
-
-    }
 
     #region 節点(Node)に関する部分
 
@@ -398,6 +370,91 @@ public class FrameDataService : FrameWeb
 
     #endregion
 
+    #region 荷重(Load)に関する部分
+
+    public bool SetLoadValueScale()
+    {
+        if (!base._ListLoadData.ContainsKey(LoadType))
+        {
+            return false;
+        }
+
+        // 最大の荷重値を決定する
+        foreach(var i in base._ListLoadData.Keys)
+        {
+            // 要素荷重の最大値を集計
+            foreach (LoadMemberData lm in base._ListLoadData[i].load_member)
+            {
+                int j;
+                switch (lm.mark)
+                {
+                    case 2:
+                        j = (lm.direction != "r") ? 2 : 3;
+                        break;
+                    case 1:
+                        j = 0;
+                        break;
+                    case 11:
+                        j = 1;
+                        break;
+                    default:
+                        continue;
+                }
+                foreach (double value in new double[] { lm.P1, lm.P2 })
+                {
+                    maxLoadValue[j] = Math.Max(maxLoadValue[j], Math.Abs(value));
+                }
+            }
+            // 節点荷重の最大値を集計
+            foreach (LoadNodeData ln in base._ListLoadData[i].load_node)
+            {
+                foreach (double value in new double[] { ln.tx, ln.ty, ln.tz })
+                {
+                    maxLoadValue[0] = Math.Max(maxLoadValue[0], Math.Abs(value));
+                }
+                foreach (double value in new double[] { ln.rx, ln.ry, ln.rz })
+                {
+                    maxLoadValue[1] = Math.Max(maxLoadValue[1], Math.Abs(value));
+                }
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// 分布バネの大きさを返す
+    /// </summary>
+    /// <param name="value">荷重値</param>
+    /// <param name="target">tx, ty, tz, tr のどれか</param>
+    /// <returns></returns>
+    public float LoadBlockScale(double value, string target)
+    {
+        float result;
+
+        // 最大の大きさを決定する
+        var MaxSize = this.NodeScale * LOADSCALE;
+
+        // 荷重値に応じて大きさを決定する
+        double size = 0;
+        switch (target)
+        {
+            case "P":
+                size = MaxSize * value / maxLoadValue[0];
+                break;
+            case "M":
+                size = MaxSize * value / maxLoadValue[1];
+                break;
+            case "W":
+                size = MaxSize * value / maxLoadValue[2];
+                break;
+            case "T":
+                size = MaxSize * value / maxLoadValue[3];
+                break;
+        }
+        result = (float)size;
+
+        return result;
+    }
     /// <summary>
     /// 使用する荷重データを取得する
     /// </summary>
@@ -411,8 +468,43 @@ public class FrameDataService : FrameWeb
             return base._ListLoadData[LoadType];
         }
     }
+    #endregion
 
+    public void SetData(string strJson)
+    {
+        var OnChengeList = base._SetData(strJson);
 
+        // 節点データが変わったら _maxNodeLangth, _minNodeLangth を再計算
+        if (OnChengeList[(int)InputModeType.Node] == true)
+        {
+            this.maxNodeDistance = -1f;
+            this.minNodeDistance = -1f;
+            this.NodeScale = -1f;
+            this.SetNodeBlockScale();
+        }
 
+        // 材料データが変わったら _maxInertia, _minInertia を再計算
+        if (OnChengeList[(int)InputModeType.Element] == true)
+        {
+            this.maxInertia = -1f;
+            this.minInertia = -1f;
+            this.SetElementInertia();
+        }
+
+        // 分布バネデータが変わったら maxMemberSpring を再計算
+        if (OnChengeList[(int)InputModeType.FixMember] == true)
+        {
+            this.maxMemberSpring = new double[4] { 0.0, 0.0, 0.0, 0.0 };
+            this.SetMemberSpringScale();
+        }
+
+        // 荷重データが変わったら maxLoadValue を再計算
+        if (OnChengeList[(int)InputModeType.Load] == true)
+        {
+            this.maxLoadValue = new double[4] { 0.0, 0.0, 0.0, 0.0 };
+            this.SetLoadValueScale();
+        }
+
+    }
 }
 

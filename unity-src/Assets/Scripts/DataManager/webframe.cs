@@ -110,9 +110,9 @@ public class FrameWeb //: Singleton<webframe>
                     try
                     {
                         Dictionary<string, object> member2 = member1[key] as Dictionary<string, object>;
-                        string i = member2["ni"].ToString(); 
-                        string j = member2["nj"].ToString(); 
-                        string e = member2["e"].ToString(); 
+                        string i = member2["ni"].ToString();
+                        string j = member2["nj"].ToString();
+                        string e = member2["e"].ToString();
                         if (this.listNodePoint.ContainsKey(i)
                             && this.listNodePoint.ContainsKey(j))
                         {
@@ -619,12 +619,13 @@ public class FrameWeb //: Singleton<webframe>
         public int fix_member = 1;
         public int element = 1;
         public int joint = 1;
-        public List<LoadNodeData> load_node;
-        public List<LoadMemberData> load_member;
+        public List<LoadNodeData> load_node = new List<LoadNodeData>();
+        public List<LoadMemberData> load_member = new List<LoadMemberData>();
     }
 
     public partial class LoadNodeData
     {
+        public int row = 0;
         public string n = "0";
         public double tx = 0.0;
         public double ty = 0.0;
@@ -632,8 +633,9 @@ public class FrameWeb //: Singleton<webframe>
         public double rx = 0.0;
         public double ry = 0.0;
         public double rz = 0.0;
-        public LoadNodeData(string _n, double _tx, double _ty, double _tz, double _rx, double _ry, double _rz)
+        public LoadNodeData(int _row, string _n, double _tx, double _ty, double _tz, double _rx, double _ry, double _rz)
         {
+            this.row = _row;
             this.n = _n;
             this.tx = _tx;
             this.ty = _ty;
@@ -646,6 +648,7 @@ public class FrameWeb //: Singleton<webframe>
 
     public partial class LoadMemberData
     {
+        public int row = 0;
         public string m = "0";
         public string direction = "";
         public int mark = 0;
@@ -653,8 +656,9 @@ public class FrameWeb //: Singleton<webframe>
         public double L2 = 0.0;
         public double P1 = 0.0;
         public double P2 = 0.0;
-        public LoadMemberData(string _m, string _direction, int _mark, double _L1, double _L2, double _P1, double _P2)
+        public LoadMemberData(int _row, string _m, string _direction, int _mark, double _L1, double _L2, double _P1, double _P2)
         {
+            this.row = _row;
             this.m = _m;
             this.direction = _direction;
             this.mark = _mark;
@@ -697,6 +701,7 @@ public class FrameWeb //: Singleton<webframe>
                             List<object> load3 = load2["load_node"] as List<object>;
                             foreach (Dictionary<string, object> ln in load3)
                             {
+                                int row = ComonFunctions.ConvertToInt(ln["row"]);
                                 string id = ln["n"].ToString();
 
                                 if (this.listNodePoint.ContainsKey(id) == false)
@@ -709,7 +714,7 @@ public class FrameWeb //: Singleton<webframe>
                                 double ry = ComonFunctions.ConvertToDouble(ln["ry"]);
                                 double rz = ComonFunctions.ConvertToDouble(ln["rz"]);
 
-                                LoadNodeData ex = new LoadNodeData(id, tx, ty, tz, rx, ry, rz);
+                                LoadNodeData ex = new LoadNodeData(row, id, tx, ty, tz, rx, ry, rz);
                                 load_node.Add(ex);
                             }
                         }
@@ -730,6 +735,7 @@ public class FrameWeb //: Singleton<webframe>
                             List<object> load3 = load2["load_member"] as List<object>;
                             foreach (Dictionary<string, object> lm in load3)
                             {
+                                int row = ComonFunctions.ConvertToInt(lm["row"]);
                                 string id = lm["m"].ToString();
 
                                 if (this.ListMemberData.ContainsKey(id) == false)
@@ -742,7 +748,7 @@ public class FrameWeb //: Singleton<webframe>
                                 double P1 = ComonFunctions.ConvertToDouble(lm["P1"]);
                                 double P2 = ComonFunctions.ConvertToDouble(lm["P2"]);
 
-                                LoadMemberData ex = new LoadMemberData(id, direction, mark, L1, L2, P1, P2);
+                                LoadMemberData ex = new LoadMemberData(row, id, direction, mark, L1, L2, P1, P2);
                                 load_member.Add(ex);
                             }
                         }

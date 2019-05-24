@@ -6,6 +6,20 @@ using SystemUtility;
 
 public class NoticePointDispManager : PartsDispManager
 {
+    public override void CreateParts()
+    {
+        // 前のオブジェクトを消す
+        foreach (string id in base._blockWorkData.Keys)
+        {
+            try
+            {
+                Destroy(base._blockWorkData[id].renderer.sharedMaterial);
+                Destroy(base._blockWorkData[id].gameObject);
+            }
+            catch { }
+        }
+        base._blockWorkData.Clear();
+    }
     /// <summary>
     /// パーツを作成する
     /// </summary>
@@ -17,18 +31,6 @@ public class NoticePointDispManager : PartsDispManager
     {
         try
         {
-            // 前のオブジェクトを消す
-            foreach (string id in base._blockWorkData.Keys)
-            {
-                try
-                {
-                    Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                    Destroy(base._blockWorkData[id].gameObject);
-                }
-                catch { }
-            }
-            base._blockWorkData.Clear();
-
             // 新しいオブジェクトを生成する
             foreach (int i in _webframe.ListNoticePoint.Keys)
             {
