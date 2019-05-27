@@ -40,7 +40,7 @@ public class LoadDispManager : PartsDispManager
         }
         catch (Exception e)
         {
-            Debug.Log("FixMemberDispManager CreateMembers" + e.Message);
+            Debug.Log("LoadDispManager CreateMembers" + e.Message);
         }
     }
 
@@ -53,22 +53,96 @@ public class LoadDispManager : PartsDispManager
         for (int i = 0; i < ListLoadData.load_node.Count; i++)
         {
             FrameWeb.LoadNodeData ln = ListLoadData.load_node[i];
-            var tLoads = new Dictionary<string, double> { { "tx", ln.tx }, { "ty", ln.ty }, { "tz", ln.tz } };
-            foreach (var key in tLoads.Keys)
+            if (!_webframe.listNodePoint.ContainsKey(ln.n)) continue;
+            Vector3 pos = _webframe.listNodePoint[ln.n];
+
+            foreach (var load in new Dictionary<string, double> {
+                { "tx", ln.tx }, { "ty", ln.ty }, { "tz", ln.tz },
+                { "rx", ln.rx }, { "ry", ln.ry }, { "rz", ln.rz }
+            })
             {
-                double value = tLoads[key];
-                if (value == 0) continue;
-                if (!_webframe.listNodePoint.ContainsKey(ln.n)) continue;
-                string id = string.Format("{0}:{1}-{2}-{3}", i, ln.row, ln.n, key);// これから作成するブロックの id
-
-
-
-
+                if (load.Value == 0) continue;
+                string id = string.Format("{0}:{1}-{2}-{3}", i, ln.row, ln.n, load.Key);// これから作成するブロックの id
+                BlockWorkData blockWorkData;
+                switch (load.Key)
+                {
+                    case "tx":
+                    case "ty":
+                    case "tz":
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                        base.InitBlock(ref blockWorkData, ln.row, id);
+                        if (!this.SetLoadNodeBlockStatus(ref blockWorkData, pos, load)) continue;
+                        this.AddWorkData(id, blockWorkData);
+                        break;
+                    case "rx":
+                    case "ry":
+                    case "rz":
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                        base.InitBlock(ref blockWorkData, ln.row, id);
+                        if (!this.SetMomentNodeBlockStatus(ref blockWorkData, pos, load)) continue;
+                        this.AddWorkData(id, blockWorkData);
+                        break;
+                }
             }
-
-
-
         }
+    }
+    private bool SetLoadNodeBlockStatus(ref BlockWorkData blockWorkData, Vector3 pos, KeyValuePair<string, double> load)
+    {
+        // 位置を決定する
+        blockWorkData.rootBlockTransform.position = pos;
+
+        // 大きさを設定する
+        var scale = _webframe.NodeBlockScale;
+        blockWorkData.rootBlockTransform.localScale = scale;
+        float P1 = _webframe.LoadBlockScale(load.Value, "P");
+        blockWorkData.rootBlockTransform.Find("Cylinder").transform.localScale += new Vector3(0, P1, 0);
+        blockWorkData.rootBlockTransform.Find("Cylinder").transform.position += new Vector3(0, 0, scale.y*P1);
+
+        //向きを設定する
+        int sign = Math.Sign(load.Value);
+        switch (load.Key)
+        {
+            case "tx":
+                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, -sign * 90f, 0f)); // y軸を軸として90°回転
+                break;
+            case "ty":
+                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+                break;
+            case "tz":
+                if(sign < 0)
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
+                break;
+        }
+
+        return true;
+    }
+
+    private bool SetMomentNodeBlockStatus(ref BlockWorkData blockWorkData, Vector3 pos, KeyValuePair<string, double> load)
+    {
+        // 位置を決定する
+        blockWorkData.rootBlockTransform.position = pos;
+
+        // 大きさを設定する
+        float P1 = _webframe.LoadBlockScale(load.Value, "P");
+        blockWorkData.rootBlockTransform.localScale = new Vector3(P1, P1, P1);
+
+        //向きを設定する
+        int sign = Math.Sign(load.Value);
+        switch (load.Key)
+        {
+            case "rx":
+                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, sign * 90f, 0f)); // y軸を軸として90°回転
+                break;
+            case "ry":
+                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+                break;
+            case "rz":
+                if (sign > 0)
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, 180f, 0f)); // z軸を軸として180°回転
+                break;
+        }
+
+        return true;
     }
 
     #endregion
@@ -134,8 +208,7 @@ public class LoadDispManager : PartsDispManager
 
     private bool SetTxBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
     {
-        // 要素が有効か調べる
-        if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
+        // 要素座標を取得
         FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
 
         // 節点が有効なら作成する
@@ -198,7 +271,7 @@ public class LoadDispManager : PartsDispManager
 
     private bool SetTyzBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
     {
-        // 要素が有効か調べる
+        // 要素座標を取得
         if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
         FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
 
@@ -262,7 +335,7 @@ public class LoadDispManager : PartsDispManager
 
     private bool SetTrBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
     {
-        // 要素が有効か調べる
+        // 要素座標を取得
         if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
         FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
 
