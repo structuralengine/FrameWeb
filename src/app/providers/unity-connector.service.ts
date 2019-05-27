@@ -6,8 +6,8 @@ import { FrameDataService } from '../providers/frame-data.service';
 })
 
 export class UnityConnectorService {
-  unityInstance: any
-  inputMode: string
+  unityInstance: any;
+  inputMode: string;
 
   constructor(private frame: FrameDataService) { 
     this.inputMode = '/input-nodes';
@@ -25,11 +25,11 @@ export class UnityConnectorService {
       case 'GetInputJSON':
         this.chengeData();
         break;
-      
+
       case 'GetInputMode':
         this.ChengeMode(this.inputMode);
         break;
-      
+
       default:
         break;
     }
@@ -41,21 +41,20 @@ export class UnityConnectorService {
 
   // #endregion
 
-  
   // #region unity にメッセージを送る
 
   // 入力の変更時の処理
   public sendResultData() {
-    let strJson: string = this.frame.getResultText();
-    console.log("%c" + strJson, 'color: magenta');
+    const strJson: string = this.frame.getResultText();
+    console.log('%c' + strJson, 'color: magenta');
     this.sendMessageToUnity('ExternalConnect', 'ReceiveData', strJson);
   }
 
   public chengeData(mode: string = 'unity') {
-    let strJson: string = this.frame.getInputText(mode);
-    console.log("%c" + mode, 'color: green');
-    console.log("%c" + strJson, 'color: red');
-    let funcName: string = (mode == 'unity') ? 'ReceiveData' : 'ReceiveModeData';
+    const strJson: string = this.frame.getInputText(mode);
+    console.log('%c' + mode, 'color: green');
+    console.log('%c' + strJson, 'color: red');
+    const funcName: string = (mode === 'unity') ? 'ReceiveData' : 'ReceiveModeData';
     this.sendMessageToUnity('ExternalConnect', funcName, strJson);
   }
 
@@ -99,7 +98,7 @@ export class UnityConnectorService {
         break;
       case '/result-disg':
         inputModeName = 'disg';
-        break;  
+        break;
       case '/result-comb_disg':
       case '/result-pic_disg':
         inputModeName = 'comb_disg';
@@ -124,7 +123,7 @@ export class UnityConnectorService {
 
   private sendMessageToUnity(objectName: string, methodName: string, messageValue: any = '') {
     try {
-      if (messageValue == '') {
+      if (messageValue === '') {
         this.unityInstance.SendMessage(objectName, methodName);
       } else {
         this.unityInstance.SendMessage(objectName, methodName, messageValue);

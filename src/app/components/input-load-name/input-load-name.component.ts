@@ -14,6 +14,9 @@ export class InputLoadNameComponent implements OnInit {
   page: number;
   rowHeaders: any[];
 
+  hotTableSettings = {
+  };
+
   constructor(private input: InputDataService,
     private unity: UnityConnectorService) {
     this.page = 1;
@@ -24,7 +27,7 @@ export class InputLoadNameComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
@@ -33,14 +36,10 @@ export class InputLoadNameComponent implements OnInit {
     const a1: number = (currentPage - 1) * InputLoadNameComponent.ROWS_COUNT + 1;
     const a2: number = a1 + InputLoadNameComponent.ROWS_COUNT - 1;
 
-    for (var i = a1; i <= a2; i++) {
+    for (let i = a1; i <= a2; i++) {
       const load_name = this.input.getLoadNameColumns(i);
       this.dataset.push(load_name);
       this.rowHeaders.push(i);
     }
-  }
-
-  hotTableSettings = {
-
   }
 }

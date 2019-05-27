@@ -13,6 +13,14 @@ export class InputJointComponent implements OnInit {
   dataset: any[];
   page: number;
 
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-joints');
+      }
+    }
+  };
+
   constructor(private input: InputDataService,
     private unity: UnityConnectorService) {
     this.dataset = new Array();
@@ -24,24 +32,14 @@ export class InputJointComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
 
-    for (var i = 1; i <= InputJointComponent.ROWS_COUNT; i++) {
+    for (let i = 1; i <= InputJointComponent.ROWS_COUNT; i++) {
       const joint = this.input.getJointColumns(this.page, i);
-      this.dataset.push(joint)
-    }
-
-  }
-
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeData('unity-joints');
-      }
+      this.dataset.push(joint);
     }
   }
-
 }

@@ -13,6 +13,14 @@ export class InputFixMemberComponent implements OnInit {
   dataset: any[];
   page: number;
 
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-fix_members');
+      }
+    }
+  };
+
   constructor(private input: InputDataService,
     private unity: UnityConnectorService) {
     this.dataset = new Array();
@@ -24,25 +32,14 @@ export class InputFixMemberComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
 
-    for (var i = 1; i <= InputFixMemberComponent.ROWS_COUNT; i++) {
+    for (let i = 1; i <= InputFixMemberComponent.ROWS_COUNT; i++) {
       const fix_member = this.input.getFixMemberColumns(this.page, i);
-      this.dataset.push(fix_member)
-
-    }
-
-  }
-
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeData('unity-fix_members');
-      }
+      this.dataset.push(fix_member);
     }
   }
-
 }

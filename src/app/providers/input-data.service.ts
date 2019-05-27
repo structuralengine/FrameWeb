@@ -6,22 +6,23 @@ import { ɵangular_packages_platform_browser_platform_browser_k } from '@angular
 })
 export class InputDataService {
 
-    public node: any[] 
-    public member: any[] 
-    public fix_node: any
-    public element: any
-    public joint: any
-    
-    public notice_points: any[] 
-    static NOTICE_POINTS_COUNT: number = 20;
+    static NOTICE_POINTS_COUNT = 20;
 
-    public fix_member: any
-    public load_name: any[] 
-    public load: any[] 
+    public node: any[];
+    public member: any[];
+    public fix_node: any;
+    public element: any;
+    public joint: any;
 
-    public define: any[] 
-    public combine: any[] 
-    public pickup: any[] 
+    public notice_points: any[];
+
+    public fix_member: any;
+    public load_name: any[];
+    public load: any[];
+
+    public define: any[];
+    public combine: any[];
+    public pickup: any[];
 
     constructor() {
         this.clear();
@@ -42,15 +43,14 @@ export class InputDataService {
         this.define = new Array();
         this.combine = new Array();
         this.pickup = new Array();
-    
     }
 
     public getNodeColumns(index: number): any {
 
         let result: any = null;
         for (let i = 0; i < this.node.length; i++) {
-            var tmp = this.node[i];
-            if (tmp['id'] == index) {
+            const tmp = this.node[i];
+            if (tmp['id'] === index) {
                 result = tmp;
                 break;
             }
@@ -59,7 +59,7 @@ export class InputDataService {
         if (result == null) {
             result = { id: index, x: '', y: '', z: '' };
             this.node.push(result);
-        } 
+        }
         return result;
     }
 
@@ -67,15 +67,15 @@ export class InputDataService {
 
         let result: any = null;
         for (let i = 0; i < this.member.length; i++) {
-            var tmp = this.member[i];
-            if (tmp['id'] == index) {
+            const tmp = this.member[i];
+            if (tmp['id'] === index) {
                 result = tmp;
                 break;
             }
         }
         // 対象データが無かった時に処理
         if (result == null) {
-            result = { id: index, L:'', ni: '', nj: '', e: '', cg: '' };
+            result = { id: index, L: '', ni: '', nj: '', e: '', cg: '' };
             this.member.push(result);
         }
         return result;
@@ -95,8 +95,8 @@ export class InputDataService {
 
         // 行を探す
         for (let i = 0; i < target.length; i++) {
-            var tmp = target[i];
-            if (tmp['row'] == row) {
+            const tmp = target[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -109,7 +109,7 @@ export class InputDataService {
             this.fix_node[typNo] = target;
         }
 
-        return result;        
+        return result;
     }
 
     public getElementColumns(typNo: number, index: number): any {
@@ -126,8 +126,8 @@ export class InputDataService {
 
         // 行を探す
         for (let i = 0; i < target.length; i++) {
-            var tmp = target[i];
-            if (tmp['id'] == index) {
+            const tmp = target[i];
+            if (tmp['id'] === index) {
                 result = tmp;
                 break;
             }
@@ -157,8 +157,8 @@ export class InputDataService {
 
         // 行を探す
         for (let i = 0; i < target.length; i++) {
-            var tmp = target[i];
-            if (tmp['row'] == row) {
+            const tmp = target[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -179,8 +179,8 @@ export class InputDataService {
         let result: any = null;
 
         for (let i = 0; i < this.notice_points.length; i++) {
-            var tmp = this.notice_points[i];
-            if (tmp['row'] == row) {
+            const tmp = this.notice_points[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -188,15 +188,15 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row, m: '', len: '' };
-            for (var i = 1; i <= InputDataService.NOTICE_POINTS_COUNT; i++) {
-                result["L" + i] = '';
+            for (let i = 1; i <= InputDataService.NOTICE_POINTS_COUNT; i++) {
+                result['L' + i] = '';
             }
             this.notice_points.push(result);
         } else {
             // データの不足を補う
-            for (var i = 1; i <= InputDataService.NOTICE_POINTS_COUNT; i++) {
-                if (!(("L" + i) in result)) {
-                    result["L" + i] = '';
+            for (let i = 1; i <= InputDataService.NOTICE_POINTS_COUNT; i++) {
+                if (!(('L' + i) in result)) {
+                    result['L' + i] = '';
                 }
             }
         }
@@ -217,8 +217,8 @@ export class InputDataService {
 
         // 行を探す
         for (let i = 0; i < target.length; i++) {
-            var tmp = target[i];
-            if (tmp['row'] == row) {
+            const tmp = target[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -238,8 +238,8 @@ export class InputDataService {
 
         let result: any = null;
         for (let i = 0; i < this.load_name.length; i++) {
-            var tmp = this.load_name[i];
-            if (tmp['id'] == index) {
+            const tmp = this.load_name[i];
+            if (tmp['id'] === index.toString()) {
                 result = tmp;
                 break;
             }
@@ -266,8 +266,8 @@ export class InputDataService {
 
         // 行を探す
         for (let i = 0; i < target.length; i++) {
-            var tmp = target[i];
-            if (tmp['row'] == row) {
+            const tmp = target[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -291,8 +291,8 @@ export class InputDataService {
         let result: any = null;
 
         for (let i = 0; i < this.define.length; i++) {
-            var tmp = this.define[i];
-            if (tmp['row'] == row) {
+            const tmp = this.define[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -301,8 +301,8 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i <= col; i++) {
-                result["D" + i] = '';
+            for (let i = 1; i <= col; i++) {
+                result['D' + i] = '';
             }
             this.define.push(result);
         }
@@ -314,8 +314,8 @@ export class InputDataService {
         let result: any = null;
 
         for (let i = 0; i < this.combine.length; i++) {
-            var tmp = this.combine[i];
-            if (tmp['row'] == row) {
+            const tmp = this.combine[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -324,8 +324,8 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i < col; i++) {
-                result["C" + i] = '';
+            for (let i = 1; i < col; i++) {
+                result['C' + i] = '';
             }
             this.combine.push(result);
         }
@@ -337,8 +337,8 @@ export class InputDataService {
         let result: any = null;
 
         for (let i = 0; i < this.pickup.length; i++) {
-            var tmp = this.pickup[i];
-            if (tmp['row'] == row) {
+            const tmp = this.pickup[i];
+            if (tmp['row'] === row) {
                 result = tmp;
                 break;
             }
@@ -347,8 +347,8 @@ export class InputDataService {
         // 対象データが無かった時に処理
         if (result == null) {
             result = { row: row };
-            for (var i = 1; i < col; i++) {
-                result["C" + i] = '';
+            for (let i = 1; i < col; i++) {
+                result['C' + i] = '';
             }
             this.pickup.push(result);
         }

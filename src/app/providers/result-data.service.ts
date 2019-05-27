@@ -13,7 +13,7 @@ export class ResultDataService {
   public disg: any;
   public reac: any;
   public fsec: any;
-  
+ 
   public disgCombine: any;
   public reacCombine: any;
   public fsecCombine: any;
@@ -34,7 +34,7 @@ export class ResultDataService {
     this.disgCombine = {};
     this.reacCombine = {};
     this.fsecCombine = {};
-    
+
     this.disgPickup = {};
     this.reacPickup = {};
     this.fsecPickup = {};
@@ -51,10 +51,10 @@ export class ResultDataService {
     } else {
       target = this.disg[typNo];
     }
-    let result = target[index];
+    const result = target[index];
     return result;
   }
-  
+
   public getCombineDisgColumns(combNo: number, index: number, mode: string): any {
 
     // 組み合わせを探す
@@ -73,7 +73,7 @@ export class ResultDataService {
       target2 = target1[mode];
     }
 
-    let result = target2[index];
+    const result = target2[index];
     return result;
    }
 
@@ -95,7 +95,7 @@ export class ResultDataService {
       target2 = target1[mode];
     }
 
-    let result = target2[index];
+    const result = target2[index];
     return result;
   }
 
@@ -109,7 +109,7 @@ export class ResultDataService {
     } else {
       target = this.reac[typNo];
     }
-    let result = target[index];
+    const result = target[index];
     return result;
   }
 
@@ -131,7 +131,7 @@ export class ResultDataService {
       target2 = target1[mode];
     }
 
-    let result = target2[index];
+    const result = target2[index];
     return result;
   }
 
@@ -153,7 +153,7 @@ export class ResultDataService {
       target2 = target1[mode];
     }
 
-    let result = target2[index];
+    const result = target2[index];
     return result;
   }
 
@@ -171,8 +171,8 @@ export class ResultDataService {
 
     // 行を探す
     for (let i = 0; i < target.length; i++) {
-      var tmp = target[i];
-      if (tmp['row'] == row) {
+      const tmp = target[i];
+      if (tmp['row'] === row) {
         result = tmp;
         break;
       }
@@ -206,7 +206,7 @@ export class ResultDataService {
       target2 = target1[mode];
     }
 
-    let result = target2[index];
+    const result = target2[index];
     return result;
   }
 
@@ -228,8 +228,7 @@ export class ResultDataService {
       target2 = target1[mode];
     }
 
-    let result = target2[index];
+    const result = target2[index];
     return result;
   }
-
 }

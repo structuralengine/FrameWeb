@@ -16,6 +16,14 @@ export class InputLoadComponent implements OnInit {
   page: number;
   load_name: string;
 
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-loads');
+      }
+    }
+  };
+
   constructor(private input: InputDataService,
     private frame: FrameDataService,
     private unity: UnityConnectorService) {
@@ -30,24 +38,15 @@ export class InputLoadComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
-    for (var i = 1; i <= this.ROWS_COUNT; i++) {
+    for (let i = 1; i <= this.ROWS_COUNT; i++) {
       const load_name = this.input.getLoadColumns(this.page, i);
       this.dataset.push(load_name)
     }
     const currentLoad:{} = this.input.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
   }
-
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeData('unity-loads');
-      }
-    }
-  }
-
 }

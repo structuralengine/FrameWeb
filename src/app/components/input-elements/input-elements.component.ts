@@ -14,6 +14,14 @@ export class InputElementsComponent implements OnInit {
   dataset: any[];
   page: number;
 
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.unity.chengeData('unity-elements');
+      }
+    }
+  };
+
   constructor(private input: InputDataService,
     private unity: UnityConnectorService) {
     this.dataset = new Array();
@@ -25,23 +33,14 @@ export class InputElementsComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
 
-    for (var i = 1; i <= InputElementsComponent.ROWS_COUNT; i++) {
+    for (let i = 1; i <= InputElementsComponent.ROWS_COUNT; i++) {
       const element = this.input.getElementColumns(this.page, i);
-      this.dataset.push(element)
+      this.dataset.push(element);
     }
   }
-
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeData('unity-elements');
-      }
-    }
-  }
-
 }

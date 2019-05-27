@@ -10,13 +10,21 @@ import { InputDataService } from '../../providers/input-data.service';
   
 export class InputCombineComponent implements OnInit {
 
-  ROWS_COUNT: number = 20;
+  ROWS_COUNT = 20;
   COLUMNS_COUNT: number;
   page: number;
   combineData: any[];
   combineColums: any[];
   combineTitles: any[];
   rowHeaders: any[];
+
+  hotTableSettings = {
+    afterChange: (hotInstance, changes, source) => {
+      if (changes != null) {
+        this.frame.isCombinePickupChenge = true;
+      }
+    }
+  };
 
   constructor(private input: InputDataService,
     private frame: FrameDataService) {
@@ -30,7 +38,7 @@ export class InputCombineComponent implements OnInit {
   }
 
   ngOnInit() {
-    let head: string = 'D';
+    let head = 'D';
     this.COLUMNS_COUNT = this.frame.getDefineCaseCount();
     if (this.COLUMNS_COUNT <= 0) {
       this.COLUMNS_COUNT = this.frame.getLoadCaseCount();
@@ -39,7 +47,7 @@ export class InputCombineComponent implements OnInit {
     if (this.COLUMNS_COUNT <= 5) {
       this.COLUMNS_COUNT = 5;
     }
-    for (var i = 1; i <= this.COLUMNS_COUNT; i++) {
+    for (let i = 1; i <= this.COLUMNS_COUNT; i++) {
       this.combineColums.push('C' + i.toString());
       this.combineTitles.push(head + i.toString());
     }
@@ -49,7 +57,7 @@ export class InputCombineComponent implements OnInit {
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.combineData = new Array();
@@ -58,19 +66,10 @@ export class InputCombineComponent implements OnInit {
     const a1: number = (currentPage - 1) * this.ROWS_COUNT + 1;
     const a2: number = a1 + this.ROWS_COUNT - 1;
 
-    for (var i = a1; i <= a2; i++) {
-      const combine = this.input.getCombineDataColumns(i, this.COLUMNS_COUNT+1);
+    for (let i = a1; i <= a2; i++) {
+      const combine = this.input.getCombineDataColumns(i, this.COLUMNS_COUNT + 1);
       this.combineData.push(combine);
       this.rowHeaders.push(i);
     }
   }
-
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.frame.isCombinePickupChenge = true;
-      }
-    }
-  }
-  
 }

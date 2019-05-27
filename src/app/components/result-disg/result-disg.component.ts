@@ -20,21 +20,20 @@ export class ResultDisgComponent implements OnInit {
   }
 
   ngOnInit() {
-    let n: number = this.frame.getLoadCaseCount();
+    const n: number = this.frame.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
-    for (var i = 0; i < this.result.DISG_ROWS_COUNT; i++) {
+    for (let i = 0; i < this.result.DISG_ROWS_COUNT; i++) {
       const disg = this.result.getDisgColumns(this.page, i);
-      this.dataset.push(disg)
+      this.dataset.push(disg);
     }
     this.load_name = this.frame.getLoadName(currentPage);
   }
 }
-

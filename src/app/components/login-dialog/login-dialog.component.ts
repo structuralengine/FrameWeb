@@ -14,15 +14,15 @@ export class LoginDialogComponent implements OnInit {
   loginUserName: string;
   loginPassword: string;
   rememberCheck: boolean;
-  loginError: boolean
+  loginError: boolean;
   errorMessage: string;
   connecting: boolean;
 
   constructor(public activeModal: NgbActiveModal,
     private http: Http,
-    private user: UserInfoService) { 
-    this.loginError = false;
-    this.connecting = false;
+    private user: UserInfoService) {
+      this.loginError = false;
+      this.connecting = false;
     }
 
   ngOnInit() {
@@ -43,7 +43,7 @@ export class LoginDialogComponent implements OnInit {
         response => {
           // 通信成功時の処理（成功コールバック）
           const response_text = JSON.parse(response.text());
-          if ("error" in response_text) {
+          if ('error' in response_text) {
             this.errorMessage = response_text.error;
             this.loginError = true;
             this.connecting = false;
@@ -54,7 +54,7 @@ export class LoginDialogComponent implements OnInit {
             this.user.user_id = response_text.user_id;
             this.user.purchase_value = response_text.purchase_value;
             this.user.loggedIn = true;
-            this.activeModal.close("Submit");
+            this.activeModal.close('Submit');
           }
         },
         error => {

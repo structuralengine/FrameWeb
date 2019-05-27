@@ -10,7 +10,8 @@ import { ResultDataService } from '../../providers/result-data.service';
 export class ResultPickupFsecComponent implements OnInit {
 
   KEYS = ['fx_max', 'fx_min', 'fy_max', 'fy_min', 'fz_max', 'fz_min', 'mx_max', 'mx_min', 'my_max', 'my_min', 'mz_max', 'mz_min'];
-  TITLES = ['軸方向力 最大', '軸方向力 最小', 'y方向のせん断力 最大', 'y方向のせん断力 最小', 'z方向のせん断力 最大', 'z方向のせん断力 最小', 'ねじりモーメント 最大', 'ねじりモーメント 最小', 'y軸回りの曲げモーメント 最大', 'y軸回りの曲げモーメント力 最小', 'z軸回りの曲げモーメント 最大', 'z軸回りの曲げモーメント 最小'];
+  TITLES = ['軸方向力 最大', '軸方向力 最小', 'y方向のせん断力 最大', 'y方向のせん断力 最小', 'z方向のせん断力 最大', 'z方向のせん断力 最小',
+    'ねじりモーメント 最大', 'ねじりモーメント 最小', 'y軸回りの曲げモーメント 最大', 'y軸回りの曲げモーメント力 最小', 'z軸回りの曲げモーメント 最大', 'z軸回りの曲げモーメント 最小'];
 
   dataset: any[];
   page: number;
@@ -24,20 +25,20 @@ export class ResultPickupFsecComponent implements OnInit {
 
   ngOnInit() {
     this.frame.CombinePickup();
-    let n: number = this.frame.getPickupCaseCount();
+    const n: number = this.frame.getPickupCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     for (let i = 0; i < this.KEYS.length; i++) {
       this.dataset[i] = new Array();
-      for (var j = 1; j <= this.result.FSEC_ROWS_COUNT; j++) {
+      for (let j = 1; j <= this.result.FSEC_ROWS_COUNT; j++) {
         const fsec = this.result.getPickupFsecColumns(this.page, j, this.KEYS[i]);
-        this.dataset[i].push(fsec)
+        this.dataset[i].push(fsec);
       }
       this.load_name = this.frame.getPickUpName(currentPage);
     }

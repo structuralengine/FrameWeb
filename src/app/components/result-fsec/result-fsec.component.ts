@@ -20,19 +20,19 @@ export class ResultFsecComponent implements OnInit {
   }
 
   ngOnInit() {
-    let n: number = this.frame.getLoadCaseCount();
+    const n: number = this.frame.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
-    for (var i = 1; i <= this.result.FSEC_ROWS_COUNT; i++) {
+    for (let i = 1; i <= this.result.FSEC_ROWS_COUNT; i++) {
       const reac = this.result.getFsecColumns(this.page, i);
-      this.dataset.push(reac)
+      this.dataset.push(reac);
     }
     this.load_name = this.frame.getLoadName(currentPage);
   }

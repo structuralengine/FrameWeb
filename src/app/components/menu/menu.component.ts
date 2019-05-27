@@ -44,11 +44,11 @@ export class MenuComponent implements OnInit {
     this.unity.chengeData();
   }
 
-  //ファイルを開く
+  // ファイルを開く
   open(evt) {
     const file = evt.target.files[0];
     this.fileName = file.name;
-    evt.target.value = "";
+    evt.target.value = '';
     this.fileToText(file)
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
@@ -76,8 +76,8 @@ export class MenuComponent implements OnInit {
   save(): void {
     const inputJson: string = this.InputData.getInputText();
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
-    if (this.fileName.length == 0) {
-      this.fileName = "frameWebForJS.json"
+    if (this.fileName.length === 0) {
+      this.fileName = 'frameWebForJS.json';
     }
     FileSaver.saveAs(blob, this.fileName);
   }
@@ -85,21 +85,21 @@ export class MenuComponent implements OnInit {
   // 計算
   calcrate(): void {
 
-    if (this.user.loggedIn == false) {
+    if (this.user.loggedIn === false) {
       this.logIn();
     }
-    if (this.user.loggedIn == false) {
+    if (this.user.loggedIn === false) {
       return;
     }
 
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const inputJson = 'inp_grid='
-      + this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword })
+      + this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword });
 
     console.log(inputJson);
 
-    const url = 'https://structuralengine.com/FrameWeb/api/Web_Api.py';
+    const url = 'http://structuralengine.com/FrameWeb/api/Web_Api.py';
 
     this.http.post(url, inputJson, {
       headers: new Headers({
@@ -139,7 +139,7 @@ export class MenuComponent implements OnInit {
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
-      if (this.loggedIn == true) {
+      if (this.loggedIn === true) {
         this.loginUserName = this.user.loginUserName;
         this.userPoint = this.user.purchase_value.toString();
       }

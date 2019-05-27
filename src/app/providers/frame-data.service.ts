@@ -4,6 +4,7 @@ import { ResultDataService } from './result-data.service';
 import { directiveCreate } from '@angular/core/src/render3/instructions';
 import { Content } from '@angular/compiler/src/render3/r3_ast';
 import { CATCH_STACK_VAR } from '@angular/compiler/src/output/output_ast';
+import { jsonpCallbackContext } from '@angular/common/http/src/module';
 
 
 @Injectable({
@@ -31,19 +32,19 @@ export class FrameDataService {
   ////////////////////////////////////////////////////////////////////////////////////
   public getInputText(mode: string = 'file', Properties = {}): string {
 
-    let jsonData: {} = this.getInputJson(mode);
+    const jsonData: {} = this.getInputJson(mode);
 
     // パラメータを追加したい場合
-    for (let key in Properties) {
+    for (const key of Object.keys(Properties)) {
       jsonData[key] = Properties[key];
     }
 
-    let result: string = JSON.stringify(jsonData);
+    const result: string = JSON.stringify(jsonData);
     return result;
   }
 
   private getInputJson(mode: string) {
-    let jsonData = {};
+    const jsonData = {};
 
     const node: {} = this.getNodeJson(mode);
     if (Object.keys(node).length > 0) {
@@ -107,7 +108,7 @@ export class FrameDataService {
 
   private getNodeJson(mode: string = 'file') {
 
-    let jsonData = {};
+    const jsonData = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('-nodes') < 0) {
       return jsonData;
     }
@@ -121,20 +122,20 @@ export class FrameDataService {
         continue;
       }
       let item = {};
-      if (mode == 'calc') {
+      if (mode === 'calc') {
         x = (x == null) ? 0 : x;
         y = (y == null) ? 0 : y;
         z = (z == null) ? 0 : z;
-        item = { "x": x, "y": y, "z": z };
+        item = { 'x': x, 'y': y, 'z': z };
       } else {
-        let strX: string = (x == null) ? "" : x.toFixed(3);
-        let strY: string = (y == null) ? "" : y.toFixed(3);
-        let strZ: string = (z == null) ? "" : z.toFixed(3);
-        item["x"] = strX;
-        item["y"] = strY;
-        item["z"] = strZ;
+        const strX: string = (x == null) ? '' : x.toFixed(3);
+        const strY: string = (y == null) ? '' : y.toFixed(3);
+        const strZ: string = (z == null) ? '' : z.toFixed(3);
+        item['x'] = strX;
+        item['y'] = strY;
+        item['z'] = strZ;
       }
-      let key: string = row['id'];
+      const key: string = row['id'];
       jsonData[key] = item;
     }
     return jsonData;
@@ -142,14 +143,13 @@ export class FrameDataService {
 
   private getFixNodeJson(mode: string = 'file') {
 
-    let result = {};
+    const result = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('fix_nodes') < 0) {
       return result;
     }
-
-    for (var typNo in this.input.fix_node) {
+    for (const typNo of Object.keys(this.input.fix_node)) {
       const fix_node = this.input.fix_node[typNo];
-      let jsonData = new Array();
+      const jsonData = new Array();
       for (let i = 0; i < fix_node.length; i++) {
         const row: {} = fix_node[i];
         let n = this.toNumber(row['n']);
@@ -163,7 +163,7 @@ export class FrameDataService {
           && rx == null && ry == null && rz == null) {
           continue;
         }
-        if (mode == 'calc') {
+        if (mode === 'calc') {
           n = (n == null) ? 0 : n;
           tx = (tx == null) ? 0 : tx;
           ty = (ty == null) ? 0 : ty;
@@ -171,7 +171,7 @@ export class FrameDataService {
           rx = (rx == null) ? 0 : rx;
           ry = (ry == null) ? 0 : ry;
           rz = (rz == null) ? 0 : rz;
-          let item = { n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
+          const item = { n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
           jsonData.push(item);
         } else {
           jsonData.push(row);
@@ -186,7 +186,7 @@ export class FrameDataService {
 
   private getMemberJson(mode: string = 'file') {
 
-    let jsonData = {};
+    const jsonData = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('-members') < 0) {
       return jsonData;
     }
@@ -201,20 +201,20 @@ export class FrameDataService {
         continue;
       }
       let item = {};
-      if (mode == 'calc') {
+      if (mode === 'calc') {
         ni = (ni == null) ? 0 : ni;
         nj = (nj == null) ? 0 : nj;
         e = (e == null) ? 0 : e;
         cg = (cg == null) ? 0 : cg;
-        item = { "ni": ni, "nj": nj, "e": e, "cg": cg };
+        item = { 'ni': ni, 'nj': nj, 'e': e, 'cg': cg };
       } else {
-        for (var _key in row) {
-          if ((_key != 'id') && (_key != 'L')) {
+        for (const _key in row) {
+          if ((_key !== 'id') && (_key !== 'L')) {
             item[_key] = row[_key];
           }
         }
       }
-      let key: string = row.id;
+      const key: string = row.id;
       jsonData[key] = item;
     }
     return jsonData;
@@ -222,14 +222,14 @@ export class FrameDataService {
 
   private getElementJson(mode: string = 'file') {
 
-    let result = {};
+    const result = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('elements') < 0) {
       return result;
     }
 
-    for (var typNo in this.input.element) {
+    for (const typNo of Object.keys(this.input.element)) {
       const element = this.input.element[typNo];
-      let jsonData = {};
+      const jsonData = {};
       for (let i = 0; i < element.length; i++) {
         const row: {} = element[i];
         let E = this.toNumber(row['E']);
@@ -244,7 +244,7 @@ export class FrameDataService {
           continue;
         }
         let item = {};
-        if (mode == 'calc') {
+        if (mode === 'calc') {
           E = (E == null) ? 0 : E;
           G = (G == null) ? 0 : G;
           Xp = (Xp == null) ? 0 : Xp;
@@ -254,13 +254,13 @@ export class FrameDataService {
           Iz = (Iz == null) ? 0 : Iz;
           item = { E: E, G: G, Xp: Xp, A: A, J: J, Iy: Iy, Iz: Iz };
         } else {
-          for (var _key in row) {
-            if (_key != 'id') {
+          for (const _key in row) {
+            if (_key !== 'id') {
               item[_key] = row[_key];
             }
           }
         }
-        let key: string = row['id'];
+        const key: string = row['id'];
         jsonData[key] = item;
       }
       if (Object.keys(jsonData).length > 0) {
@@ -272,17 +272,17 @@ export class FrameDataService {
 
   private getJointJson(mode: string = 'file') {
 
-    let result = {};
+    const result = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('joints') < 0) {
       return result;
     }
 
-    for (var typNo in this.input.joint) {
+    for (const typNo of Object.keys(this.input.joint)) {
       const joint = this.input.joint[typNo];
-      let jsonData = new Array();
+      const jsonData = new Array();
       for (let i = 0; i < joint.length; i++) {
         const row: {} = joint[i];
-        let r = row['row'];
+        const r = row['row'];
         let m = this.toNumber(row['m']);
         let xi = this.toNumber(row['xi']);
         let yi = this.toNumber(row['yi']);
@@ -295,7 +295,7 @@ export class FrameDataService {
           continue;
         }
         let item = {};
-        if (mode == 'calc') {
+        if (mode === 'calc') {
           m = (m == null) ? 0 : m;
           xi = (xi == null) ? 0 : xi;
           yi = (yi == null) ? 0 : yi;
@@ -318,31 +318,31 @@ export class FrameDataService {
 
   private getNoticePointsJson(mode: string = 'file') {
 
-    let result = new Array();
+    const result = new Array();
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('notice_points') < 0) {
       return result;
     }
 
     for (let i = 0; i < this.input.notice_points.length; i++) {
       const row: {} = this.input.notice_points[i];
-      let r = row['row'];
+      const r = row['row'];
       let m = this.toNumber(row['m']);
-      let points = new Array();
-      for (var j = 1; j < InputDataService.NOTICE_POINTS_COUNT + 1; j++) {
+      const points = new Array();
+      for (let j = 1; j < InputDataService.NOTICE_POINTS_COUNT + 1; j++) {
         const key = 'L' + j;
         if (key in row) {
-          let tmp: number = this.toNumber(row[key]);
+          const tmp: number = this.toNumber(row[key]);
           if (tmp != null) {
             points.push(tmp);
           }
         }
       }
-      if (m == null && Object.keys(points).length == 0) {
+      if (m == null && Object.keys(points).length === 0) {
         continue;
       }
       m = (m == null) ? 0 : m;
-      let item = { m: m, Points: points };
-      if (mode != 'calc') {
+      const item = { m: m, Points: points };
+      if (mode !== 'calc') {
         item['row'] = r;
       }
       result.push(item);
@@ -352,14 +352,14 @@ export class FrameDataService {
 
   private getFixMemberJson(mode: string = 'file') {
 
-    let result = {};
+    const result = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('fix_members') < 0) {
       return result;
     }
 
-    for (var typNo in this.input.fix_member) {
+    for (const typNo of Object.keys(this.input.fix_member)) {
       const fix_member = this.input.fix_member[typNo];
-      let jsonData = new Array();
+      const jsonData = new Array();
       for (let i = 0; i < fix_member.length; i++) {
         const row: {} = fix_member[i];
         let m = this.toNumber(row['m']);
@@ -370,13 +370,13 @@ export class FrameDataService {
         if (m == null && tx == null && ty == null && tz == null && tr == null) {
           continue;
         }
-        if (mode == 'calc') {
+        if (mode === 'calc') {
           m = (m == null) ? 0 : m;
           tx = (tx == null) ? 0 : tx;
           ty = (ty == null) ? 0 : ty;
           tz = (tz == null) ? 0 : tz;
           tr = (tr == null) ? 0 : tr;
-          let item = { m: m, tx: tx, ty: ty, tz: tz, tr: tr };
+          const item = { m: m, tx: tx, ty: ty, tz: tz, tr: tr };
           jsonData.push(item);
         } else {
           jsonData.push(row);
@@ -391,24 +391,24 @@ export class FrameDataService {
 
   private getLoadJson(mode: string = 'file') {
 
-    let result = {};
+    const result = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('loads') < 0) {
       return result;
     }
 
     // 荷重基本設定
-    let load_name = this.getLoadNameJson(mode);
+    const load_name = this.getLoadNameJson(mode);
 
     // 節点荷重データ
-    let load_node = this.getNodeLoadJson(mode);
+    const load_node = this.getNodeLoadJson(mode);
 
     // 要素荷重データ
-    let load_member = this.getMemberLoadJson(mode);
+    const load_member = this.getMemberLoadJson(mode);
 
     // 合成する
-    if (mode == 'file') {
-      for (let load_id in load_name) {
-        let jsonData = load_name[load_id];
+    if (mode === 'file') {
+      for (const load_id of Object.keys(load_name)) {
+        const jsonData = load_name[load_id];
         if (load_id in load_node) {
           jsonData['load_node'] = load_node[load_id];
           delete load_node[load_id];
@@ -421,7 +421,7 @@ export class FrameDataService {
         delete load_name[load_id];
       }
     }
-    for (let load_id in load_node) {
+    for (const load_id of Object.keys(load_node)) {
       let jsonData = {};
       if (load_id in load_name) {
         jsonData = load_name[load_id];
@@ -436,7 +436,7 @@ export class FrameDataService {
       result[load_id] = jsonData;
       delete load_name[load_id];
     }
-    for (let load_id in load_member) {
+    for (const load_id of Object.keys(load_member)) {
       let jsonData = {};
       if (load_id in load_name) {
         jsonData = load_name[load_id];
@@ -452,7 +452,7 @@ export class FrameDataService {
 
   // 荷重基本データ
   private getLoadNameJson(mode: string = 'file'): any {
-    let load_name = {};
+    const load_name = {};
     for (let i = 0; i < this.input.load_name.length; i++) {
       const tmp = this.input.load_name[i];
       const key: string = tmp['id'];
@@ -460,29 +460,29 @@ export class FrameDataService {
       if (id == null) {
         continue;
       }
-      let rate = this.toNumber(tmp['rate']);
-      let symbol: string = tmp['symbol'];
-      let name: string = tmp['name'];
+      const rate = this.toNumber(tmp['rate']);
+      const symbol: string = tmp['symbol'];
+      const name: string = tmp['name'];
       let fix_node = this.toNumber(tmp['fix_node']);
       let fix_member = this.toNumber(tmp['fix_member']);
       let element = this.toNumber(tmp['element']);
       let joint = this.toNumber(tmp['joint']);
 
-      if (rate == null && symbol == '' && name == ''
+      if (rate == null && symbol === '' && name === ''
         && fix_node == null && fix_member == null && element == null && joint == null) {
         continue;
       }
 
       let jsonData = {};
-      if (mode == 'calc') {
+      if (mode === 'calc') {
         fix_node = (fix_node == null) ? 1 : fix_node;
         fix_member = (fix_member == null) ? 1 : fix_member;
         element = (element == null) ? 1 : element;
         joint = (joint == null) ? 1 : joint;
         jsonData = { fix_node: fix_node, fix_member: fix_member, element: element, joint: joint }
       } else {
-        for (var _key in tmp) {
-          if (_key != 'id') {
+        for (const _key in tmp) {
+          if (_key !== 'id') {
             jsonData[_key] = tmp[_key];
           }
         }
@@ -496,16 +496,16 @@ export class FrameDataService {
   public getLoadName(currentPage: number): string {
 
     if (currentPage < 1) {
-      return "";
+      return '';
     }
     if (currentPage > this.input.load_name.length) {
-      return "";
+      return '';
     }
 
-    let i = currentPage - 1;
+    const i = currentPage - 1;
     const tmp = this.input.load_name[i];
 
-    let result: string = '';
+    let result = '';
     if ('name' in tmp) {
       result = tmp['name'];
     }
@@ -514,17 +514,16 @@ export class FrameDataService {
 
   // 節点荷重データ
   private getNodeLoadJson(mode: string = 'file'): any {
-    let load_node = {};
+    const load_node = {};
 
-    for (let load_id in this.input.load) {
+    for (const load_id of Object.keys(this.input.load)) {
+      const tmp_node = new Array();
 
-      let tmp_node = new Array();
-
-      let load: any[] = this.input.load[load_id];
+      const load: any[] = this.input.load[load_id];
       for (let j = 0; j < load.length; j++) {
         const row: {} = load[j];
-        let r = row['row'];
-        let n = this.toNumber(row['n']);
+        const r = row['row'];
+        const n = this.toNumber(row['n']);
         let tx = this.toNumber(row['tx']);
         let ty = this.toNumber(row['ty']);
         let tz = this.toNumber(row['tz']);
@@ -535,7 +534,7 @@ export class FrameDataService {
           rx != null || ry != null || rz != null)) {
 
           let item2 = {};
-          if (mode == 'calc') {
+          if (mode === 'calc') {
             tx = (tx == null) ? 0 : tx;
             ty = (ty == null) ? 0 : ty;
             tz = (tz == null) ? 0 : tz;
@@ -558,38 +557,45 @@ export class FrameDataService {
 
   // 要素荷重データ
   private getMemberLoadJson(mode: string = 'file'): any {
-    let load_member = {};
-    for (let load_id in this.input.load) {
-      let load1: any[] = this.input.load[load_id];
-      if (load1.length == 0) {
+    const load_member = {};
+    for (const load_id of Object.keys(this.input.load)) {
+      const load1: any[] = this.input.load[load_id];
+      if (load1.length === 0) {
         continue;
       }
-      let tmp_member = new Array();
-      if (mode == 'file') {
+      const tmp_member = new Array();
+      if (mode === 'file') {
         for (let j = 0; j < load1.length; j++) {
           const row: {} = load1[j];
-          let m1 = this.toNumber(row['m1']);
-          let m2 = this.toNumber(row['m2']);
-          let direction: string = row['direction'];
-          let mark = this.toNumber(row['mark']);
-          let L1 = this.toNumber(row['L1']);
-          let L2 = this.toNumber(row['L2']);
-          let P1 = this.toNumber(row['P1']);
-          let P2 = this.toNumber(row['P2']);
+          const m1 = this.toNumber(row['m1']);
+          const m2 = this.toNumber(row['m2']);
+          const direction: string = row['direction'];
+          const mark = this.toNumber(row['mark']);
+          const L1 = this.toNumber(row['L1']);
+          const L2 = this.toNumber(row['L2']);
+          const P1 = this.toNumber(row['P1']);
+          const P2 = this.toNumber(row['P2']);
           if ((m1 != null || m2 != null) && direction != '' && mark != null
             && (L1 != null || L2 != null || P1 != null || P2 != null)) {
-            let item1 = {
-              row: row['row'], m1: row['m1'], m2: row['m2'], direction: row['direction'], mark: row['mark'],
-              L1: row['L1'], L2: row['L2'], P1: row['P1'], P2: row['P2']
+            const item1 = {
+              row: row['row'],
+              m1: row['m1'],
+              m2: row['m2'],
+              direction: row['direction'],
+              mark: row['mark'],
+              L1: row['L1'],
+              L2: row['L2'],
+              P1: row['P1'],
+              P2: row['P2']
             };
             tmp_member.push(item1);
           }
         }
       } else {
-        let load2: any[] = this.reMemberLoads(load1);
+        const load2: any[] = this.convertMemberLoads(load1);
         for (let j = 0; j < load2.length; j++) {
           const row: {} = load2[j];
-          let item2 = {
+          const item2 = {
             m: row['m1'],
             direction: row['direction'],
             mark: row['mark'],
@@ -598,7 +604,7 @@ export class FrameDataService {
             P1: this.toNumber(row['P1'], 2),
             P2: this.toNumber(row['P2'], 2)
           };
-          if (mode != 'calc') {
+          if (mode !== 'calc') {
             item2['row'] = row['row'];
           }
           tmp_member.push(item2);
@@ -611,61 +617,62 @@ export class FrameDataService {
     return load_member;
   }
 
-  private reMemberLoads(load1: any[]): any {
+  // 要素荷重を サーバーで扱える形式に変換する
+  private convertMemberLoads(load1: any[]): any {
 
     // 有効な行を選別する
-    let load2 = new Array();
-    for (let i = 0; i < load1.length; i++) {
-      const row: {} = load1[i];
-      let r = row['row'];
+    const load2 = new Array();
+    for (let j = 0; j < load1.length; j++) {
+      const row: {} = load1[j];
+      const r = row['row'];
       let m1 = this.toNumber(row['m1']);
       let m2 = this.toNumber(row['m2']);
       let direction: string = row['direction'];
-      let mark = this.toNumber(row['mark']);
-      let L1 = this.toNumber(row['L1']);
+      const mark = this.toNumber(row['mark']);
+      const L1 = this.toNumber(row['L1']);
       let L2 = this.toNumber(row['L2']);
       let P1 = this.toNumber(row['P1']);
       let P2 = this.toNumber(row['P2']);
-      if ((m1 != null || m2 != null) && direction != '' && mark != null
+      if ((m1 != null || m2 != null) && direction !== '' && mark != null
         && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
         m1 = (m1 == null) ? 0 : m1;
         m2 = (m2 == null) ? 0 : m2;
 
         direction = direction.trim();
-        let sL1: string = (L1 == null) ? "0" : row['L1'].toString();
+        const sL1: string = (L1 == null) ? '0' : row['L1'].toString();
         L2 = (L2 == null) ? 0 : L2;
         P1 = (P1 == null) ? 0 : P1;
         P2 = (P2 == null) ? 0 : P2;
-        let item2 = { row: r, m1: m1, m2: m2, direction: direction, mark: mark, L1: sL1, L2: L2, P1: P1, P2: P2 };
+        const item2 = { row: r, m1: m1, m2: m2, direction: direction, mark: mark, L1: sL1, L2: L2, P1: P1, P2: P2 };
         load2.push(item2);
       }
     }
-    if (load2.length == 0) {
+    if (load2.length === 0) {
       return new Array();
     }
     // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
-    for (let i = 0; i < load2.length; i++) {
-      let row = load2[i];
-      if (row.m1 == 0) {
+    for (let j = 0; j < load2.length; j++) {
+      const row = load2[j];
+      if (row.m1 === 0) {
         row.m1 = row.m2;
-        load2[i] = row;
+        load2[j] = row;
       }
-      if (row.m2 == 0) {
+      if (row.m2 === 0) {
         row.m2 = row.m1;
-        load2[i] = row;
+        load2[j] = row;
       }
     }
 
     // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
-    let i: number = 0
-    let curNo: number = -1
-    let curPos: number = 0
+    let i = 0;
+    let curNo = -1;
+    let curPos = 0;
     do {
-      let row = load2[i];
+      const row = load2[i];
       if (row.m2 < 0) {
         const reLoadsInfo = this.getMemberGroupLoad(row, curNo, curPos);
-        let newLoads = reLoadsInfo['loads'];
+        const newLoads = reLoadsInfo['loads'];
         curNo = reLoadsInfo['curNo'];
         curPos = reLoadsInfo['curPos'];
         load2.splice(i, 1);
@@ -678,13 +685,13 @@ export class FrameDataService {
     } while (i < load2.length);
 
     // 要素番号 m1 != m2 の場合の入力を分ける -----------------------
-    i = 0
+    i = 0;
     do {
-      let targetLoad = load2[i];
-      let m1 = this.toNumber(targetLoad.m1);
-      let m2 = this.toNumber(targetLoad.m2);
+      const targetLoad = load2[i];
+      const m1 = this.toNumber(targetLoad.m1);
+      const m2 = this.toNumber(targetLoad.m2);
       if (m1 < m2) {
-        let newLoads = this.getMemberRepeatLoad(targetLoad);
+        const newLoads = this.getMemberRepeatLoad(targetLoad);
         load2.splice(i, 1);
         for (let j = 0; j < newLoads.length; j++) {
           load2.push(newLoads);
@@ -695,19 +702,19 @@ export class FrameDataService {
     } while (i < load2.length);
 
     // 距離 にマイナスが付いた場合の入力を直す -------------------
-    curNo = -1
-    curPos = 0
-    for (let i = 0; i < load2.length; i++) {
-      let targetLoad = load2[i];
-      let sL1: string = targetLoad.L1.toString();
+    curNo = -1;
+    curPos = 0;
+    for (let j = 0; j < load2.length; j++) {
+      const targetLoad = load2[j];
+      const sL1: string = targetLoad.L1.toString();
       if (sL1.indexOf('-') >= 0 || targetLoad.L2 < 0) {
         const reLoadsInfo = this.setMemberLoadAddition(targetLoad, curNo, curPos);
-        let newLoads = reLoadsInfo['loads'];
+        const newLoads = reLoadsInfo['loads'];
         curNo = reLoadsInfo['curNo'];
         curPos = reLoadsInfo['curPos'];
-        load2.splice(i, 1);
-        for (let j = 0; j < newLoads.length; j++) {
-          load2.push(newLoads[j]);
+        load2.splice(j, 1);
+        for (let k = 0; k < newLoads.length; k++) {
+          load2.push(newLoads[k]);
         }
       }
     }
@@ -717,11 +724,11 @@ export class FrameDataService {
   // 要素番号 m2 にマイナスが付いた場合の入力を分ける
   private getMemberGroupLoad(targetLoad: any, curNo: number, curPos: number): any {
 
-    let result = {};
+    const result = {};
 
     // もともとの入力データを保存  . . . . . . . . . . . . . . . . . .
-    let org_m1: number = Math.abs(targetLoad.m1);
-    let org_m2: number = Math.abs(targetLoad.m2);
+    const org_m1: number = Math.abs(targetLoad.m1);
+    const org_m2: number = Math.abs(targetLoad.m2);
 
     // L1の位置を確定する . . . . . . . . . . . . . . . . . . . . . .
     let m1: number = Math.abs(targetLoad.m1);
@@ -731,7 +738,7 @@ export class FrameDataService {
     let P2: number; let Po: number;
     let L: number; let ll: number; let lo: number;
 
-    let sL1: string = targetLoad.L1.toString();
+    const sL1: string = targetLoad.L1.toString();
     if (sL1.indexOf('-') >= 0) {
       // 距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
@@ -743,9 +750,9 @@ export class FrameDataService {
     }
 
     for (let j = m1; j <= m2; j++) {
-      let L: number = this.getMemberLength(j.toString());
-      if (L1 > L) {
-        L1 = L1 - L;
+      const Lj: number = this.getMemberLength(j.toString());
+      if (L1 > Lj) {
+        L1 = L1 - Lj;
         targetLoad.m1 = j + 1;
         targetLoad.L1 = L1.toString();
       } else {
@@ -764,7 +771,7 @@ export class FrameDataService {
       case 1:
       case 11:
         if (targetLoad.L2 < 0) {
-          L2 = L1 + L2
+          L2 = L1 + L2;
         }
         for (let j = m1; j <= m2; j++) {
           L = this.getMemberLength(j.toString());
@@ -783,7 +790,7 @@ export class FrameDataService {
       default:
         if (targetLoad.L2 < 0) {
           // 連続部材の全長さLLを計算する
-          ll = 0
+          ll = 0;
           for (let j = m1; j <= m2; j++) {
             ll = ll + this.getMemberLength(j.toString());
           }
@@ -792,14 +799,14 @@ export class FrameDataService {
             L2 = 0;
           }
           targetLoad.m2 = m2;
-          targetLoad.L2 = L2
+          targetLoad.L2 = L2;
         }
         for (let j = m2; j >= org_m1; j--) {
           L = this.getMemberLength(j.toString());
           if (L2 > L) {
             L2 = L2 - L;
             targetLoad.m2 = j - 1;
-            targetLoad.L2 = L2
+            targetLoad.L2 = L2;
           } else {
             break;
           }
@@ -812,18 +819,18 @@ export class FrameDataService {
     // ちょうど j端 になったら次の部材の 距離0(ゼロ) とする
     if (curPos >= L - 0.0001) {
       if (org_m2 > curNo) {
-        curNo = curNo + 1
-        curPos = 0
+        curNo = curNo + 1;
+        curPos = 0;
       }
     }
 
     // 部材を連続して入力データを作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
-    let loads = new Array();
+    const loads = new Array();
     m1 = Math.abs(targetLoad.m1);
     m2 = Math.abs(targetLoad.m2);
 
     // 連続部材の全長さLLを計算する
-    ll = 0
+    ll = 0;
     for (let j = m1; j <= m2; j++) {
       ll = ll + this.getMemberLength(j.toString());
     }
@@ -834,7 +841,7 @@ export class FrameDataService {
       case 1:
       case 11:
         if (m1 = m2) {
-          let newLoads = {};
+          const newLoads = {};
           newLoads['direction'] = targetLoad.direction;
           newLoads['mark'] = targetLoad.mark;
           newLoads['m1'] = m1;
@@ -846,7 +853,7 @@ export class FrameDataService {
           loads.push(newLoads);
 
         } else {
-          let newLoads1 = {};
+          const newLoads1 = {};
           newLoads1['direction'] = targetLoad.direction;
           newLoads1['mark'] = targetLoad.mark;
           newLoads1['m1'] = m1;
@@ -857,7 +864,7 @@ export class FrameDataService {
           newLoads1['P2'] = 0;
           loads.push(newLoads1);
 
-          let newLoads2 = {};
+          const newLoads2 = {};
           newLoads2['direction'] = targetLoad.direction;
           newLoads2['mark'] = targetLoad.mark;
           newLoads2['m1'] = m2;
@@ -872,12 +879,12 @@ export class FrameDataService {
       case 9:
         for (let j = m1; j <= m2; j++) {
 
-          let newLoads = {};
+          const newLoads = {};
           newLoads['direction'] = targetLoad.direction;
           newLoads['mark'] = targetLoad.mark;
           newLoads['m1'] = j.toString();
           newLoads['m2'] = j.toString();
-          newLoads['L1'] = "0";
+          newLoads['L1'] = '0';
           newLoads['L2'] = 0;
           newLoads['P1'] = targetLoad.P1;
           newLoads['P2'] = targetLoad.P1;
@@ -893,7 +900,7 @@ export class FrameDataService {
 
         for (let j = m1; j <= m2; j++) {
 
-          let newLoads = {};
+          const newLoads = {};
           newLoads['direction'] = targetLoad.direction;
           newLoads['mark'] = targetLoad.mark;
 
@@ -908,22 +915,29 @@ export class FrameDataService {
               L = L - L2;
               break;
           }
-          newLoads['L1'] = "0";
+          newLoads['L1'] = '0';
           newLoads['L2'] = 0;
           newLoads['P1'] = P2;
           P2 = P2 + Po * L;
           newLoads['P2'] = P2;
 
-          if (j == m1) {
+          if (j === m1) {
             newLoads['L1'] = targetLoad.L1;
             newLoads['P1'] = targetLoad.P1;
           }
-          if (j == m2) {
+          if (j === m2) {
             newLoads['L2'] = targetLoad.L2;
             newLoads['P2'] = targetLoad.P2;
           }
           loads.push(newLoads);
         }
+    }
+
+    // 行rowの入力情報があれば追加する  . . . . . . . . . . . . . . . . . . . . 
+    if ('row' in targetLoad) {
+      for (let i = 0; i < loads.length; i++) {
+        loads[i]['row'] = targetLoad['row'];
+      }
     }
 
     // 戻り値を作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -936,13 +950,13 @@ export class FrameDataService {
   // 要素番号 m1 != m2 の場合の入力を分ける
   private getMemberRepeatLoad(targetLoad: any): any {
 
-    let result = new Array();
+    const result = new Array();
 
-    let m1: number = Math.abs(targetLoad.m1);
-    let m2: number = Math.abs(targetLoad.m2);
+    const m1: number = Math.abs(targetLoad.m1);
+    const m2: number = Math.abs(targetLoad.m2);
 
     for (let i = m1; i <= m2; i++) {
-      let newLoads = {};
+      const newLoads = {};
       newLoads['direction'] = targetLoad.direction;
       newLoads['m1'] = i;
       newLoads['m2'] = i;
@@ -956,19 +970,19 @@ export class FrameDataService {
     return result;
   }
 
-  //距離 L2 にマイナスが付いた場合の入力を分ける
+  // 距離 L2 にマイナスが付いた場合の入力を分ける
   private setMemberLoadAddition(targetLoad: any, curNo: number, curPos: number): any {
 
     let L: number; let ll: number;
 
     let m1: number = Math.abs(targetLoad.m1);
-    let m2: number = Math.abs(targetLoad.m2);
+    const m2: number = Math.abs(targetLoad.m2);
     let L1: number = Math.abs(targetLoad.L1);
     let L2: number = Math.abs(targetLoad.L2);
 
-    let sL1: string = targetLoad.L1.toString();
+    const sL1: string = targetLoad.L1.toString();
     if (sL1.indexOf('-') >= 0) {
-      //距離L1が加算モードで入力されている場合
+      // 距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
         L1 = curPos + L1;
@@ -981,7 +995,7 @@ export class FrameDataService {
 
     if (targetLoad.L2 < 0) {
       // 連続部材の全長さLLを計算する
-      ll = 0
+      ll = 0;
       for (let j = m1; j <= m2; j++) {
         ll = ll + this.getMemberLength(j.toString());
       }
@@ -990,10 +1004,10 @@ export class FrameDataService {
         L2 = 0;
       }
       targetLoad.m2 = Math.sign(targetLoad.m2) * m2;
-      targetLoad.L2 = L2
+      targetLoad.L2 = L2;
       L = this.getMemberLength(m2.toString());
       curNo = Math.abs(targetLoad.m2);
-      curPos = L - targetLoad.L2
+      curPos = L - targetLoad.L2;
     }
 
     if (curPos >= L - 0.0001) {
@@ -1002,21 +1016,21 @@ export class FrameDataService {
         curPos = 0;
       }
     }
-    let result = { 'loads': targetLoad, 'curNo': curNo, 'curPos': curPos };
+    const result = { 'loads': targetLoad, 'curNo': curNo, 'curPos': curPos };
     return result;
   }
 
   // 有効な 荷重ケース数を調べる
   public getLoadCaseCount(): number {
-    let list = new Array();
+    const list = new Array();
     list.push(this.getLoadJson('file'));
     list.push(this.getNodeLoadJson('file'));
     list.push(this.getMemberLoadJson('file'));
-    let maxCase: number = 0;
+    let maxCase = 0;
     for (let i = 0; i < list.length; i++) {
-      let dict = list[i];
-      for (let load_id in dict) {
-        let load_no: number = this.toNumber(load_id);
+      const dict = list[i];
+      for (const load_id of Object.keys(dict)) {
+        const load_no: number = this.toNumber(load_id);
         if (maxCase < load_no) {
           maxCase = load_no;
         }
@@ -1025,31 +1039,32 @@ export class FrameDataService {
     return maxCase;
   }
 
+  // DEFINEケース 組合せ
   private getDefineJson(mode: string = 'file') {
 
-    let jsonData = {};
+    const jsonData = {};
     for (let i = 0; i < this.input.define.length; i++) {
-      let data = {};
+      const data = {};
       const row = this.input.define[i];
       const id = row['row'];
-      let flg: boolean = false;
+      let flg = false;
       for (let key in row) {
-        if (key == 'row' || key == 'name') {
-          if (mode == 'file') {
+        if (key === 'row' || key === 'name') {
+          if (mode === 'file') {
             data[key] = row[key];
           }
         } else {
           const value = row[key];
           if (this.toNumber(value) != null) {
             flg = true;
-            if (mode != 'file') {
+            if (mode !== 'file') {
               key = key.replace('C', '').replace('D', '');
             }
             data[key] = value;
           }
         }
       }
-      if (flg == true) {
+      if (flg === true) {
         jsonData[id] = data;
       }
     }
@@ -1058,21 +1073,22 @@ export class FrameDataService {
 
   // 有効な DEFINEケース数を調べる
   public getDefineCaseCount(): number {
-    let dict = this.getDefineJson();
+    const dict = this.getDefineJson();
     return Object.keys(dict).length;
   }
 
+  // COMBINEケース 組合せ
   private getCombineJson(mode: string = 'file') {
 
-    let jsonData = {};
+    const jsonData = {};
     for (let i = 0; i < this.input.combine.length; i++) {
-      let data = {};
+      const data = {};
       const row = this.input.combine[i];
       const id = row['row'];
-      let flg: boolean = false;
+      let flg = false;
       for (let key in row) {
-        if (key == 'row' || key == 'name') {
-          if (mode == 'file') {
+        if (key === 'row' || key === 'name') {
+          if (mode === 'file') {
             data[key] = row[key];
           }
         } else {
@@ -1080,7 +1096,7 @@ export class FrameDataService {
           const num = this.toNumber(value);
           if (num != null) {
             flg = true;
-            if (mode != 'file') {
+            if (mode !== 'file') {
               key = key.replace('C', '').replace('D', '');
               data[key] = num;
             } else {
@@ -1089,7 +1105,7 @@ export class FrameDataService {
           }
         }
       }
-      if (flg == true) {
+      if (flg === true) {
         jsonData[id] = data;
       }
     }
@@ -1098,73 +1114,76 @@ export class FrameDataService {
 
   // 有効な COMBINE ケース数を調べる
   public getCombineCaseCount(): number {
-    let dict = this.getCombineJson();
+    const dict = this.getCombineJson();
     return Object.keys(dict).length;
   }
 
+  // COMBINE ケース名を取得する
   public getCombineName(currentPage: number): string {
 
     if (currentPage < 1) {
-      return "";
+      return '';
     }
     if (currentPage > this.input.combine.length) {
-      return "";
+      return '';
     }
 
-    let i = currentPage - 1;
+    const i = currentPage - 1;
     const tmp = this.input.combine[i];
 
-    let result: string = '';
+    let result = '';
     if ('name' in tmp) {
       result = tmp['name'];
     }
     return result;
   }
 
+  // PICKUPケース 組合せ
   private getPickUpJson(mode: string = 'file') {
 
-    let jsonData = {};
+    const jsonData = {};
     for (let i = 0; i < this.input.pickup.length; i++) {
-      let data = {};
+      const data = {};
       const row = this.input.pickup[i];
       const id = row['row'];
-      let flg: boolean = false;
+      let flg = false;
       for (let key in row) {
-        if (key == 'row' || key == 'name') {
-          if (mode == 'file') {
+        if (key === 'row' || key === 'name') {
+          if (mode === 'file') {
             data[key] = row[key];
           }
         } else {
           const value = row[key];
           if (this.toNumber(value) != null) {
             flg = true;
-            if (mode != 'file') {
+            if (mode !== 'file') {
               key = key.replace('C', '').replace('D', '');
             }
             data[key] = value;
           }
         }
       }
-      if (flg == true) {
+      if (flg === true) {
         jsonData[id] = data;
       }
     }
     return jsonData;
   }
 
+  // PICKUP ケース名を取得する
   public getPickUpName(currentPage: number): string {
 
     if (currentPage < 1) {
-      return "";
+      return '';
     }
     if (currentPage > this.input.pickup.length) {
-      return "";
+      return '';
     }
 
-    let i = currentPage - 1;
+    const i = currentPage - 1;
     const tmp = this.input.pickup[i];
 
-    let result: string = '';
+    let result = '';
     if ('name' in tmp) {
       result = tmp['name'];
     }
@@ -1173,19 +1192,20 @@ export class FrameDataService {
 
   // 有効な PICKUP ケース数を調べる
   public getPickupCaseCount(): number {
-    let dict = this.getPickUpJson();
+    const dict = this.getPickUpJson();
     return Object.keys(dict).length;
   }
 
+  // 計算結果 テキスト形式
   public getResultText(): string {
 
-    let jsonData= {};
+    const jsonData = {};
 
     jsonData['disg'] = this.getDisgJson();
     jsonData['reac'] = this.getReacJson();
     jsonData['fsec'] = this.getFsecJson();
 
-    let result: string = JSON.stringify(jsonData);
+    const result: string = JSON.stringify(jsonData);
     return result;
   }
 
@@ -1201,7 +1221,7 @@ export class FrameDataService {
     return this.result.fsec;
   }
 
-  
+
   ////////////////////////////////////////////////////////////////////////////////////
   // ファイルを読み込む ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////
@@ -1222,25 +1242,33 @@ export class FrameDataService {
   }
 
   private setNodeJson(jsonData: {}): void {
-    if (!('node' in jsonData)) return;
+    if (!('node' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['node'];
-    for (var index in json) {
+    for (const index of Object.keys(json)) {
       const item = json[index];
-      let result = { id: index, x: item.x, y: item.y, z: item.z };
+      const result = { id: index, x: item.x, y: item.y, z: item.z };
       this.input.node.push(result);
     }
   }
 
   private setFixNodeJson(jsonData: {}): void {
-    if (!('fix_node' in jsonData)) return;
+    if (!('fix_node' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['fix_node'];
-    for (var typNo in json) {
-      let js: any[] = json[typNo];
-      let target = new Array();
+    for (const typNo of Object.keys(json)) {
+      const js: any[] = json[typNo];
+      const target = new Array();
       for (let i = 0; i < js.length; i++) {
         const item: {} = js[i];
-        let row: string = ('row' in item) ? item['row'] : (i + 1).toString();
-        let result = { row: row, n: item['n'], tx: item['tx'], ty: item['ty'], tz: item['tz'], rx: item['rx'], ry: item['ry'], rz: item['rz'] };
+        const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+        const result = {
+          row: row, n: item['n'],
+          tx: item['tx'], ty: item['ty'], tz: item['tz'],
+          rx: item['rx'], ry: item['ry'], rz: item['rz']
+        };
         target.push(result);
       }
       this.input.fix_node[typNo] = target;
@@ -1248,24 +1276,28 @@ export class FrameDataService {
   }
 
   private setMemberJson(jsonData: {}): void {
-    if (!('member' in jsonData)) return;
+    if (!('member' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['member'];
-    for (var index in json) {
+    for (const index of Object.keys(json)) {
       const item = json[index];
-      let result = { id: index, L: '', ni: item.ni, nj: item.nj, e: item.e, cg: item.cg };
+      const result = { id: index, L: '', ni: item.ni, nj: item.nj, e: item.e, cg: item.cg };
       this.input.member.push(result);
     }
   }
 
   private setElementJson(jsonData: {}): void {
-    if (!('element' in jsonData)) return;
+    if (!('element' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['element'];
-    for (var typNo in json) {
+    for (const typNo of Object.keys(json)) {
       const js = json[typNo];
-      let target = new Array();
-      for (var index in js) {
+      const target = new Array();
+      for (const index of Object.keys(js)) {
         const item = js[index];
-        let result = { id: index, E: item.E, G: item.G, Xp: item.Xp, A: item.A, J: item.J, Iy: item.Iy, Iz: item.Iz };
+        const result = { id: index, E: item.E, G: item.G, Xp: item.Xp, A: item.A, J: item.J, Iy: item.Iy, Iz: item.Iz };
         target.push(result);
       }
       this.input.element[typNo] = target;
@@ -1273,15 +1305,21 @@ export class FrameDataService {
   }
 
   private setJointJson(jsonData: {}): void {
-    if (!('joint' in jsonData)) return;
+    if (!('joint' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['joint'];
-    for (var typNo in json) {
-      let js: any[] = json[typNo];
-      let target = new Array();
+    for (const typNo of Object.keys(json)) {
+      const js: any[] = json[typNo];
+      const target = new Array();
       for (let i = 0; i < js.length; i++) {
         const item: {} = js[i];
-        let row: string = ('row' in item) ? item['row'] : (i + 1).toString();
-        let result = { row: row, m: item['m'], xi: item['xi'], yi: item['yi'], zi: item['zi'], xj: item['xj'], yj: item['yj'], zj: item['zj'] };
+        const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+        const result = {
+          row: row, m: item['m'],
+          xi: item['xi'], yi: item['yi'], zi: item['zi'],
+          xj: item['xj'], yj: item['yj'], zj: item['zj']
+        };
         target.push(result);
       }
       this.input.joint[typNo] = target;
@@ -1289,16 +1327,18 @@ export class FrameDataService {
   }
 
   private setNoticePointsJson(jsonData: {}): void {
-    if (!('notice_points' in jsonData)) return;
-    let js: any[] = jsonData['notice_points'];
+    if (!('notice_points' in jsonData)) {
+      return;
+    }
+    const js: any[] = jsonData['notice_points'];
     for (let i = 0; i < js.length; i++) {
       const item: {} = js[i];
-      let row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+      const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
       const m = item['m'];
-      let Points: any[] = item['Points'];
-      let result = { row: row, m: m };
-      for (var j = 0; j < Points.length; j++) {
-        const key = "L" + (j + 1).toString();
+      const Points: any[] = item['Points'];
+      const result = { row: row, m: m };
+      for (let j = 0; j < Points.length; j++) {
+        const key = 'L' + (j + 1).toString();
         result[key] = Points[j];
       }
       this.input.notice_points.push(result);
@@ -1306,15 +1346,17 @@ export class FrameDataService {
   }
 
   private setFixMemberJson(jsonData: {}): void {
-    if (!('fix_member' in jsonData)) return;
+    if (!('fix_member' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['fix_member'];
-    for (var typNo in json) {
-      let js: any[] = json[typNo];
-      let target = new Array();
+    for (const typNo of Object.keys(json)) {
+      const js: any[] = json[typNo];
+      const target = new Array();
       for (let i = 0; i < js.length; i++) {
         const item: {} = js[i];
-        let row: string = ('row' in item) ? item['row'] : (i + 1).toString();
-        let result = { row: row, m: item['m'], tx: item['tx'], ty: item['ty'], tz: item['tz'], tr: item['tr'] };
+        const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+        const result = { row: row, m: item['m'], tx: item['tx'], ty: item['ty'], tz: item['tz'], tr: item['tr'] };
         target.push(result);
       }
       this.input.fix_member[typNo] = target;
@@ -1323,37 +1365,42 @@ export class FrameDataService {
 
   private setLoadJson(jsonData: {}): void {
 
-    if (!('load' in jsonData)) return;
+    if (!('load' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['load'];
 
-    for (var index in json) {
-      let tmp_load1 = {};
-      let tmp_load2 = {};
+    for (const index of Object.keys(json)) {
+      const tmp_load1 = {};
+      const tmp_load2 = {};
       const item1: {} = json[index];
-      let _rate: string = ('rate' in item1) ? item1['rate'] : '';
-      let _symbol: string = ('symbol' in item1) ? item1['symbol'] : '';
-      let _name: string = ('name' in item1) ? item1['name'] : '';
-      let _fix_node: string = ('fix_node' in item1) ? item1['fix_node'] : '';
-      let _fix_member: string = ('fix_member' in item1) ? item1['fix_member'] : '';
-      let _element: string = ('element' in item1) ? item1['element'] : '';
-      let _joint: string = ('joint' in item1) ? item1['joint'] : '';
+      const _rate: string = ('rate' in item1) ? item1['rate'] : '';
+      const _symbol: string = ('symbol' in item1) ? item1['symbol'] : '';
+      const _name: string = ('name' in item1) ? item1['name'] : '';
+      const _fix_node: string = ('fix_node' in item1) ? item1['fix_node'] : '';
+      const _fix_member: string = ('fix_member' in item1) ? item1['fix_member'] : '';
+      const _element: string = ('element' in item1) ? item1['element'] : '';
+      const _joint: string = ('joint' in item1) ? item1['joint'] : '';
 
-      let result1 = { id: index, rate: _rate, symbol: _symbol, name: _name, fix_node: _fix_node, fix_member: _fix_member, element: _element, joint: _joint };
+      const result1 = {
+        id: index, rate: _rate, symbol: _symbol, name: _name,
+        fix_node: _fix_node, fix_member: _fix_member, element: _element, joint: _joint
+      };
       this.input.load_name.push(result1);
 
       if ('load_node' in item1) {
         const load_node_list: any[] = item1['load_node']
         for (let i = 0; i < load_node_list.length; i++) {
           const item2: {} = load_node_list[i];
-          let _row: string = ('row' in item2) ? item2['row'] : (i + 1).toString();
-          let _n: string = ('n' in item2) ? item2['n'] : '';
-          let _tx: string = ('tx' in item2) ? item2['tx'] : '';
-          let _ty: string = ('ty' in item2) ? item2['ty'] : '';
-          let _tz: string = ('tz' in item2) ? item2['tz'] : '';
-          let _rx: string = ('rx' in item2) ? item2['rx'] : '';
-          let _ry: string = ('ry' in item2) ? item2['ry'] : '';
-          let _rz: string = ('rz' in item2) ? item2['rz'] : '';
-          let result2 = { row: _row, n: _n, tx: _tx, ty: _ty, tz: _tz, rx: _rx, ry: _ry, rz: _rz };
+          const _row: string = ('row' in item2) ? item2['row'] : (i + 1).toString();
+          const _n: string = ('n' in item2) ? item2['n'] : '';
+          const _tx: string = ('tx' in item2) ? item2['tx'] : '';
+          const _ty: string = ('ty' in item2) ? item2['ty'] : '';
+          const _tz: string = ('tz' in item2) ? item2['tz'] : '';
+          const _rx: string = ('rx' in item2) ? item2['rx'] : '';
+          const _ry: string = ('ry' in item2) ? item2['ry'] : '';
+          const _rz: string = ('rz' in item2) ? item2['rz'] : '';
+          const result2 = { row: _row, n: _n, tx: _tx, ty: _ty, tz: _tz, rx: _rx, ry: _ry, rz: _rz };
           tmp_load1[_row] = result2;
         }
       }
@@ -1361,28 +1408,28 @@ export class FrameDataService {
         const load_member_list: any[] = item1['load_member']
         for (let i = 0; i < load_member_list.length; i++) {
           const item3: {} = load_member_list[i];
-          let _row: string = ('row' in item3) ? item3['row'] : (i + 1).toString();
-          let _m1: string = ('m1' in item3) ? item3['m1'] : '';
-          let _m2: string = ('m2' in item3) ? item3['m2'] : '';
-          let _L1: string = ('L1' in item3) ? item3['L1'] : '';
+          const _row: string = ('row' in item3) ? item3['row'] : (i + 1).toString();
+          const _m1: string = ('m1' in item3) ? item3['m1'] : '';
+          const _m2: string = ('m2' in item3) ? item3['m2'] : '';
+          const _L1: string = ('L1' in item3) ? item3['L1'] : '';
 
-          let _direction: string = ('direction' in item3) ? item3['direction'] : '';
-          let _mark: string = ('mark' in item3) ? item3['mark'] : '';
+          const _direction: string = ('direction' in item3) ? item3['direction'] : '';
+          const _mark: string = ('mark' in item3) ? item3['mark'] : '';
 
-          let _L2: string = ('L2' in item3) ? item3['L2'] : '';
-          let _P1: string = ('P1' in item3) ? item3['P1'] : '';
-          let _P2: string = ('P2' in item3) ? item3['P2'] : '';
-          let result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark, L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
+          const _L2: string = ('L2' in item3) ? item3['L2'] : '';
+          const _P1: string = ('P1' in item3) ? item3['P1'] : '';
+          const _P2: string = ('P2' in item3) ? item3['P2'] : '';
+          const result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark, L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
           tmp_load2[_row] = result3;
         }
       }
 
       // 同じ行に load_node があったら合成する
-      let tmp_load = new Array();
-      for (let row1 in tmp_load1) {
-        let result2 = tmp_load1[row1];
+      const tmp_load = new Array();
+      for (const row1 of Object.keys(tmp_load1)) {
+        const result2 = tmp_load1[row1];
         if (row1 in tmp_load2) {
-          let result3 = tmp_load2[row1];
+          const result3 = tmp_load2[row1];
           result2['m1'] = result3['m1'];
           result2['m2'] = result3['m2'];
           result2['direction'] = result3['direction'];
@@ -1395,8 +1442,8 @@ export class FrameDataService {
         }
         tmp_load.push(result2);
       }
-      for (let row2 in tmp_load2) {
-        let result3 = tmp_load2[row2];
+      for (const row2 of Object.keys(tmp_load2)) {
+        const result3 = tmp_load2[row2];
         tmp_load.push(result3);
       }
 
@@ -1405,37 +1452,43 @@ export class FrameDataService {
   }
 
   private setDefineJson(jsonData: {}): void {
-    if (!('define' in jsonData)) return;
+    if (!('define' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['define'];
-    for (let index in json) {
+    for (const index of Object.keys(json)) {
       if (index == null) {
         continue;
       }
-      let result: {} = json[index];
+      const result: {} = json[index];
       this.input.define.push(result);
     }
   }
 
   private setCombineJson(jsonData: {}): void {
-    if (!('combine' in jsonData)) return;
+    if (!('combine' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['combine'];
-    for (let index in json) {
+    for (const index of Object.keys(json)) {
       if (index == null) {
         continue;
       }
-      let result: {} = json[index];
+      const result: {} = json[index];
       this.input.combine.push(result);
     }
   }
 
   private setPickUpJson(jsonData: {}): void {
-    if (!('pickup' in jsonData)) return;
+    if (!('pickup' in jsonData)) {
+      return;
+    }
     const json: {} = jsonData['pickup'];
-    for (let index in json) {
+    for (const index of Object.keys(json)) {
       if (index == null) {
         continue;
       }
-      let result: {} = json[index];
+      const result: {} = json[index];
       this.input.pickup.push(result);
     }
   }
@@ -1470,36 +1523,38 @@ export class FrameDataService {
     const pickup = this.getPickUpJson('calc');
 
     // define を集計
-    let defList = {};
+    const defList = {};
     if (Object.keys(define).length > 0) {
-      for (let defNo in define) {
-        let d: object = define[defNo];
-        let defines = new Array();
-        for (let dKey in d) {
+      for (const defNo of Object.keys(define)) {
+        const d: object = define[defNo];
+        const defines = new Array();
+        for (const dKey of Object.keys(d)) {
           defines.push(d[dKey]);
         }
         defList[defNo] = defines;
       }
     } else {
-      for (let caseNo in load) {
+      for (const caseNo of Object.keys(load)) {
         defList[caseNo] = new Array(caseNo);
       }
     }
 
     // combine を集計
-    let combList = {};
-    for (let combNo in combine) {
-      let target: object = combine[combNo];
-      let combines = new Array([]);
-      for (let defNo in target) {
-        if (!(defNo in defList)) continue; //なければ飛ばす
-        let def = defList[defNo];
-        let defKeys = Object.keys(def);
+    const combList = {};
+    for (const combNo of Object.keys(combine)) {
+      const target: object = combine[combNo];
+      const combines = new Array([]);
+      for (const defNo of Object.keys(target)) {
+        if (!(defNo in defList)) {
+          continue; // なければ飛ばす
+        }
+        const def = defList[defNo];
+        const defKeys = Object.keys(def);
         // defineNo が複数あった場合に配列を複製する
         if (defKeys.length > 1) {
-          let count: number = combines.length;
+          const count: number = combines.length;
           for (let i = 0; i < count; i++) {
-            let base = combines[i];
+            const base = combines[i];
             for (let j = 1; j < defKeys.length; j++) {
               combines.push(base.slice(0, base.length));
             }
@@ -1507,7 +1562,7 @@ export class FrameDataService {
         }
         // 組み合わせにケース番号を登録する
         let coef = target[defNo]
-        let j: number = 0;
+        let j = 0;
         for (let i = 0; i < combines.length; i++) {
           let caseNo: string = def[defKeys[j]];
           if (caseNo.indexOf('-') >= 0) {
@@ -1516,7 +1571,9 @@ export class FrameDataService {
           }
           combines[i].push({ caseNo: caseNo, coef: coef });
           j++;
-          if (j == defKeys.length) j = 0;
+          if (j === defKeys.length) {
+            j = 0;
+          }
         }
       }
       combList[combNo] = combines;
@@ -1524,13 +1581,15 @@ export class FrameDataService {
 
 
     // pickup を集計
-    let pickList = {};
-    for (let pickNo in pickup) {
-      let p: object = pickup[pickNo];
-      let combines = new Array();
-      for (let pKey in p) {
+    const pickList = {};
+    for (const pickNo of Object.keys(pickup)) {
+      const p: object = pickup[pickNo];
+      const combines = new Array();
+      for (const pKey of Object.keys(p)) {
         const comNo: string = p[pKey];
-        if (!(comNo in combList)) continue; //なければ飛ばす
+        if (!(comNo in combList)) {
+          continue; // なければ飛ばす
+        }
         combines.push(comNo);
       }
       pickList[pickNo] = combines;
@@ -1547,18 +1606,18 @@ export class FrameDataService {
   }
 
   private setDisgJson(jsonData: {}): void {
-    let max_row: number = 0;
-    for (let caseNo in jsonData) {
-      let target = new Array();
+    let max_row = 0;
+    for (const caseNo of Object.keys(jsonData)) {
+      const target = new Array();
       const caseData: {} = jsonData[caseNo];
-      if (typeof (caseData) != 'object') {
+      if (typeof (caseData) !== 'object') {
         continue;
       }
       if (!('disg' in caseData)) {
         continue;
       }
       const json: {} = caseData['disg'];
-      for (let n in json) {
+      for (const n of Object.keys(json)) {
         const item: {} = json[n];
 
         let dx: number = this.toNumber(item['dx']);
@@ -1573,7 +1632,7 @@ export class FrameDataService {
         rx = (rx == null) ? 0 : rx;
         ry = (ry == null) ? 0 : ry;
         rz = (rz == null) ? 0 : rz;
-        let result = {
+        const result = {
           id: n,
           dx: dx.toFixed(3),
           dy: dy.toFixed(3),
@@ -1591,18 +1650,18 @@ export class FrameDataService {
   }
 
   private setReacJson(jsonData: {}): void {
-    let max_row: number = 0;
-    for (let caseNo in jsonData) {
-      let target = new Array();
+    let max_row = 0;
+    for (const caseNo of Object.keys(jsonData)) {
+      const target = new Array();
       const caseData: {} = jsonData[caseNo];
-      if (typeof (caseData) != 'object') {
+      if (typeof (caseData) !== 'object') {
         continue;
       }
       if (!('reac' in caseData)) {
         continue;
       }
       const json: {} = caseData['reac'];
-      for (let n in json) {
+      for (const n of Object.keys(json)) {
         const item: {} = json[n];
 
         let tx: number = this.toNumber(item['tx']);
@@ -1619,7 +1678,7 @@ export class FrameDataService {
         my = (my == null) ? 0 : my;
         mz = (mz == null) ? 0 : mz;
 
-        let result = {
+        const result = {
           id: n,
           tx: tx.toFixed(2),
           ty: ty.toFixed(2),
@@ -1637,33 +1696,34 @@ export class FrameDataService {
   }
 
   private setFsecJson(jsonData: {}): void {
-    let max_row: number = 0;
-    for (let caseNo in jsonData) {
-      let target = new Array();
+    let max_row = 0;
+
+    for (const caseNo of Object.keys(jsonData)) {
+      const target = new Array();
       const caseData: {} = jsonData[caseNo];
-      if (typeof (caseData) != 'object') {
+      if (typeof (caseData) !== 'object') {
         continue;
       }
       if (!('fsec' in caseData)) {
         continue;
       }
       const json: {} = caseData['fsec'];
-      let row: number = 0;
-      let memberNo: string = '';
-      for (let m in json) {
+      let row = 0;
+      let memberNo = '';
+      for (const m of Object.keys(json)) {
 
-        let noticePoint: number = 0.0;
+        let noticePoint = 0.0;
         memberNo = m;
         const js: {} = json[m];
 
         let result = {};
-        let old = {};
+        const old = {};
         const node = this.getNodeNo(memberNo)
         let ni: string = node['ni'];
-        let nj: string = "";
-        let counter: number = 0;
+        let nj = '';
+        let counter = 0;
         const data_length: number = Object.keys(js).length;
-        for (let p in js) {
+        for (const p of Object.keys(js)) {
           counter++;
           const item: {} = js[p];
           let fxi: number = this.toNumber(item['fxi']);
@@ -1698,7 +1758,7 @@ export class FrameDataService {
 
           memberNo = '';
           ni = '';
-          if (counter == data_length) {
+          if (counter === data_length) {
             nj = node['nj'];
           }
           noticePoint += this.toNumber(item['L']);
@@ -1744,40 +1804,45 @@ export class FrameDataService {
 
     try {
 
-      //combineのループ
-      for (let combNo in combList) {
-        let resultDisg = { dx_max: {}, dx_min: {}, dy_max: {}, dy_min: {}, dz_max: {}, dz_min: {}, rx_max: {}, rx_min: {}, ry_max: {}, ry_min: {}, rz_max: {}, rz_min: {} };
+      // combineのループ
+      for (const combNo of Object.keys(combList)) {
+        const resultDisg = {
+          dx_max: {}, dx_min: {}, dy_max: {}, dy_min: {}, dz_max: {}, dz_min: {},
+          rx_max: {}, rx_min: {}, ry_max: {}, ry_min: {}, rz_max: {}, rz_min: {}
+        };
 
-        //defineのループ
-        let combines: any[] = combList[combNo];
+        // defineのループ
+        const combines: any[] = combList[combNo];
         for (let i = 0; i < combines.length; i++) {
-          let combineDisg = { dx: {}, dy: {}, dz: {}, rx: {}, ry: {}, rz: {} };
+          const combineDisg = { dx: {}, dy: {}, dz: {}, rx: {}, ry: {}, rz: {} };
 
           // 基本ケースのループ
-          let com = combines[i];
+          const com = combines[i];
           for (let j = 0; j < com.length; j++) {
-            let caseInfo = com[j];
+            const caseInfo = com[j];
 
             if (!(caseInfo.caseNo in this.result.disg)) {
               continue;
             }
-            //節点番号のループ
-            let disgs: any[] = this.result.disg[caseInfo.caseNo];
-            for (let i = 0; i < disgs.length; i++) {
-              let result: {} = disgs[i];
+            // 節点番号のループ
+            const disgs: any[] = this.result.disg[caseInfo.caseNo];
+            for (let n = 0; n < disgs.length; n++) {
+              const result: {} = disgs[n];
               const id = result['id'];
 
               // dx, dy … のループ
-              for (let key1 in combineDisg) {
-                let value = combineDisg[key1];
-                let temp: {} = (id in value) ? value[id] : { id: id, dx: 0, dy: 0, dz: 0, rx: 0, ry: 0, rz: 0, case: '' };
+              for (const key1 of Object.keys(combineDisg)) {
+                const value = combineDisg[key1];
+                const temp: {} = (id in value) ? value[id] : { id: id, dx: 0, dy: 0, dz: 0, rx: 0, ry: 0, rz: 0, case: '' };
 
                 // x, y, z, 変位, 回転角 のループ
-                for (let key2 in result) {
-                  if (key2 == 'id') continue;
+                for (const key2 in result) {
+                  if (key2 === 'id') {
+                    continue;
+                  }
                   temp[key2] += caseInfo.coef * result[key2];
                 }
-                temp['case'] += "+" + caseInfo.caseNo.toString();
+                temp['case'] += '+' + caseInfo.caseNo.toString();
                 value[id] = temp;
                 combineDisg[key1] = value;
               }
@@ -1785,23 +1850,23 @@ export class FrameDataService {
           }
 
           // dx, dy … のループ
-          const k: string[] = ["_max", "_min"];
-          for (let key1 in combineDisg) {
+          const k: string[] = ['_max', '_min'];
+          for (const key1 of Object.keys(combineDisg)) {
             for (let n = 0; n < k.length; n++) {
               let key2: string;
               key2 = key1 + k[n];
               const old = resultDisg[key2];
               const current = combineDisg[key1];
               // 節点番号のループ
-              for (let id in current) {
+              for (const id of Object.keys(current)) {
                 if (!(id in old)) {
                   old[id] = current[id];
                   resultDisg[key2] = old;
                   continue;
                 }
                 const target = current[id];
-                let comparison = old[id]
-                if ((n == 0 && comparison[key1] < target[key1])
+                const comparison = old[id]
+                if ((n === 0 && comparison[key1] < target[key1])
                   || (n > 0 && comparison[key1] > target[key1])) {
                   old[id] = target;
                   resultDisg[key2] = old;
@@ -1809,7 +1874,6 @@ export class FrameDataService {
               }
             }
           }
-
         }
         this.result.disgCombine[combNo] = resultDisg;
       }
@@ -1822,40 +1886,45 @@ export class FrameDataService {
 
     try {
 
-      //combineのループ
-      for (let combNo in combList) {
-        let resultReac = { tx_max: {}, tx_min: {}, ty_max: {}, ty_min: {}, tz_max: {}, tz_min: {}, mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {} };
+      // combineのループ
+      for (const combNo of Object.keys(combList)) {
+        const resultReac = {
+          tx_max: {}, tx_min: {}, ty_max: {}, ty_min: {}, tz_max: {}, tz_min: {},
+          mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {}
+        };
 
-        //defineのループ
-        let combines: any[] = combList[combNo];
+        // defineのループ
+        const combines: any[] = combList[combNo];
         for (let i = 0; i < combines.length; i++) {
-          let combineReac = { tx: {}, ty: {}, tz: {}, mx: {}, my: {}, mz: {} };
+          const combineReac = { tx: {}, ty: {}, tz: {}, mx: {}, my: {}, mz: {} };
 
           // 基本ケースのループ
-          let com = combines[i];
+          const com = combines[i];
           for (let j = 0; j < com.length; j++) {
-            let caseInfo = com[j];
+            const caseInfo = com[j];
 
             if (!(caseInfo.caseNo in this.result.disg)) {
               continue;
             }
-            //節点番号のループ
-            let Reacs: any[] = this.result.reac[caseInfo.caseNo];
-            for (let i = 0; i < Reacs.length; i++) {
-              let result: {} = Reacs[i];
+            // 節点番号のループ
+            const Reacs: any[] = this.result.reac[caseInfo.caseNo];
+            for (let n = 0; n < Reacs.length; n++) {
+              const result: {} = Reacs[n];
               const id = result['id'];
 
               // dx, dy … のループ
-              for (let key1 in combineReac) {
-                let value = combineReac[key1];
-                let temp: {} = (id in value) ? value[id] : { id: id, tx: 0, ty: 0, tz: 0, mx: 0, my: 0, mz: 0, case: '' };
+              for (const key1 of Object.keys(combineReac)) {
+                const value = combineReac[key1];
+                const temp: {} = (id in value) ? value[id] : { id: id, tx: 0, ty: 0, tz: 0, mx: 0, my: 0, mz: 0, case: '' };
 
                 // x, y, z, 変位, 回転角 のループ
-                for (let key2 in result) {
-                  if (key2 == 'id') continue;
+                for (const key2 in result) {
+                  if (key2 === 'id') {
+                    continue;
+                  }
                   temp[key2] += caseInfo.coef * result[key2];
                 }
-                temp['case'] += "+" + caseInfo.caseNo.toString();
+                temp['case'] += '+' + caseInfo.caseNo.toString();
                 value[id] = temp;
                 combineReac[key1] = value;
               }
@@ -1863,23 +1932,23 @@ export class FrameDataService {
           }
 
           // dx, dy … のループ
-          const k: string[] = ["_max", "_min"];
-          for (let key1 in combineReac) {
+          const k: string[] = ['_max', '_min'];
+          for (const key1 of Object.keys(combineReac)) {
             for (let n = 0; n < k.length; n++) {
               let key2: string;
               key2 = key1 + k[n];
               const old = resultReac[key2];
               const current = combineReac[key1];
               // 節点番号のループ
-              for (let id in current) {
+              for (const id of Object.keys(current)) {
                 if (!(id in old)) {
                   old[id] = current[id];
                   resultReac[key2] = old;
                   continue;
                 }
                 const target = current[id];
-                let comparison = old[id]
-                if ((n == 0 && comparison[key1] < target[key1])
+                const comparison = old[id]
+                if ((n === 0 && comparison[key1] < target[key1])
                   || (n > 0 && comparison[key1] > target[key1])) {
                   old[id] = target;
                   resultReac[key2] = old;
@@ -1899,44 +1968,49 @@ export class FrameDataService {
 
     try {
 
-      //combineのループ
-      for (let combNo in combList) {
-        let resultFsec = { fx_max: {}, fx_min: {}, fy_max: {}, fy_min: {}, fz_max: {}, fz_min: {}, mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {} };
+      // combineのループ
+      for (const combNo of Object.keys(combList)) {
+        const resultFsec = {
+          fx_max: {}, fx_min: {}, fy_max: {}, fy_min: {}, fz_max: {}, fz_min: {},
+          mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {}
+        };
 
-        //defineのループ
-        let combines: any[] = combList[combNo];
+        // defineのループ
+        const combines: any[] = combList[combNo];
         for (let i = 0; i < combines.length; i++) {
-          let combineFsec = { fx: {}, fy: {}, fz: {}, mx: {}, my: {}, mz: {} };
+          const combineFsec = { fx: {}, fy: {}, fz: {}, mx: {}, my: {}, mz: {} };
 
           // 基本ケースのループ
-          let com = combines[i];
+          const com = combines[i];
           for (let j = 0; j < com.length; j++) {
-            let caseInfo = com[j];
+            const caseInfo = com[j];
 
             if (!(caseInfo.caseNo in this.result.fsec)) {
               continue;
             }
-            //節点番号のループ
-            let Fsecs: any[] = this.result.fsec[caseInfo.caseNo];
-            for (let i = 0; i < Fsecs.length; i++) {
-              let result: {} = Fsecs[i];
+            // 節点番号のループ
+            const Fsecs: any[] = this.result.fsec[caseInfo.caseNo];
+            for (let n = 0; n < Fsecs.length; n++) {
+              const result: {} = Fsecs[n];
               const row = result['row'];
 
               // dx, dy … のループ
-              for (let key1 in combineFsec) {
-                let value = combineFsec[key1];
-                let temp: {} = (row in value) ? value[row] : { row: row, fx: 0, fy: 0, fz: 0, mx: 0, my: 0, mz: 0, case: '' };
+              for (const key1 of Object.keys(combineFsec)) {
+                const value = combineFsec[key1];
+                const temp: {} = (row in value) ? value[row] : { row: row, fx: 0, fy: 0, fz: 0, mx: 0, my: 0, mz: 0, case: '' };
 
                 // x, y, z, 変位, 回転角 のループ
-                for (let key2 in result) {
-                  if (key2 == 'row') continue;
-                  if (key2 == 'm' || key2 == 'n' || key2 == 'l') {
+                for (const key2 in result) {
+                  if (key2 === 'row') {
+                    continue;
+                  }
+                  if (key2 === 'm' || key2 === 'n' || key2 === 'l') {
                     temp[key2] = result[key2];
                     continue;
                   }
                   temp[key2] += caseInfo.coef * result[key2];
                 }
-                temp['case'] += "+" + caseInfo.caseNo.toString();
+                temp['case'] += '+' + caseInfo.caseNo.toString();
                 value[row] = temp;
                 combineFsec[key1] = value;
               }
@@ -1944,23 +2018,23 @@ export class FrameDataService {
           }
 
           // dx, dy … のループ
-          const k: string[] = ["_max", "_min"];
-          for (let key1 in combineFsec) {
+          const k: string[] = ['_max', '_min'];
+          for (const key1 of Object.keys(combineFsec)) {
             for (let n = 0; n < k.length; n++) {
               let key2: string;
               key2 = key1 + k[n];
               const old = resultFsec[key2];
               const current = combineFsec[key1];
               // 節点番号のループ
-              for (let id in current) {
+              for (const id of Object.keys(current)) {
                 if (!(id in old)) {
                   old[id] = current[id];
                   resultFsec[key2] = old;
                   continue;
                 }
                 const target = current[id];
-                let comparison = old[id]
-                if ((n == 0 && comparison[key1] < target[key1])
+                const comparison = old[id]
+                if ((n === 0 && comparison[key1] < target[key1])
                   || (n > 0 && comparison[key1] > target[key1])) {
                   old[id] = target;
                   resultFsec[key2] = old;
@@ -1979,9 +2053,9 @@ export class FrameDataService {
 
   private setDisgPickupJson(pickList: any): void {
     try {
-      //pickupのループ
-      for (let pickNo in pickList) {
-        let combines: any[] = pickList[pickNo];
+      // pickupのループ
+      for (const pickNo of Object.keys(pickList)) {
+        const combines: any[] = pickList[pickNo];
         let tmp: {} = null;
         for (let i = 0; i < combines.length; i++) {
           const combNo: string = combines[i];
@@ -1990,14 +2064,14 @@ export class FrameDataService {
             tmp = com;
             continue;
           }
-          for (let k in com) {
+          for (const k of Object.keys(com)) {
             const key = k.split('_');
             const target = com[k];
             const comparison = tmp[k];
-            for (let id in comparison) {
-              let a = comparison[id];
-              let b = target[id];
-              if (key[1] == 'max') {
+            for (const id of Object.keys(comparison)) {
+              const a = comparison[id];
+              const b = target[id];
+              if (key[1] === 'max') {
                 if (b[key[0]] > a[key[0]]) {
                   tmp[k] = com[k];
                 }
@@ -2018,9 +2092,9 @@ export class FrameDataService {
 
   private setReacPickupJson(pickList: any): void {
     try {
-      //pickupのループ
-      for (let pickNo in pickList) {
-        let combines: any[] = pickList[pickNo];
+      // pickupのループ
+      for (const pickNo of Object.keys(pickList)) {
+        const combines: any[] = pickList[pickNo];
         let tmp: {} = null;
         for (let i = 0; i < combines.length; i++) {
           const combNo: string = combines[i];
@@ -2029,14 +2103,14 @@ export class FrameDataService {
             tmp = com;
             continue;
           }
-          for (let k in com) {
+          for (const k of Object.keys(com)) {
             const key = k.split('_');
             const target = com[k];
             const comparison = tmp[k];
-            for (let id in comparison) {
-              let a = comparison[id];
-              let b = target[id];
-              if (key[1] == 'max') {
+            for (const id of Object.keys(comparison)) {
+              const a = comparison[id];
+              const b = target[id];
+              if (key[1] === 'max') {
                 if (b[key[0]] > a[key[0]]) {
                   tmp[k] = com[k];
                 }
@@ -2057,9 +2131,10 @@ export class FrameDataService {
 
   private setFsecPickupJson(pickList: any): void {
     try {
-      //pickupのループ
-      for (let pickNo in pickList) {
-        let combines: any[] = pickList[pickNo];
+      // pickupのループ
+
+      for (const pickNo of Object.keys(pickList)) {
+        const combines: any[] = pickList[pickNo];
         let tmp: {} = null;
         for (let i = 0; i < combines.length; i++) {
           const combNo: string = combines[i];
@@ -2069,14 +2144,14 @@ export class FrameDataService {
 
             continue;
           }
-          for (let k in com) {
+          for (const k of Object.keys(com)) {
             const key = k.split('_');
             const target = com[k];
             const comparison = tmp[k];
-            for (let id in comparison) {
-              let a = comparison[id];
-              let b = target[id];
-              if (key[1] == 'max') {
+            for (const id of Object.keys(comparison)) {
+              const a = comparison[id];
+              const b = target[id];
+              if (key[1] === 'max') {
                 if (b[key[0]] > a[key[0]]) {
                   tmp[k] = com[k];
                 }
@@ -2106,8 +2181,8 @@ export class FrameDataService {
     }
 
     // 比較対象双方のキー配列を取得する（順番保証のためソートをかける）
-    let aKeys = Object.keys(a).sort();
-    let bKeys = Object.keys(b).sort();
+    const aKeys = Object.keys(a).sort();
+    const bKeys = Object.keys(b).sort();
 
     // 比較対象同士のキー配列を比較する
     if (aKeys.toString() !== bKeys.toString()) {
@@ -2116,7 +2191,7 @@ export class FrameDataService {
     }
 
     // 値をすべて調べる。
-    let wrongIndex = aKeys.findIndex(function (value) {
+    const wrongIndex = aKeys.findIndex(function (value) {
       // 注意！これは等価演算子で正常に比較できるもののみを対象としています。
       // つまり、ネストされたObjectやArrayなどには対応していないことに注意してください。
       return a[value] !== b[value];
@@ -2130,7 +2205,7 @@ export class FrameDataService {
   private toNumber(num: string, digit: number = null): number {
     let result: number = null;
     try {
-      let tmp: string = num.toString().trim();
+      const tmp: string = num.toString().trim();
       if (tmp.length > 0) {
         result = ((n: number) => isNaN(n) ? null : n)(+tmp);
       }
@@ -2146,7 +2221,7 @@ export class FrameDataService {
 
   // 補助関数
   private getNodeNo(memberNo: string) {
-    let jsonData = { ni: '', nj: '' };
+    const jsonData = { ni: '', nj: '' };
 
     const memberList: {} = this.getMemberJson('unity-members');
     if (Object.keys(memberList).length <= 0) {
@@ -2177,13 +2252,13 @@ export class FrameDataService {
     const node: {} = this.getNodeNo(memberNo);
     const ni: string = node['ni'];
     const nj: string = node['nj'];
-    if (ni == '' || nj == '') {
-      return null
+    if (ni === '' || nj === '') {
+      return null;
     }
     const iPos = this.getNodePos(ni)
     const jPos = this.getNodePos(nj)
     if (iPos == null || jPos == null) {
-      return null
+      return null;
     }
     const xi: number = iPos['x'];
     const yi: number = iPos['y'];

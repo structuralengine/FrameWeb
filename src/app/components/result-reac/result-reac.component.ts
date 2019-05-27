@@ -20,21 +20,20 @@ export class ResultReacComponent implements OnInit {
   }
 
   ngOnInit() {
-    let n: number = this.frame.getLoadCaseCount();
+    const n: number = this.frame.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
-    for (var i = 0; i < this.result.REAC_ROWS_COUNT; i++) {
+    for (let i = 0; i < this.result.REAC_ROWS_COUNT; i++) {
       const reac = this.result.getReacColumns(this.page, i);
-      this.dataset.push(reac)
+      this.dataset.push(reac);
     }
     this.load_name = this.frame.getLoadName(currentPage);
   }
 }
-

@@ -20,7 +20,7 @@ export class AppComponent {
   constructor(platformLocation: PlatformLocation,
     private _router: Router,
     private unityConnector: UnityConnectorService ) {
-    
+
     const location = (platformLocation as any).location;
     this.baseUrl = location.origin + location.pathname;
     console.log('baseUrl', this.baseUrl);
@@ -30,7 +30,7 @@ export class AppComponent {
       if (event instanceof NavigationEnd) {
         this.unityConnector.ChengeMode(event.url);
       }
-    })
+    });
 
     // custom property
     this.isContentsDailogShow = false;
@@ -51,5 +51,4 @@ export class AppComponent {
   contentsDailogShow(): void{
     this.isContentsDailogShow = true;
   }
-
 }

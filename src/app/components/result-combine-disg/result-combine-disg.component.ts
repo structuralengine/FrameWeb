@@ -10,7 +10,8 @@ import { ResultDataService } from '../../providers/result-data.service';
 export class ResultCombineDisgComponent implements OnInit {
 
   KEYS = ['dx_max', 'dx_min', 'dy_max', 'dy_min', 'dz_max', 'dz_min', 'rx_max', 'rx_min', 'ry_max', 'ry_min', 'rz_max', 'rz_min'];
-  TITLES = ['x方向の移動量 最大', 'x方向の移動量 最小', 'y方向の移動量 最大', 'y方向の移動量 最小', 'z方向の移動量 最大', 'Z方向の移動量 最小', 'x軸回りの回転角 最大', 'x軸回りの回転角 最小', 'y軸回りの回転角 最大', 'y軸回りの回転角 最小', 'z軸回りの回転角 最大', 'Z軸回りの回転角 最小'];
+  TITLES = ['x方向の移動量 最大', 'x方向の移動量 最小', 'y方向の移動量 最大', 'y方向の移動量 最小', 'z方向の移動量 最大', 'Z方向の移動量 最小',
+    'x軸回りの回転角 最大', 'x軸回りの回転角 最小', 'y軸回りの回転角 最大', 'y軸回りの回転角 最小', 'z軸回りの回転角 最大', 'Z軸回りの回転角 最小'];
 
   dataset: any[];
   page: number;
@@ -24,13 +25,13 @@ export class ResultCombineDisgComponent implements OnInit {
 
   ngOnInit() {
     this.frame.CombinePickup();
-    let n: number = this.frame.getCombineCaseCount();
+    const n: number = this.frame.getCombineCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
 
   loadPage(currentPage: number) {
-    if (currentPage != this.page) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
 
@@ -38,7 +39,7 @@ export class ResultCombineDisgComponent implements OnInit {
       this.dataset[i] = new Array();
       for (let j = 1; j <= this.result.DISG_ROWS_COUNT; j++) {
         const disg = this.result.getCombineDisgColumns(this.page, j, this.KEYS[i]);
-        this.dataset[i].push(disg)
+        this.dataset[i].push(disg);
       }
     }
     this.load_name = this.frame.getCombineName(currentPage);
