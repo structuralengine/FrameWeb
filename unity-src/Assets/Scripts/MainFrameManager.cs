@@ -222,6 +222,14 @@ public class MainFrameManager : MonoBehaviour
 
     #region JavaScript から インプットデータ の変更通知が来た 
 
+    public void InputDataClear()
+    {
+        // jsonデータを読み込みます
+        this._webframe.Clear();
+
+        // ゲームオブジェクトを生成します。
+        this.CreateParts();
+    }
 
     public void InputDataChenge(string json)
     {

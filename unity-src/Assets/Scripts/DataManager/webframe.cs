@@ -30,6 +30,22 @@ public enum InputModeType
 /// <summary> 骨組応答解析データ </summary>
 public class FrameWeb //: Singleton<webframe>
 {
+    public void Clear()
+    {
+        this.listNodePoint.Clear();
+        this.ListMemberData.Clear();
+        this.ListNoticePoint.Clear();
+        this._ListElementData.Clear();
+        this.ListPanelData.Clear();
+        this._ListFixNode.Clear();
+        this._ListFixMember.Clear();
+        this._ListJointData.Clear();
+        this._ListLoadData.Clear();
+        this.ListDisgData.Clear();
+        this.ListReacData.Clear();
+        this.ListFsecData.Clear();
+    }
+
     #region 格点データ
 
     public Dictionary<string, Vector3> listNodePoint = new Dictionary<string, Vector3>();
@@ -1024,6 +1040,11 @@ public class FrameWeb //: Singleton<webframe>
 
         /* Jsonデータを読み込む */
         Dictionary<string, object> objJson = Json.Deserialize(strJson) as Dictionary<string, object>;
+
+        if (objJson.Count == 0) {
+            this.Clear();
+            return OnChengeList;
+        }
 
         /* 読み込んだデータをUnity内で使う用に編集・再定義 */
         // 格点データ
