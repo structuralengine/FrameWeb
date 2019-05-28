@@ -250,46 +250,50 @@ public class FrameWeb //: Singleton<webframe>
     protected Dictionary<int, Dictionary<string, ElementData>> _ListElementData = new Dictionary<int, Dictionary<string, ElementData>>();
 
     /// <summary> 属性データを読み込む </summary>
-    private bool SetElementData(Dictionary<string, object> objJson)
+    private bool SetElementData(Dictionary<string, object> objJson, int mode = 0)
     {
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("element"))
-            {
+            if (!objJson.ContainsKey("element"))
+                return false;
+
+            if (mode == 0)
                 this._ListElementData.Clear();
 
-                Dictionary<string, object> element1 = objJson["element"] as Dictionary<string, object>;
-                foreach (string key1 in element1.Keys)
+            Dictionary<string, object> element1 = objJson["element"] as Dictionary<string, object>;
+            foreach (string key1 in element1.Keys)
+            {
+                Dictionary<string, ElementData> tmp = new Dictionary<string, ElementData>();
+                try
                 {
-                    Dictionary<string, ElementData> tmp = new Dictionary<string, ElementData>();
-                    try
-                    {
-                        int typ = int.Parse(key1);
+                    int typ = int.Parse(key1);
 
-                        Dictionary<string, object> element2 = element1[key1] as Dictionary<string, object>;
-                        foreach (string key2 in element2.Keys)
-                        {
-                            Dictionary<string, object> element3 = element2[key2] as Dictionary<string, object>;
-                            float E = ComonFunctions.ConvertToSingle(element3["E"]);
-                            float G = ComonFunctions.ConvertToSingle(element3["G"]);
-                            float Xp = ComonFunctions.ConvertToSingle(element3["Xp"]);
-                            float A = ComonFunctions.ConvertToSingle(element3["A"]);
-                            float J = ComonFunctions.ConvertToSingle(element3["J"]);
-                            float Iz = ComonFunctions.ConvertToSingle(element3["Iz"]);
-                            float Iy = ComonFunctions.ConvertToSingle(element3["Iy"]);
-                            ElementData e = new ElementData(E, G, Xp, A, J, Iz, Iy);
-                            tmp.Add(key2, e);
-                        }
-                        this._ListElementData.Add(typ, tmp);
-                    }
-                    catch
+                    Dictionary<string, object> element2 = element1[key1] as Dictionary<string, object>;
+                    foreach (string key2 in element2.Keys)
                     {
-                        continue;
+                        Dictionary<string, object> element3 = element2[key2] as Dictionary<string, object>;
+                        float E = ComonFunctions.ConvertToSingle(element3["E"]);
+                        float G = ComonFunctions.ConvertToSingle(element3["G"]);
+                        float Xp = ComonFunctions.ConvertToSingle(element3["Xp"]);
+                        float A = ComonFunctions.ConvertToSingle(element3["A"]);
+                        float J = ComonFunctions.ConvertToSingle(element3["J"]);
+                        float Iz = ComonFunctions.ConvertToSingle(element3["Iz"]);
+                        float Iy = ComonFunctions.ConvertToSingle(element3["Iy"]);
+                        ElementData e = new ElementData(E, G, Xp, A, J, Iz, Iy);
+                        tmp.Add(key2, e);
                     }
+                    if (this._ListElementData.ContainsKey(typ))
+                        this._ListElementData[typ] = tmp;
+                    else
+                        this._ListElementData.Add(typ, tmp);
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
         }
         catch (Exception e)
         {
@@ -400,53 +404,57 @@ public class FrameWeb //: Singleton<webframe>
     protected Dictionary<int, Dictionary<int, FixNodeData>> _ListFixNode = new Dictionary<int, Dictionary<int, FixNodeData>>();
 
     /// <summary> 支点データを読み込む </summary>
-    private bool SetFixNode(Dictionary<string, object> objJson)
+    private bool SetFixNode(Dictionary<string, object> objJson, int mode = 0)
     {
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("fix_node"))
-            {
+            if (!objJson.ContainsKey("fix_node"))
+                return false;
+
+            if (mode == 0)
                 this._ListFixNode.Clear();
 
-                Dictionary<string, object> fix_node1 = objJson["fix_node"] as Dictionary<string, object>;
-                foreach (string key1 in fix_node1.Keys)
+            Dictionary<string, object> fix_node1 = objJson["fix_node"] as Dictionary<string, object>;
+            foreach (string key1 in fix_node1.Keys)
+            {
+                Dictionary<int, FixNodeData> tmp = new Dictionary<int, FixNodeData>();
+                try
                 {
-                    Dictionary<int, FixNodeData> tmp = new Dictionary<int, FixNodeData>();
-                    try
+                    int typ = int.Parse(key1);
+                    List<object> fix_node2 = fix_node1[key1] as List<object>;
+
+                    foreach (var fn in fix_node2)
                     {
-                        int typ = int.Parse(key1);
-                        List<object> fix_node2 = fix_node1[key1] as List<object>;
+                        Dictionary<string, object> fix_node3 = fn as Dictionary<string, object>;
 
-                        foreach (var fn in fix_node2)
-                        {
-                            Dictionary<string, object> fix_node3 = fn as Dictionary<string, object>;
+                        int id = ComonFunctions.ConvertToInt(fix_node3["row"]);
+                        string n = fix_node3["n"].ToString();
 
-                            int id = ComonFunctions.ConvertToInt(fix_node3["row"]);
-                            string n = fix_node3["n"].ToString();
+                        if (this.listNodePoint.ContainsKey(n) == false)
+                            continue;
 
-                            if (this.listNodePoint.ContainsKey(n) == false)
-                                continue;
+                        double tx = ComonFunctions.ConvertToDouble(fix_node3["tx"]);
+                        double ty = ComonFunctions.ConvertToDouble(fix_node3["ty"]);
+                        double tz = ComonFunctions.ConvertToDouble(fix_node3["tz"]);
+                        double rx = ComonFunctions.ConvertToDouble(fix_node3["rx"]);
+                        double ry = ComonFunctions.ConvertToDouble(fix_node3["ry"]);
+                        double rz = ComonFunctions.ConvertToDouble(fix_node3["rz"]);
 
-                            double tx = ComonFunctions.ConvertToDouble(fix_node3["tx"]);
-                            double ty = ComonFunctions.ConvertToDouble(fix_node3["ty"]);
-                            double tz = ComonFunctions.ConvertToDouble(fix_node3["tz"]);
-                            double rx = ComonFunctions.ConvertToDouble(fix_node3["rx"]);
-                            double ry = ComonFunctions.ConvertToDouble(fix_node3["ry"]);
-                            double rz = ComonFunctions.ConvertToDouble(fix_node3["rz"]);
-
-                            FixNodeData ex = new FixNodeData(n, tx, ty, tz, rx, ry, rz);
-                            tmp.Add(id, ex);
-                        }
+                        FixNodeData ex = new FixNodeData(n, tx, ty, tz, rx, ry, rz);
+                        tmp.Add(id, ex);
+                    }
+                    if (this._ListFixNode.ContainsKey(typ))
+                        this._ListFixNode[typ] = tmp;
+                    else
                         this._ListFixNode.Add(typ, tmp);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
         }
         catch (Exception e)
         {
@@ -481,51 +489,57 @@ public class FrameWeb //: Singleton<webframe>
     protected Dictionary<int, Dictionary<int, FixMemberData>> _ListFixMember = new Dictionary<int, Dictionary<int, FixMemberData>>();
 
     /// <summary> バネデータを読み込む </summary>
-    private bool SetFixMember(Dictionary<string, object> objJson)
+    private bool SetFixMember(Dictionary<string, object> objJson, int mode = 0)
     {
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("fix_member"))
+            if (!objJson.ContainsKey("fix_member"))
             {
+                return false;
+            }
+            if (mode == 0)
                 this._ListFixMember.Clear();
 
-                Dictionary<string, object> fix_member1 = objJson["fix_member"] as Dictionary<string, object>;
-                foreach (string key1 in fix_member1.Keys)
+            Dictionary<string, object> fix_member1 = objJson["fix_member"] as Dictionary<string, object>;
+            foreach (string key1 in fix_member1.Keys)
+            {
+                Dictionary<int, FixMemberData> tmp = new Dictionary<int, FixMemberData>();
+                try
                 {
-                    Dictionary<int, FixMemberData> tmp = new Dictionary<int, FixMemberData>();
-                    try
+                    int typ = int.Parse(key1);
+                    List<object> fix_member2 = fix_member1[key1] as List<object>;
+
+                    foreach (var fm in fix_member2)
                     {
-                        int typ = int.Parse(key1);
-                        List<object> fix_member2 = fix_member1[key1] as List<object>;
+                        Dictionary<string, object> fix_member3 = fm as Dictionary<string, object>;
 
-                        foreach (var fm in fix_member2)
-                        {
-                            Dictionary<string, object> fix_member3 = fm as Dictionary<string, object>;
+                        int id = ComonFunctions.ConvertToInt(fix_member3["row"]);
+                        string m = fix_member3["m"].ToString();
 
-                            int id = ComonFunctions.ConvertToInt(fix_member3["row"]);
-                            string m = fix_member3["m"].ToString();
+                        if (this.ListMemberData.ContainsKey(m) == false)
+                            continue;
 
-                            if (this.ListMemberData.ContainsKey(m) == false)
-                                continue;
+                        double tx = ComonFunctions.ConvertToDouble(fix_member3["tx"]);
+                        double ty = ComonFunctions.ConvertToDouble(fix_member3["ty"]);
+                        double tz = ComonFunctions.ConvertToDouble(fix_member3["tz"]);
+                        double tr = ComonFunctions.ConvertToDouble(fix_member3["tr"]);
 
-                            double tx = ComonFunctions.ConvertToDouble(fix_member3["tx"]);
-                            double ty = ComonFunctions.ConvertToDouble(fix_member3["ty"]);
-                            double tz = ComonFunctions.ConvertToDouble(fix_member3["tz"]);
-                            double tr = ComonFunctions.ConvertToDouble(fix_member3["tr"]);
-
-                            FixMemberData ex = new FixMemberData(m, tx, ty, tz, tr);
-                            tmp.Add(id, ex);
-                        }
+                        FixMemberData ex = new FixMemberData(m, tx, ty, tz, tr);
+                        tmp.Add(id, ex);
+                    }
+                    if (this._ListFixMember.ContainsKey(typ))
+                        this._ListFixMember[typ] = tmp;
+                    else
                         this._ListFixMember.Add(typ, tmp);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -566,54 +580,58 @@ public class FrameWeb //: Singleton<webframe>
     protected Dictionary<int, Dictionary<int, JointData>> _ListJointData = new Dictionary<int, Dictionary<int, JointData>>();
 
     /// <summary> 支点データを読み込む </summary>
-    private bool SetJointData(Dictionary<string, object> objJson)
+    private bool SetJointData(Dictionary<string, object> objJson, int mode = 0)
     {
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("joint"))
-            {
+            if (!objJson.ContainsKey("joint"))
+                return false;
+
+            if (mode == 0)
                 this._ListJointData.Clear();
 
-                Dictionary<string, object> joint1 = objJson["joint"] as Dictionary<string, object>;
+            Dictionary<string, object> joint1 = objJson["joint"] as Dictionary<string, object>;
 
-                foreach (string key1 in joint1.Keys)
+            foreach (string key1 in joint1.Keys)
+            {
+                Dictionary<int, JointData> tmp = new Dictionary<int, JointData>();
+                try
                 {
-                    Dictionary<int, JointData> tmp = new Dictionary<int, JointData>();
-                    try
+                    int typ = int.Parse(key1);
+                    List<object> joint2 = joint1[key1] as List<object>;
+
+                    foreach (var jo in joint2)
                     {
-                        int typ = int.Parse(key1);
-                        List<object> joint2 = joint1[key1] as List<object>;
+                        Dictionary<string, object> joint3 = jo as Dictionary<string, object>;
 
-                        foreach (var jo in joint2)
-                        {
-                            Dictionary<string, object> joint3 = jo as Dictionary<string, object>;
+                        int id = ComonFunctions.ConvertToInt(joint3["row"]);
+                        string m = joint3["m"].ToString();
 
-                            int id = ComonFunctions.ConvertToInt(joint3["row"]);
-                            string m = joint3["m"].ToString();
+                        if (this.ListMemberData.ContainsKey(m) == false)
+                            continue;
 
-                            if (this.ListMemberData.ContainsKey(m) == false)
-                                continue;
+                        int xi = ComonFunctions.ConvertToInt(joint3["xi"]);
+                        int yi = ComonFunctions.ConvertToInt(joint3["yi"]);
+                        int zi = ComonFunctions.ConvertToInt(joint3["zi"]);
+                        int xj = ComonFunctions.ConvertToInt(joint3["xj"]);
+                        int yj = ComonFunctions.ConvertToInt(joint3["yj"]);
+                        int zj = ComonFunctions.ConvertToInt(joint3["zj"]);
 
-                            int xi = ComonFunctions.ConvertToInt(joint3["xi"]);
-                            int yi = ComonFunctions.ConvertToInt(joint3["yi"]);
-                            int zi = ComonFunctions.ConvertToInt(joint3["zi"]);
-                            int xj = ComonFunctions.ConvertToInt(joint3["xj"]);
-                            int yj = ComonFunctions.ConvertToInt(joint3["yj"]);
-                            int zj = ComonFunctions.ConvertToInt(joint3["zj"]);
-
-                            JointData ex = new JointData(m, xi, yi, zi, xj, yj, zj);
-                            tmp.Add(id, ex);
-                        }
-                        this._ListJointData.Add(typ, tmp);
+                        JointData ex = new JointData(m, xi, yi, zi, xj, yj, zj);
+                        tmp.Add(id, ex);
                     }
-                    catch
-                    {
-                        continue;
-                    }
+                    if (this._ListJointData.ContainsKey(typ))
+                        this._ListJointData[typ] = tmp;
+                    else this._ListJointData.Add(typ, tmp);
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
 
         }
         catch (Exception e)
@@ -688,99 +706,104 @@ public class FrameWeb //: Singleton<webframe>
     protected Dictionary<int, LoadData> _ListLoadData = new Dictionary<int, LoadData>();
 
     /// <summary> 荷重データを読み込む </summary>
-    private bool SetLoadData(Dictionary<string, object> objJson)
+    private bool SetLoadData(Dictionary<string, object> objJson, int mode = 0)
     {
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("load"))
-            {
+            if (!objJson.ContainsKey("load"))
+                return false;
+
+            if (mode == 0)
                 this._ListLoadData.Clear();
 
-                Dictionary<string, object> load1 = objJson["load"] as Dictionary<string, object>;
-                foreach (string key1 in load1.Keys)
+            Dictionary<string, object> load1 = objJson["load"] as Dictionary<string, object>;
+            foreach (string key1 in load1.Keys)
+            {
+                LoadData tmp = new LoadData();
+                int caseNo = int.Parse(key1);
+                Dictionary<string, object> load2 = load1[key1] as Dictionary<string, object>;
+
+                int fix_node = ComonFunctions.ConvertToInt(load2["fix_node"], 1);
+                int fix_member = ComonFunctions.ConvertToInt(load2["fix_member"], 1);
+                int element = ComonFunctions.ConvertToInt(load2["element"], 1);
+                int joint = ComonFunctions.ConvertToInt(load2["joint"], 1);
+
+                List<LoadNodeData> load_node = new List<LoadNodeData>();
+                if (load2.ContainsKey("load_node"))
                 {
-                    LoadData tmp = new LoadData();
-                    int caseNo = int.Parse(key1);
-                    Dictionary<string, object> load2 = load1[key1] as Dictionary<string, object>;
-
-                    int fix_node = ComonFunctions.ConvertToInt(load2["fix_node"], 1);
-                    int fix_member = ComonFunctions.ConvertToInt(load2["fix_member"], 1);
-                    int element = ComonFunctions.ConvertToInt(load2["element"], 1);
-                    int joint = ComonFunctions.ConvertToInt(load2["joint"], 1);
-
-                    List<LoadNodeData> load_node = new List<LoadNodeData>();
-                    if (load2.ContainsKey("load_node"))
+                    try
                     {
-                        try
+                        List<object> load3 = load2["load_node"] as List<object>;
+                        foreach (Dictionary<string, object> ln in load3)
                         {
-                            List<object> load3 = load2["load_node"] as List<object>;
-                            foreach (Dictionary<string, object> ln in load3)
-                            {
-                                int row = ComonFunctions.ConvertToInt(ln["row"]);
-                                string id = ln["n"].ToString();
+                            int row = ComonFunctions.ConvertToInt(ln["row"]);
+                            string id = ln["n"].ToString();
 
-                                if (this.listNodePoint.ContainsKey(id) == false)
-                                    continue;
+                            if (this.listNodePoint.ContainsKey(id) == false)
+                                continue;
 
-                                double tx = ComonFunctions.ConvertToDouble(ln["tx"]);
-                                double ty = ComonFunctions.ConvertToDouble(ln["ty"]);
-                                double tz = ComonFunctions.ConvertToDouble(ln["tz"]);
-                                double rx = ComonFunctions.ConvertToDouble(ln["rx"]);
-                                double ry = ComonFunctions.ConvertToDouble(ln["ry"]);
-                                double rz = ComonFunctions.ConvertToDouble(ln["rz"]);
+                            double tx = ComonFunctions.ConvertToDouble(ln["tx"]);
+                            double ty = ComonFunctions.ConvertToDouble(ln["ty"]);
+                            double tz = ComonFunctions.ConvertToDouble(ln["tz"]);
+                            double rx = ComonFunctions.ConvertToDouble(ln["rx"]);
+                            double ry = ComonFunctions.ConvertToDouble(ln["ry"]);
+                            double rz = ComonFunctions.ConvertToDouble(ln["rz"]);
 
-                                LoadNodeData ex = new LoadNodeData(row, id, tx, ty, tz, rx, ry, rz);
-                                load_node.Add(ex);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.Log("Error!! at webframe SetLoadNodeData");
-                            Debug.Log(e.Message);
-                            return OnChenge;
+                            LoadNodeData ex = new LoadNodeData(row, id, tx, ty, tz, rx, ry, rz);
+                            load_node.Add(ex);
                         }
                     }
-                    tmp.load_node = load_node;
-
-                    List<LoadMemberData> load_member = new List<LoadMemberData>();
-                    if (load2.ContainsKey("load_member"))
+                    catch (Exception e)
                     {
-                        try
-                        {
-                            List<object> load3 = load2["load_member"] as List<object>;
-                            foreach (Dictionary<string, object> lm in load3)
-                            {
-                                int row = ComonFunctions.ConvertToInt(lm["row"]);
-                                string id = lm["m"].ToString();
-
-                                if (this.ListMemberData.ContainsKey(id) == false)
-                                    continue;
-
-                                string direction = lm["direction"].ToString();
-                                int mark = ComonFunctions.ConvertToInt(lm["mark"]);
-                                double L1 = ComonFunctions.ConvertToDouble(lm["L1"]);
-                                double L2 = ComonFunctions.ConvertToDouble(lm["L2"]);
-                                double P1 = ComonFunctions.ConvertToDouble(lm["P1"]);
-                                double P2 = ComonFunctions.ConvertToDouble(lm["P2"]);
-
-                                LoadMemberData ex = new LoadMemberData(row, id, direction, mark, L1, L2, P1, P2);
-                                load_member.Add(ex);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.Log("Error!! at webframe SetLoadMemberData");
-                            Debug.Log(e.Message);
-                            return OnChenge;
-                        }
+                        Debug.Log("Error!! at webframe SetLoadNodeData");
+                        Debug.Log(e.Message);
+                        return OnChenge;
                     }
-                    tmp.load_member = load_member;
-
-                    this._ListLoadData.Add(caseNo, tmp);
                 }
-                OnChenge = true;
+                tmp.load_node = load_node;
+
+                List<LoadMemberData> load_member = new List<LoadMemberData>();
+                if (load2.ContainsKey("load_member"))
+                {
+                    try
+                    {
+                        List<object> load3 = load2["load_member"] as List<object>;
+                        foreach (Dictionary<string, object> lm in load3)
+                        {
+                            int row = ComonFunctions.ConvertToInt(lm["row"]);
+                            string id = lm["m"].ToString();
+
+                            if (this.ListMemberData.ContainsKey(id) == false)
+                                continue;
+
+                            string direction = lm["direction"].ToString();
+                            int mark = ComonFunctions.ConvertToInt(lm["mark"]);
+                            double L1 = ComonFunctions.ConvertToDouble(lm["L1"]);
+                            double L2 = ComonFunctions.ConvertToDouble(lm["L2"]);
+                            double P1 = ComonFunctions.ConvertToDouble(lm["P1"]);
+                            double P2 = ComonFunctions.ConvertToDouble(lm["P2"]);
+
+                            LoadMemberData ex = new LoadMemberData(row, id, direction, mark, L1, L2, P1, P2);
+                            load_member.Add(ex);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("Error!! at webframe SetLoadMemberData");
+                        Debug.Log(e.Message);
+                        return OnChenge;
+                    }
+                }
+                tmp.load_member = load_member;
+
+                if (this._ListLoadData.ContainsKey(caseNo))
+                    this._ListLoadData[caseNo] = tmp;
+                else
+                    this._ListLoadData.Add(caseNo, tmp);
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -1034,14 +1057,15 @@ public class FrameWeb //: Singleton<webframe>
 
 
     /// <summary> データを作成する </summary>
-    protected bool[] _SetData(string strJson)
+    protected bool[] _SetData(string strJson, int mode = 0)
     {
         var OnChengeList = new bool[(int)InputModeType.Max];
 
         /* Jsonデータを読み込む */
         Dictionary<string, object> objJson = Json.Deserialize(strJson) as Dictionary<string, object>;
 
-        if (objJson.Count == 0) {
+        if (objJson.Count == 0)
+        {
             this.Clear();
             return OnChengeList;
         }
@@ -1050,7 +1074,7 @@ public class FrameWeb //: Singleton<webframe>
         // 格点データ
         OnChengeList[(int)InputModeType.Node] = SetNodePoint(objJson);
         // 属性データ
-        OnChengeList[(int)InputModeType.Element] = SetElementData(objJson);
+        OnChengeList[(int)InputModeType.Element] = SetElementData(objJson, mode);
         // 要素データ
         OnChengeList[(int)InputModeType.Member] = SetMemberData(objJson);
         // 着目点データ
@@ -1058,13 +1082,13 @@ public class FrameWeb //: Singleton<webframe>
         //	パネルデータ
         OnChengeList[(int)InputModeType.Panel] = SetPanelData(objJson);
         //	支点データ
-        OnChengeList[(int)InputModeType.FixNode] = SetFixNode(objJson);
+        OnChengeList[(int)InputModeType.FixNode] = SetFixNode(objJson, mode);
         //	バネデータ
-        OnChengeList[(int)InputModeType.FixMember] = SetFixMember(objJson);
+        OnChengeList[(int)InputModeType.FixMember] = SetFixMember(objJson, mode);
         //	結合データ
-        OnChengeList[(int)InputModeType.Joint] = SetJointData(objJson);
+        OnChengeList[(int)InputModeType.Joint] = SetJointData(objJson, mode);
         //	荷重データ
-        OnChengeList[(int)InputModeType.Load] = SetLoadData(objJson);
+        OnChengeList[(int)InputModeType.Load] = SetLoadData(objJson, mode);
         // 変位量データ
         OnChengeList[(int)InputModeType.Disg] = SetDisgData(objJson);
         // 反力データ

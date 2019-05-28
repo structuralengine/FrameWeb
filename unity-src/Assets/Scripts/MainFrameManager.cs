@@ -162,6 +162,20 @@ public class MainFrameManager : MonoBehaviour
         }
     }
 
+    public void InputTypeChange(InputModeType ModeId, int TypeNo)
+    {
+        this.InputModeChange(ModeId);
+
+        // ゲームオブジェクトを変更します。
+        PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
+
+        if (partsDispWork.partsDispManager == null)
+            return;
+
+        partsDispWork.partsDispManager.ChangeTypeNo(TypeNo);
+        partsDispWork.partsDispManager.CreateParts();
+        partsDispWork.partsDispManager.SetBlockStatusAll();
+    }
 
     /// <summary>
     /// アクティブな表示モードを切り替える
@@ -260,7 +274,7 @@ public class MainFrameManager : MonoBehaviour
         }
 
         // jsonデータを読み込みます
-        this._webframe.SetData(json);
+        this._webframe.SetData(json, 1);
 
         // ゲームオブジェクトを変更します。
         PartsDispWork partsDispWork = _partsDispWorks[(int)this.inputMode];
@@ -279,6 +293,12 @@ public class MainFrameManager : MonoBehaviour
         {
             partsDispWork.partsDispManager.SetBlockStatusAll();
         }
+    }
+
+    /// <summary> JavaScript から 計算結果データ が来た </summary>
+    public void ResultDataChenge(string json)
+    {
+
     }
 
     #endregion

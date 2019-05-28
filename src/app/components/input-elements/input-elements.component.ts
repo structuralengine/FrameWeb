@@ -17,7 +17,7 @@ export class InputElementsComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-elements');
+        this.unity.chengeData('unity-elements:' + this.page.toString());
       }
     }
   };
@@ -42,5 +42,6 @@ export class InputElementsComponent implements OnInit {
       const element = this.input.getElementColumns(this.page, i);
       this.dataset.push(element);
     }
+    this.unity.ChengeMode('elements:' + currentPage.toString());
   }
 }

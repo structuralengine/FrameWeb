@@ -9,6 +9,11 @@ using UnityEngine;
 /// </summary>
 public class LoadDispManager : PartsDispManager
 {
+    public override void ChangeTypeNo(int TypeNo)
+    {
+        _webframe.LoadType = TypeNo;
+    }
+
     public override void CreateParts()
     {
         // 前のオブジェクトを消す

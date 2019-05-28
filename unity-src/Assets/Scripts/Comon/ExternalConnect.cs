@@ -69,6 +69,12 @@ public class ExternalConnect : MonoBehaviour
         mainFrameObject.InputModeDataChenge(strJson);
     }
 
+    /// <summary> Htmlから 計算結果のJsonデータが届く </summary>
+    public void ReceiveResultData(string strJson)
+    {
+        mainFrameObject.ResultDataChenge(strJson);
+    }
+
     /// <summary> Htmlから キャプチャー画像の送付依頼がくる </summary>
     public void SendCapture()
     {
@@ -92,57 +98,90 @@ public class ExternalConnect : MonoBehaviour
     public void ChengeMode(string mode)
     {
         InputModeType inputModeType = InputModeType.None;
-        switch (mode)
+
+        string[] values = mode.Split(':');
+
+        int option = 0;
+        if (values.Length > 1)
+            Int32.TryParse(values[1], out option);
+
+        switch (values[0])
         {
             case "nodes":
                 inputModeType = InputModeType.Node;
+                mainFrameObject.InputModeChange(inputModeType);
                 break;
             case "members":
                 inputModeType = InputModeType.Member;
+                mainFrameObject.InputModeChange(inputModeType);
                 break;
             case "panels":
                 inputModeType = InputModeType.Panel;
+                mainFrameObject.InputModeChange(inputModeType);
                 break;
             case "fix_nodes":
                 inputModeType = InputModeType.FixNode;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "elements":
                 inputModeType = InputModeType.Element;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "joints":
                 inputModeType = InputModeType.Joint;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "notice_points":
                 inputModeType = InputModeType.NoticePoints;
+                mainFrameObject.InputModeChange(inputModeType);
                 break;
             case "fix_members":
                 inputModeType = InputModeType.FixMember;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "loads":
                 inputModeType = InputModeType.Load;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "fsec":
                 inputModeType = InputModeType.Fsec;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "comb_fsec":
                 inputModeType = InputModeType.Fsec;
+                mainFrameObject.InputTypeChange(inputModeType, option);
+                break;
+            case "pik_fsec":
+                inputModeType = InputModeType.Fsec;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "disg":
                 inputModeType = InputModeType.Disg;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "comb_disg":
                 inputModeType = InputModeType.Disg;
+                mainFrameObject.InputTypeChange(inputModeType, option);
+                break;
+            case "pik_disg":
+                inputModeType = InputModeType.Disg;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "reac":
                 inputModeType = InputModeType.Reac;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             case "comb_reac":
                 inputModeType = InputModeType.Reac;
+                mainFrameObject.InputTypeChange(inputModeType, option);
+                break;
+            case "pik_reac":
+                inputModeType = InputModeType.Reac;
+                mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
             default:
                 return;
         }
-        mainFrameObject.InputModeChange(inputModeType);
     }
 
     /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>

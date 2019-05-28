@@ -50,7 +50,7 @@ export class InputDataService {
         let result: any = null;
         for (let i = 0; i < this.node.length; i++) {
             const tmp = this.node[i];
-            if (tmp['id'] === index) {
+            if (tmp['id'].toString() === index.toString()) {
                 result = tmp;
                 break;
             }
@@ -68,7 +68,7 @@ export class InputDataService {
         let result: any = null;
         for (let i = 0; i < this.member.length; i++) {
             const tmp = this.member[i];
-            if (tmp['id'] === index) {
+            if (tmp['id'].toString() === index.toString()) {
                 result = tmp;
                 break;
             }
@@ -127,7 +127,7 @@ export class InputDataService {
         // 行を探す
         for (let i = 0; i < target.length; i++) {
             const tmp = target[i];
-            if (tmp['id'] === index) {
+            if (tmp['id'].toString() === index.toString()) {
                 result = tmp;
                 break;
             }

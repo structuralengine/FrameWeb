@@ -6,6 +6,11 @@ using SystemUtility;
 
 public class FixNodeDispManager : PartsDispManager
 {
+    public override void ChangeTypeNo(int TypeNo)
+    {
+        _webframe.FixNodeType = TypeNo;
+    }
+
     public override void CreateParts()
     {
         // 前のオブジェクトを消す

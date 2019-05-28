@@ -19,7 +19,7 @@ export class InputLoadComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-loads');
+        this.unity.chengeData('unity-loads:' + this.page.toString());
       }
     }
   };
@@ -48,5 +48,7 @@ export class InputLoadComponent implements OnInit {
     }
     const currentLoad:{} = this.input.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
+
+    this.unity.ChengeMode('loads:' + currentPage.toString());
   }
 }

@@ -17,6 +17,22 @@ public class ElementDispManager : PartsDispManager
         {
             BlockWorkData blockWorkData;
 
+            if (_webframe.ListElementData.Count == 0)
+            {
+                // 前のオブジェクトを消す
+                foreach (string id in base._blockWorkData.Keys)
+                {
+                    try
+                    {
+                        Destroy(base._blockWorkData[id].renderer.sharedMaterial);
+                        Destroy(base._blockWorkData[id].gameObject);
+                    }
+                    catch { }
+                }
+                base._blockWorkData.Clear();
+                return;
+            }
+
             // データに無いブロックは消す
             List<string> DeleteKeys = new List<string>();
             foreach (string id in base._blockWorkData.Keys)
@@ -56,6 +72,11 @@ public class ElementDispManager : PartsDispManager
         {
             Debug.Log("ElementDispManager CreateElements" + e.Message);
         }
+    }
+
+    public override void ChangeTypeNo(int TypeNo)
+    {
+        _webframe.ElemtType = TypeNo;
     }
 
     /// <summary>JSに選択アイテムの変更を通知する </summary>

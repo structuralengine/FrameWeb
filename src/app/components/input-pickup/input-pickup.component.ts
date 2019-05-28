@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { ReadDataService } from '../../providers/read-data.service';
 import { InputDataService } from '../../providers/input-data.service';
 
 @Component({
@@ -21,13 +22,14 @@ export class InputPickupComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.frame.isCombinePickupChenge = true;
+        this.reault.isCombinePickupChenge = true;
       }
     }
   };
 
   constructor(private input: InputDataService,
-    private frame: FrameDataService) {
+    private frame: FrameDataService,
+    private reault: ReadDataService) {
 
     this.page = 1;
     this.pickupData = new Array();
@@ -64,7 +66,7 @@ export class InputPickupComponent implements OnInit {
     const a2: number = a1 + this.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const pickup = this.input.getPickUpDataColumns(i, this.COLUMNS_COUNT+1);
+      const pickup = this.input.getPickUpDataColumns(i, this.COLUMNS_COUNT + 1);
       this.pickupData.push(pickup);
       this.rowHeaders.push(i);
     }

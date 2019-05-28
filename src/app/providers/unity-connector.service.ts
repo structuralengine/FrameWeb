@@ -10,7 +10,7 @@ export class UnityConnectorService {
   inputMode: string;
 
   constructor(private frame: FrameDataService) { 
-    this.inputMode = '/input-nodes';
+    this.inputMode = 'nodes';
   }
 
   public setUnityInstance(instance: any):void {
@@ -47,7 +47,7 @@ export class UnityConnectorService {
   public sendResultData() {
     const strJson: string = this.frame.getResultText();
     console.log('%c' + strJson, 'color: magenta');
-    this.sendMessageToUnity('ExternalConnect', 'ReceiveData', strJson);
+    this.sendMessageToUnity('ExternalConnect', 'ReceiveResultData', strJson);
   }
 
   public chengeData(mode: string = 'unity') {
@@ -58,64 +58,11 @@ export class UnityConnectorService {
     this.sendMessageToUnity('ExternalConnect', funcName, strJson);
   }
 
-  public ChengeMode(mode: string) {
-    let inputModeName: string = 'nodes';
-    switch (mode) {
-      case '/input-nodes':
-        inputModeName = 'nodes';
-        break;
-      case '/input-members':
-        inputModeName = 'members';
-        break;
-      case '/panels ← まだ作成していない画面です。':
-        inputModeName = 'panels';
-        break;
-      case '/input-fix_nodes':
-        inputModeName = 'fix_nodes';
-        break;
-      case '/input-elements':
-        inputModeName = 'elements';
-        break;
-      case '/input-joints':
-        inputModeName = 'joints';
-        break;
-      case '/input-notice_points':
-        inputModeName = 'notice_points';
-        break;
-      case '/input-fix_members':
-        inputModeName = 'fix_members';
-        break;
-      case '/input-load-name':
-      case '/input-loads':
-        inputModeName = 'loads';
-        break;
-      case '/result-fsec':
-        inputModeName = 'fsec';
-        break;
-      case '/result-pic_fsec':
-      case '/result-comb_fsec':
-        inputModeName = 'comb_fsec';
-        break;
-      case '/result-disg':
-        inputModeName = 'disg';
-        break;
-      case '/result-comb_disg':
-      case '/result-pic_disg':
-        inputModeName = 'comb_disg';
-        break;
-      case '/result-reac':
-        inputModeName = 'reac';
-        break;
-      case '/result-comb_reac':
-      case '/result-pic_reac':
-        inputModeName = 'comb_reac';
-        break;
-      default:
-        return;
-    }
-    this.inputMode = mode;
+  public ChengeMode(inputModeName: string) {
+    this.inputMode = inputModeName;
     this.sendMessageToUnity('ExternalConnect', 'ChengeMode', inputModeName);
   }
+
 
   public SelectItemChange(id: string) {
     this.sendMessageToUnity('ExternalConnect', 'SelectItemChange', id);

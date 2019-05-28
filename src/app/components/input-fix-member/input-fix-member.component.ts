@@ -16,7 +16,7 @@ export class InputFixMemberComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-fix_members');
+        this.unity.chengeData('unity-fix_members:' + this.page.toString());
       }
     }
   };
@@ -41,5 +41,6 @@ export class InputFixMemberComponent implements OnInit {
       const fix_member = this.input.getFixMemberColumns(this.page, i);
       this.dataset.push(fix_member);
     }
+    this.unity.ChengeMode('fix_members:' + currentPage.toString());
   }
 }

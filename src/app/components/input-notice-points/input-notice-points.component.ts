@@ -65,6 +65,7 @@ export class InputNoticePointsComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage(1);
+    this.unity.ChengeMode('notice_points');
   }
 
   loadPage(currentPage: number) {

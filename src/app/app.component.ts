@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
-import { Router, NavigationEnd } from "@angular/router";
+import { Router, NavigationEnd } from '@angular/router';
 
 import { UnityConnectorService } from './providers/unity-connector.service';
 
@@ -25,19 +25,19 @@ export class AppComponent {
     this.baseUrl = location.origin + location.pathname;
     console.log('baseUrl', this.baseUrl);
 
-        // ページが遷移した時の処理
+    /* // ページが遷移した時の処理
     this._router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.unityConnector.ChengeMode(event.url);
       }
     });
+    */
 
     // custom property
     this.isContentsDailogShow = false;
     this.isCalculated = false;
 
   }
-
 
   ngOnInit() {
     this.project = 'unity';

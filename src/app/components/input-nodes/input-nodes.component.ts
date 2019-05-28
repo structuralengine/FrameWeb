@@ -78,6 +78,7 @@ export class InputNodesComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage(1);
+    this.unity.ChengeMode('nodes');
   }
 
   loadPage(currentPage: number) {

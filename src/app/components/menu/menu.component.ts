@@ -9,6 +9,7 @@ import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 import { UserInfoService } from '../../providers/user-info.service';
 import * as FileSaver from 'file-saver';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { ReadDataService } from '../../providers/read-data.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
@@ -27,6 +28,7 @@ export class MenuComponent implements OnInit {
     private app: AppComponent,
     private user: UserInfoService,
     private InputData: FrameDataService,
+    private ResultData: ReadDataService,
     private http: Http,
     private unity: UnityConnectorService) {
     this.loggedIn = this.user.loggedIn;
@@ -40,6 +42,7 @@ export class MenuComponent implements OnInit {
   renew(): void {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.InputData.clear();
+    this.ResultData.clear();
     this.app.isCalculated = false;
     this.unity.chengeData();
   }
@@ -52,7 +55,7 @@ export class MenuComponent implements OnInit {
     this.fileToText(file)
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
-        this.InputData.loadInputData(text); // データを読み込む
+        this.ResultData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
         this.unity.chengeData();
       })
@@ -110,10 +113,15 @@ export class MenuComponent implements OnInit {
       response => {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
-        this.InputData.loadResultData(response.text());
-        this.loadResultData(response.text());
-        this.app.isCalculated = true;
-        this.unity.sendResultData();
+        console.log(response.text());
+
+        if (!this.ResultData.loadResultData(response.text())){
+          alert(response.text());
+        } else {
+          this.loadResultData(response.text());
+          this.app.isCalculated = true;
+          this.unity.sendResultData();
+        }
         modalRef.close();
       },
       error => {

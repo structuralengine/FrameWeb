@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../providers/input-data.service';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { ReadDataService } from '../../providers/read-data.service';
 
 
 @Component({
@@ -20,13 +21,14 @@ export class InputDefineComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.frame.isCombinePickupChenge = true;
+        this.reault.isCombinePickupChenge = true;
       }
     }
   };
 
   constructor(private input: InputDataService,
-    private frame: FrameDataService) {
+    private frame: FrameDataService,
+    private reault: ReadDataService) {
 
     this.page = 1;
     this.defineData = new Array();

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { ReadDataService } from '../../providers/read-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-result-combine-disg',
@@ -19,12 +21,14 @@ export class ResultCombineDisgComponent implements OnInit {
   collectionSize: number;
 
   constructor(private frame: FrameDataService,
-    private result: ResultDataService) {
+    private read: ReadDataService,
+    private result: ResultDataService,
+    private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    this.frame.CombinePickup();
+    this.read.CombinePickup();
     const n: number = this.frame.getCombineCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
@@ -43,5 +47,7 @@ export class ResultCombineDisgComponent implements OnInit {
       }
     }
     this.load_name = this.frame.getCombineName(currentPage);
+
+    this.unity.ChengeMode('comb_disg:' + currentPage.toString());
   }
 }

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FrameDataService } from '../../providers/frame-data.service';
+import { ReadDataService } from '../../providers/read-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-result-pickup-disg',
@@ -19,12 +21,14 @@ export class ResultPickupDisgComponent implements OnInit {
   collectionSize: number;
 
   constructor(private frame: FrameDataService,
-    private result: ResultDataService) {
+    private read: ReadDataService,
+    private result: ResultDataService,
+    private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    this.frame.CombinePickup();
+    this.read.CombinePickup();
     const n: number = this.frame.getPickupCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
@@ -42,5 +46,7 @@ export class ResultPickupDisgComponent implements OnInit {
       }
     }
     this.load_name = this.frame.getPickUpName(currentPage);
-  }
+
+    this.unity.ChengeMode('pik_disg:' + currentPage.toString());
+ }
 }

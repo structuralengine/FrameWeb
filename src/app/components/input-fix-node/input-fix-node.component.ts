@@ -7,7 +7,7 @@ import { UnityConnectorService } from '../../providers/unity-connector.service';
   templateUrl: './input-fix-node.component.html',
   styleUrls: ['./input-fix-node.component.scss']
 })
-  
+
 export class InputFixNodeComponent implements OnInit {
 
   static ROWS_COUNT = 20;
@@ -17,7 +17,7 @@ export class InputFixNodeComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-fix_nodes');
+        this.unity.chengeData('unity-fix_nodes:' + this.page.toString());
       }
     }
   };
@@ -43,5 +43,6 @@ export class InputFixNodeComponent implements OnInit {
       const fix_node = this.input.getFixNodeColumns(this.page, i);
       this.dataset.push(fix_node);
     }
+    this.unity.ChengeMode('fix_nodes:' + currentPage.toString());
   }
 }

@@ -470,9 +470,9 @@ public class FrameDataService : FrameWeb
     }
     #endregion
 
-    public void SetData(string strJson)
+    public void SetData(string strJson, int mode = 0)
     {
-        var OnChengeList = base._SetData(strJson);
+        var OnChengeList = base._SetData(strJson, mode);
 
         // 節点データが変わったら _maxNodeLangth, _minNodeLangth を再計算
         if (OnChengeList[(int)InputModeType.Node] == true)

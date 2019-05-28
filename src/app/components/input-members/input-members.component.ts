@@ -58,6 +58,7 @@ export class InputMembersComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage(1);
+    this.unity.ChengeMode('members');
   }
 
   loadPage(currentPage: number) {

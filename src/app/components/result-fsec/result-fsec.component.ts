@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FrameDataService } from '../../providers/frame-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
+import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
   selector: 'app-result-fsec',
@@ -15,7 +16,8 @@ export class ResultFsecComponent implements OnInit {
   collectionSize: number;
 
   constructor(private frame: FrameDataService,
-    private result: ResultDataService) {
+    private result: ResultDataService,
+    private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
@@ -35,5 +37,7 @@ export class ResultFsecComponent implements OnInit {
       this.dataset.push(reac);
     }
     this.load_name = this.frame.getLoadName(currentPage);
+
+    this.unity.ChengeMode('fsec:' + currentPage.toString());
   }
 }

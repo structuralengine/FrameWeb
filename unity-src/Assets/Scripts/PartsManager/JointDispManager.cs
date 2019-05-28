@@ -6,6 +6,11 @@ using SystemUtility;
 
 public class JointDispManager : PartsDispManager
 {
+    public override void ChangeTypeNo(int TypeNo)
+    {
+        _webframe.JointType = TypeNo;
+    }
+
     public override void CreateParts()
     {
         // 前のオブジェクトを消す

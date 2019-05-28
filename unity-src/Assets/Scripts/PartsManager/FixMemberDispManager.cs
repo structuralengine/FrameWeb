@@ -9,6 +9,11 @@ using UnityEngine;
 /// </summary>
 public class FixMemberDispManager : PartsDispManager
 {
+    public override void ChangeTypeNo(int TypeNo)
+    {
+        _webframe.FixMemberType = TypeNo;
+    }
+
     public override void CreateParts()
     {
         // 前のオブジェクトを消す

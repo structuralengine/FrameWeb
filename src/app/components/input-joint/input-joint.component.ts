@@ -16,7 +16,7 @@ export class InputJointComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-joints');
+        this.unity.chengeData('unity-joints:' + this.page.toString());
       }
     }
   };
@@ -41,5 +41,6 @@ export class InputJointComponent implements OnInit {
       const joint = this.input.getJointColumns(this.page, i);
       this.dataset.push(joint);
     }
+    this.unity.ChengeMode('joints:' + currentPage.toString());
   }
 }

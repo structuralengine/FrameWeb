@@ -15,7 +15,11 @@ export class InputLoadNameComponent implements OnInit {
   rowHeaders: any[];
 
   hotTableSettings = {
+    afterSelection: (hotInstance, row, column, row2, column2, preventScrolling, selectionLayerLevel) => {
+      this.unity.ChengeMode('loads:' + (row + 1).toString());
+    }
   };
+
 
   constructor(private input: InputDataService,
     private unity: UnityConnectorService) {

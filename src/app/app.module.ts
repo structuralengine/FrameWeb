@@ -19,6 +19,7 @@ import { HotTableModule } from '@handsontable/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { FrameDataService } from './providers/frame-data.service';
+import { ReadDataService } from './providers/read-data.service';
 import { InputDataService } from './providers/input-data.service';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
@@ -101,6 +102,7 @@ import { ResultCombineFsecComponent } from './components/result-combine-fsec/res
   ],
   providers: [
     FrameDataService,
+    ReadDataService,
     InputDataService,
     ResultDataService,
     UserInfoService,

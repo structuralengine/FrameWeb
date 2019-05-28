@@ -119,7 +119,14 @@ public class PartsDispManager : MonoBehaviour
     {
     }
 
+    /// <summary>
+    /// データのタイプ変更
+    /// </summary>
+    /// <param name="TypeNo"></param>
+    public virtual void ChangeTypeNo(int TypeNo)
+    {
 
+    }
 
     /// <summary>
     /// 表示ブロックの設定の仮想関数
