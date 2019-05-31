@@ -41,9 +41,12 @@ public class FrameWeb //: Singleton<webframe>
         this._ListFixMember.Clear();
         this._ListJointData.Clear();
         this._ListLoadData.Clear();
-        this.ListDisgData.Clear();
-        this.ListReacData.Clear();
-        this.ListFsecData.Clear();
+    }
+    public void ResultDataClear()
+    {
+        this._ListDisgData.Clear();
+        this._ListReacData.Clear();
+        this._ListFsecData.Clear();
     }
 
     #region 格点データ
@@ -56,29 +59,30 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("node"))
-            {
-                this.listNodePoint.Clear();
+            if (!objJson.ContainsKey("node"))
+                return false;
 
-                Dictionary<string, object> node1 = objJson["node"] as Dictionary<string, object>;
-                foreach (string key in node1.Keys)
+            this.listNodePoint.Clear();
+
+            Dictionary<string, object> node1 = objJson["node"] as Dictionary<string, object>;
+            foreach (string key in node1.Keys)
+            {
+                try
                 {
-                    try
-                    {
-                        Dictionary<string, object> node2 = node1[key] as Dictionary<string, object>;
-                        float x = ComonFunctions.ConvertToSingle(node2["x"]);
-                        float y = ComonFunctions.ConvertToSingle(node2["y"]);
-                        float z = ComonFunctions.ConvertToSingle(node2["z"]);
-                        Vector3 xyz = new Vector3(x, -y, z); // Unity 左手系 → FrameWeb 右手系 なので y にマイナスを乗ずる
-                        this.listNodePoint.Add(key, xyz);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
+                    Dictionary<string, object> node2 = node1[key] as Dictionary<string, object>;
+                    float x = ComonFunctions.ConvertToSingle(node2["x"]);
+                    float y = ComonFunctions.ConvertToSingle(node2["y"]);
+                    float z = ComonFunctions.ConvertToSingle(node2["z"]);
+                    Vector3 xyz = new Vector3(x, -y, z); // Unity 左手系 → FrameWeb 右手系 なので y にマイナスを乗ずる
+                    this.listNodePoint.Add(key, xyz);
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -116,33 +120,34 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("member"))
-            {
-                this.ListMemberData.Clear();
+            if (!objJson.ContainsKey("member"))
+                return false;
 
-                Dictionary<string, object> member1 = objJson["member"] as Dictionary<string, object>;
-                foreach (string key in member1.Keys)
+            this.ListMemberData.Clear();
+
+            Dictionary<string, object> member1 = objJson["member"] as Dictionary<string, object>;
+            foreach (string key in member1.Keys)
+            {
+                try
                 {
-                    try
+                    Dictionary<string, object> member2 = member1[key] as Dictionary<string, object>;
+                    string i = member2["ni"].ToString();
+                    string j = member2["nj"].ToString();
+                    string e = member2["e"].ToString();
+                    if (this.listNodePoint.ContainsKey(i)
+                        && this.listNodePoint.ContainsKey(j))
                     {
-                        Dictionary<string, object> member2 = member1[key] as Dictionary<string, object>;
-                        string i = member2["ni"].ToString();
-                        string j = member2["nj"].ToString();
-                        string e = member2["e"].ToString();
-                        if (this.listNodePoint.ContainsKey(i)
-                            && this.listNodePoint.ContainsKey(j))
-                        {
-                            MemberData ex = new MemberData(i, j, e);
-                            this.ListMemberData.Add(key, ex);
-                        }
-                    }
-                    catch
-                    {
-                        continue;
+                        MemberData ex = new MemberData(i, j, e);
+                        this.ListMemberData.Add(key, ex);
                     }
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -176,40 +181,41 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("notice_points"))
-            {
-                this.ListNoticePoint.Clear();
+            if (!objJson.ContainsKey("notice_points"))
+                return false;
 
-                List<object> notice1 = objJson["notice_points"] as List<object>;
-                foreach (Dictionary<string, object> tmp in notice1)
+            this.ListNoticePoint.Clear();
+
+            List<object> notice1 = objJson["notice_points"] as List<object>;
+            foreach (Dictionary<string, object> tmp in notice1)
+            {
+                try
                 {
-                    try
+                    int id = ComonFunctions.ConvertToInt(tmp["row"]);
+                    string m = tmp["m"].ToString();
+                    if (this.ListMemberData.ContainsKey(m))
                     {
-                        int id = ComonFunctions.ConvertToInt(tmp["row"]);
-                        string m = tmp["m"].ToString();
-                        if (this.ListMemberData.ContainsKey(m))
+                        List<object> pos1 = tmp["Points"] as List<object>;
+                        List<float> pos2 = new List<float>();
+                        foreach (var p in pos1)
                         {
-                            List<object> pos1 = tmp["Points"] as List<object>;
-                            List<float> pos2 = new List<float>();
-                            foreach (var p in pos1)
+                            if (p != null)
                             {
-                                if (p != null)
-                                {
-                                    float pos = ComonFunctions.ConvertToSingle(p, -1);
-                                    if (pos > 0)
-                                        pos2.Add(pos);
-                                }
+                                float pos = ComonFunctions.ConvertToSingle(p, -1);
+                                if (pos > 0)
+                                    pos2.Add(pos);
                             }
-                            this.ListNoticePoint.Add(id, new NoticePointData(m, pos2));
                         }
-                    }
-                    catch
-                    {
-                        continue;
+                        this.ListNoticePoint.Add(id, new NoticePointData(m, pos2));
                     }
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -331,35 +337,36 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("panel"))
-            {
-                this.ListPanelData.Clear();
+            if (!objJson.ContainsKey("panel"))
+                return false;
 
-                Dictionary<string, object> panel1 = objJson["panel"] as Dictionary<string, object>;
-                foreach (string key in panel1.Keys)
+            this.ListPanelData.Clear();
+
+            Dictionary<string, object> panel1 = objJson["panel"] as Dictionary<string, object>;
+            foreach (string key in panel1.Keys)
+            {
+                try
                 {
-                    try
+                    Dictionary<string, object> panel2 = panel1[key] as Dictionary<string, object>;
+                    string n1 = panel2["no1"].ToString();
+                    string n2 = panel2["no2"].ToString();
+                    string n3 = panel2["no3"].ToString();
+                    string e = panel2["e"].ToString();
+                    if (this.listNodePoint.ContainsKey(n1)
+                        && this.listNodePoint.ContainsKey(n2)
+                        && this.listNodePoint.ContainsKey(n3))
                     {
-                        Dictionary<string, object> panel2 = panel1[key] as Dictionary<string, object>;
-                        string n1 = panel2["no1"].ToString();
-                        string n2 = panel2["no2"].ToString();
-                        string n3 = panel2["no3"].ToString();
-                        string e = panel2["e"].ToString();
-                        if (this.listNodePoint.ContainsKey(n1)
-                            && this.listNodePoint.ContainsKey(n2)
-                            && this.listNodePoint.ContainsKey(n3))
-                        {
-                            PanelData ex = new PanelData(n1, n2, n3, e);
-                            this.ListPanelData.Add(key, ex);
-                        }
-                    }
-                    catch
-                    {
-                        continue;
+                        PanelData ex = new PanelData(n1, n2, n3, e);
+                        this.ListPanelData.Add(key, ex);
                     }
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -495,9 +502,8 @@ public class FrameWeb //: Singleton<webframe>
         try
         {
             if (!objJson.ContainsKey("fix_member"))
-            {
                 return false;
-            }
+
             if (mode == 0)
                 this._ListFixMember.Clear();
 
@@ -816,6 +822,7 @@ public class FrameWeb //: Singleton<webframe>
     #endregion
 
     #region 変位量データ
+    public int DisgType = 1;
 
     public partial class DisgData
     {
@@ -835,7 +842,7 @@ public class FrameWeb //: Singleton<webframe>
             this.rz = _rz;
         }
     }
-    public Dictionary<string, DisgData> ListDisgData = new Dictionary<string, DisgData>();
+    protected Dictionary<int, Dictionary<string, DisgData>> _ListDisgData = new Dictionary<int, Dictionary<string, DisgData>>();
 
     /// <summary> 変位量データを読み込む </summary>
     private bool SetDisgData(Dictionary<string, object> objJson)
@@ -843,37 +850,46 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("disg"))
+            if (!objJson.ContainsKey("disg"))
+                return false;
+
+            this._ListDisgData.Clear();
+
+            Dictionary<string, object> disg1 = objJson["disg"] as Dictionary<string, object>;
+            foreach (string CaseNo in disg1.Keys)
             {
-                this.ListDisgData.Clear();
-
-                Dictionary<string, object> disg1 = objJson["disg"] as Dictionary<string, object>;
-                foreach (string key in disg1.Keys)
+                try
                 {
-                    try
-                    {
-                        Dictionary<string, object> disg2 = disg1[key] as Dictionary<string, object>;
+                    List<object> disg2 = disg1[CaseNo] as List<object>;
 
-                        if (this.listNodePoint.ContainsKey(key))
-                        {
-                            double dx = ComonFunctions.ConvertToDouble(disg2["dx"]);
-                            double dy = ComonFunctions.ConvertToDouble(disg2["dy"]);
-                            double dz = ComonFunctions.ConvertToDouble(disg2["dz"]);
-                            double rx = ComonFunctions.ConvertToDouble(disg2["rx"]);
-                            double ry = ComonFunctions.ConvertToDouble(disg2["ry"]);
-                            double rz = ComonFunctions.ConvertToDouble(disg2["rz"]);
+                    Dictionary<string, DisgData> tmp = new Dictionary<string, DisgData>();
 
-                            DisgData ex = new DisgData(dx, dy, dz, rx, ry, rz);
-                            this.ListDisgData.Add(key, ex);
-                        }
-                    }
-                    catch
+                    for (int i = 0; i < disg2.Count; i++)
                     {
-                        continue;
+                        Dictionary<string, object> disg3 = disg2[i] as Dictionary<string, object>;
+
+                        string n = disg3["id"].ToString();
+
+                        double dx = ComonFunctions.ConvertToDouble(disg3["dx"]);
+                        double dy = ComonFunctions.ConvertToDouble(disg3["dy"]);
+                        double dz = ComonFunctions.ConvertToDouble(disg3["dz"]);
+                        double rx = ComonFunctions.ConvertToDouble(disg3["rx"]);
+                        double ry = ComonFunctions.ConvertToDouble(disg3["ry"]);
+                        double rz = ComonFunctions.ConvertToDouble(disg3["rz"]);
+
+                        DisgData ex = new DisgData(dx, dy, dz, rx, ry, rz);
+                        tmp.Add(n, ex);
                     }
+
+                    int typ = ComonFunctions.ConvertToInt(CaseNo);
+                    this._ListDisgData.Add(typ, tmp);
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
         }
         catch (Exception e)
         {
@@ -886,6 +902,7 @@ public class FrameWeb //: Singleton<webframe>
     #endregion
 
     #region  反力データ
+    public int ReacType = 1;
 
     public partial class ReacData
     {
@@ -905,7 +922,7 @@ public class FrameWeb //: Singleton<webframe>
             this.mz = _mz;
         }
     }
-    public Dictionary<string, ReacData> ListReacData = new Dictionary<string, ReacData>();
+    protected Dictionary<int, Dictionary<string, ReacData>> _ListReacData = new Dictionary<int, Dictionary<string, ReacData>>();
 
     /// <summary> 反力データを読み込む </summary>
     private bool SetReacData(Dictionary<string, object> objJson)
@@ -913,37 +930,47 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("reac"))
+            if (!objJson.ContainsKey("reac"))
+                return false;
+
+            this._ListReacData.Clear();
+
+            Dictionary<string, object> reac1 = objJson["reac"] as Dictionary<string, object>;
+            foreach (string CaseNo in reac1.Keys)
             {
-                this.ListReacData.Clear();
-
-                Dictionary<string, object> reac1 = objJson["reac"] as Dictionary<string, object>;
-                foreach (string key in reac1.Keys)
+                try
                 {
-                    try
-                    {
-                        Dictionary<string, object> reac2 = reac1[key] as Dictionary<string, object>;
+                    List<object> reac2 = reac1[CaseNo] as List<object>;
 
-                        if (this.listNodePoint.ContainsKey(key))
-                        {
-                            double tx = ComonFunctions.ConvertToDouble(reac2["tx"]);
-                            double ty = ComonFunctions.ConvertToDouble(reac2["ty"]);
-                            double tz = ComonFunctions.ConvertToDouble(reac2["tz"]);
-                            double mx = ComonFunctions.ConvertToDouble(reac2["mx"]);
-                            double my = ComonFunctions.ConvertToDouble(reac2["my"]);
-                            double mz = ComonFunctions.ConvertToDouble(reac2["mz"]);
+                    Dictionary<string, ReacData> tmp = new Dictionary<string, ReacData>();
 
-                            ReacData ex = new ReacData(tx, ty, tz, mx, my, mz);
-                            this.ListReacData.Add(key, ex);
-                        }
-                    }
-                    catch
+                    for (int i = 0; i < reac2.Count; i++)
                     {
-                        continue;
+                        Dictionary<string, object> reac3 = reac2[i] as Dictionary<string, object>;
+
+                        string n = reac3["id"].ToString();
+
+                        double tx = ComonFunctions.ConvertToDouble(reac3["tx"]);
+                        double ty = ComonFunctions.ConvertToDouble(reac3["ty"]);
+                        double tz = ComonFunctions.ConvertToDouble(reac3["tz"]);
+                        double mx = ComonFunctions.ConvertToDouble(reac3["mx"]);
+                        double my = ComonFunctions.ConvertToDouble(reac3["my"]);
+                        double mz = ComonFunctions.ConvertToDouble(reac3["mz"]);
+
+                        ReacData ex = new ReacData(tx, ty, tz, mx, my, mz);
+                        tmp.Add(n, ex);
                     }
+
+                    int typ = ComonFunctions.ConvertToInt(CaseNo);
+                    this._ListReacData.Add(typ, tmp);
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -956,42 +983,31 @@ public class FrameWeb //: Singleton<webframe>
     #endregion
 
     #region  断面力データ
+    public int FsecType = 1;
 
     public partial class FsecData
     {
-        public double fxi = 0.0;
-        public double fyi = 0.0;
-        public double fzi = 0.0;
-        public double mxi = 0.0;
-        public double myi = 0.0;
-        public double mzi = 0.0;
-        public double fxj = 0.0;
-        public double fyj = 0.0;
-        public double fzj = 0.0;
-        public double mxj = 0.0;
-        public double myj = 0.0;
-        public double mzj = 0.0;
+        public double fx = 0.0;
+        public double fy = 0.0;
+        public double fz = 0.0;
+        public double mx = 0.0;
+        public double my = 0.0;
+        public double mz = 0.0;
         public double L = 0.0;
-        public FsecData(double _fxi, double _fyi, double _fzi, double _mxi, double _myi, double _mzi,
-            double _fxj, double _fyj, double _fzj, double _mxj, double _myj, double _mzj, double _L)
+        public FsecData(double _fx, double _fy, double _fz, double _mx, double _my, double _mz, double _L)
         {
-            this.fxi = _fxi;
-            this.fyi = _fyi;
-            this.fzi = _fzi;
-            this.mxi = _mxi;
-            this.myi = _myi;
-            this.mzi = _mzi;
-            this.fxj = _fxj;
-            this.fyj = _fyj;
-            this.fzj = _fzj;
-            this.mxj = _mxj;
-            this.myj = _myj;
-            this.mzj = _mzj;
+            this.fx = _fx;
+            this.fy = _fy;
+            this.fz = _fz;
+            this.mx = _mx;
+            this.my = _my;
+            this.mz = _mz;
             this.L = _L;
         }
     }
 
-    public Dictionary<int, Dictionary<string, FsecData>> ListFsecData = new Dictionary<int, Dictionary<string, FsecData>>();
+    protected Dictionary<int, Dictionary<string, SortedDictionary<int, FsecData>>> _ListFsecData 
+        = new Dictionary<int, Dictionary<string, SortedDictionary<int, FsecData>>>();
 
     /// <summary> 断面力データを読み込む </summary>
     private bool SetFsecData(Dictionary<string, object> objJson)
@@ -999,51 +1015,61 @@ public class FrameWeb //: Singleton<webframe>
         bool OnChenge = false;
         try
         {
-            if (objJson.ContainsKey("fsec"))
+            if (!objJson.ContainsKey("fsec"))
+                return false;
+
+            this._ListFsecData.Clear();
+
+            Dictionary<string, object> fsec1 = objJson["fsec"] as Dictionary<string, object>;
+            foreach (string CaseNo in fsec1.Keys)
             {
-                this.ListFsecData.Clear();
-
-                Dictionary<string, object> fsec1 = objJson["fsec"] as Dictionary<string, object>;
-                foreach (string key1 in fsec1.Keys)
+                try
                 {
-                    Dictionary<string, FsecData> tmp = new Dictionary<string, FsecData>();
-                    try
+                    List<object> fsec2 = fsec1[CaseNo] as List<object>;
+
+                    Dictionary<string, SortedDictionary<int, FsecData>> tmp = new Dictionary<string, SortedDictionary<int, FsecData>>();
+                    SortedDictionary<int, FsecData> member = new SortedDictionary<int, FsecData>();
+
+                    string old_m = "";
+                    for (int i = 0; i < fsec2.Count; i++)
                     {
-                        Dictionary<string, object> fsec2 = fsec1[key1] as Dictionary<string, object>;
+                        Dictionary<string, object> fsec3 = fsec2[i] as Dictionary<string, object>;
 
-                        int id = int.Parse(key1);
+                        int id = ComonFunctions.ConvertToInt(fsec3["row"]);
 
-                        foreach (string key2 in fsec2.Keys)
-                        {
-                            Dictionary<string, object> fsec3 = fsec2[key2] as Dictionary<string, object>;
+                        string m = fsec3["m"].ToString();
+                        if (m == "")
+                            m = old_m;
+                        else
+                            old_m = m;
 
-                            double fxi = ComonFunctions.ConvertToDouble(fsec3["fxi"]);
-                            double fyi = ComonFunctions.ConvertToDouble(fsec3["fyi"]);
-                            double fzi = ComonFunctions.ConvertToDouble(fsec3["fzi"]);
-                            double mxi = ComonFunctions.ConvertToDouble(fsec3["mxi"]);
-                            double myi = ComonFunctions.ConvertToDouble(fsec3["myi"]);
-                            double mzi = ComonFunctions.ConvertToDouble(fsec3["mzi"]);
-                            double fxj = ComonFunctions.ConvertToDouble(fsec3["fxj"]);
-                            double fyj = ComonFunctions.ConvertToDouble(fsec3["fyj"]);
-                            double fzj = ComonFunctions.ConvertToDouble(fsec3["fzj"]);
-                            double mxj = ComonFunctions.ConvertToDouble(fsec3["mxj"]);
-                            double myj = ComonFunctions.ConvertToDouble(fsec3["myj"]);
-                            double mzj = ComonFunctions.ConvertToDouble(fsec3["mzj"]);
-                            double L = ComonFunctions.ConvertToDouble(fsec3["L"]);
+                        double fx = ComonFunctions.ConvertToDouble(fsec3["fx"]);
+                        double fy = ComonFunctions.ConvertToDouble(fsec3["fy"]);
+                        double fz = ComonFunctions.ConvertToDouble(fsec3["fz"]);
+                        double mx = ComonFunctions.ConvertToDouble(fsec3["mx"]);
+                        double my = ComonFunctions.ConvertToDouble(fsec3["my"]);
+                        double mz = ComonFunctions.ConvertToDouble(fsec3["mz"]);
+                        double L = ComonFunctions.ConvertToDouble(fsec3["l"]);
 
-                            FsecData f = new FsecData(fxi, fyi, fzi, mxi, myi, mzi, fxj, fyj, fzj, mxj, myj, mzj, L);
+                        FsecData ex = new FsecData( fx, fy, fz, mx, my, mz, L);
+                        member.Add(id, ex);
 
-                            tmp.Add(key2, f);
-                        }
-                        this.ListFsecData.Add(id, tmp);
+                        if (tmp.ContainsKey(m))
+                            tmp[m] = member;
+                        else
+                            tmp.Add(m, member);
                     }
-                    catch
-                    {
-                        continue;
-                    }
+
+                    int typ = ComonFunctions.ConvertToInt(CaseNo);
+                    this._ListFsecData.Add(typ, tmp);
                 }
-                OnChenge = true;
+                catch
+                {
+                    continue;
+                }
             }
+            OnChenge = true;
+
         }
         catch (Exception e)
         {
@@ -1054,7 +1080,6 @@ public class FrameWeb //: Singleton<webframe>
     }
 
     #endregion
-
 
     /// <summary> データを作成する </summary>
     protected bool[] _SetData(string strJson, int mode = 0)
@@ -1067,6 +1092,7 @@ public class FrameWeb //: Singleton<webframe>
         if (objJson.Count == 0)
         {
             this.Clear();
+            this.ResultDataClear();
             return OnChengeList;
         }
 
@@ -1098,7 +1124,6 @@ public class FrameWeb //: Singleton<webframe>
 
         return OnChengeList;
     }
-
 
 }
 

@@ -298,6 +298,8 @@ public class MainFrameManager : MonoBehaviour
     /// <summary> JavaScript から 計算結果データ が来た </summary>
     public void ResultDataChenge(string json)
     {
+        // jsonデータを読み込みます
+        this._webframe.SetData(json);
 
     }
 

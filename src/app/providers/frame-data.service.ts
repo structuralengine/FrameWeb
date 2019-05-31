@@ -149,7 +149,7 @@ export class FrameDataService {
 
     for (const typNo of Object.keys(this.input.fix_node)) {
       // unity-fix_nodes モードは カレントのケースのみデータを生成する
-      if (targetCase !== '0') {
+      if (targetCase !== mode) {
         if (typNo !== targetCase) {
           continue;
         }
@@ -238,7 +238,7 @@ export class FrameDataService {
 
     for (const typNo of Object.keys(this.input.element)) {
       // unity-elements モードは カレントのケースのみデータを生成する
-      if (targetCase !== '0') {
+      if (targetCase !== mode) {
         if (typNo !== targetCase) {
           continue;
         }
@@ -297,7 +297,7 @@ export class FrameDataService {
 
     for (const typNo of Object.keys(this.input.joint)) {
       // unity-joints モードは カレントのケースのみデータを生成する
-      if (targetCase !== '0') {
+      if (targetCase !== mode) {
         if (typNo !== targetCase) {
           continue;
         }
@@ -386,7 +386,7 @@ export class FrameDataService {
 
     for (const typNo of Object.keys(this.input.fix_member)) {
       // unity-fix_members モードは カレントのケースのみデータを生成する
-      if (targetCase !== '0') {
+      if (targetCase !== mode) {
         if (typNo !== targetCase) {
           continue;
         }
@@ -493,7 +493,7 @@ export class FrameDataService {
       const tmp = this.input.load_name[i];
       const key: string = tmp['id'];
       // unity-loads モードは カレントのケースのみデータを生成する
-      if (targetCase !== '') {
+      if (targetCase !== mode) {
         if (key !== targetCase) {
           continue;
         }
@@ -562,7 +562,7 @@ export class FrameDataService {
 
     for (const load_id of Object.keys(this.input.load)) {
       // unity-loads モードは カレントのケースのみデータを生成する
-      if (targetCase !== '') {
+      if (targetCase !== mode) {
         if (load_id !== targetCase) {
           continue;
         }
@@ -613,7 +613,7 @@ export class FrameDataService {
 
     for (const load_id of Object.keys(this.input.load)) {
       // unity-loads モードは カレントのケースのみデータを生成する
-      if (targetCase !== '') {
+      if (targetCase !== mode) {
         if (load_id !== targetCase) {
           continue;
         }

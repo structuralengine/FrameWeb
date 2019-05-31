@@ -46,6 +46,12 @@ public class FrameDataService : FrameWeb
     private float LOADSCALE = 0.8f;
     private double[] maxLoadValue;
 
+
+    private float FSECSCALE = 0.8f;
+    private double[] maxFsecValue;
+
+
+
     #endregion
 
     #region 節点(Node)に関する部分
@@ -470,6 +476,130 @@ public class FrameDataService : FrameWeb
     }
     #endregion
 
+    #region 変位量(Disg)に関する部分
+    public Dictionary<string, DisgData> ListDisgData
+    {
+        get
+        {
+            if (!base._ListDisgData.ContainsKey(DisgType))
+                return new Dictionary<string, DisgData>();
+            return base._ListDisgData[DisgType];
+        }
+    }
+    #endregion
+
+    #region 反力(Reac)に関する部分
+    public Dictionary<string, ReacData> ListReacData
+    {
+        get
+        {
+            if (!base._ListReacData.ContainsKey(ReacType))
+                return new Dictionary<string, ReacData>();
+            return base._ListReacData[ReacType];
+        }
+    }
+    #endregion
+
+    #region 断面力(Fsec)に関する部分
+
+    public bool SetFsecValueScale()
+    {
+        if (!base._ListFsecData.ContainsKey(LoadType))
+        {
+            return false;
+        }
+
+        // 最大の荷重値を決定する
+        foreach (var i in base._ListFsecData.Keys)
+        {
+            // 要素荷重の最大値を集計
+            foreach (LoadMemberData lm in base._ListFsecData[i].load_member)
+            {
+                int j;
+                switch (lm.mark)
+                {
+                    case 2:
+                        j = (lm.direction != "r") ? 2 : 3;
+                        break;
+                    case 1:
+                        j = 0;
+                        break;
+                    case 11:
+                        j = 1;
+                        break;
+                    default:
+                        continue;
+                }
+                foreach (double value in new double[] { lm.P1, lm.P2 })
+                {
+                    maxFsecValue[j] = Math.Max(maxFsecValue[j], Math.Abs(value));
+                }
+            }
+            // 節点荷重の最大値を集計
+            foreach (LoadNodeData ln in base._ListFsecData[i].load_node)
+            {
+                foreach (double value in new double[] { ln.tx, ln.ty, ln.tz })
+                {
+                    maxFsecValue[0] = Math.Max(maxFsecValue[0], Math.Abs(value));
+                }
+                foreach (double value in new double[] { ln.rx, ln.ry, ln.rz })
+                {
+                    maxFsecValue[1] = Math.Max(maxFsecValue[1], Math.Abs(value));
+                }
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// 断面力の大きさを返す
+    /// </summary>
+    /// <param name="value">荷重値</param>
+    /// <param name="target">tx, ty, tz, tr のどれか</param>
+    /// <returns></returns>
+    public float FsecBlockScale(double value, string target)
+    {
+        float result;
+
+        // 最大の大きさを決定する
+        var MaxSize = this.NodeScale * FSECSCALE;
+
+        // 荷重値に応じて大きさを決定する
+        double size = 0;
+        switch (target)
+        {
+            case "N":
+                size = MaxSize * value / maxFsecValue[0];
+                break;
+            case "M":
+                size = MaxSize * value / maxFsecValue[1];
+                break;
+            case "S":
+                size = MaxSize * value / maxFsecValue[2];
+                break;
+            case "T":
+                size = MaxSize * value / maxFsecValue[3];
+                break;
+        }
+        result = (float)size;
+
+        return result;
+    }
+    /// <summary>
+    /// 使用する断面力データを取得する
+    /// </summary>
+    /// <returns>Dictionary[int, FixMemberData]</returns>
+    public SortedDictionary<int, FsecData> ListFsecData
+    {
+        get
+        {
+            if (!base._ListFsecData.ContainsKey(FsecType))
+                return new SortedDictionary<int, FsecData>();
+            return base._ListFsecData[FsecType];
+        }
+    }
+    #endregion
+
     public void SetData(string strJson, int mode = 0)
     {
         var OnChengeList = base._SetData(strJson, mode);
@@ -505,6 +635,15 @@ public class FrameDataService : FrameWeb
             this.SetLoadValueScale();
         }
 
+        // 断面力データが変わったら maxLoadValue を再計算
+        if (OnChengeList[(int)InputModeType.Fsec] == true)
+        {
+            this.maxFsecValue = new double[4] { 0.0, 0.0, 0.0, 0.0 };
+            this.SetFsecValueScale();
+        }
+
     }
+
+
 }
 

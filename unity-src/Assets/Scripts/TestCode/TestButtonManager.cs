@@ -85,6 +85,12 @@ public class TestButtonManager : MonoBehaviour
           this.script.ReceiveModeData(strJson2);
           break;
 
+        case "ReceiveResultData":
+            object output4 = objJson["strJson"];
+            string strJson3 = Json.Serialize(output4);
+            this.script.ReceiveResultData(strJson3);
+            break;
+
         case "SendCapture":
           this.script.SendCapture();
           break;
