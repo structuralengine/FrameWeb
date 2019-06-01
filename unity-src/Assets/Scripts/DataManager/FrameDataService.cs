@@ -278,7 +278,7 @@ public class FrameDataService : FrameWeb
             switch (target)
             {
                 case "tx":
-                    size = MaxSize * fm.tx / maxMemberSpring[0] ;
+                    size = MaxSize * fm.tx / maxMemberSpring[0];
                     break;
                 case "ty":
                     size = MaxSize * fm.ty / Math.Max(maxMemberSpring[1], maxMemberSpring[2]);
@@ -386,7 +386,7 @@ public class FrameDataService : FrameWeb
         }
 
         // 最大の荷重値を決定する
-        foreach(var i in base._ListLoadData.Keys)
+        foreach (var i in base._ListLoadData.Keys)
         {
             // 要素荷重の最大値を集計
             foreach (LoadMemberData lm in base._ListLoadData[i].load_member)
@@ -504,47 +504,23 @@ public class FrameDataService : FrameWeb
 
     public bool SetFsecValueScale()
     {
-        if (!base._ListFsecData.ContainsKey(LoadType))
-        {
-            return false;
-        }
-
         // 最大の荷重値を決定する
-        foreach (var i in base._ListFsecData.Keys)
+        foreach (var FsecCase in base._ListFsecData)
         {
-            // 要素荷重の最大値を集計
-            foreach (LoadMemberData lm in base._ListFsecData[i].load_member)
+            foreach (var FsecMember in FsecCase.Value)
             {
-                int j;
-                switch (lm.mark)
+                foreach (var Fsec in FsecMember.Value)
                 {
-                    case 2:
-                        j = (lm.direction != "r") ? 2 : 3;
-                        break;
-                    case 1:
-                        j = 0;
-                        break;
-                    case 11:
-                        j = 1;
-                        break;
-                    default:
-                        continue;
-                }
-                foreach (double value in new double[] { lm.P1, lm.P2 })
-                {
-                    maxFsecValue[j] = Math.Max(maxFsecValue[j], Math.Abs(value));
-                }
-            }
-            // 節点荷重の最大値を集計
-            foreach (LoadNodeData ln in base._ListFsecData[i].load_node)
-            {
-                foreach (double value in new double[] { ln.tx, ln.ty, ln.tz })
-                {
-                    maxFsecValue[0] = Math.Max(maxFsecValue[0], Math.Abs(value));
-                }
-                foreach (double value in new double[] { ln.rx, ln.ry, ln.rz })
-                {
-                    maxFsecValue[1] = Math.Max(maxFsecValue[1], Math.Abs(value));
+                    // N
+                    maxFsecValue[0] = Math.Max(maxFsecValue[0], Math.Abs(Fsec.Value.fx));
+                    // M
+                    maxFsecValue[1] = Math.Max(maxFsecValue[1], Math.Abs(Fsec.Value.my));
+                    maxFsecValue[1] = Math.Max(maxFsecValue[1], Math.Abs(Fsec.Value.mz));
+                    // S
+                    maxFsecValue[2] = Math.Max(maxFsecValue[2], Math.Abs(Fsec.Value.fy));
+                    maxFsecValue[2] = Math.Max(maxFsecValue[2], Math.Abs(Fsec.Value.fz));
+                    // T
+                    maxFsecValue[3] = Math.Max(maxFsecValue[3], Math.Abs(Fsec.Value.mx));
                 }
             }
         }
@@ -589,12 +565,12 @@ public class FrameDataService : FrameWeb
     /// 使用する断面力データを取得する
     /// </summary>
     /// <returns>Dictionary[int, FixMemberData]</returns>
-    public SortedDictionary<int, FsecData> ListFsecData
+    public Dictionary<string, SortedDictionary<int, FsecData>> ListFsecData
     {
         get
         {
             if (!base._ListFsecData.ContainsKey(FsecType))
-                return new SortedDictionary<int, FsecData>();
+                return new Dictionary<string, SortedDictionary<int, FsecData>>();
             return base._ListFsecData[FsecType];
         }
     }
