@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using SystemUtility;
 using UnityEngine;
 
 
@@ -11,205 +12,191 @@ public class FsecDispManager : PartsDispManager
 {
     public override void ChangeTypeNo(int TypeNo)
     {
-        _webframe.LoadType = TypeNo;
+        _webframe.FsecType = TypeNo;
     }
 
     public override void CreateParts()
     {
-        // 前のオブジェクトを消す
-        foreach (string id in base._blockWorkData.Keys)
-        {
-            try
-            {
-                Destroy(base._blockWorkData[id].renderer.sharedMaterial);
-                Destroy(base._blockWorkData[id].gameObject);
-            }
-            catch { }
-        }
-        base._blockWorkData.Clear();
-    }
-
-    /// <summary>
-    /// パーツを作成する
-    /// </summary>
-    /// <remarks>
-    /// データの状況によって 生成するパーツの 個数が変わる本DispManbager は
-    /// CreateParts ではなく SetBlockStatusAll でパーツの生成を行う
-    /// </remarks>
-    public override void SetBlockStatusAll()
-    {
         try
         {
-            this.SetLoadMemberBlockStatus();
-            this.SetLoadNodeBlockStatus();
+            // 前のオブジェクトを消す
+            foreach (string id in base._blockWorkData.Keys)
+            {
+                try
+                {
+                    Destroy(base._blockWorkData[id].renderer.sharedMaterial);
+                    Destroy(base._blockWorkData[id].gameObject);
+                }
+                catch { }
+            }
+            base._blockWorkData.Clear();
+
+            // 新しいオブジェクトを生成する
+            BlockWorkData blockWorkData;
+
+            foreach(string m in _webframe.ListFsecData.Keys)
+            {
+                if (!_webframe.ListMemberData.ContainsKey(m)) continue;
+
+                foreach (var Fsec in _webframe.ListFsecData[m])
+                {
+                    int i = Fsec.Key;
+                    if(Fsec.Value.fx > 0)
+                    {
+                        string id = string.Format("{0}/{1}/fx", i, m);
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                        base.InitBlock(ref blockWorkData, i, id);
+                        base._blockWorkData.Add(id, blockWorkData);
+                    }
+                    if (Fsec.Value.fy > 0)
+                    {
+                        string id = string.Format("{0}/{1}/fy", i, m);
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                        base.InitBlock(ref blockWorkData, i, id);
+                        base._blockWorkData.Add(id, blockWorkData);
+                    }
+                    if (Fsec.Value.fz > 0)
+                    {
+                        string id = string.Format("{0}/{1}/fz", i, m);
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                        base.InitBlock(ref blockWorkData, i, id);
+                        base._blockWorkData.Add(id, blockWorkData);
+                    }
+                    if (Fsec.Value.mx > 0)
+                    {
+                        string id = string.Format("{0}/{1}/mx", i, m);
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                        base.InitBlock(ref blockWorkData, i, id);
+                        base._blockWorkData.Add(id, blockWorkData);
+                    }
+                    if (Fsec.Value.my > 0)
+                    {
+                        string id = string.Format("{0}/{1}/my", i, m);
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                        base.InitBlock(ref blockWorkData, i, id);
+                        base._blockWorkData.Add(id, blockWorkData);
+                    }
+                    if (Fsec.Value.mz > 0)
+                    {
+                        string id = string.Format("{0}/{1}/mz", i, m);
+                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                        base.InitBlock(ref blockWorkData, i, id);
+                        base._blockWorkData.Add(id, blockWorkData);
+                    }
+                }
+            }
         }
         catch (Exception e)
         {
-            Debug.Log("LoadDispManager CreateMembers" + e.Message);
+            Debug.Log("MemberDispManager CreateMembers" + e.Message);
         }
     }
 
-    #region 節点荷重の新しいオブジェクトを生成する
-
-    private void SetLoadNodeBlockStatus()
+    /// <summary>
+    /// 
+    /// </summary>
+    public override void SetBlockStatus(string id)
     {
-        FrameWeb.LoadData ListLoadData = _webframe.ListLoadData;
+        if (!base._blockWorkData.ContainsKey(id))
+            return;
 
-        for (int i = 0; i < ListLoadData.load_node.Count; i++)
+        string[] idList = id.Split('/');
+        int i = ComonFunctions.ConvertToInt(idList[0]);
+        string m = idList[1];
+        string direction = idList[2];
+
+        FrameWeb.MemberData memberData = _webframe.ListMemberData[m];
+
+        // 節点が有効かどうか調べる
+        string nodeI = memberData.ni;
+        string nodeJ = memberData.nj;
+
+        float length = 0.0f;
+
+        PartsDispStatus partsDispStatus;
+        partsDispStatus.id = id;
+        partsDispStatus.enable = _webframe.GetNodeLength(nodeI, nodeJ, out length);
+
+        if (base.SetBlockStatusCommon(partsDispStatus) == false)
         {
-            FrameWeb.LoadNodeData ln = ListLoadData.load_node[i];
-            if (!_webframe.listNodePoint.ContainsKey(ln.n)) continue;
-            Vector3 pos = _webframe.listNodePoint[ln.n];
-
-            foreach (var load in new Dictionary<string, double> {
-                { "tx", ln.tx }, { "ty", ln.ty }, { "tz", ln.tz },
-                { "rx", ln.rx }, { "ry", ln.ry }, { "rz", ln.rz }
-            })
-            {
-                if (load.Value == 0) continue;
-                string id = string.Format("{0}:{1}-{2}-{3}", i, ln.row, ln.n, load.Key);// これから作成するブロックの id
-                BlockWorkData blockWorkData;
-                switch (load.Key)
-                {
-                    case "tx":
-                    case "ty":
-                    case "tz":
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-                        base.InitBlock(ref blockWorkData, ln.row, id);
-                        if (!this.SetLoadNodeBlockStatus(ref blockWorkData, pos, load)) continue;
-                        this.AddWorkData(id, blockWorkData);
-                        break;
-                    case "rx":
-                    case "ry":
-                    case "rz":
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-                        base.InitBlock(ref blockWorkData, ln.row, id);
-                        if (!this.SetMomentNodeBlockStatus(ref blockWorkData, pos, load)) continue;
-                        this.AddWorkData(id, blockWorkData);
-                        break;
-                }
-            }
+            return;
         }
-    }
-    private bool SetLoadNodeBlockStatus(ref BlockWorkData blockWorkData, Vector3 pos, KeyValuePair<string, double> load)
-    {
-        // 位置を決定する
-        blockWorkData.rootBlockTransform.position = pos;
 
-        // 大きさを設定する
-        var scale = _webframe.NodeBlockScale;
+        //	表示に必要なパラメータを用意する
+        Vector3 pos_i = _webframe.listNodePoint[nodeI];
+        Vector3 pos_j = _webframe.listNodePoint[nodeJ];
+
+        Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+        Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
+
+        float length = Vector3.Distance(pos_1, pos_2);
+        float P1 = _webframe.LoadBlockScale(lm.P1, "W");
+        float P2 = _webframe.LoadBlockScale(lm.P2, "W");
+
+        // 位置を設定する
+        blockWorkData.rootBlockTransform.position = pos_1;
+        blockWorkData.rootBlockTransform.LookAt(pos_j);
+
+        //メッシュを編集する
+        float MaxValue = Math.Max(P1, P2);
+        if (P1 < P2)
+        {
+            List<Vector3> vertextList = new List<Vector3>();
+            blockWorkData.mesh.GetVertices(vertextList);
+            Vector3 vertext = vertextList[1];
+            vertext.x *= P1 / P2;
+            vertextList[1] = vertext;
+            blockWorkData.mesh.SetVertices(vertextList);
+        }
+        else if (P1 > P2)
+        {
+            List<Vector3> vertextList = new List<Vector3>();
+            blockWorkData.mesh.GetVertices(vertextList);
+            Vector3 vertext = vertextList[3];
+            vertext.x *= P2 / P1;
+            vertextList[3] = vertext;
+            blockWorkData.mesh.SetVertices(vertextList);
+        }
+
+        // 幅と長さを設定する
+        Vector3 scale = new Vector3(MaxValue, 1, length);
         blockWorkData.rootBlockTransform.localScale = scale;
-        float P1 = _webframe.LoadBlockScale(load.Value, "P");
-        blockWorkData.rootBlockTransform.Find("Cylinder").transform.localScale += new Vector3(0, P1, 0);
-        blockWorkData.rootBlockTransform.Find("Cylinder").transform.position += new Vector3(0, 0, scale.y*P1);
 
-        //向きを設定する
-        int sign = Math.Sign(load.Value);
-        switch (load.Key)
+
+        switch (direction)
         {
-            case "tx":
-                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, -sign * 90f, 0f)); // y軸を軸として90°回転
+            case "fx":
+                // 向き(回転)を設定する
+                Transform member = blockWorkData.rootBlockTransform.transform;
+                Vector3 parts = member.up;
+                Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
+                blockWorkData.rootBlockTransform.rotation = rotate;
+
                 break;
-            case "ty":
-                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+            case "fy":
+
                 break;
-            case "tz":
-                if(sign < 0)
-                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
+            case "fz":
+
                 break;
+            case "mx":
+
+                break;
+            case "my":
+
+                break;
+            case "mz":
+
+                break;
+            default:
+                return;
         }
 
-        return true;
+        //	色の指定
+        Color color = s_noSelectColor;
+        base.SetPartsColor(id, color);
     }
 
-    private bool SetMomentNodeBlockStatus(ref BlockWorkData blockWorkData, Vector3 pos, KeyValuePair<string, double> load)
-    {
-        // 位置を決定する
-        blockWorkData.rootBlockTransform.position = pos;
-
-        // 大きさを設定する
-        float P1 = _webframe.LoadBlockScale(load.Value, "P");
-        blockWorkData.rootBlockTransform.localScale = new Vector3(P1, P1, P1);
-
-        //向きを設定する
-        int sign = Math.Sign(load.Value);
-        switch (load.Key)
-        {
-            case "rx":
-                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, sign * 90f, 0f)); // y軸を軸として90°回転
-                break;
-            case "ry":
-                blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
-                break;
-            case "rz":
-                if (sign > 0)
-                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, 180f, 0f)); // z軸を軸として180°回転
-                break;
-        }
-
-        return true;
-    }
-
-    #endregion
-
-    #region 要素荷重の新しいオブジェクトを生成する
-
-    private void SetLoadMemberBlockStatus()
-    {
-        FrameWeb.LoadData ListLoadData = _webframe.ListLoadData;
-
-        for (int i = 0; i < ListLoadData.load_member.Count; i++)
-        {
-            FrameWeb.LoadMemberData lm = ListLoadData.load_member[i];
-            if (lm.P1 == 0 && lm.P2 == 0) continue;
-
-            if (!_webframe.ListMemberData.ContainsKey(lm.m)) continue;
-            FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
-
-            string id = string.Format("{0}:{1}-{2}-{3}-{4}", i, lm.row, lm.m, lm.mark, lm.direction);// これから作成するブロックの id
-            BlockWorkData blockWorkData;
-            if (lm.mark == 2)
-            {// 分布荷重
-                switch (lm.direction)
-                {
-                    case "x":
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[3]) };
-                        if (!this.SetTxBlockStatus(id, ref blockWorkData, lm)) continue;
-                        this.AddWorkData(id, blockWorkData);
-                        break;
-                    case "y":
-                    case "z":
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
-                        if (!this.SetTyzBlockStatus(id, ref blockWorkData, lm)) continue;
-                        this.AddWorkData(id, blockWorkData);
-                        break;
-                    case "r":
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[4]) };
-                        if (!this.SetTrBlockStatus(id, ref blockWorkData, lm)) continue;
-                        this.AddWorkData(id, blockWorkData);
-                        break;
-                    case "gx":
-                    case "gy":
-                    case "gz":
-                    default:
-                        Console.Write(string.Format("{0}は、まだ作ってない", lm.direction));
-                        continue;
-                }
-            }
-            else if (lm.mark == 1)
-            {// 集中荷重
-
-            }
-            else if (lm.mark == 11)
-            {// 集中回転荷重
-
-            }
-            else if (lm.mark == 9)
-            {// 温度荷重
-
-            }
-        }
-    }
 
     private bool SetTxBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
     {
