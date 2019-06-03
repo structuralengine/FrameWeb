@@ -477,6 +477,15 @@ public class FrameDataService : FrameWeb
     #endregion
 
     #region 変位量(Disg)に関する部分
+
+    public float DisgLineScale
+    {
+        get
+        {
+            return this.NodeScale / 10;
+        }
+    }
+
     public Dictionary<string, DisgData> ListDisgData
     {
         get
@@ -489,6 +498,15 @@ public class FrameDataService : FrameWeb
     #endregion
 
     #region 反力(Reac)に関する部分
+
+    public float ReacBlockScale
+    {
+        get
+        {
+            return this.NodeScale * 3f;
+        }
+    }
+    
     public Dictionary<string, ReacData> ListReacData
     {
         get

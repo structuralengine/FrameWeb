@@ -147,35 +147,11 @@ public class ExternalConnect : MonoBehaviour
                 inputModeType = InputModeType.Fsec;
                 mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
-            case "comb_fsec":
-                inputModeType = InputModeType.Fsec;
-                mainFrameObject.InputTypeChange(inputModeType, option);
-                break;
-            case "pik_fsec":
-                inputModeType = InputModeType.Fsec;
-                mainFrameObject.InputTypeChange(inputModeType, option);
-                break;
             case "disg":
                 inputModeType = InputModeType.Disg;
                 mainFrameObject.InputTypeChange(inputModeType, option);
                 break;
-            case "comb_disg":
-                inputModeType = InputModeType.Disg;
-                mainFrameObject.InputTypeChange(inputModeType, option);
-                break;
-            case "pik_disg":
-                inputModeType = InputModeType.Disg;
-                mainFrameObject.InputTypeChange(inputModeType, option);
-                break;
             case "reac":
-                inputModeType = InputModeType.Reac;
-                mainFrameObject.InputTypeChange(inputModeType, option);
-                break;
-            case "comb_reac":
-                inputModeType = InputModeType.Reac;
-                mainFrameObject.InputTypeChange(inputModeType, option);
-                break;
-            case "pik_reac":
                 inputModeType = InputModeType.Reac;
                 mainFrameObject.InputTypeChange(inputModeType, option);
                 break;

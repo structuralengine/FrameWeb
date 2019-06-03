@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// 荷重（ノード）の表示を管理するクラス
+/// 断面力（Fsec）の表示を管理するクラス
 /// </summary>
 public class FsecDispManager : PartsDispManager
 {
@@ -38,45 +38,46 @@ public class FsecDispManager : PartsDispManager
             {
                 if (!_webframe.ListMemberData.ContainsKey(m)) continue;
 
-                foreach (var Fsec in _webframe.ListFsecData[m])
+                var member = _webframe.ListFsecData[m];
+                for (int i = 1; i < member.Count - 1; i++) // インデックスの1番目からスタート
                 {
-                    int i = Fsec.Key;
-                    if(Fsec.Value.fx > 0)
+                    var Fsec = member[i];
+                    if(Math.Abs(Fsec.fx) > 0)
                     {
                         string id = string.Format("{0}/{1}/fx", i, m);
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
                         base.InitBlock(ref blockWorkData, i, id);
                         base._blockWorkData.Add(id, blockWorkData);
                     }
-                    if (Fsec.Value.fy > 0)
+                    if (Math.Abs(Fsec.fy) > 0)
                     {
                         string id = string.Format("{0}/{1}/fy", i, m);
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
                         base.InitBlock(ref blockWorkData, i, id);
                         base._blockWorkData.Add(id, blockWorkData);
                     }
-                    if (Fsec.Value.fz > 0)
+                    if (Math.Abs(Fsec.fz) > 0)
                     {
                         string id = string.Format("{0}/{1}/fz", i, m);
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
                         base.InitBlock(ref blockWorkData, i, id);
                         base._blockWorkData.Add(id, blockWorkData);
                     }
-                    if (Fsec.Value.mx > 0)
+                    if (Math.Abs(Fsec.mx) > 0)
                     {
                         string id = string.Format("{0}/{1}/mx", i, m);
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
                         base.InitBlock(ref blockWorkData, i, id);
                         base._blockWorkData.Add(id, blockWorkData);
                     }
-                    if (Fsec.Value.my > 0)
+                    if (Math.Abs(Fsec.my) > 0)
                     {
                         string id = string.Format("{0}/{1}/my", i, m);
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
                         base.InitBlock(ref blockWorkData, i, id);
                         base._blockWorkData.Add(id, blockWorkData);
                     }
-                    if (Fsec.Value.mz > 0)
+                    if (Math.Abs(Fsec.mz) > 0)
                     {
                         string id = string.Format("{0}/{1}/mz", i, m);
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
@@ -100,22 +101,23 @@ public class FsecDispManager : PartsDispManager
         if (!base._blockWorkData.ContainsKey(id))
             return;
 
+        // id から情報を得る
         string[] idList = id.Split('/');
         int i = ComonFunctions.ConvertToInt(idList[0]);
         string m = idList[1];
         string direction = idList[2];
 
+        // 節点が有効かどうか調べる
         FrameWeb.MemberData memberData = _webframe.ListMemberData[m];
 
-        // 節点が有効かどうか調べる
         string nodeI = memberData.ni;
         string nodeJ = memberData.nj;
 
-        float length = 0.0f;
+        float member_length = 0.0f;
 
         PartsDispStatus partsDispStatus;
         partsDispStatus.id = id;
-        partsDispStatus.enable = _webframe.GetNodeLength(nodeI, nodeJ, out length);
+        partsDispStatus.enable = _webframe.GetNodeLength(nodeI, nodeJ, out member_length);
 
         if (base.SetBlockStatusCommon(partsDispStatus) == false)
         {
@@ -123,278 +125,120 @@ public class FsecDispManager : PartsDispManager
         }
 
         //	表示に必要なパラメータを用意する
+        var mFsec = _webframe.ListFsecData[m];
+        FrameWeb.FsecData iFsec = mFsec[i-1];
+        FrameWeb.FsecData jFsec = mFsec[i];
+        float P1 = 0f, P2 = 0f;
+        switch (direction)
+        {
+            case "fx":
+                P1 = _webframe.FsecBlockScale(iFsec.fx, "N");
+                P2 = _webframe.FsecBlockScale(jFsec.fx, "N");
+                break;
+            case "fy":
+                P1 = _webframe.FsecBlockScale(iFsec.fy, "S");
+                P2 = _webframe.FsecBlockScale(jFsec.fy, "S");
+                break;
+            case "fz":
+                P1 = _webframe.FsecBlockScale(iFsec.fz, "S");
+                P2 = _webframe.FsecBlockScale(jFsec.fz, "S");
+                break;
+            case "mx":
+                P1 = _webframe.FsecBlockScale(iFsec.mx, "T");
+                P2 = _webframe.FsecBlockScale(jFsec.mx, "T");
+                break;
+            case "my":
+                P1 = _webframe.FsecBlockScale(iFsec.my, "M");
+                P2 = _webframe.FsecBlockScale(jFsec.my, "M");
+                break;
+            case "mz":
+                P1 = _webframe.FsecBlockScale(iFsec.mz, "M");
+                P2 = _webframe.FsecBlockScale(jFsec.mz, "M");
+                break;
+        }
+
+        BlockWorkData blockWorkData = base._blockWorkData[id];
+
         Vector3 pos_i = _webframe.listNodePoint[nodeI];
         Vector3 pos_j = _webframe.listNodePoint[nodeJ];
 
-        Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
-        Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
+        Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)iFsec.L / member_length);
+        Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (float)jFsec.L / member_length);
 
         float length = Vector3.Distance(pos_1, pos_2);
-        float P1 = _webframe.LoadBlockScale(lm.P1, "W");
-        float P2 = _webframe.LoadBlockScale(lm.P2, "W");
 
         // 位置を設定する
         blockWorkData.rootBlockTransform.position = pos_1;
         blockWorkData.rootBlockTransform.LookAt(pos_j);
 
-        //メッシュを編集する
-        float MaxValue = Math.Max(P1, P2);
-        if (P1 < P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            Vector3 vertext = vertextList[1];
-            vertext.x *= P1 / P2;
-            vertextList[1] = vertext;
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-        else if (P1 > P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            Vector3 vertext = vertextList[3];
-            vertext.x *= P2 / P1;
-            vertextList[3] = vertext;
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-
         // 幅と長さを設定する
-        Vector3 scale = new Vector3(MaxValue, 1, length);
-        blockWorkData.rootBlockTransform.localScale = scale;
+        float aP1 = Mathf.Abs(P1), aP2 = Mathf.Abs(P2);
+        float MaxValue = (aP1 > aP2) ? P1 : P2;
 
-
+        Vector3 scale;
         switch (direction)
         {
-            case "fx":
-                // 向き(回転)を設定する
-                Transform member = blockWorkData.rootBlockTransform.transform;
-                Vector3 parts = member.up;
-                Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
-                blockWorkData.rootBlockTransform.rotation = rotate;
-
-                break;
             case "fy":
-
-                break;
-            case "fz":
-
-                break;
-            case "mx":
-
-                break;
             case "my":
-
-                break;
+            case "fz":
             case "mz":
+                //メッシュを編集する
+                List<Vector3> vertextList = new List<Vector3>();
+                blockWorkData.mesh.GetVertices(vertextList);
+                Vector3 vertext;
+                //P1側
+                vertext = vertextList[3];
+                vertext.x = aP1;
+                vertextList[3] = vertext;
+                //P2側
+                vertext = vertextList[1];
+                vertext.x = aP2;
+                vertextList[1] = vertext;
+                blockWorkData.mesh.SetVertices(vertextList);
 
+                // 幅と長さを設定する
+                scale = new Vector3(1, 1, length);
+                blockWorkData.rootBlockTransform.localScale = scale;
                 break;
+
             default:
-                return;
+                // 幅と長さを設定する
+                MaxValue = Mathf.Abs(MaxValue);
+                scale = new Vector3(MaxValue, MaxValue, length);
+                blockWorkData.rootBlockTransform.localScale = scale;
+                break;
         }
 
+        // 向き(回転)を設定する
+        Transform member;
+        Vector3 parts;
+        Quaternion rotate;
+        switch (direction)
+        {
+            case "fy":
+            case "my":
+                member = blockWorkData.rootBlockTransform.transform;
+                parts = member.right;
+                rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
+                blockWorkData.rootBlockTransform.rotation = rotate;
+                break;
+            case "fz":
+            case "mz":
+                // 向き(回転)を設定する
+                member = blockWorkData.rootBlockTransform.transform;
+                parts = member.forward;
+                rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
+                blockWorkData.rootBlockTransform.rotation = rotate;
+                break;
+            default:
+                break;
+        }
         //	色の指定
         Color color = s_noSelectColor;
         base.SetPartsColor(id, color);
     }
 
-
-    private bool SetTxBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
-    {
-        // 要素座標を取得
-        FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
-
-        // 節点が有効なら作成する
-        float member_length = 0.0f;
-        if (!_webframe.GetNodeLength(memberData.ni, memberData.nj, out member_length)) return false;
-        base.InitBlock(ref blockWorkData, lm.row, id);
-
-        // 位置を決定する
-        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
-        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-
-        Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
-        Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
-
-        float length = Vector3.Distance(pos_1, pos_2);
-        float P1 = _webframe.LoadBlockScale(lm.P1, "W");
-        float P2 = _webframe.LoadBlockScale(lm.P2, "W");
-
-        // 位置を設定する
-        blockWorkData.rootBlockTransform.position = pos_1;
-        blockWorkData.rootBlockTransform.LookAt(pos_j);
-
-        //メッシュを編集する
-        float MaxValue = Math.Max(P1, P2);
-        if (P1 < P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            Vector3 vertext = vertextList[1];
-            vertext.x *= P1 / P2;
-            vertextList[1] = vertext;
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-        else if (P1 > P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            Vector3 vertext = vertextList[3];
-            vertext.x *= P2 / P1;
-            vertextList[3] = vertext;
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-
-        // 幅と長さを設定する
-        Vector3 scale = new Vector3(MaxValue, 1, length);
-        blockWorkData.rootBlockTransform.localScale = scale;
-
-        // 画像のタイリング
-        float Tiling = Mathf.Floor(length / MaxValue);
-        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
-
-        // 向き(回転)を設定する
-        Transform member = blockWorkData.rootBlockTransform.transform;
-        Vector3 parts = member.up;
-        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
-        blockWorkData.rootBlockTransform.rotation = rotate;
-
-        return true;
-    }
-
-    private bool SetTyzBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
-    {
-        // 要素座標を取得
-        if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
-        FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
-
-        // 節点が有効なら作成する
-        float member_length = 0.0f;
-        if (!_webframe.GetNodeLength(memberData.ni, memberData.nj, out member_length)) return false;
-        base.InitBlock(ref blockWorkData, lm.row, id);
-
-        // 位置を決定する
-        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
-        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-
-        Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
-        Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
-
-        float length = Vector3.Distance(pos_1, pos_2);
-        float P1 = _webframe.LoadBlockScale(lm.P1, "W");
-        float P2 = _webframe.LoadBlockScale(lm.P2, "W");
-
-        // 位置を設定する
-        blockWorkData.rootBlockTransform.position = pos_1;
-        blockWorkData.rootBlockTransform.LookAt(pos_j);
-
-        //メッシュを編集する
-        float MaxValue = Math.Max(P1, P2);
-        if (P1 < P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            Vector3 vertext = vertextList[1];
-            vertext.x *= P1 / P2;
-            vertextList[1] = vertext;
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-        else if (P1 > P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            Vector3 vertext = vertextList[3];
-            vertext.x *= P2 / P1;
-            vertextList[3] = vertext;
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-
-        // 幅と長さを設定する
-        Vector3 scale = new Vector3(MaxValue, 1, length);
-        blockWorkData.rootBlockTransform.localScale = scale;
-
-        // 画像のタイリング
-        float Tiling = Mathf.Floor(length / MaxValue);
-        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
-
-        // 向き(回転)を設定する
-        Transform member = blockWorkData.rootBlockTransform.transform;
-        Vector3 parts = (lm.direction == "y") ? member.right : member.forward;
-        Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
-        blockWorkData.rootBlockTransform.rotation = rotate;
-
-        return true;
-    }
-
-    private bool SetTrBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
-    {
-        // 要素座標を取得
-        if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
-        FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
-
-        // 節点が有効なら作成する
-        float member_length = 0.0f;
-        if (!_webframe.GetNodeLength(memberData.ni, memberData.nj, out member_length)) return false;
-        base.InitBlock(ref blockWorkData, lm.row, id);
-
-        // 位置を決定する
-        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
-        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-
-        Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
-        Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
-
-        float length = Vector3.Distance(pos_1, pos_2);
-        float P1 = _webframe.LoadBlockScale(lm.P1, "T");
-        float P2 = _webframe.LoadBlockScale(lm.P2, "T");
-
-        // 位置を設定する
-        blockWorkData.rootBlockTransform.position = pos_1;
-        blockWorkData.rootBlockTransform.LookAt(pos_j);
-
-        //メッシュを編集する
-        float MaxValue = Math.Max(P1, P2);
-        if (P1 < P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            //P1側の Mesh を小さくする
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-        else if (P1 > P2)
-        {
-            List<Vector3> vertextList = new List<Vector3>();
-            blockWorkData.mesh.GetVertices(vertextList);
-            //P2側の Mesh を小さくする
-            blockWorkData.mesh.SetVertices(vertextList);
-        }
-
-        // 幅と長さを設定する
-        Vector3 scale = new Vector3(MaxValue, MaxValue, length);
-        blockWorkData.rootBlockTransform.localScale = scale;
-
-        // 画像のタイリング
-        float Tiling = Mathf.Floor(length / MaxValue);
-        blockWorkData.renderer.material.mainTextureScale = new Vector2(1, Tiling);
-
-        return true;
-    }
-
-    #endregion
-
-    private void AddWorkData(string id, BlockWorkData blockWorkData)
-    {
-        base._blockWorkData.Add(id, blockWorkData);
-
-        PartsDispStatus partsDispStatus;
-        partsDispStatus.id = id;
-        partsDispStatus.enable = true;
-
-        if (base.SetBlockStatusCommon(partsDispStatus) == false)
-        {
-            return;
-        }
-    }
-
+    
     /// <summary>JSに選択アイテムの変更を通知する </summary>
     public override void SendSelectChengeMessage(int row)
     {

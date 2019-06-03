@@ -194,6 +194,7 @@ public class MainFrameManager : MonoBehaviour
                     continue;
                 if (_partsDispWorks[i].partsGameObject == null)
                     continue;
+
                 switch ((InputModeType)i)
                 {
                     case InputModeType.Node:
@@ -201,6 +202,8 @@ public class MainFrameManager : MonoBehaviour
                         NodeDispManager n = _partsDispWorks[i].partsDispManager as NodeDispManager;
                         if (label == InputModeType.Node)
                             n.ChangeDispMode(NodeDispManager.DispType.Block);
+                        else if (label == InputModeType.Disg)
+                            _partsDispWorks[i].partsGameObject.SetActive(false);
                         else
                             n.ChangeDispMode(NodeDispManager.DispType.Dot);
                         break;
@@ -208,6 +211,8 @@ public class MainFrameManager : MonoBehaviour
                     case InputModeType.Member:
                         //	要素は非表示にせずに表示モードを切り替える
                         if (label == InputModeType.Element)
+                            _partsDispWorks[i].partsGameObject.SetActive(false);
+                        else if (label == InputModeType.Disg)
                             _partsDispWorks[i].partsGameObject.SetActive(false);
                         else
                         {
@@ -219,6 +224,7 @@ public class MainFrameManager : MonoBehaviour
                                 m.ChangeDispMode(MemberDispManager.DispType.Line);
                         }
                         break;
+
                     default:
                         _partsDispWorks[i].partsGameObject.SetActive((InputModeType)i == label);
                         break;

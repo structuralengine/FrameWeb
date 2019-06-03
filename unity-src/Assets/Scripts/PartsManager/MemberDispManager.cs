@@ -170,32 +170,6 @@ public class MemberDispManager : PartsDispManager
 
     }
 
-
-    /// <summary>
-    /// 指定された節点と一致するブロックを設定する
-    /// </summary>
-    /// <param name="search_node"></param>
-    public void CheckNodeAndUpdateStatus(string search_node)
-    {
-        Dictionary<string, FrameWeb.MemberData> ListMemberData = _webframe.ListMemberData;
-
-        foreach (string id in ListMemberData.Keys)
-        {
-            string nodeI = ListMemberData[id].ni;
-            string nodeJ = ListMemberData[id].nj;
-
-            float length = 0.0f;
-            if (_webframe.GetNodeLength(nodeI, nodeJ, out length) == false)
-                continue;
-            if (search_node != nodeI && search_node != nodeJ)
-            {
-                continue;       //	関わっていないので無視
-            }
-            this.SetBlockStatus(id);
-        }
-    }
-
-
     /// <summary>
     /// 
     /// </summary>
@@ -221,5 +195,4 @@ public class MemberDispManager : PartsDispManager
         _dispType = dispType;
         SetBlockStatusAll();
     }
-
 }
