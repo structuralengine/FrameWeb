@@ -37,27 +37,14 @@ public class DisgDispManager : PartsDispManager
                 catch { }
             }
 
-            // 基準の線を生成する
+            // 基準線を生成する
             foreach (string id in _webframe.ListMemberData.Keys)
             {
-                int i = ComonFunctions.ConvertToInt(id);
                 if (!base._blockWorkData.ContainsKey(id))
                 {
                     blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
-                    this.InitLine(ref blockWorkData, i, id);
-
                     FrameWeb.MemberData memberData = _webframe.ListMemberData[id];
-                    Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
-                    Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
-
-                    Transform LineBlock = blockWorkData.rootBlockTransform.Find("Line");
-                    LineRenderer lRend = LineBlock.GetComponent<LineRenderer>();
-                    lRend.positionCount = 2;
-                    lRend.startWidth = _webframe.DisgLineScale;
-                    lRend.endWidth = _webframe.DisgLineScale;
-                    lRend.SetPosition(0, pos_i);
-                    lRend.SetPosition(1, pos_j);
-
+                    this.InitLine(ref blockWorkData,  id, _webframe.ListMemberData[id]);
                     base._blockWorkData.Add(id, blockWorkData);
                 }
             }
@@ -69,8 +56,10 @@ public class DisgDispManager : PartsDispManager
         }
     }
 
-    private void InitLine(ref BlockWorkData blockWorkData, int data_id, string block_id)
+    private void InitLine(ref BlockWorkData blockWorkData,  string block_id, FrameWeb.MemberData memberData)
     {
+        int data_id = ComonFunctions.ConvertToInt(block_id);
+
         blockWorkData.gameObjectTransform = blockWorkData.gameObject.transform;
         blockWorkData.rootBlockTransform = blockWorkData.gameObjectTransform.Find("Root");
         blockWorkData.blockData = blockWorkData.gameObject.GetComponentInChildren<BlockData>();
@@ -91,6 +80,18 @@ public class DisgDispManager : PartsDispManager
         {
             blockWorkData.mesh = meshFileter.mesh;
         }
+
+        // 位置を決定
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+
+        Transform LineBlock = blockWorkData.rootBlockTransform.Find("Line");
+        LineRenderer lRend = LineBlock.GetComponent<LineRenderer>();
+        lRend.positionCount = 2;
+        lRend.startWidth = _webframe.DisgLineScale;
+        lRend.endWidth = _webframe.DisgLineScale;
+        lRend.SetPosition(0, pos_i);
+        lRend.SetPosition(1, pos_j);
     }
 
     /// <summary>

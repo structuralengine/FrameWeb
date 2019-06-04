@@ -50,6 +50,8 @@ public class FrameDataService : FrameWeb
     private float FSECSCALE = 0.8f;
     private double[] maxFsecValue;
 
+    private float DISGSCALE = 2f;
+    private float maxDisgValue;
 
 
     #endregion
@@ -478,6 +480,31 @@ public class FrameDataService : FrameWeb
 
     #region 変位量(Disg)に関する部分
 
+    public float DisgScale(double value)
+    {
+        // 最大の大きさを決定する
+        var MaxSize = this.NodeScale * DISGSCALE;
+        return MaxSize * (float)value / maxDisgValue;
+    }
+
+    private bool SetDisgValueScale()
+    {
+        if (!_ListDisgData.ContainsKey(DisgType))
+            return false;
+
+        //
+        maxDisgValue = 0;
+        foreach (var iCase in this._ListDisgData) { 
+            foreach (var tmp in iCase.Value)
+            {
+                maxDisgValue = Mathf.Max(Mathf.Abs((float)tmp.Value.dx), maxDisgValue);
+                maxDisgValue = Mathf.Max(Mathf.Abs((float)tmp.Value.dy), maxDisgValue);
+                maxDisgValue = Mathf.Max(Mathf.Abs((float)tmp.Value.dz), maxDisgValue);
+            }
+        }
+        return true;
+    }
+
     public float DisgLineScale
     {
         get
@@ -629,6 +656,12 @@ public class FrameDataService : FrameWeb
             this.SetLoadValueScale();
         }
 
+        // 断面力データが変わったら maxLoadValue を再計算
+        if (OnChengeList[(int)InputModeType.Disg] == true)
+        {
+            this.maxDisgValue = -1f;
+            this.SetDisgValueScale();
+        }
         // 断面力データが変わったら maxLoadValue を再計算
         if (OnChengeList[(int)InputModeType.Fsec] == true)
         {

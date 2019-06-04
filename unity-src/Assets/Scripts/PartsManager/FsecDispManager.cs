@@ -10,10 +10,17 @@ using UnityEngine;
 /// </summary>
 public class FsecDispManager : PartsDispManager
 {
-    public override void ChangeTypeNo(int TypeNo)
+    public enum DispType
     {
-        _webframe.FsecType = TypeNo;
+        fx,
+        fy,
+        fz,
+        mx,
+        my,
+        mz
     }
+
+    private DispType _dispType = DispType.mz;
 
     public override void CreateParts()
     {
@@ -37,53 +44,27 @@ public class FsecDispManager : PartsDispManager
             foreach(string m in _webframe.ListFsecData.Keys)
             {
                 if (!_webframe.ListMemberData.ContainsKey(m)) continue;
-
                 var member = _webframe.ListFsecData[m];
-                for (int i = 1; i < member.Count - 1; i++) // インデックスの1番目からスタート
+
+                // 注)インデックスの1番目からスタート
+                // 　 インデックスの0番目のデータは、1番目のBlock のi端として使うので
+                int j = 0;
+                foreach(int i in member.Keys)
                 {
+                    j++;
+                    if (j == 1) continue;
                     var Fsec = member[i];
-                    if(Math.Abs(Fsec.fx) > 0)
-                    {
-                        string id = string.Format("{0}/{1}/fx", i, m);
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-                        base.InitBlock(ref blockWorkData, i, id);
-                        base._blockWorkData.Add(id, blockWorkData);
-                    }
-                    if (Math.Abs(Fsec.fy) > 0)
-                    {
-                        string id = string.Format("{0}/{1}/fy", i, m);
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-                        base.InitBlock(ref blockWorkData, i, id);
-                        base._blockWorkData.Add(id, blockWorkData);
-                    }
-                    if (Math.Abs(Fsec.fz) > 0)
-                    {
-                        string id = string.Format("{0}/{1}/fz", i, m);
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-                        base.InitBlock(ref blockWorkData, i, id);
-                        base._blockWorkData.Add(id, blockWorkData);
-                    }
-                    if (Math.Abs(Fsec.mx) > 0)
-                    {
-                        string id = string.Format("{0}/{1}/mx", i, m);
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-                        base.InitBlock(ref blockWorkData, i, id);
-                        base._blockWorkData.Add(id, blockWorkData);
-                    }
-                    if (Math.Abs(Fsec.my) > 0)
-                    {
-                        string id = string.Format("{0}/{1}/my", i, m);
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-                        base.InitBlock(ref blockWorkData, i, id);
-                        base._blockWorkData.Add(id, blockWorkData);
-                    }
-                    if (Math.Abs(Fsec.mz) > 0)
-                    {
-                        string id = string.Format("{0}/{1}/mz", i, m);
-                        blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-                        base.InitBlock(ref blockWorkData, i, id);
-                        base._blockWorkData.Add(id, blockWorkData);
-                    }
+                    //曲げ、せん断で使う PrefabFsecBlock1 を部材分割数分生成
+                    string MS_id = string.Format("{0}/{1}/MS", i, m);
+                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+                    base.InitBlock(ref blockWorkData, i, MS_id);
+                    base._blockWorkData.Add(MS_id, blockWorkData);
+
+                    //軸力、ねじりで使う PrefabFsecBlock2 を部材分割数分生成
+                    string NT_id = string.Format("{0}/{1}/NT", i, m);
+                    blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                    base.InitBlock(ref blockWorkData, i, NT_id);
+                    base._blockWorkData.Add(NT_id, blockWorkData);
                 }
             }
         }
@@ -100,6 +81,8 @@ public class FsecDispManager : PartsDispManager
     {
         if (!base._blockWorkData.ContainsKey(id))
             return;
+
+        BlockWorkData blockWorkData = base._blockWorkData[id];
 
         // id から情報を得る
         string[] idList = id.Split('/');
@@ -119,45 +102,64 @@ public class FsecDispManager : PartsDispManager
         partsDispStatus.id = id;
         partsDispStatus.enable = _webframe.GetNodeLength(nodeI, nodeJ, out member_length);
 
+        switch (this._dispType)
+        {
+            case DispType.fx:
+            case DispType.mx:
+                if (direction == "NT")
+                    partsDispStatus.enable = (partsDispStatus.enable) ? true : false;
+                else
+                    partsDispStatus.enable = false;
+                break;
+            case DispType.fy:
+            case DispType.fz:
+            case DispType.my:
+            case DispType.mz:
+                if (direction == "MS")
+                    partsDispStatus.enable = (partsDispStatus.enable) ? true : false;
+                else
+                    partsDispStatus.enable = false;
+
+                break;
+        }
         if (base.SetBlockStatusCommon(partsDispStatus) == false)
         {
             return;
         }
 
         //	表示に必要なパラメータを用意する
-        var mFsec = _webframe.ListFsecData[m];
+        SortedDictionary<int,FrameWeb.FsecData> mFsec = _webframe.ListFsecData[m];
+ 
         FrameWeb.FsecData iFsec = mFsec[i-1];
         FrameWeb.FsecData jFsec = mFsec[i];
         float P1 = 0f, P2 = 0f;
-        switch (direction)
+        switch (this._dispType)
         {
-            case "fx":
+            case DispType.fx:
                 P1 = _webframe.FsecBlockScale(iFsec.fx, "N");
                 P2 = _webframe.FsecBlockScale(jFsec.fx, "N");
                 break;
-            case "fy":
+            case DispType.fy:
                 P1 = _webframe.FsecBlockScale(iFsec.fy, "S");
                 P2 = _webframe.FsecBlockScale(jFsec.fy, "S");
                 break;
-            case "fz":
+            case DispType.fz:
                 P1 = _webframe.FsecBlockScale(iFsec.fz, "S");
                 P2 = _webframe.FsecBlockScale(jFsec.fz, "S");
                 break;
-            case "mx":
+            case DispType.mx:
                 P1 = _webframe.FsecBlockScale(iFsec.mx, "T");
                 P2 = _webframe.FsecBlockScale(jFsec.mx, "T");
                 break;
-            case "my":
+            case DispType.my:
                 P1 = _webframe.FsecBlockScale(iFsec.my, "M");
                 P2 = _webframe.FsecBlockScale(jFsec.my, "M");
                 break;
-            case "mz":
+            case DispType.mz:
                 P1 = _webframe.FsecBlockScale(iFsec.mz, "M");
                 P2 = _webframe.FsecBlockScale(jFsec.mz, "M");
                 break;
         }
-
-        BlockWorkData blockWorkData = base._blockWorkData[id];
 
         Vector3 pos_i = _webframe.listNodePoint[nodeI];
         Vector3 pos_j = _webframe.listNodePoint[nodeJ];
@@ -176,12 +178,12 @@ public class FsecDispManager : PartsDispManager
         float MaxValue = (aP1 > aP2) ? P1 : P2;
 
         Vector3 scale;
-        switch (direction)
+        switch (this._dispType)
         {
-            case "fy":
-            case "my":
-            case "fz":
-            case "mz":
+            case DispType.fy:
+            case DispType.fz:
+            case DispType.my:
+            case DispType.mz:
                 //メッシュを編集する
                 List<Vector3> vertextList = new List<Vector3>();
                 blockWorkData.mesh.GetVertices(vertextList);
@@ -213,17 +215,17 @@ public class FsecDispManager : PartsDispManager
         Transform member;
         Vector3 parts;
         Quaternion rotate;
-        switch (direction)
+        switch (this._dispType)
         {
-            case "fy":
-            case "my":
+            case DispType.fy:
+            case DispType.my:
                 member = blockWorkData.rootBlockTransform.transform;
                 parts = member.right;
                 rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
                 blockWorkData.rootBlockTransform.rotation = rotate;
                 break;
-            case "fz":
-            case "mz":
+            case DispType.fz:
+            case DispType.mz:
                 // 向き(回転)を設定する
                 member = blockWorkData.rootBlockTransform.transform;
                 parts = member.forward;
@@ -238,7 +240,23 @@ public class FsecDispManager : PartsDispManager
         base.SetPartsColor(id, color);
     }
 
-    
+    public void ChangeDispMode(DispType dispType)
+    {
+        if (_dispType == dispType)
+        {
+            return;
+        }
+
+        _dispType = dispType;
+        SetBlockStatusAll();
+    }
+
+
+    public override void ChangeTypeNo(int TypeNo)
+    {
+        _webframe.FsecType = TypeNo;
+    }
+
     /// <summary>JSに選択アイテムの変更を通知する </summary>
     public override void SendSelectChengeMessage(int row)
     {

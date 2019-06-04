@@ -9,7 +9,8 @@ public class NodeDispManager : PartsDispManager
     public enum DispType
     {
         Block,
-        Dot
+        Dot,
+        Disg
     }
 
     private DispType _dispType = DispType.Dot;
@@ -100,12 +101,18 @@ public class NodeDispManager : PartsDispManager
         BlockWorkData blockWorkData = base._blockWorkData[id];
 
         //	姿勢を設定
+        if(_dispType == DispType.Disg)
+        {
+            FrameWeb.DisgData disg = _webframe.ListDisgData[id];
+            nodePoint.x += _webframe.DisgScale(disg.dx);
+            nodePoint.y += _webframe.DisgScale(disg.dy);
+            nodePoint.z += _webframe.DisgScale(disg.dz);
+        }
         blockWorkData.gameObjectTransform.position = nodePoint;
         blockWorkData.gameObjectTransform.localScale = _webframe.NodeBlockScale;
 
         //	色の指定
-        //	色の指定
-        Color color = (_dispType == DispType.Block) ? s_noSelectColor : s_lineTypeBlockColor;
+        Color color = (_dispType != DispType.Dot) ? s_noSelectColor : s_lineTypeBlockColor;
         base.SetPartsColor(id, color);
 
     }
@@ -115,7 +122,7 @@ public class NodeDispManager : PartsDispManager
     /// </summary>
     public override void InputMouse()
     {
-        if (_dispType == DispType.Block)
+        if (_dispType != DispType.Dot)
         {
             base.InputMouse();
         }

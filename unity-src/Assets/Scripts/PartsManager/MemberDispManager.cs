@@ -11,7 +11,8 @@ public class MemberDispManager : PartsDispManager
     public enum DispType
     {
         Block,
-        Line
+        Line,
+        Disg
     }
 
     private DispType _dispType = DispType.Line;
@@ -127,6 +128,18 @@ public class MemberDispManager : PartsDispManager
         //	表示に必要なパラメータを用意する
         Vector3 pos_i = _webframe.listNodePoint[nodeI];
         Vector3 pos_j = _webframe.listNodePoint[nodeJ];
+        if (_dispType == DispType.Disg)
+        {
+            FrameWeb.DisgData disg_i = _webframe.ListDisgData[nodeI];
+            pos_i.x += _webframe.DisgScale(disg_i.dx);
+            pos_i.y += _webframe.DisgScale(disg_i.dy);
+            pos_i.z += _webframe.DisgScale(disg_i.dz);
+            FrameWeb.DisgData disg_j = _webframe.ListDisgData[nodeJ];
+            pos_j.x += _webframe.DisgScale(disg_j.dx);
+            pos_j.y += _webframe.DisgScale(disg_j.dy);
+            pos_j.z += _webframe.DisgScale(disg_j.dz);
+        }
+
 
         float Line_scale = _webframe.MemberLineScale;
         Vector3 scale = new Vector3(Line_scale, Line_scale, length);

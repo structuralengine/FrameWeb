@@ -30,6 +30,7 @@ public class MainFrameManager : MonoBehaviour
 
     PartsDispWork[] _partsDispWorks = new PartsDispWork[(int)InputModeType.Max];
 
+    GameObject MyToggle;
 
     /// <summary>
     /// 表示用オブジェクトのインスタンス化
@@ -76,6 +77,9 @@ public class MainFrameManager : MonoBehaviour
         //	描画マネージャを起動する
         InstantiatePrefab();
 
+        // Fsec モード時の トグルボタン
+        this.MyToggle = GameObject.Find("Toggle");
+        this.MyToggle.SetActive(false);
     }
 
     #endregion
@@ -149,6 +153,50 @@ public class MainFrameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 断面力(Fsec)表示モードにおいて トグルボタンにより表示モードを変える
+    /// </summary>
+    public void ToggleOnChange()
+    {
+        if (this.inputMode != InputModeType.Fsec)
+        {
+            this.MyToggle.SetActive(false);
+            return;
+        }
+
+        FsecDispManager f = _partsDispWorks[9].partsDispManager as FsecDispManager;
+
+        ToggleGroup toggleGroup = this.MyToggle.GetComponent<ToggleGroup>();
+        Toggle[] Toggles = toggleGroup.GetComponentsInChildren<Toggle>();
+        foreach (Toggle toggle in Toggles)
+        {
+            if (toggle.isOn != true)
+                continue;
+            switch (toggle.name)
+            {
+                case "fx":
+                    f.ChangeDispMode(FsecDispManager.DispType.fx);
+                    break;
+                case "fy":
+                    f.ChangeDispMode(FsecDispManager.DispType.fy);
+                    break;
+                case "fz":
+                    f.ChangeDispMode(FsecDispManager.DispType.fz);
+                    break;
+                case "mx":
+                    f.ChangeDispMode(FsecDispManager.DispType.mx);
+                    break;
+                case "my":
+                    f.ChangeDispMode(FsecDispManager.DispType.my);
+                    break;
+                case "mz":
+                    f.ChangeDispMode(FsecDispManager.DispType.mz);
+                    break;
+            }
+        }
+        _partsDispWorks[9].partsDispManager.SetBlockStatusAll();
+    }
+
     #endregion
 
     #region  JavaScript から 表示モードの変更通知が来た 
@@ -203,7 +251,7 @@ public class MainFrameManager : MonoBehaviour
                         if (label == InputModeType.Node)
                             n.ChangeDispMode(NodeDispManager.DispType.Block);
                         else if (label == InputModeType.Disg)
-                            _partsDispWorks[i].partsGameObject.SetActive(false);
+                            n.ChangeDispMode(NodeDispManager.DispType.Disg);
                         else
                             n.ChangeDispMode(NodeDispManager.DispType.Dot);
                         break;
@@ -212,14 +260,14 @@ public class MainFrameManager : MonoBehaviour
                         //	要素は非表示にせずに表示モードを切り替える
                         if (label == InputModeType.Element)
                             _partsDispWorks[i].partsGameObject.SetActive(false);
-                        else if (label == InputModeType.Disg)
-                            _partsDispWorks[i].partsGameObject.SetActive(false);
                         else
                         {
                             _partsDispWorks[i].partsGameObject.SetActive(true);
                             MemberDispManager m = _partsDispWorks[i].partsDispManager as MemberDispManager;
                             if (label == InputModeType.Member)
                                 m.ChangeDispMode(MemberDispManager.DispType.Block);
+                            else if(label == InputModeType.Disg)
+                                m.ChangeDispMode(MemberDispManager.DispType.Disg);
                             else
                                 m.ChangeDispMode(MemberDispManager.DispType.Line);
                         }
@@ -229,6 +277,13 @@ public class MainFrameManager : MonoBehaviour
                         _partsDispWorks[i].partsGameObject.SetActive((InputModeType)i == label);
                         break;
                 }
+            }
+            // 画面右下のToggleボタンの表示
+            if(this.MyToggle != null) { 
+                if (label == InputModeType.Fsec)
+                    this.MyToggle.SetActive(true);
+                else
+                    this.MyToggle.SetActive(false);
             }
         }
         catch (Exception e)
