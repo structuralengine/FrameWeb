@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -101,7 +100,7 @@ public class LoadDispManager : PartsDispManager
         blockWorkData.rootBlockTransform.localScale = scale;
         float P1 = _webframe.LoadBlockScale(load.Value, "P");
         blockWorkData.rootBlockTransform.Find("Cylinder").transform.localScale += new Vector3(0, P1, 0);
-        blockWorkData.rootBlockTransform.Find("Cylinder").transform.position += new Vector3(0, 0, scale.y*P1);
+        blockWorkData.rootBlockTransform.Find("Cylinder").transform.position += new Vector3(0, 0, scale.y * P1);
 
         //向きを設定する
         int sign = Math.Sign(load.Value);
@@ -114,7 +113,7 @@ public class LoadDispManager : PartsDispManager
                 blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
                 break;
             case "tz":
-                if(sign < 0)
+                if (sign < 0)
                     blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
                 break;
         }
@@ -198,17 +197,172 @@ public class LoadDispManager : PartsDispManager
             }
             else if (lm.mark == 1)
             {// 集中荷重
-
+                if (!this.SetPointLoadBlockStatus(id, lm)) continue;
             }
             else if (lm.mark == 11)
             {// 集中回転荷重
-
+                blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+                if (!this.SetPointMomentBlockStatus(id, lm)) continue;
             }
             else if (lm.mark == 9)
             {// 温度荷重
 
             }
         }
+    }
+
+    private bool SetPointMomentBlockStatus(string id, FrameWeb.LoadMemberData lm)
+    {
+        // 要素座標を取得
+        FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
+
+        // 節点が有効なら作成する
+        float member_length = 0.0f;
+        if (!_webframe.GetNodeLength(memberData.ni, memberData.nj, out member_length)) return false;
+
+
+        // 位置を決定する
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+
+
+        float P1 = _webframe.LoadBlockScale(lm.P1, "M");
+        float P2 = _webframe.LoadBlockScale(lm.P2, "M");
+
+        if (Mathf.Abs(P1) > 0)
+        {
+            Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+            BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+            base.InitBlock(ref blockWorkData, lm.row, id);
+            // 位置を設定する
+            blockWorkData.rootBlockTransform.position = pos_1;
+            // 大きさを設定する
+            blockWorkData.rootBlockTransform.localScale = new Vector3(P1, P1, P1);
+            //向きを設定する
+            int sign = Math.Sign(P1);
+            switch (lm.direction)
+            {
+                case "x":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, sign * 90f, 0f)); // y軸を軸として90°回転
+                    break;
+                case "y":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+                    break;
+                case "z":
+                    if (sign > 0)
+                        blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, 180f, 0f)); // z軸を軸として180°回転
+                    break;
+            }
+            this.AddWorkData(id, blockWorkData);
+        }
+        if (Mathf.Abs(P2) > 0)
+        {
+            Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
+            BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
+            base.InitBlock(ref blockWorkData, lm.row, id);
+            // 位置を設定する
+            blockWorkData.rootBlockTransform.position = pos_2;
+            // 大きさを設定する
+            blockWorkData.rootBlockTransform.localScale = new Vector3(P2, P2, P2);
+            //向きを設定する
+            int sign = Math.Sign(P1);
+            switch (lm.direction)
+            {
+                case "x":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, -sign * 90f, 0f)); // y軸を軸として90°回転
+                    break;
+                case "y":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+                    break;
+                case "z":
+                    if (sign < 0)
+                        blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
+                    break;
+            }
+            this.AddWorkData(id, blockWorkData);
+        }
+
+        return true;
+    }
+
+    private bool SetPointLoadBlockStatus(string id, FrameWeb.LoadMemberData lm)
+    {
+        // 要素座標を取得
+        FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
+
+        // 節点が有効なら作成する
+        float member_length = 0.0f;
+        if (!_webframe.GetNodeLength(memberData.ni, memberData.nj, out member_length)) return false;
+
+
+        // 位置を決定する
+        Vector3 pos_i = _webframe.listNodePoint[memberData.ni];
+        Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
+
+
+        float P1 = _webframe.LoadBlockScale(lm.P1, "P");
+        float P2 = _webframe.LoadBlockScale(lm.P2, "P");
+
+        if (Mathf.Abs(P1) > 0)
+        {
+            Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+            BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+            base.InitBlock(ref blockWorkData, lm.row, id);
+            // 位置を設定する
+            blockWorkData.rootBlockTransform.position = pos_1;
+            // 大きさを設定する
+            var scale = _webframe.NodeBlockScale;
+            blockWorkData.rootBlockTransform.localScale = scale;
+            blockWorkData.rootBlockTransform.Find("Cylinder").transform.localScale += new Vector3(0, P1, 0);
+            blockWorkData.rootBlockTransform.Find("Cylinder").transform.position += new Vector3(0, 0, scale.y * P1);
+            //向きを設定する
+            int sign = Math.Sign(P1);
+            switch (lm.direction)
+            {
+                case "x":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, -sign * 90f, 0f)); // y軸を軸として90°回転
+                    break;
+                case "y":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+                    break;
+                case "z":
+                    if (sign < 0)
+                        blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
+                    break;
+            }
+            this.AddWorkData(id, blockWorkData);
+        }
+        if (Mathf.Abs(P2) > 0)
+        {
+            Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
+            BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
+            base.InitBlock(ref blockWorkData, lm.row, id);
+            // 位置を設定する
+            blockWorkData.rootBlockTransform.position = pos_2;
+            // 大きさを設定する
+            var scale = _webframe.NodeBlockScale;
+            blockWorkData.rootBlockTransform.localScale = scale;
+            blockWorkData.rootBlockTransform.Find("Cylinder").transform.localScale += new Vector3(0, P1, 0);
+            blockWorkData.rootBlockTransform.Find("Cylinder").transform.position += new Vector3(0, 0, scale.y * P1);
+            //向きを設定する
+            int sign = Math.Sign(P1);
+            switch (lm.direction)
+            {
+                case "x":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, -sign * 90f, 0f)); // y軸を軸として90°回転
+                    break;
+                case "y":
+                    blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(-sign * 90f, 0f, 0f)); // x軸を軸として90°回転
+                    break;
+                case "z":
+                    if (sign < 0)
+                        blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
+                    break;
+            }
+            this.AddWorkData(id, blockWorkData);
+        }
+
+        return true;
     }
 
     private bool SetTxBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
