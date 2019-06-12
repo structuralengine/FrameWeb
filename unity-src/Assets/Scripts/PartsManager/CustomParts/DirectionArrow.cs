@@ -36,7 +36,7 @@ public class DirectionArrow : MonoBehaviour
 			0, 1, 2, 3, 4, 5,
 		};
 		Color[]	colors = new Color[]{
-			Color.red, Color.red, Color.green, Color.green, Color.blue, Color.blue,
+            Color.green, Color.green, Color.blue, Color.blue,  Color.red, Color.red,
 		};
 
 		mesh.vertices = vertices;

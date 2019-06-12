@@ -233,7 +233,7 @@ public class LoadDispManager : PartsDispManager
         {
             Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-            base.InitBlock(ref blockWorkData, lm.row, id);
+            base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
             blockWorkData.rootBlockTransform.position = pos_1;
             // 大きさを設定する
@@ -253,13 +253,13 @@ public class LoadDispManager : PartsDispManager
                         blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(0f, 180f, 0f)); // z軸を軸として180°回転
                     break;
             }
-            this.AddWorkData(id, blockWorkData);
+            this.AddWorkData(id + "-P1", blockWorkData);
         }
         if (Mathf.Abs(P2) > 0)
         {
             Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
-            base.InitBlock(ref blockWorkData, lm.row, id);
+            base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
             blockWorkData.rootBlockTransform.position = pos_2;
             // 大きさを設定する
@@ -279,7 +279,7 @@ public class LoadDispManager : PartsDispManager
                         blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
                     break;
             }
-            this.AddWorkData(id, blockWorkData);
+            this.AddWorkData(id + "-P2", blockWorkData);
         }
 
         return true;
@@ -307,7 +307,7 @@ public class LoadDispManager : PartsDispManager
         {
             Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-            base.InitBlock(ref blockWorkData, lm.row, id);
+            base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
             blockWorkData.rootBlockTransform.position = pos_1;
             // 大きさを設定する
@@ -330,13 +330,13 @@ public class LoadDispManager : PartsDispManager
                         blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
                     break;
             }
-            this.AddWorkData(id, blockWorkData);
+            this.AddWorkData(id + "-P1", blockWorkData);
         }
         if (Mathf.Abs(P2) > 0)
         {
             Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
-            base.InitBlock(ref blockWorkData, lm.row, id);
+            base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
             blockWorkData.rootBlockTransform.position = pos_2;
             // 大きさを設定する
@@ -359,7 +359,7 @@ public class LoadDispManager : PartsDispManager
                         blockWorkData.rootBlockTransform.transform.Rotate(new Vector3(180f, 0f, 0f)); // z軸を軸として180°回転
                     break;
             }
-            this.AddWorkData(id, blockWorkData);
+            this.AddWorkData(id + "-P2", blockWorkData);
         }
 
         return true;

@@ -21,16 +21,16 @@ public class Grid : MonoBehaviour
 	[SerializeField]
 	Color		_gridColor = Color.gray;
 
-	[SerializeField]
-	GridFace	_gridFace = GridFace.XY;
+    [SerializeField]
+    GridFace _gridFace = GridFace.XY;
 
-	//[SerializeField]
-	//bool		_enableCenterGrid = true;
+    //[SerializeField]
+    //bool		_enableCenterGrid = true;
 
-	//[SerializeField]
-	//Color		_centerGridColor = Color.white;
-	
-	Mesh			_mesh;
+    //[SerializeField]
+    //Color		_centerGridColor = Color.white;
+
+    Mesh			_mesh;
 	MeshRenderer	_meshRenderer;
 
 

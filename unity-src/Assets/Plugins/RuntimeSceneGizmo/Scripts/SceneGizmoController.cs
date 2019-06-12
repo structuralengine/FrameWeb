@@ -2,7 +2,7 @@
 
 namespace RuntimeSceneGizmo
 {
-	//public enum GizmoComponent { None = -1, Center = 0, XNegative = 4, XPositive = 3, YNegative = 5, YPositive = 6, ZNegative = 1, ZPositive = 2 };
+//public enum GizmoComponent { None = -1, Center = 0, XNegative = 4, XPositive = 3, YNegative = 5, YPositive = 6, ZNegative = 1, ZPositive = 2 };
   public enum GizmoComponent { None = -1, Center = 0, XNegative = 1, XPositive = 2, YNegative = 3, YPositive = 4, ZNegative = 5, ZPositive = 6 };
 
   public class SceneGizmoController : MonoBehaviour
