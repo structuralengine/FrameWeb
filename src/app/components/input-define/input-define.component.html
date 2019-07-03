@@ -1,7 +1,7 @@
 <div class="btn-group">
   <nav>
     <a routerLink="/input-define" routerLinkActive="selected-item"
-      class="btn btn-outline-primary">DEFINE</a>
+      class="btn btn-outline-primary active">DEFINE</a>
     <a routerLink="/input-combine" routerLinkActive="selected-item"
       class="btn btn-outline-primary">COMBINE</a>
     <a routerLink="/input-pickup" routerLinkActive="selected-item"
@@ -9,19 +9,22 @@
   </nav>
 </div>
 
-<div class="pager">
-  <div class="pager-title">ページ</div>
-  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
-  </ngb-pagination>
-</div>
+<div style="width:900px;">
+  <div class="pager">
+    <div class="pager-title">ページ</div>
+    <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+    </ngb-pagination>
+  </div>
 
-<div class="datasheet">
-  <hot-table class="hot" 
-  [data]="defineData" 
-  [colHeaders]="true"
-  [rowHeaders]="rowHeaders" 
-  [height]="500"
-  [settings]="hotTableSettings">
-    <hot-column *ngFor="let c of defineColums;" [data]="c" [title]="c"></hot-column>
-  </hot-table>
+  <div class="datasheet">
+    <hot-table class="hot" 
+    [data]="defineData" 
+    [colHeaders]="true"
+    [rowHeaders]="rowHeaders" 
+    [height]="500"
+    [width]="300"
+    [settings]="hotTableSettings">
+      <hot-column *ngFor="let c of defineColums;" [data]="c" [title]="c"></hot-column>
+    </hot-table>
+  </div>
 </div>

@@ -2,7 +2,7 @@
   <nav>
     <a routerLink="/input-define" routerLinkActive="selected-item" class="btn btn-outline-primary">DEFINE</a>
     <a routerLink="/input-combine" routerLinkActive="selected-item" class="btn btn-outline-primary">COMBINE</a>
-    <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary">PICKUP</a>
+    <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary active">PICKUP</a>
   </nav>
 </div>
 
@@ -18,6 +18,7 @@
   [colHeaders]="true" 
   [rowHeaders]="rowHeaders" 
   [height]="500"
+  [width]="900"
   [settings]="hotTableSettings">
     <hot-column *ngFor="let c of pickupColums; index as i" [data]="c" [title]="pickupTitles[i]"></hot-column>
   </hot-table>

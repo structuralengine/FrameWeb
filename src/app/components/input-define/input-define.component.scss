@@ -1,8 +1,12 @@
 .btn-group {
-    width: 500px;
     margin-top: 15px;
     margin-bottom: 15px;
     margin-left: 15px;
+
+    display: inline-block;
+    position:absolute;
+    width:30%;
+    left:0px;
 }
 
 .pager {
@@ -12,6 +16,8 @@
     .pager-title{
         float:left;
     }
+    
+    display: inline-block;
 }
 
 .datasheet{

@@ -152,6 +152,9 @@ export class MenuComponent implements OnInit {
         this.userPoint = this.user.purchase_value.toString();
       }
     });
+
+    // 「ユーザー名」入力ボックスにフォーカスを当てる
+    document.getElementById("user_name_id").focus();
   }
 
   logOut(): void {

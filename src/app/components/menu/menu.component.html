@@ -1,6 +1,12 @@
 <div class="row">
+  <div class="col-xs-4 margin">
+      <div *ngIf="loggedIn" class="welcome-message">
+        {{loginUserName}}さん！あなたの保有ポイントは{{userPoint}}ポイントです
+      </div>
+    
+  </div>
 
-  <div class="col">
+  <div class="col-xs-4 margin">
     <div ngbDropdown class="d-inline-block">
       <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>ファイル</button>
       <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
@@ -20,16 +26,13 @@
     </div>
   </div>
 
-  <div class="col">
+  <div class="col-xs-4 margin">
     <div *ngIf="!loggedIn" class="d-inline-block">
       <button (click)="logIn()" class="btn btn-outline-primary">ログイン</button>
     </div>
     <div *ngIf="loggedIn" class="d-inline-block">
       <div class="logout-button">
         <button (click)="logOut()" class="btn btn-outline-primary">ログアウト</button>
-      </div>
-      <div class="welcome-message">
-        {{loginUserName}}さん！あなたの保有ポイントは{{userPoint}}ポイントです
       </div>
     </div>
   </div>

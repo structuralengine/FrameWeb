@@ -26,6 +26,13 @@ export class LoginDialogComponent implements OnInit {
     }
 
   ngOnInit() {
+    //　エンターキーでログイン可能にする。
+    //　不要な場合は以下の処理を消してください。
+    document.body.onkeydown = (e)=> {
+      if (e.key === 'Enter') {
+        this.onClick();
+      }
+    }
   }
 
   onClick() {

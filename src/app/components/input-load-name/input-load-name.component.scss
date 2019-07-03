@@ -5,13 +5,21 @@
     .pager-title{
         float:left;
     }
+
+    display: inline-block;
+    width:30%;
+    right:0px;
 }
 
 .btn-group {
-    width: 500px;
     margin-top: 15px;
     margin-bottom: 15px;
     margin-left: 15px;
+
+    display: inline-block;
+    position:absolute;
+    width:30%;
+    left:0px;
 }
 
 .datasheet{
