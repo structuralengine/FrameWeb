@@ -311,7 +311,7 @@ public class LoadDispManager : PartsDispManager
             base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
             StartCoroutine(MoveBlock(pos_i, pos_j, (float)lm.L1 / member_length, r => {
-                if (blockWorkData != null) blockWorkData.rootBlockTransform.position = r;
+                if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = r;
              }  ));
             //blockWorkData.rootBlockTransform.position = pos_1;
             // 大きさを設定する
@@ -342,7 +342,9 @@ public class LoadDispManager : PartsDispManager
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
-            StartCoroutine(MoveBlock(pos_i, pos_j, (member_length - (float)lm.L2) / member_length, r => blockWorkData.rootBlockTransform.position = r));
+            StartCoroutine(MoveBlock(pos_i, pos_j, (member_length - (float)lm.L2) / member_length, r => {
+                if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = r;
+            }));
             //blockWorkData.rootBlockTransform.position = pos_2;
             // 大きさを設定する
             var scale = _webframe.NodeBlockScale;
