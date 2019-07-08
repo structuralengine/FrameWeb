@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -305,11 +306,14 @@ public class LoadDispManager : PartsDispManager
 
         if (Mathf.Abs(P1) > 0)
         {
-            Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+            //Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
-            blockWorkData.rootBlockTransform.position = pos_1;
+            StartCoroutine(MoveBlock(pos_i, pos_j, (float)lm.L1 / member_length, r => {
+                if (blockWorkData != null) blockWorkData.rootBlockTransform.position = r;
+             }  ));
+            //blockWorkData.rootBlockTransform.position = pos_1;
             // 大きさを設定する
             var scale = _webframe.NodeBlockScale;
             blockWorkData.rootBlockTransform.localScale = scale;
@@ -334,11 +338,12 @@ public class LoadDispManager : PartsDispManager
         }
         if (Mathf.Abs(P2) > 0)
         {
-            Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
+            //Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
-            blockWorkData.rootBlockTransform.position = pos_2;
+            StartCoroutine(MoveBlock(pos_i, pos_j, (member_length - (float)lm.L2) / member_length, r => blockWorkData.rootBlockTransform.position = r));
+            //blockWorkData.rootBlockTransform.position = pos_2;
             // 大きさを設定する
             var scale = _webframe.NodeBlockScale;
             blockWorkData.rootBlockTransform.localScale = scale;
@@ -363,6 +368,23 @@ public class LoadDispManager : PartsDispManager
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// オブジェクトを線形補間で移動する
+    /// </summary>
+    /// <returns>The block.</returns>
+    /// <param name="pos_i">Position i.</param>
+    /// <param name="pos_j">Position j.</param>
+    /// <param name="t">T.</param>
+    /// <param name="callback">Callback.</param>
+    IEnumerator MoveBlock(Vector3 pos_i, Vector3 pos_j, float t, Action<Vector3> callback) {
+        while(t < 1f) {
+            t += Time.deltaTime;
+            var res = Vector3.Lerp(pos_i, pos_j, t);
+            callback(res);
+            yield return null;
+        }
     }
 
     private bool SetTxBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
