@@ -174,18 +174,18 @@ public class LoadDispManager : PartsDispManager
                 {
                     case "x":
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[3]) };
-                        if (!this.SetTxBlockStatus(id, ref blockWorkData, lm)) continue;
+                        if (!this.SetTxBlockStatus(id, blockWorkData, lm, b => blockWorkData = b)) continue;
                         this.AddWorkData(id, blockWorkData);
                         break;
                     case "y":
                     case "z":
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[2]) };
-                        if (!this.SetTyzBlockStatus(id, ref blockWorkData, lm)) continue;
+                        if (!this.SetTyzBlockStatus(id, blockWorkData, lm, b => blockWorkData = b)) continue;
                         this.AddWorkData(id, blockWorkData);
                         break;
                     case "r":
                         blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[4]) };
-                        if (!this.SetTrBlockStatus(id, ref blockWorkData, lm)) continue;
+                        if (!this.SetTrBlockStatus(id, blockWorkData, lm, b => blockWorkData = b)) continue;
                         this.AddWorkData(id, blockWorkData);
                         break;
                     case "gx":
@@ -236,7 +236,11 @@ public class LoadDispManager : PartsDispManager
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
-            blockWorkData.rootBlockTransform.position = pos_1;
+            Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
+            StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t => {
+                if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
+            }));
+            //blockWorkData.rootBlockTransform.position = pos_1;
             // 大きさを設定する
             blockWorkData.rootBlockTransform.localScale = new Vector3(P1, P1, P1);
             //向きを設定する
@@ -262,7 +266,11 @@ public class LoadDispManager : PartsDispManager
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[1]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
-            blockWorkData.rootBlockTransform.position = pos_2;
+            Vector3 startVec = pos_2.y > 0f ? Vector3.up : Vector3.forward;
+            StartCoroutine(MoveBlock(pos_2+startVec, pos_2, (member_length - (float)lm.L2) / member_length, t => {
+                if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
+            }));
+            //blockWorkData.rootBlockTransform.position = pos_2;
             // 大きさを設定する
             blockWorkData.rootBlockTransform.localScale = new Vector3(P2, P2, P2);
             //向きを設定する
@@ -306,11 +314,12 @@ public class LoadDispManager : PartsDispManager
 
         if (Mathf.Abs(P1) > 0)
         {
-            //Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+            Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
-            StartCoroutine(MoveBlock(pos_i, pos_j, (float)lm.L1 / member_length, r => {
+            Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
+            StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, r => {
                 if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = r;
              }  ));
             //blockWorkData.rootBlockTransform.position = pos_1;
@@ -338,11 +347,12 @@ public class LoadDispManager : PartsDispManager
         }
         if (Mathf.Abs(P2) > 0)
         {
-            //Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
+            Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
             BlockWorkData blockWorkData = new BlockWorkData { gameObject = Instantiate(_blockPrefab[0]) };
             base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
-            StartCoroutine(MoveBlock(pos_i, pos_j, (member_length - (float)lm.L2) / member_length, r => {
+            Vector3 startVec = pos_2.y > 0f ? Vector3.up : Vector3.forward;
+            StartCoroutine(MoveBlock(pos_2 + startVec, pos_2, (member_length - (float)lm.L2) / member_length, r => {
                 if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = r;
             }));
             //blockWorkData.rootBlockTransform.position = pos_2;
@@ -386,10 +396,11 @@ public class LoadDispManager : PartsDispManager
             var res = Vector3.Lerp(pos_i, pos_j, t);
             callback(res);
             yield return null;
+            //yield return new WaitForSeconds(2f);
         }
     }
 
-    private bool SetTxBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
+    private bool SetTxBlockStatus(string id, BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm, Action<BlockWorkData> callback)
     {
         // 要素座標を取得
         FrameWeb.MemberData memberData = _webframe.ListMemberData[lm.m];
@@ -404,6 +415,11 @@ public class LoadDispManager : PartsDispManager
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
 
         Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+        Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
+        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t=> {
+            if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
+        }));
+
         Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
 
         float length = Vector3.Distance(pos_1, pos_2);
@@ -411,7 +427,7 @@ public class LoadDispManager : PartsDispManager
         float P2 = _webframe.LoadBlockScale(lm.P2, "W");
 
         // 位置を設定する
-        blockWorkData.rootBlockTransform.position = pos_1;
+        //blockWorkData.rootBlockTransform.position = pos_1;
         blockWorkData.rootBlockTransform.LookAt(pos_j);
 
         //メッシュを編集する
@@ -449,10 +465,12 @@ public class LoadDispManager : PartsDispManager
         Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
         blockWorkData.rootBlockTransform.rotation = rotate;
 
+        callback(blockWorkData);
+
         return true;
     }
 
-    private bool SetTyzBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
+    private bool SetTyzBlockStatus(string id, BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm, Action<BlockWorkData> callback)
     {
         // 要素座標を取得
         if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
@@ -468,6 +486,11 @@ public class LoadDispManager : PartsDispManager
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
 
         Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+        Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
+        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t => {
+            if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
+        }));
+
         Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
 
         float length = Vector3.Distance(pos_1, pos_2);
@@ -475,7 +498,7 @@ public class LoadDispManager : PartsDispManager
         float P2 = _webframe.LoadBlockScale(lm.P2, "W");
 
         // 位置を設定する
-        blockWorkData.rootBlockTransform.position = pos_1;
+        //blockWorkData.rootBlockTransform.position = pos_1;
         blockWorkData.rootBlockTransform.LookAt(pos_j);
 
         //メッシュを編集する
@@ -513,10 +536,12 @@ public class LoadDispManager : PartsDispManager
         Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
         blockWorkData.rootBlockTransform.rotation = rotate;
 
+        callback(blockWorkData);
+
         return true;
     }
 
-    private bool SetTrBlockStatus(string id, ref BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm)
+    private bool SetTrBlockStatus(string id, BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm, Action<BlockWorkData> callback)
     {
         // 要素座標を取得
         if (!_webframe.ListMemberData.ContainsKey(lm.m)) return false;
@@ -532,6 +557,11 @@ public class LoadDispManager : PartsDispManager
         Vector3 pos_j = _webframe.listNodePoint[memberData.nj];
 
         Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
+        Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
+        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t => {
+            if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
+        }));
+
         Vector3 pos_2 = Vector3.Lerp(pos_i, pos_j, (member_length - (float)lm.L2) / member_length);
 
         float length = Vector3.Distance(pos_1, pos_2);
@@ -539,7 +569,7 @@ public class LoadDispManager : PartsDispManager
         float P2 = _webframe.LoadBlockScale(lm.P2, "T");
 
         // 位置を設定する
-        blockWorkData.rootBlockTransform.position = pos_1;
+        //blockWorkData.rootBlockTransform.position = pos_1;
         blockWorkData.rootBlockTransform.LookAt(pos_j);
 
         //メッシュを編集する
