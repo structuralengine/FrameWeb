@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class LoadDispManager : PartsDispManager
 {
+    private const float MOVE_SPPED = 0.2f;
+
     public override void ChangeTypeNo(int TypeNo)
     {
         _webframe.LoadType = TypeNo;
@@ -237,7 +239,7 @@ public class LoadDispManager : PartsDispManager
             base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
             Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
-            StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t => {
+            StartCoroutine(MoveBlock(pos_1+startVec, pos_1, MOVE_SPPED, t => {
                 if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
             }));
             //blockWorkData.rootBlockTransform.position = pos_1;
@@ -267,7 +269,7 @@ public class LoadDispManager : PartsDispManager
             base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
             Vector3 startVec = pos_2.y > 0f ? Vector3.up : Vector3.forward;
-            StartCoroutine(MoveBlock(pos_2+startVec, pos_2, (member_length - (float)lm.L2) / member_length, t => {
+            StartCoroutine(MoveBlock(pos_2+startVec, pos_2, MOVE_SPPED, t => {
                 if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
             }));
             //blockWorkData.rootBlockTransform.position = pos_2;
@@ -319,7 +321,7 @@ public class LoadDispManager : PartsDispManager
             base.InitBlock(ref blockWorkData, lm.row, id + "-P1");
             // 位置を設定する
             Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
-            StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, r => {
+            StartCoroutine(MoveBlock(pos_1+startVec, pos_1, MOVE_SPPED, r => {
                 if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = r;
              }  ));
             //blockWorkData.rootBlockTransform.position = pos_1;
@@ -352,7 +354,7 @@ public class LoadDispManager : PartsDispManager
             base.InitBlock(ref blockWorkData, lm.row, id + "-P2");
             // 位置を設定する
             Vector3 startVec = pos_2.y > 0f ? Vector3.up : Vector3.forward;
-            StartCoroutine(MoveBlock(pos_2 + startVec, pos_2, (member_length - (float)lm.L2) / member_length, r => {
+            StartCoroutine(MoveBlock(pos_2 + startVec, pos_2, MOVE_SPPED, r => {
                 if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = r;
             }));
             //blockWorkData.rootBlockTransform.position = pos_2;
@@ -416,7 +418,7 @@ public class LoadDispManager : PartsDispManager
 
         Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
         Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
-        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t=> {
+        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, MOVE_SPPED, t=> {
             if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
         }));
 
@@ -487,7 +489,7 @@ public class LoadDispManager : PartsDispManager
 
         Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
         Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
-        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t => {
+        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, MOVE_SPPED, t => {
             if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
         }));
 
@@ -532,7 +534,7 @@ public class LoadDispManager : PartsDispManager
 
         // 向き(回転)を設定する
         Transform member = blockWorkData.rootBlockTransform.transform;
-        Vector3 parts = (lm.direction == "y") ? member.right : member.forward;
+        Vector3 parts = (lm.direction == "y") ? pos_1.z > 0f ? member.up : member.forward : member.right;
         Quaternion rotate = Quaternion.LookRotation(pos_j - pos_i, parts);
         blockWorkData.rootBlockTransform.rotation = rotate;
 
@@ -558,7 +560,7 @@ public class LoadDispManager : PartsDispManager
 
         Vector3 pos_1 = Vector3.Lerp(pos_i, pos_j, (float)lm.L1 / member_length);
         Vector3 startVec = pos_1.y > 0f ? Vector3.up : Vector3.forward;
-        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, (float)lm.L1 / member_length, t => {
+        StartCoroutine(MoveBlock(pos_1+startVec, pos_1, MOVE_SPPED, t => {
             if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
         }));
 
