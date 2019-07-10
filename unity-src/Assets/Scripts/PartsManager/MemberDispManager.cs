@@ -153,6 +153,16 @@ public class MemberDispManager : PartsDispManager
         //	姿勢を設定
         blockWorkData = base._blockWorkData[id];
 
+        // 下の横棒から上のオブジェクトを線形移動する
+        if (int.Parse(id) < 10) {
+            Vector3 startVec = pos_i.y > 0f ? Vector3.up : Vector3.forward;
+            StartCoroutine(MoveBlock(pos_i + startVec, pos_i, MOVE_SPPED, t => {
+                if (blockWorkData.rootBlockTransform != null) {
+                    blockWorkData.rootBlockTransform.position = t;
+                }
+            }));
+        }
+
         blockWorkData.rootBlockTransform.position = pos_i;
         blockWorkData.rootBlockTransform.LookAt(pos_j);
         blockWorkData.rootBlockTransform.localScale = scale;

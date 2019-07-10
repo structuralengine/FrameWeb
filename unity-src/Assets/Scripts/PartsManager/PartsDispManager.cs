@@ -17,6 +17,8 @@ public class PartsDispManager : MonoBehaviour
     protected static readonly Color s_noSelectColor = new Color(1.0f, 1.0f, 1.0f);
     protected static readonly Color s_lineTypeBlockColor = Color.black;
 
+    protected const float MOVE_SPPED = 0.2f;
+
     protected FrameDataService _webframe = null;
     protected MainFrameManager _mainFrameManager = null;
 
@@ -206,6 +208,23 @@ public class PartsDispManager : MonoBehaviour
                 SetPartsColor(i, s_selectColor);
             else
                 SetPartsColor(i, s_noSelectColor);
+        }
+    }
+
+    /// <summary>
+    /// オブジェクトを線形補間で移動する
+    /// </summary>
+    /// <returns>The block.</returns>
+    /// <param name="pos_i">Position i.</param>
+    /// <param name="pos_j">Position j.</param>
+    /// <param name="t">T.</param>
+    /// <param name="callback">Callback.</param>
+    protected IEnumerator MoveBlock(Vector3 pos_i, Vector3 pos_j, float t, Action<Vector3> callback) {
+        while (t < 1f) {
+            t += Time.deltaTime;
+            var res = Vector3.Lerp(pos_i, pos_j, t);
+            callback(res);
+            yield return null;
         }
     }
 
