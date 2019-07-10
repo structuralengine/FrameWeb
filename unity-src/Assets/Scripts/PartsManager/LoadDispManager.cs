@@ -9,7 +9,6 @@ using UnityEngine;
 /// </summary>
 public class LoadDispManager : PartsDispManager
 {
-    private const float MOVE_SPPED = 0.2f;
 
     public override void ChangeTypeNo(int TypeNo)
     {
@@ -382,24 +381,6 @@ public class LoadDispManager : PartsDispManager
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// オブジェクトを線形補間で移動する
-    /// </summary>
-    /// <returns>The block.</returns>
-    /// <param name="pos_i">Position i.</param>
-    /// <param name="pos_j">Position j.</param>
-    /// <param name="t">T.</param>
-    /// <param name="callback">Callback.</param>
-    IEnumerator MoveBlock(Vector3 pos_i, Vector3 pos_j, float t, Action<Vector3> callback) {
-        while(t < 1f) {
-            t += Time.deltaTime;
-            var res = Vector3.Lerp(pos_i, pos_j, t);
-            callback(res);
-            yield return null;
-            //yield return new WaitForSeconds(2f);
-        }
     }
 
     private bool SetTxBlockStatus(string id, BlockWorkData blockWorkData, FrameWeb.LoadMemberData lm, Action<BlockWorkData> callback)
