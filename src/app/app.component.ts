@@ -25,14 +25,6 @@ export class AppComponent {
     this.baseUrl = location.origin + location.pathname;
     console.log('baseUrl', this.baseUrl);
 
-    /* // ページが遷移した時の処理
-    this._router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.unityConnector.ChengeMode(event.url);
-      }
-    });
-    */
-
     // custom property
     this.isContentsDailogShow = false;
     this.isCalculated = false;
@@ -53,19 +45,19 @@ export class AppComponent {
 
     this.deactiveButtons();
 
-    document.getElementById(id).classList.add("active");
-    
+    document.getElementById(id).classList.add('active');
+
     this.isContentsDailogShow = true;
     this.setDialogHeight();
   }
 
   // アクティブになっているボタンを全て非アクティブにする
   deactiveButtons() {
-    for(var i = 0; i <= 11; i++) {
-      var data = document.getElementById(i+"");
+    for(let i = 0; i <= 11; i++) {
+      const data = document.getElementById(i + '');
       if (data != null) {
-        if (data.classList.contains("active")) {
-          data.classList.remove("active");
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
         }
       }
     }
@@ -75,14 +67,14 @@ export class AppComponent {
   setDialogHeight() {
 
     setTimeout(function () {
-      var dialog = document.getElementById('contents-dialog-id');
+      const dialog = document.getElementById('contents-dialog-id');
       // ヘッダ領域を取得
-      var header = document.getElementsByClassName('header');
-      var container = document.getElementsByClassName('container');
-      var headerSize = container[0].clientHeight + header[0].clientHeight + 30;
+      const header = document.getElementsByClassName('header');
+      const container = document.getElementsByClassName('container');
+      const headerSize = container[0].clientHeight + header[0].clientHeight + 30;
 
-      dialog.style.height = window.innerHeight - headerSize +"px";
-      console.log("dialog height:"+dialog.style.height);
+      dialog.style.height = window.innerHeight - headerSize  + 'px';
+      console.log('dialog height:' + dialog.style.height);
 
     }, 100);
 

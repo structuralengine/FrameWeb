@@ -109,15 +109,7 @@ public class NodeDispManager : PartsDispManager
             nodePoint.z += _webframe.DisgScale(disg.dz);
         }
 
-        if (int.Parse(id) <= 8) {
-            Vector3 startVec = nodePoint.y > 0f ? Vector3.up : Vector3.forward;
-            StartCoroutine(MoveBlock(nodePoint + startVec, nodePoint, MOVE_SPPED, t => {
-                if (blockWorkData.rootBlockTransform != null) blockWorkData.rootBlockTransform.position = t;
-            }));
-        } else {
-            blockWorkData.gameObjectTransform.position = nodePoint;
-        }
-
+        blockWorkData.gameObjectTransform.position = nodePoint;
         blockWorkData.gameObjectTransform.localScale = _webframe.NodeBlockScale;
 
         //	色の指定
