@@ -8,10 +8,10 @@ export class InputDataService {
 
     static NOTICE_POINTS_COUNT = 20;
 
-    public node: any[];
-    public member: any[];
-    public fix_node: any;
-    public element: any;
+    // public node: any[];
+    // public member: any[];
+    // public fix_node: any;
+    // public element: any;
     public joint: any;
 
     public notice_points: any[];
@@ -30,10 +30,10 @@ export class InputDataService {
 
     public clear(): void{
 
-        this.node = new Array();
-        this.member = new Array();
-        this.fix_node = {};
-        this.element = {};
+        // this.node = new Array();
+        // this.member = new Array();
+        // this.fix_node = {};
+        // this.element = {};
         this.joint = {};
         this.notice_points = new Array();
         this.fix_member = {};
@@ -45,7 +45,8 @@ export class InputDataService {
         this.pickup = new Array();
     }
 
-    public getNodeColumns(index: number): any {
+
+ /* public getNodeColumns(index: number): any {
 
         let result: any = null;
         for (let i = 0; i < this.node.length; i++) {
@@ -62,8 +63,9 @@ export class InputDataService {
         }
         return result;
     }
-
-    public getMemberColumns(index: number): any {
+*/
+    
+/*  public getMemberColumns(index: number): any {
 
         let result: any = null;
         for (let i = 0; i < this.member.length; i++) {
@@ -80,8 +82,9 @@ export class InputDataService {
         }
         return result;
     }
+*/
 
-    public getFixNodeColumns(typNo: number, row: number): any{
+/*  public getFixNodeColumns(typNo: number, row: number): any{
 
         let target: any = null;
         let result: any = null;
@@ -111,8 +114,9 @@ export class InputDataService {
 
         return result;
     }
+*/
 
-    public getElementColumns(typNo: number, index: number): any {
+/*   public getElementColumns(typNo: number, index: number): any {
 
         let target: any = null;
         let result: any = null;
@@ -142,6 +146,7 @@ export class InputDataService {
 
         return result;
     }
+    */
 
     public getJointColumns(typNo: number, row: number): any {
 
