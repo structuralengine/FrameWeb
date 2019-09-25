@@ -25,7 +25,7 @@ export class FrameDataService {
   // mode file:ファイルに保存用データを生成
   //      unity: unity に送信用データを生成
   //      calc: 計算サーバーに送信用データを生成
-  ////////////////////////////////////////////////////////////////////////////////////
+  /*
   public getInputText(mode: string = 'file', Properties = {}): string {
 
     const jsonData: {} = this.getInputJson(mode);
@@ -101,7 +101,7 @@ export class FrameDataService {
 
     return jsonData;
   }
-
+  
   public getNodeJson(mode: string = 'file') {
 
     const jsonData = {};
@@ -189,7 +189,7 @@ export class FrameDataService {
     }
     return result;
   }
-
+  
   public getMemberJson(mode: string = 'file') {
 
     const jsonData = {};
@@ -225,7 +225,7 @@ export class FrameDataService {
     }
     return jsonData;
   }
-
+  
   private getElementJson(mode: string = 'file') {
 
     const result = {};
@@ -284,7 +284,7 @@ export class FrameDataService {
     }
     return result;
   }
-
+  
   private getJointJson(mode: string = 'file') {
 
     const result = {};
@@ -339,7 +339,7 @@ export class FrameDataService {
     }
     return result;
   }
-
+  
   private getNoticePointsJson(mode: string = 'file') {
 
     const result = new Array();
@@ -373,7 +373,7 @@ export class FrameDataService {
     }
     return result;
   }
-
+  
   private getFixMemberJson(mode: string = 'file') {
 
     const result = {};
@@ -421,7 +421,7 @@ export class FrameDataService {
     }
     return result;
   }
-
+  
   private getLoadJson(mode: string = 'file') {
 
     const result = {};
@@ -1098,7 +1098,7 @@ export class FrameDataService {
     }
     return maxCase;
   }
-
+  */
   // DEFINEケース 組合せ
   public getDefineJson(mode: string = 'file') {
 

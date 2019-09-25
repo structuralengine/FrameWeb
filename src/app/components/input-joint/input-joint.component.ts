@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputJointService } from './input-joint.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
@@ -21,8 +21,8 @@ export class InputJointComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private unity: UnityConnectorService) {
+  constructor(private input: InputJointService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
     this.page = 1;
   }

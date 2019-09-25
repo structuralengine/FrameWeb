@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputNodesService } from './input-nodes.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 
@@ -71,8 +71,8 @@ export class InputNodesComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private unity: UnityConnectorService) {
+  constructor(private input: InputNodesService,
+              private unity: UnityConnectorService) {
     this.page = 1;
   }
 

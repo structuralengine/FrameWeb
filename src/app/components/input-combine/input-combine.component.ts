@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { InputCombineService } from './input-combine.service';
 import { FrameDataService } from '../../providers/frame-data.service';
-import { InputDataService } from '../../providers/input-data.service';
 import { ReadDataService } from '../../providers/read-data.service';
 
 @Component({
@@ -27,9 +27,9 @@ export class InputCombineComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private frame: FrameDataService,
-    private reault: ReadDataService) {
+  constructor(private input: InputCombineService,
+              private frame: FrameDataService,
+              private reault: ReadDataService) {
 
     this.page = 1;
     this.combineData = new Array();

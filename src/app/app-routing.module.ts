@@ -9,7 +9,7 @@ import { InputElementsComponent } from './components/input-elements/input-elemen
 import { InputJointComponent } from './components/input-joint/input-joint.component';
 import { InputNoticePointsComponent } from './components/input-notice-points/input-notice-points.component';
 import { InputFixMemberComponent } from './components/input-fix-member/input-fix-member.component';
-import { InputLoadNameComponent } from './components/input-load-name/input-load-name.component';
+import { InputLoadNameComponent } from './components/input-load/input-load-name.component';
 import { InputLoadComponent } from './components/input-load/input-load.component';
 import { InputDefineComponent } from './components/input-define/input-define.component';
 import { InputCombineComponent } from './components/input-combine/input-combine.component';

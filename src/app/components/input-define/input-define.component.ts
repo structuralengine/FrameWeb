@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputDefineService } from './input-define.service';
 import { FrameDataService } from '../../providers/frame-data.service';
 import { ReadDataService } from '../../providers/read-data.service';
 
@@ -26,9 +26,9 @@ export class InputDefineComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private frame: FrameDataService,
-    private reault: ReadDataService) {
+  constructor(private input: InputDefineService,
+              private frame: FrameDataService,
+              private reault: ReadDataService) {
 
     this.page = 1;
     this.defineData = new Array();

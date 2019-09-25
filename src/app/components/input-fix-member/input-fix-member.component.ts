@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputFixMemberService } from './input-fix-member.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
@@ -21,8 +21,8 @@ export class InputFixMemberComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private unity: UnityConnectorService) {
+  constructor(private input: InputFixMemberService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
     this.page = 1;
   }

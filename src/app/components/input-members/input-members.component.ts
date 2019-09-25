@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputMembersService } from './input-members.service';
 import { FrameDataService } from '../../providers/frame-data.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
@@ -50,7 +50,7 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
+  constructor(private input: InputMembersService,
     private frame: FrameDataService,
     private unity: UnityConnectorService) {
     this.page = 1;

@@ -21,6 +21,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FrameDataService } from './providers/frame-data.service';
 import { ReadDataService } from './providers/read-data.service';
 import { InputDataService } from './providers/input-data.service';
+import { DataHelperService } from './providers/data-helper.service';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
 import { UnityConnectorService } from './providers/unity-connector.service';
@@ -46,8 +47,7 @@ import { InputNoticePointsComponent } from './components/input-notice-points/inp
 import { InputNoticePointsService } from './components/input-notice-points/input-notice-points.service';
 import { InputFixMemberComponent } from './components/input-fix-member/input-fix-member.component';
 import { InputFixMemberService } from './components/input-fix-member/input-fix-member.service';
-import { InputLoadNameComponent } from './components/input-load-name/input-load-name.component';
-import { InputLoadNameService } from './components/input-load-name/input-load-name.service';
+import { InputLoadNameComponent } from './components/input-load/input-load-name.component';
 import { InputLoadComponent } from './components/input-load/input-load.component';
 import { InputLoadService } from './components/input-load/input-load.service';
 import { InputDefineComponent } from './components/input-define/input-define.component';
@@ -129,6 +129,7 @@ import { ResultCombineFsecService } from './components/result-combine-fsec/resul
     ReadDataService,
     
     InputDataService,
+    DataHelperService,
     InputNodesService,
     InputMembersService,
     InputFixNodeService,
@@ -136,7 +137,6 @@ import { ResultCombineFsecService } from './components/result-combine-fsec/resul
     InputJointService,
     InputNoticePointsService,
     InputFixMemberService,
-    InputLoadNameService,
     InputLoadService,
     InputDefineService,
     InputCombineService,

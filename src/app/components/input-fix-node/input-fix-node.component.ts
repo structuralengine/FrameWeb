@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputFixNodeService } from './input-fix-node.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class InputFixNodeComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
+  constructor(private input: InputFixNodeService,
     private unity: UnityConnectorService) {
 
     this.dataset = new Array();

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputLoadService } from './input-load.service';
 import { FrameDataService } from '../../providers/frame-data.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
@@ -24,9 +24,9 @@ export class InputLoadComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private frame: FrameDataService,
-    private unity: UnityConnectorService) {
+  constructor(private input: InputLoadService,
+              private frame: FrameDataService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
@@ -46,7 +46,7 @@ export class InputLoadComponent implements OnInit {
       const load_name = this.input.getLoadColumns(this.page, i);
       this.dataset.push(load_name)
     }
-    const currentLoad:{} = this.input.getLoadNameColumns(currentPage);
+    const currentLoad: {} = this.input.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
     this.unity.ChengeMode('loads:' + currentPage.toString());

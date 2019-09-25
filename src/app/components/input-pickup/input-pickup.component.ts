@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { InputPickupService } from './input-pickup.service';
 import { FrameDataService } from '../../providers/frame-data.service';
 import { ReadDataService } from '../../providers/read-data.service';
-import { InputDataService } from '../../providers/input-data.service';
 
 @Component({
   selector: 'app-input-pickup',
@@ -27,9 +27,9 @@ export class InputPickupComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private frame: FrameDataService,
-    private reault: ReadDataService) {
+  constructor(private input: InputPickupService,
+              private frame: FrameDataService,
+              private reault: ReadDataService) {
 
     this.page = 1;
     this.pickupData = new Array();

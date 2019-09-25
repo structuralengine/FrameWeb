@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../providers/input-data.service';
+import { InputNoticePointsService } from './input-notice-points.service';
 import { FrameDataService } from '../../providers/frame-data.service';
 import { UnityConnectorService } from '../../providers/unity-connector.service';
 
@@ -49,16 +49,16 @@ export class InputNoticePointsComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputDataService,
-    private frame: FrameDataService,
-    private unity: UnityConnectorService) {
+  constructor(private input: InputNoticePointsService,
+              private frame: FrameDataService,
+              private unity: UnityConnectorService) {
 
     this.dataset = new Array();
     this.page = 1;
     this.colums = new Array();
     this.rowHeaders = new Array();
 
-    for (let i = 1; i <= InputDataService.NOTICE_POINTS_COUNT; i++) {
+    for (let i = 1; i <= InputNoticePointsService.NOTICE_POINTS_COUNT; i++) {
       this.colums.push('L' + i.toString());
     }
   }
