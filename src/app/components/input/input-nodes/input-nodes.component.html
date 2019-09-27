@@ -1,0 +1,52 @@
+<div class="pager">
+  <div class="pager-title">ページ</div>
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)"></ngb-pagination>
+</div>
+
+<div class="datasheet">
+    <hot-table class="hot" 
+        [settings]="hotTableSettings1" 
+        [data]="dataset1" 
+        [colHeaders]="true" 
+        [rowHeaders]="false"
+        [width]="220" 
+        [height]="500"
+        >
+        <hot-column data="id" [readOnly]="true" title="節点No"></hot-column>
+        <hot-column data="x" title="X"></hot-column>
+        <hot-column data="y" title="Y"></hot-column>
+        <hot-column data="z" title="Z"></hot-column>
+    </hot-table>
+</div>
+
+<div class="datasheet">
+    <hot-table class="hot" 
+        [settings]="hotTableSettings2" 
+        [data]="dataset2" 
+        [colHeaders]="true" 
+        [rowHeaders]="false"
+        [width]="220" 
+        [height]="500"
+        >
+        <hot-column data="id" [readOnly]="true" title="節点No"></hot-column>
+        <hot-column data="x" title="X"></hot-column>
+        <hot-column data="y" title="Y"></hot-column>
+        <hot-column data="z" title="Z"></hot-column>
+    </hot-table>
+</div>
+
+<div class="datasheet">
+    <hot-table class="hot" 
+        [settings]="hotTableSettings3" 
+        [data]="dataset3" 
+        [colHeaders]="true" 
+        [rowHeaders]="false"
+        [width]="220" 
+        [height]="500"
+        >
+        <hot-column data="id" [readOnly]="true" title="節点No"></hot-column>
+        <hot-column data="x" title="X"></hot-column>
+        <hot-column data="y" title="Y"></hot-column>
+        <hot-column data="z" title="Z"></hot-column>
+    </hot-table>
+</div>

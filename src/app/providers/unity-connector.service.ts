@@ -1,5 +1,6 @@
-import { Injectable } from '../components/input/input-fix-member/node_modules/@angular/core';
-import { FrameDataService } from '../providers/frame-data.service';
+import { Injectable } from '@angular/core';
+import { InputDataService } from './input-data.service';
+import { ResultDataService } from './result-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ export class UnityConnectorService {
   unityInstance: any;
   inputMode: string;
 
-  constructor(private frame: FrameDataService) { 
+  constructor(private input: InputDataService,
+              private result: ResultDataService) { 
     this.inputMode = 'nodes';
   }
 
@@ -45,13 +47,13 @@ export class UnityConnectorService {
 
   // 入力の変更時の処理
   public sendResultData() {
-    const strJson: string = this.frame.getResultText();
+    const strJson: string = this.result.getResultText();
     console.log('%c' + strJson, 'color: magenta');
     this.sendMessageToUnity('ExternalConnect', 'ReceiveResultData', strJson);
   }
 
   public chengeData(mode: string = 'unity') {
-    const strJson: string = this.frame.getInputText(mode);
+    const strJson: string = this.input.getInputText(mode);
     console.log('%c' + mode, 'color: green');
     console.log('%c' + strJson, 'color: red');
     const funcName: string = (mode === 'unity') ? 'ReceiveData' : 'ReceiveModeData';

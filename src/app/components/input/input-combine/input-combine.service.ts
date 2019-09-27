@@ -1,4 +1,4 @@
-import { Injectable } from './node_modules/@angular/core';
+import { Injectable } from '@angular/core';
 import { DataHelperService } from '../../../providers/data-helper.service';
 
 @Injectable({

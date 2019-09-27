@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
+import { DataHelperService } from '../../../providers/data-helper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResultFsecService {
 
+  public FSEC_ROWS_COUNT: number;
   public fsec: any;
 
-  constructor() {    
-     this.clear();
+  constructor(private helper: DataHelperService) {
+    this.clear();
   }
 
   public clear(): void {
@@ -44,6 +46,115 @@ export class ResultFsecService {
     }
 
     return result;
+  }
+
+  public getFsecJson(): object {
+    return this.fsec;
+  }
+
+  public setFsecJson(jsonData: {}): void {
+    let max_row = 0;
+
+    for (const caseNo of Object.keys(jsonData)) {
+      const target = new Array();
+      const caseData: {} = jsonData[caseNo];
+      if (typeof (caseData) !== 'object') {
+        continue;
+      }
+      if (!('fsec' in caseData)) {
+        continue;
+      }
+      const json: {} = caseData['fsec'];
+      let row = 0;
+      let memberNo = '';
+      for (const m of Object.keys(json)) {
+
+        let noticePoint = 0.0;
+        memberNo = m;
+        const js: {} = json[m];
+
+        let result = {};
+        const old = {};
+        const node = this.helper.getNodeNo(memberNo)
+        let ni: string = node['ni'];
+        let nj = '';
+        let counter = 0;
+        const data_length: number = Object.keys(js).length;
+        for (const p of Object.keys(js)) {
+          counter++;
+          const item: {} = js[p];
+          let fxi: number = this.helper.toNumber(item['fxi']);
+          let fyi: number = this.helper.toNumber(item['fyi']);
+          let fzi: number = this.helper.toNumber(item['fzi']);
+          let mxi: number = this.helper.toNumber(item['mxi']);
+          let myi: number = this.helper.toNumber(item['myi']);
+          let mzi: number = this.helper.toNumber(item['mzi']);
+          fxi = (fxi == null) ? 0 : fxi;
+          fyi = (fyi == null) ? 0 : fyi;
+          fzi = (fzi == null) ? 0 : fzi;
+          mxi = (mxi == null) ? 0 : mxi;
+          myi = (myi == null) ? 0 : myi;
+          mzi = (mzi == null) ? 0 : mzi;
+          result = {
+            m: memberNo,
+            n: ni,
+            l: noticePoint.toFixed(3),
+            fx: fxi.toFixed(2),
+            fy: fyi.toFixed(2),
+            fz: fzi.toFixed(2),
+            mx: mxi.toFixed(2),
+            my: myi.toFixed(2),
+            mz: mzi.toFixed(2)
+          };
+          if (!this.helper.objectEquals(old, result)) {
+            Object.assign(old, result);
+            row++;
+            result['row'] = row;
+            target.push(result);
+          }
+
+          memberNo = '';
+          ni = '';
+          if (counter === data_length) {
+            nj = node['nj'];
+          }
+          noticePoint += this.helper.toNumber(item['L']);
+          let fxj: number = this.helper.toNumber(item['fxj']);
+          let fyj: number = this.helper.toNumber(item['fyj']);
+          let fzj: number = this.helper.toNumber(item['fzj']);
+          let mxj: number = this.helper.toNumber(item['mxj']);
+          let myj: number = this.helper.toNumber(item['myj']);
+          let mzj: number = this.helper.toNumber(item['mzj']);
+          fxj = (fxj == null) ? 0 : fxj;
+          fyj = (fyj == null) ? 0 : fyj;
+          fzj = (fzj == null) ? 0 : fzj;
+          mxj = (mxj == null) ? 0 : mxj;
+          myj = (myj == null) ? 0 : myj;
+          mzj = (mzj == null) ? 0 : mzj;
+          result = {
+            m: '',
+            n: nj,
+            l: noticePoint.toFixed(3),
+            fx: fxj.toFixed(2),
+            fy: fyj.toFixed(2),
+            fz: fzj.toFixed(2),
+            mx: mxj.toFixed(2),
+            my: myj.toFixed(2),
+            mz: mzj.toFixed(2)
+          };
+          if (!this.helper.objectEquals(old, result)) {
+            Object.assign(old, result);
+            row++;
+            result['row'] = row;
+            target.push(result);
+          }
+
+        }
+      }
+      this.fsec[caseNo] = target;
+      max_row = Math.max(max_row, target.length);
+    }
+    this.FSEC_ROWS_COUNT = max_row;
   }
 
 }

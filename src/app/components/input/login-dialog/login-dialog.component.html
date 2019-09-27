@@ -1,0 +1,37 @@
+<div class="modal-header">
+  <a href="https://structuralengine.com/" target="_blank">Structural Engine</a>のユーザーでログインしてください
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <label for="loginEmail">ユーザー名</label>
+    <input type="email" class="form-control" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
+  </div>
+  <div class="form-group">
+    <label for="loginPassword">パスワード</label>
+    <input type="password" class="form-control" [(ngModel)]="loginPassword" placeholder="Password">
+  </div>
+<!-- 
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" [(ngModel)]="rememberCheck">
+    <label class="form-check-label" for="rememberCheck">
+      ログイン状態を保持する
+    </label>
+  </div>
+   -->
+  <div *ngIf="loginError">
+    {{errorMessage}}
+  </div>
+</div>
+<div class="modal-footer">
+  <div *ngIf="connecting">
+    <!-- <img src="../../assets/img/loading.gif" /> -->
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <button class="btn btn-outline-success" (click)="onClick()">ログイン</button>
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>
+</div>
