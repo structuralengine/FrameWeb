@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '../components/input/input-fix-member/node_modules/@angular/core';
 import { FrameDataService } from '../providers/frame-data.service';
 
 @Injectable({

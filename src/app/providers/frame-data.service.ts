@@ -1098,7 +1098,7 @@ export class FrameDataService {
     }
     return maxCase;
   }
-  */
+
   // DEFINEケース 組合せ
   public getDefineJson(mode: string = 'file') {
 
@@ -1172,32 +1172,6 @@ export class FrameDataService {
     return jsonData;
   }
 
-  // 有効な COMBINE ケース数を調べる
-  public getCombineCaseCount(): number {
-    const dict = this.getCombineJson();
-    return Object.keys(dict).length;
-  }
-
-  // COMBINE ケース名を取得する
-  public getCombineName(currentPage: number): string {
-
-    if (currentPage < 1) {
-      return '';
-    }
-    if (currentPage > this.input.combine.length) {
-      return '';
-    }
-
-    const i = currentPage - 1;
-    const tmp = this.input.combine[i];
-
-    let result = '';
-    if ('name' in tmp) {
-      result = tmp['name'];
-    }
-    return result;
-  }
-
   // PICKUPケース 組合せ
   public getPickUpJson(mode: string = 'file') {
 
@@ -1256,30 +1230,7 @@ export class FrameDataService {
     return Object.keys(dict).length;
   }
 
-  // 計算結果 テキスト形式
-  public getResultText(): string {
 
-    const jsonData = {};
-
-    jsonData['disg'] = this.getDisgJson();
-    jsonData['reac'] = this.getReacJson();
-    jsonData['fsec'] = this.getFsecJson();
-
-    const result: string = JSON.stringify(jsonData);
-    return result;
-  }
-
-  private getDisgJson(): object {
-    return this.result.disg;
-  }
-
-  private getReacJson(): object {
-    return this.result.reac;
-  }
-
-  private getFsecJson(): object {
-    return this.result.fsec;
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////
   // Helper 関数 /////////////////////////////////////////////////////////////////////
@@ -1354,5 +1305,33 @@ export class FrameDataService {
     return result;
 
   }
+
+  */
+
+  // 計算結果 テキスト形式
+  public getResultText(): string {
+
+    const jsonData = {};
+
+    jsonData['disg'] = this.getDisgJson();
+    jsonData['reac'] = this.getReacJson();
+    jsonData['fsec'] = this.getFsecJson();
+
+    const result: string = JSON.stringify(jsonData);
+    return result;
+  }
+
+  private getDisgJson(): object {
+    return this.result.disg;
+  }
+
+  private getReacJson(): object {
+    return this.result.reac;
+  }
+
+  private getFsecJson(): object {
+    return this.result.fsec;
+  }
+
 
 }

@@ -1,50 +1,51 @@
 import { Injectable } from '@angular/core';
-import { InputCombineService } from '../components/input-combine/input-combine.service';
-import { InputDefineService } from '../components/input-define/input-define.service';
-import { InputElementsService } from '../components/input-elements/input-elements.service';
-import { InputFixMemberService } from '../components/input-fix-member/input-fix-member.service';
-import { InputFixNodeService } from '../components/input-fix-node/input-fix-node.service';
-import { InputJointService } from '../components/input-joint/input-joint.service';
-import { InputLoadService } from '../components/input-load/input-load.service';
-import { InputMembersService } from '../components/input-members/input-members.service';
-import { InputNodesService } from '../components/input-nodes/input-nodes.service';
-import { InputNoticePointsService } from '../components/input-notice-points/input-notice-points.service';
-import { InputPickupService } from '../components/input-pickup/input-pickup.service';
+import { InputCombineService } from '../components/input/input-combine/input-combine.service';
+import { InputDefineService } from '../components/input/input-define/input-define.service';
+import { InputElementsService } from '../components/input/input-elements/input-elements.service';
+import { InputFixMemberService } from '../components/input/input-fix-member/input-fix-member.service';
+import { InputFixNodeService } from '../components/input/input-fix-node/input-fix-node.service';
+import { InputJointService } from '../components/input/input-joint/input-joint.service';
+import { InputLoadService } from '../components/input/input-load/input-load.service';
+import { InputMembersService } from '../components/input/input-members/input-members.service';
+import { InputNodesService } from '../components/input/input-nodes/input-nodes.service';
+import { InputNoticePointsService } from '../components/input/input-notice-points/input-notice-points.service';
+import { InputPickupService } from '../components/input/input-pickup/input-pickup.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class InputDataService {
 
-  constructor(private combine:InputCombineService,
-              private define: InputDefineService,
-              private element: InputElementsService,
-              private fixmenber: InputFixMemberService,
-              private fixnode: InputFixNodeService,
-              private joint: InputJointService,
-              private load: InputLoadService,
-              private member: InputMembersService,
-              private node: InputNodesService,
-              private notice: InputNoticePointsService,
-              private pickup: InputPickupService) {
-        this.clear();
-    }
+  constructor(private combine: InputCombineService,
+    private define: InputDefineService,
+    private element: InputElementsService,
+    private fixmenber: InputFixMemberService,
+    private fixnode: InputFixNodeService,
+    private joint: InputJointService,
+    private load: InputLoadService,
+    private member: InputMembersService,
+    private node: InputNodesService,
+    private notice: InputNoticePointsService,
+    private pickup: InputPickupService) {
+    this.clear();
+  }
 
-    public clear(): void{
-      this.node.clear();
-      this.fixnode.clear();
-      this.member.clear();
-      this.element.clear();
-      this.joint.clear();
-      this.notice.clear();
-      this.fixmenber.clear();
-      this.load.clear();
-      this.define.clear();
-      this.combine.clear();
-      this.pickup.clear();
-    }
+  // データをクリアする ///////////////////////////////////////////////////////////////
+  public clear(): void {
+    this.node.clear();
+    this.fixnode.clear();
+    this.member.clear();
+    this.element.clear();
+    this.joint.clear();
+    this.notice.clear();
+    this.fixmenber.clear();
+    this.load.clear();
+    this.define.clear();
+    this.combine.clear();
+    this.pickup.clear();
+  }
 
-  // ファイルを読み込む 
+  // ファイルを読み込む ///////////////////////////////////////////////////////////////
   public loadInputData(inputText: string): void {
     this.clear();
     const jsonData: {} = JSON.parse(inputText);
@@ -61,12 +62,10 @@ export class InputDataService {
     this.pickup.setPickUpJson(jsonData);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////
   // データを生成 /////////////////////////////////////////////////////////////////////
   // mode file:ファイルに保存用データを生成
   //      unity: unity に送信用データを生成
   //      calc: 計算サーバーに送信用データを生成
-  ////////////////////////////////////////////////////////////////////////////////////
   public getInputText(mode: string = 'file', Properties = {}): string {
 
     const jsonData: {} = this.getInputJson(mode);
@@ -113,7 +112,7 @@ export class InputDataService {
       jsonData['notice_points'] = notice_points;
     }
 
-    const fix_member: {} = this.member.getFixMemberJson(mode);
+    const fix_member: {} = this.fixmenber.getFixMemberJson(mode);
     if (Object.keys(fix_member).length > 0) {
       jsonData['fix_member'] = fix_member;
     }
