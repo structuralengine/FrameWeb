@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultPickupFsecService } from './result-pickup-fsec.service';
-import { ResultFsecService } from '../result-Fsec/result-fsec.service';
+import { ResultFsecService } from '../result-fsec/result-fsec.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';

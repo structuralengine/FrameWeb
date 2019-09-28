@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultPickupReacService } from './result-pickup-reac.service';
-import { ResultReacService } from '../result-Reac/result-reac.service';
+import { ResultReacService } from '../result-reac/result-reac.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
