@@ -3,7 +3,7 @@ import { ResultCombineDisgService } from './result-combine-disg.service';
 import { ResultDisgService } from '../result-disg/result-disg.service';
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-combine-disg',

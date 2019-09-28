@@ -46,9 +46,9 @@ export class InputNodesService {
     }
   }
 
-  public getNodeJson(mode: string = 'file') {
+  public getNodeJson(mode: string = 'file'): object {
 
-    const jsonData = {};
+    const jsonData: object = {};
     if (mode.indexOf('unity-') >= 0 && mode.indexOf('-nodes') < 0) {
       return jsonData;
     }
@@ -81,6 +81,11 @@ export class InputNodesService {
     return jsonData;
   }
 
+  public getNodeText(): string {
+    const jsonData: object = this.getNodeJson('unity-nodes');
+    const stringData: string = JSON.stringify(jsonData);
+    return stringData;
+  }
 
   public getNodePos(nodeNo: string) {
     const nodeList: {} = this.getNodeJson('unity-nodes');

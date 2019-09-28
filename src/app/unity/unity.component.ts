@@ -1,7 +1,10 @@
 import { Component, Input, OnInit, NgZone } from '@angular/core';
 import { UnityLoader } from './UnityLoader.js';
 import { UnityProgress } from './UnityProgress.js';
-import { UnityConnectorService } from '../providers/unity-connector.service';
+import { UnityConnectorService } from './unity-connector.service';
+
+
+import { InputNodesService } from '../components/input/input-nodes/input-nodes.service';
 
 declare var window: any;
 
@@ -17,8 +20,8 @@ export class UnityComponent implements OnInit {
   @Input() appHeight: String;
 
   constructor(private zone: NgZone,
-    private unityConnector: UnityConnectorService) {
-  }
+              private unityConnector: UnityConnectorService,
+              private node: InputNodesService) { }
 
   ngOnInit() {
     window['UnityLoader'] = UnityLoader;
@@ -28,6 +31,7 @@ export class UnityComponent implements OnInit {
       zone: this.zone,
       componentFnction1: (value) => this.unityConnector.ReceiveUnity(value),
       componentFnction2: (value) => this.unityConnector.ReceiveUnitySelectItemChenge(value),
+      getNodeJson: () => this.node.getNodeText(),
       component: this,
     };
 
@@ -42,6 +46,13 @@ export class UnityComponent implements OnInit {
         window.angularComponentReference.componentFnction2(value);
       });
     };
+
+    window['GetNodeData'] = function () {
+      window.angularComponentReference.zone.run(function () {
+        window.angularComponentReference.getNodeJson();
+      });
+    };
+
 
     if (this.appLocation) {
       this.loadProject(this.appLocation);

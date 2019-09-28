@@ -11,7 +11,7 @@ import * as FileSaver from 'file-saver';
 
 import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
-import { UnityConnectorService } from '../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-menu',

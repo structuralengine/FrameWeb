@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputNodesService } from './input-nodes.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 import { DataHelperService } from '../../../providers/data-helper.service';
 
 @Component({

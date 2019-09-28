@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { UnityConnectorService } from './providers/unity-connector.service';
+import { UnityConnectorService } from './unity/unity-connector.service';
 
 @Component({
   selector: 'app-root',

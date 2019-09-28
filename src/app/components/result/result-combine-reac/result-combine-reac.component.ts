@@ -3,7 +3,7 @@ import { ResultCombineReacService } from './result-combine-reac.service';
 import { ResultReacService } from '../result-reac/result-reac.service';
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-combine-reac',

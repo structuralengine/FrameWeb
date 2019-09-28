@@ -3,7 +3,7 @@ import { ResultCombineFsecService } from './result-combine-fsec.service';
 import { ResultFsecService } from '../result-fsec/result-fsec.service';
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-combine-fsec',

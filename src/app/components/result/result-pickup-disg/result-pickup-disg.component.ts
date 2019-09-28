@@ -3,7 +3,7 @@ import { ResultPickupDisgService } from './result-pickup-disg.service';
 import { ResultDisgService } from '../result-disg/result-disg.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-pickup-disg',

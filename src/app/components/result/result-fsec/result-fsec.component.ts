@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultFsecService } from './result-fsec.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-fsec',

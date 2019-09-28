@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from '../input-members/input-members.service';
 import { InputNoticePointsService } from './input-notice-points.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-notice-points',

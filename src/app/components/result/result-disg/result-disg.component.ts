@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultDisgService } from './result-disg.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-disg',

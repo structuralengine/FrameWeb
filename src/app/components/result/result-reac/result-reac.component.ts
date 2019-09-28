@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultReacService } from './result-reac.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-reac',

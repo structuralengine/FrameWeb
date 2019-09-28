@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
-    "build": "ng build --prod --base-href 'https://structuralengine.github.io/FrameWebforJS/' && angular-cli-ghpages",
+    "build": "ng build --prod --base-href \"https://structuralengine.github.io/FrameWebforJS/\" && angular-cli-ghpages",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

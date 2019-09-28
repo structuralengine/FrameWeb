@@ -262,18 +262,19 @@ namespace RuntimeSceneGizmo
 			}
 		}
 
-		private void SetAlphaOf( GizmoComponent component, float alpha )
-		{
-			if( component == GizmoComponent.None )
-				return;
+    private void SetAlphaOf(GizmoComponent component, float alpha)
+    {
+      if (component == GizmoComponent.None)
+        return;
 
-			gizmoFadeMaterial.SetFloat( gizmoMaterialFadeProperty, alpha );
-			if( component == GizmoComponent.XNegative || component == GizmoComponent.XPositive )
-				labels[0].color = new Color( 1f, 1f, 1f, alpha );
-			else if( component == GizmoComponent.ZNegative || component == GizmoComponent.ZPositive )
-				labels[2].color = new Color( 1f, 1f, 1f, alpha );
-			else
-				labels[1].color = new Color( 1f, 1f, 1f, alpha );
+      gizmoFadeMaterial.SetFloat(gizmoMaterialFadeProperty, alpha);
+      if (component == GizmoComponent.XNegative || component == GizmoComponent.XPositive){
+        labels[0].color = new Color(0, 0, 0, alpha);
+      } else if (component == GizmoComponent.ZNegative || component == GizmoComponent.ZPositive){
+        labels[2].color = new Color(0, 0, 0, alpha);
+      } else { 
+        labels[1].color = new Color(0, 0, 0, alpha);
+      }
 		}
 
 		private void SetMaterialOf( GizmoComponent component, Material material )

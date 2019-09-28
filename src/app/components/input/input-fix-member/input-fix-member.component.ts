@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputFixMemberService } from './input-fix-member.service';
-import { UnityConnectorService } from '../../../providers/unity-connector.service';
+import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-fix-member',
