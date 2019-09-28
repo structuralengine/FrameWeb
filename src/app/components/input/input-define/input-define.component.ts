@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDefineService } from './input-define.service';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ReadDataService } from '../../../providers/read-data.service';
-
+import { InputLoadService } from '../input-load/input-load.service';
+import { ResultDataService } from '../../../providers/result-data.service';
 
 @Component({
   selector: 'app-input-define',
@@ -21,14 +20,14 @@ export class InputDefineComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.reault.isCombinePickupChenge = true;
+        this.result.isCombinePickupChenge = true;
       }
     }
   };
 
   constructor(private input: InputDefineService,
-              private frame: FrameDataService,
-              private reault: ReadDataService) {
+              private load: InputLoadService,
+              private result: ResultDataService) {
 
     this.page = 1;
     this.defineData = new Array();
@@ -37,7 +36,7 @@ export class InputDefineComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.COLUMNS_COUNT = this.frame.getLoadCaseCount() * 2 + 1;
+    this.COLUMNS_COUNT = this.load.getLoadCaseCount() * 2 + 1;
     if (this.COLUMNS_COUNT <= 5) {
       this.COLUMNS_COUNT = 5;
     }

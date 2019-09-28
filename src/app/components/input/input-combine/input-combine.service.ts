@@ -86,5 +86,32 @@ export class InputCombineService {
     }
     return jsonData;
   }
-  
+
+  // 補助関数 ///////////////////////////////////////////////////////////////
+
+  // 有効な COMBINE ケース数を調べる
+  public getCombineCaseCount(): number {
+    const dict = this.getCombineJson();
+    return Object.keys(dict).length;
+  }
+
+  // COMBINE ケース名を取得する
+  public getCombineName(currentPage: number): string {
+
+    if (currentPage < 1) {
+      return '';
+    }
+    if (currentPage > this.combine.length) {
+      return '';
+    }
+
+    const i = currentPage - 1;
+    const tmp = this.combine[i];
+
+    let result = '';
+    if ('name' in tmp) {
+      result = tmp['name'];
+    }
+    return result;
+  }
 }

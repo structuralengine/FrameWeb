@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ResultDataService } from '../../../providers/result-data.service';
+import { ResultReacService } from './result-reac.service';
+import { InputLoadService } from '../../input/input-load/input-load.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
 @Component({
@@ -15,14 +15,14 @@ export class ResultReacComponent implements OnInit {
   load_name: string;
   collectionSize: number;
 
-  constructor(private frame: FrameDataService,
-    private result: ResultDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: ResultReacService,
+              private load: InputLoadService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    const n: number = this.frame.getLoadCaseCount();
+    const n: number = this.load.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
@@ -32,11 +32,11 @@ export class ResultReacComponent implements OnInit {
       this.page = currentPage;
     }
     this.dataset = new Array();
-    for (let i = 0; i < this.result.REAC_ROWS_COUNT; i++) {
-      const reac = this.result.getReacColumns(this.page, i);
+    for (let i = 0; i < this.data.REAC_ROWS_COUNT; i++) {
+      const reac = this.data.getReacColumns(this.page, i);
       this.dataset.push(reac);
     }
-    this.load_name = this.frame.getLoadName(currentPage);
+    this.load_name = this.load.getLoadName(currentPage);
 
     this.unity.ChengeMode('reac:' + currentPage.toString());
   }

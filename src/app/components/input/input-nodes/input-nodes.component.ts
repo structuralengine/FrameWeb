@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputNodesService } from './input-nodes.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
-
+import { DataHelperService } from '../../../providers/data-helper.service';
 
 @Component({
   selector: 'app-input-nodes',
@@ -21,7 +21,7 @@ export class InputNodesComponent implements OnInit {
     beforeChange: (source, changes) => {
       try {
         for (let i = 0; i < changes.length; i++) {
-          const value: number = this.toNumber(changes[i][3]);
+          const value: number = this.helper.toNumber(changes[i][3]);
           changes[i][3] = value.toFixed(3);
         }
       } catch (e) {
@@ -39,7 +39,7 @@ export class InputNodesComponent implements OnInit {
     beforeChange: (source, changes) => {
       try {
         for (let i = 0; i < changes.length; i++) {
-          const value: number = this.toNumber(changes[i][3]);
+          const value: number = this.helper.toNumber(changes[i][3]);
           changes[i][3] = value.toFixed(3);
         }
       } catch (e) {
@@ -57,7 +57,7 @@ export class InputNodesComponent implements OnInit {
     beforeChange: (source, changes) => {
       try {
         for (let i = 0; i < changes.length; i++) {
-          const value: number = this.toNumber(changes[i][3]);
+          const value: number = this.helper.toNumber(changes[i][3]);
           changes[i][3] = value.toFixed(3);
         }
       } catch (e) {
@@ -71,8 +71,9 @@ export class InputNodesComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputNodesService,
-              private unity: UnityConnectorService) {
+  constructor(private data: InputNodesService,
+              private unity: UnityConnectorService,
+              private helper: DataHelperService) {
     this.page = 1;
   }
 
@@ -97,30 +98,17 @@ export class InputNodesComponent implements OnInit {
     const c2: number = c1 + InputNodesComponent.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const node = this.input.getNodeColumns(i);
+      const node = this.data.getNodeColumns(i);
       this.dataset1.push(node);
     }
     for (let i = b1; i <= b2; i++) {
-      const node = this.input.getNodeColumns(i);
+      const node = this.data.getNodeColumns(i);
       this.dataset2.push(node);
     }
     for (let i = c1; i <= c2; i++) {
-      const node = this.input.getNodeColumns(i);
+      const node = this.data.getNodeColumns(i);
       this.dataset3.push(node);
     }
   }
 
-  // 文字列string を数値にする
-  private toNumber(num: string): number {
-    let result: number = null;
-    try {
-      const tmp: string = num.toString().trim();
-      if (tmp.length > 0) {
-        result = ((n: number) => isNaN(n) ? null : n)(+tmp);
-      }
-    } catch{
-      result = null;
-    }
-    return result;
-  }
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { InputCombineService } from './input-combine.service';
-import { FrameDataService } from '../../providers/frame-data.service';
-import { ReadDataService } from '../../providers/read-data.service';
+import { InputDefineService } from '../input-define/input-define.service';
+import { InputLoadService } from '../input-load/input-load.service';
+import { ResultDataService } from '../../../providers/result-data.service';
 
 @Component({
   selector: 'app-input-combine',
@@ -22,14 +23,15 @@ export class InputCombineComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.reault.isCombinePickupChenge = true;
+        this.result.isCombinePickupChenge = true;
       }
     }
   };
 
-  constructor(private input: InputCombineService,
-              private frame: FrameDataService,
-              private reault: ReadDataService) {
+  constructor(private data: InputCombineService,
+              private define: InputDefineService,
+              private load: InputLoadService,
+              private result: ResultDataService) {
 
     this.page = 1;
     this.combineData = new Array();
@@ -41,9 +43,9 @@ export class InputCombineComponent implements OnInit {
 
   ngOnInit() {
     let head = 'D';
-    this.COLUMNS_COUNT = this.frame.getDefineCaseCount();
+    this.COLUMNS_COUNT = this.define.getDefineCaseCount();
     if (this.COLUMNS_COUNT <= 0) {
-      this.COLUMNS_COUNT = this.frame.getLoadCaseCount();
+      this.COLUMNS_COUNT = this.load.getLoadCaseCount();
       head = 'C';
     }
     if (this.COLUMNS_COUNT <= 5) {
@@ -69,7 +71,7 @@ export class InputCombineComponent implements OnInit {
     const a2: number = a1 + this.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const combine = this.input.getCombineDataColumns(i, this.COLUMNS_COUNT + 1);
+      const combine = this.data.getCombineDataColumns(i, this.COLUMNS_COUNT + 1);
       this.combineData.push(combine);
       this.rowHeaders.push(i);
     }

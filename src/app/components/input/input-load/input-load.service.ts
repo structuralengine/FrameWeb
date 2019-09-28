@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataHelperService } from '../../../providers/data-helper.service';
+import { InputMembersService } from '../input-members/input-members.service'
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ export class InputLoadService {
   public load_name: any[];
   public load: any[];
 
-  constructor(private helper: DataHelperService) {
+  constructor(private member: InputMembersService,
+              private helper: DataHelperService) {
     this.clear();
   }
 
@@ -546,7 +548,7 @@ export class InputLoadService {
     }
 
     for (let j = m1; j <= m2; j++) {
-      const Lj: number = this.helper.getMemberLength(j.toString());
+      const Lj: number = this.member.getMemberLength(j.toString());
       if (L1 > Lj) {
         L1 = L1 - Lj;
         targetLoad.m1 = j + 1;
@@ -570,7 +572,7 @@ export class InputLoadService {
           L2 = L1 + L2;
         }
         for (let j = m1; j <= m2; j++) {
-          L = this.helper.getMemberLength(j.toString());
+          L = this.member.getMemberLength(j.toString());
           if (L2 > L) {
             L2 = L2 - L;
             targetLoad.m2 = j + 1;
@@ -588,7 +590,7 @@ export class InputLoadService {
           // 連続部材の全長さLLを計算する
           ll = 0;
           for (let j = m1; j <= m2; j++) {
-            ll = ll + this.helper.getMemberLength(j.toString());
+            ll = ll + this.member.getMemberLength(j.toString());
           }
           L2 = ll - (curPos + L2)
           if (L2 < 0) {
@@ -598,7 +600,7 @@ export class InputLoadService {
           targetLoad.L2 = L2;
         }
         for (let j = m2; j >= org_m1; j--) {
-          L = this.helper.getMemberLength(j.toString());
+          L = this.member.getMemberLength(j.toString());
           if (L2 > L) {
             L2 = L2 - L;
             targetLoad.m2 = j - 1;
@@ -628,7 +630,7 @@ export class InputLoadService {
     // 連続部材の全長さLLを計算する
     ll = 0;
     for (let j = m1; j <= m2; j++) {
-      ll = ll + this.helper.getMemberLength(j.toString());
+      ll = ll + this.member.getMemberLength(j.toString());
     }
     L1 = this.helper.toNumber(targetLoad.L1);
     L2 = targetLoad.L2;
@@ -702,7 +704,7 @@ export class InputLoadService {
 
           newLoads['m1'] = j.toString();
           newLoads['m2'] = j.toString();
-          L = this.helper.getMemberLength(newLoads['m1']);  // 要素長
+          L = this.member.getMemberLength(newLoads['m1']);  // 要素長
           switch (j) {
             case m1:
               L = L - L1;
@@ -793,7 +795,7 @@ export class InputLoadService {
       // 連続部材の全長さLLを計算する
       ll = 0;
       for (let j = m1; j <= m2; j++) {
-        ll = ll + this.helper.getMemberLength(j.toString());
+        ll = ll + this.member.getMemberLength(j.toString());
       }
       L2 = ll - (curPos + L2);
       if (L2 < 0) {
@@ -801,7 +803,7 @@ export class InputLoadService {
       }
       targetLoad.m2 = Math.sign(targetLoad.m2) * m2;
       targetLoad.L2 = L2;
-      L = this.helper.getMemberLength(m2.toString());
+      L = this.member.getMemberLength(m2.toString());
       curNo = Math.abs(targetLoad.m2);
       curPos = L - targetLoad.L2;
     }

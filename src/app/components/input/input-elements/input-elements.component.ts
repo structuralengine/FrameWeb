@@ -22,8 +22,9 @@ export class InputElementsComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputElementsService,
-    private unity: UnityConnectorService) {
+  constructor(private data: InputElementsService,
+              private unity: UnityConnectorService) {
+    
     this.dataset = new Array();
     this.page = 1;
   }
@@ -39,7 +40,7 @@ export class InputElementsComponent implements OnInit {
     this.dataset = new Array();
 
     for (let i = 1; i <= InputElementsComponent.ROWS_COUNT; i++) {
-      const element = this.input.getElementColumns(this.page, i);
+      const element = this.data.getElementColumns(this.page, i);
       this.dataset.push(element);
     }
     this.unity.ChengeMode('elements:' + currentPage.toString());

@@ -81,5 +81,17 @@ export class InputNodesService {
     return jsonData;
   }
 
+
+  public getNodePos(nodeNo: string) {
+    const nodeList: {} = this.getNodeJson('unity-nodes');
+    if (Object.keys(nodeList).length <= 0) {
+      return null;
+    }
+    if (!(nodeNo in nodeList)) {
+      return null;
+    }
+    const node = nodeList[nodeNo];
+    return node;
+  }
 }
 

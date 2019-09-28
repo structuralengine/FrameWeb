@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ReadDataService } from '../../../providers/read-data.service';
+import { ResultPickupFsecService } from './result-pickup-fsec.service';
+import { ResultFsecService } from '../result-Fsec/result-fsec.service';
+import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
@@ -20,16 +21,17 @@ export class ResultPickupFsecComponent implements OnInit {
   load_name: string;
   collectionSize: number;
 
-  constructor(private frame: FrameDataService,
-    private read: ReadDataService,
-    private result: ResultDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: ResultPickupFsecService,
+              private fsec: ResultFsecService,
+              private pickup: InputPickupService,
+              private result: ResultDataService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    this.read.CombinePickup();
-    const n: number = this.frame.getPickupCaseCount();
+    this.result.CombinePickup();
+    const n: number = this.pickup.getPickupCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
@@ -40,11 +42,11 @@ export class ResultPickupFsecComponent implements OnInit {
     }
     for (let i = 0; i < this.KEYS.length; i++) {
       this.dataset[i] = new Array();
-      for (let j = 1; j <= this.result.FSEC_ROWS_COUNT; j++) {
-        const fsec = this.result.getPickupFsecColumns(this.page, j, this.KEYS[i]);
+      for (let j = 1; j <= this.fsec.FSEC_ROWS_COUNT; j++) {
+        const fsec = this.data.getPickupFsecColumns(this.page, j, this.KEYS[i]);
         this.dataset[i].push(fsec);
       }
-      this.load_name = this.frame.getPickUpName(currentPage);
+      this.load_name = this.pickup.getPickUpName(currentPage);
     }
     this.unity.ChengeMode('pik_fsec:' + currentPage.toString());
   }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ReadDataService } from '../../../providers/read-data.service';
+import { ResultCombineDisgService } from './result-combine-disg.service';
+import { ResultDisgService } from '../result-disg/result-disg.service';
+import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
@@ -20,16 +21,17 @@ export class ResultCombineDisgComponent implements OnInit {
   load_name: string;
   collectionSize: number;
 
-  constructor(private frame: FrameDataService,
-    private read: ReadDataService,
-    private result: ResultDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: ResultCombineDisgService,
+              private disg: ResultDisgService,
+              private comb: InputCombineService,
+              private result: ResultDataService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    this.read.CombinePickup();
-    const n: number = this.frame.getCombineCaseCount();
+    this.result.CombinePickup();
+    const n: number = this.comb.getCombineCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
@@ -41,12 +43,12 @@ export class ResultCombineDisgComponent implements OnInit {
 
     for (let i = 0; i < this.KEYS.length; i++) {
       this.dataset[i] = new Array();
-      for (let j = 1; j <= this.result.DISG_ROWS_COUNT; j++) {
-        const disg = this.result.getCombineDisgColumns(this.page, j, this.KEYS[i]);
+      for (let j = 1; j <= this.disg.DISG_ROWS_COUNT; j++) {
+        const disg = this.data.getCombineDisgColumns(this.page, j, this.KEYS[i]);
         this.dataset[i].push(disg);
       }
     }
-    this.load_name = this.frame.getCombineName(currentPage);
+    this.load_name = this.comb.getCombineName(currentPage);
 
     this.unity.ChengeMode('comb_disg:' + currentPage.toString());
   }

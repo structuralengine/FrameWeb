@@ -21,7 +21,7 @@ export class InputLoadNameComponent implements OnInit {
   };
 
 
-  constructor(private input: InputLoadService,
+  constructor(private data: InputLoadService,
               private unity: UnityConnectorService) {
     this.page = 1;
   }
@@ -41,7 +41,7 @@ export class InputLoadNameComponent implements OnInit {
     const a2: number = a1 + InputLoadNameComponent.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const load_name = this.input.getLoadNameColumns(i);
+      const load_name = this.data.getLoadNameColumns(i);
       this.dataset.push(load_name);
       this.rowHeaders.push(i);
     }

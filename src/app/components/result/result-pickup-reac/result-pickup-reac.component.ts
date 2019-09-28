@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ReadDataService } from '../../../providers/read-data.service';
+import { ResultPickupReacService } from './result-pickup-reac.service';
+import { ResultReacService } from '../result-Reac/result-reac.service';
+import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
@@ -20,16 +21,17 @@ export class ResultPickupReacComponent implements OnInit {
   load_name: string;
   collectionSize: number;
 
-  constructor(private frame: FrameDataService,
-    private read: ReadDataService,
-    private result: ResultDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: ResultPickupReacService,
+              private reac: ResultReacService,
+              private pickup: InputPickupService,
+              private result: ResultDataService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    this.read.CombinePickup();
-    const n: number = this.frame.getPickupCaseCount();
+    this.result.CombinePickup();
+    const n: number = this.pickup.getPickupCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
@@ -40,12 +42,12 @@ export class ResultPickupReacComponent implements OnInit {
     }
     for (let i = 0; i < this.KEYS.length; i++) {
       this.dataset[i] = new Array();
-      for (let j = 1; j <= this.result.REAC_ROWS_COUNT; j++) {
-        const reac = this.result.getPickupReacColumns(this.page, j, this.KEYS[i]);
+      for (let j = 1; j <= this.reac.REAC_ROWS_COUNT; j++) {
+        const reac = this.data.getPickupReacColumns(this.page, j, this.KEYS[i]);
         this.dataset[i].push(reac);
       }
     }
-    this.load_name = this.frame.getPickUpName(currentPage);
+    this.load_name = this.pickup.getPickUpName(currentPage);
 
     this.unity.ChengeMode('pik_reac:' + currentPage.toString());
   }

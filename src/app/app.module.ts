@@ -18,14 +18,11 @@ import { HotTableModule } from '@handsontable/angular';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { FrameDataService } from './providers/frame-data.service';
-import { ReadDataService } from './providers/read-data.service';
 import { InputDataService } from './providers/input-data.service';
 import { DataHelperService } from './providers/data-helper.service';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
 import { UnityConnectorService } from './providers/unity-connector.service';
-
 
 import { MenuComponent } from './components/menu/menu.component';
 import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
@@ -125,9 +122,6 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
     WaitDialogComponent
   ],
   providers: [
-    FrameDataService,
-    ReadDataService,
-    
     InputDataService,
     DataHelperService,
     InputNodesService,

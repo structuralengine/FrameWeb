@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from './input-members.service';
-import { FrameDataService } from '../../../providers/frame-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
 @Component({
@@ -37,7 +36,7 @@ export class InputMembersComponent implements OnInit {
             if (m === '') {
               continue;
             }
-            const l: number = this.frame.getMemberLength(m);
+            const l: number = this.data.getMemberLength(m);
             if (l != null) {
               this.dataset[row]['L'] = l.toFixed(3);
               hotInstance.render();
@@ -50,9 +49,8 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputMembersService,
-    private frame: FrameDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: InputMembersService,
+              private unity: UnityConnectorService) {
     this.page = 1;
   }
 
@@ -71,10 +69,10 @@ export class InputMembersComponent implements OnInit {
     const a2: number = a1 + InputMembersComponent.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const member = this.input.getMemberColumns(i);
+      const member = this.data.getMemberColumns(i);
       const m: string = member['id'];
       if (m !== '') {
-        const l: any = this.frame.getMemberLength(m);
+        const l: any = this.data.getMemberLength(m);
         member['L'] = (l != null) ? l.toFixed(3) : l;
       }
       this.dataset.push(member);

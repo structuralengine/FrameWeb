@@ -1,21 +1,11 @@
 import { Injectable } from '@angular/core';
-import { InputNodesService } from '../components/input/input-nodes/input-nodes.service';
-import { InputMembersService } from '../components/input/input-members/input-members.service';
-import { InputDefineService } from '../components/input/input-define/input-define.service';
-import { InputCombineService } from '../components/input/input-combine/input-combine.service';
-import { InputPickupService } from '../components/input/input-pickup/input-pickup.service';
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataHelperService {
 
-  constructor(private node: InputNodesService,
-    private member: InputMembersService,
-    private define: InputDefineService,
-    private combine: InputCombineService,
-    private pickup: InputPickupService) { }
+  constructor() { }
 
   // 文字列string を数値にする
   public toNumber(num: string, digit: number = null): number {

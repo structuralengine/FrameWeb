@@ -21,8 +21,9 @@ export class InputFixMemberComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputFixMemberService,
+  constructor(private data: InputFixMemberService,
               private unity: UnityConnectorService) {
+
     this.dataset = new Array();
     this.page = 1;
   }
@@ -38,7 +39,7 @@ export class InputFixMemberComponent implements OnInit {
     this.dataset = new Array();
 
     for (let i = 1; i <= InputFixMemberComponent.ROWS_COUNT; i++) {
-      const fix_member = this.input.getFixMemberColumns(this.page, i);
+      const fix_member = this.data.getFixMemberColumns(this.page, i);
       this.dataset.push(fix_member);
     }
     this.unity.ChengeMode('fix_members:' + currentPage.toString());

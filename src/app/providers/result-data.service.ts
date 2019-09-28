@@ -36,8 +36,21 @@ export class ResultDataService {
     private pickdisg: ResultPickupDisgService,
     private pickreac: ResultPickupReacService,
     private pickfsec: ResultPickupFsecService) {
-  
-      this.isCombinePickupChenge = false;
+    this.clear();
+  }
+
+  // データをクリアする ///////////////////////////////////////////////////////////////
+  public clear(): void {
+    this.disg.clear();
+    this.reac.clear();
+    this.fsec.clear();
+    this.combdisg.clear();
+    this.combreac.clear();
+    this.combfsec.clear();
+    this.pickdisg.clear();
+    this.pickreac.clear();
+    this.pickfsec.clear();
+    this.isCombinePickupChenge = true;
   }
 
   // 計算結果 テキスト形式
@@ -55,9 +68,7 @@ export class ResultDataService {
 
   // 計算結果を読み込む 
   public loadResultData(resultText: string): boolean {
-    this.disg.clear();
-    this.reac.clear();
-    this.fsec.clear();
+    this.clear();
 
     let jsonData: {} = null;
     try {

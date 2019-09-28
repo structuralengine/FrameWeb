@@ -22,8 +22,8 @@ export class InputFixNodeComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputFixNodeService,
-    private unity: UnityConnectorService) {
+  constructor(private data: InputFixNodeService,
+              private unity: UnityConnectorService) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -40,7 +40,7 @@ export class InputFixNodeComponent implements OnInit {
     this.dataset = new Array();
 
     for (let i = 1; i <= InputFixNodeComponent.ROWS_COUNT; i++) {
-      const fix_node = this.input.getFixNodeColumns(this.page, i);
+      const fix_node = this.data.getFixNodeColumns(this.page, i);
       this.dataset.push(fix_node);
     }
     this.unity.ChengeMode('fix_nodes:' + currentPage.toString());

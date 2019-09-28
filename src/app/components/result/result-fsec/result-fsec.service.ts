@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataHelperService } from '../../../providers/data-helper.service';
+import { InputMembersService } from '../../input/input-members/input-members.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ export class ResultFsecService {
   public FSEC_ROWS_COUNT: number;
   public fsec: any;
 
-  constructor(private helper: DataHelperService) {
+  constructor(private member: InputMembersService,
+              private helper: DataHelperService) {
     this.clear();
   }
 
@@ -75,7 +77,7 @@ export class ResultFsecService {
 
         let result = {};
         const old = {};
-        const node = this.helper.getNodeNo(memberNo)
+        const node = this.member.getNodeNo(memberNo)
         let ni: string = node['ni'];
         let nj = '';
         let counter = 0;

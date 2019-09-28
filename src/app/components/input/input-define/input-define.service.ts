@@ -83,5 +83,13 @@ export class InputDefineService {
     }
     return jsonData;
   }
+
+  // 補助関数 ///////////////////////////////////////////////////////////////
+  // 有効な DEFINEケース数を調べる
+  public getDefineCaseCount(): number {
+    const dict = this.getDefineJson();
+    return Object.keys(dict).length;
+  }
+
   
 }

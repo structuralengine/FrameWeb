@@ -87,4 +87,32 @@ export class InputPickupService {
     return jsonData;
   }
 
+  // 補助関数 ///////////////////////////////////////////////////////////////
+
+  // PICKUP ケース名を取得する
+  public getPickUpName(currentPage: number): string {
+
+    if (currentPage < 1) {
+      return '';
+    }
+    if (currentPage > this.pickup.length) {
+      return '';
+    }
+
+    const i = currentPage - 1;
+    const tmp = this.pickup[i];
+
+    let result = '';
+    if ('name' in tmp) {
+      result = tmp['name'];
+    }
+    return result;
+  }
+
+  // 有効な PICKUP ケース数を調べる
+  public getPickupCaseCount(): number {
+    const dict = this.getPickUpJson();
+    return Object.keys(dict).length;
+  }
+
 }

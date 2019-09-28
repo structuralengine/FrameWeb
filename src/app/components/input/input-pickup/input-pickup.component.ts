@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { InputPickupService } from './input-pickup.service';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ReadDataService } from '../../../providers/read-data.service';
+import { InputLoadService } from '../input-load/input-load.service';
+import { InputCombineService } from '../input-combine/input-combine.service';
+import { ResultDataService } from '../../../providers/result-data.service';
 
 @Component({
   selector: 'app-input-pickup',
@@ -22,14 +23,15 @@ export class InputPickupComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.reault.isCombinePickupChenge = true;
+        this.result.isCombinePickupChenge = true;
       }
     }
   };
 
-  constructor(private input: InputPickupService,
-              private frame: FrameDataService,
-              private reault: ReadDataService) {
+  constructor(private data: InputPickupService,
+              private load: InputLoadService,
+              private comb: InputCombineService,
+              private result: ResultDataService) {
 
     this.page = 1;
     this.pickupData = new Array();
@@ -39,9 +41,9 @@ export class InputPickupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.COLUMNS_COUNT = this.frame.getCombineCaseCount();
+    this.COLUMNS_COUNT = this.comb.getCombineCaseCount();
     if (this.COLUMNS_COUNT <= 0) {
-      this.COLUMNS_COUNT = this.frame.getLoadCaseCount();
+      this.COLUMNS_COUNT = this.load.getLoadCaseCount();
     }
     if (this.COLUMNS_COUNT <= 5) {
       this.COLUMNS_COUNT = 5;
@@ -66,7 +68,7 @@ export class InputPickupComponent implements OnInit {
     const a2: number = a1 + this.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const pickup = this.input.getPickUpDataColumns(i, this.COLUMNS_COUNT + 1);
+      const pickup = this.data.getPickUpDataColumns(i, this.COLUMNS_COUNT + 1);
       this.pickupData.push(pickup);
       this.rowHeaders.push(i);
     }

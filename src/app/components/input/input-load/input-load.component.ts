@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
-import { FrameDataService } from '../../../providers/frame-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
 @Component({
@@ -24,14 +23,13 @@ export class InputLoadComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputLoadService,
-              private frame: FrameDataService,
+  constructor(private data: InputLoadService,
               private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    let n: number = this.frame.getLoadCaseCount();
+    let n: number = this.data.getLoadCaseCount();
     n += 5;
     this.collectionSize = n * 10;
     this.loadPage(1);
@@ -43,10 +41,10 @@ export class InputLoadComponent implements OnInit {
     }
     this.dataset = new Array();
     for (let i = 1; i <= this.ROWS_COUNT; i++) {
-      const load_name = this.input.getLoadColumns(this.page, i);
+      const load_name = this.data.getLoadColumns(this.page, i);
       this.dataset.push(load_name)
     }
-    const currentLoad: {} = this.input.getLoadNameColumns(currentPage);
+    const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
     this.unity.ChengeMode('loads:' + currentPage.toString());

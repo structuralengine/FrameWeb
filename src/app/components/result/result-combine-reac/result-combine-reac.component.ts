@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ReadDataService } from '../../../providers/read-data.service';
+import { ResultCombineReacService } from './result-combine-reac.service';
+import { ResultReacService } from '../result-reac/result-reac.service';
+import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
@@ -20,16 +21,17 @@ export class ResultCombineReacComponent implements OnInit {
   load_name: string;
   collectionSize: number;
 
-  constructor(private frame: FrameDataService,
-    private read: ReadDataService,
-    private result: ResultDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: ResultCombineReacService,
+              private fsec: ResultReacService,
+              private comb: InputCombineService,
+              private result: ResultDataService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    this.read.CombinePickup();
-    const n: number = this.frame.getCombineCaseCount();
+    this.result.CombinePickup();
+    const n: number = this.comb.getCombineCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
@@ -40,12 +42,12 @@ export class ResultCombineReacComponent implements OnInit {
     }
     for (let i = 0; i < this.KEYS.length; i++) {
       this.dataset[i] = new Array();
-      for (let j = 1; j <= this.result.REAC_ROWS_COUNT; j++) {
-        const reac = this.result.getCombineReacColumns(this.page, j, this.KEYS[i]);
+      for (let j = 1; j <= this.fsec.REAC_ROWS_COUNT; j++) {
+        const reac = this.data.getCombineReacColumns(this.page, j, this.KEYS[i]);
         this.dataset[i].push(reac);
       }
     }
-    this.load_name = this.frame.getCombineName(currentPage);
+    this.load_name = this.comb.getCombineName(currentPage);
 
     this.unity.ChengeMode('comb_reac:' + currentPage.toString());
   }

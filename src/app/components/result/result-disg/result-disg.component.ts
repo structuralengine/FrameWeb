@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FrameDataService } from '../../../providers/frame-data.service';
-import { ResultDataService } from '../../../providers/result-data.service';
+import { ResultDisgService } from './result-disg.service';
+import { InputLoadService } from '../../input/input-load/input-load.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
 @Component({
@@ -15,14 +15,14 @@ export class ResultDisgComponent implements OnInit {
   load_name: string;
   collectionSize: number;
 
-  constructor(private frame: FrameDataService,
-    private result: ResultDataService,
-    private unity: UnityConnectorService) {
+  constructor(private data: ResultDisgService,
+              private load: InputLoadService,
+              private unity: UnityConnectorService) {
     this.dataset = new Array();
   }
 
   ngOnInit() {
-    const n: number = this.frame.getLoadCaseCount();
+    const n: number = this.load.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
@@ -32,11 +32,11 @@ export class ResultDisgComponent implements OnInit {
       this.page = currentPage;
     }
     this.dataset = new Array();
-    for (let i = 0; i < this.result.DISG_ROWS_COUNT; i++) {
-      const disg = this.result.getDisgColumns(this.page, i);
+    for (let i = 0; i < this.data.DISG_ROWS_COUNT; i++) {
+      const disg = this.data.getDisgColumns(this.page, i);
       this.dataset.push(disg);
     }
-    this.load_name = this.frame.getLoadName(currentPage);
+    this.load_name = this.load.getLoadName(currentPage);
 
     this.unity.ChengeMode('disg:' + currentPage.toString());
   }

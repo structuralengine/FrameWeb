@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { InputMembersService } from '../input-members/input-members.service';
 import { InputNoticePointsService } from './input-notice-points.service';
-import { FrameDataService } from '../../../providers/frame-data.service';
 import { UnityConnectorService } from '../../../providers/unity-connector.service';
 
 @Component({
@@ -39,7 +39,7 @@ export class InputNoticePointsComponent implements OnInit {
           if (m === '') {
             continue;
           }
-          const l: number = this.frame.getMemberLength(m);
+          const l: number = this.member.getMemberLength(m);
           notice_points['len'] = (l != null) ? l : '';
           this.dataset[row] = notice_points;
           console.log(hotInstance.render());
@@ -49,8 +49,8 @@ export class InputNoticePointsComponent implements OnInit {
     }
   };
 
-  constructor(private input: InputNoticePointsService,
-              private frame: FrameDataService,
+  constructor(private data: InputNoticePointsService,
+              private member: InputMembersService,
               private unity: UnityConnectorService) {
 
     this.dataset = new Array();
@@ -79,10 +79,10 @@ export class InputNoticePointsComponent implements OnInit {
     const a2: number = a1 + InputNoticePointsComponent.ROWS_COUNT - 1;
 
     for (let i = a1; i <= a2; i++) {
-      const notice_points = this.input.getNoticePointsColumns(i);
+      const notice_points = this.data.getNoticePointsColumns(i);
       const m: string = notice_points['m'];
       if (m !== '') {
-        const l: number = this.frame.getMemberLength(m);
+        const l: number = this.member.getMemberLength(m);
         notice_points['len'] = (l != null) ? l : '';
       }
       this.dataset.push(notice_points);

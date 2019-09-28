@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataHelperService } from '../../../providers/data-helper.service';
+import { InputNodesService } from '../input-nodes/input-nodes.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +8,8 @@ import { DataHelperService } from '../../../providers/data-helper.service';
 export class InputMembersService {
   public member: any[];
 
-  constructor(private helper: DataHelperService) {
+  constructor(private node: InputNodesService,
+              private helper: DataHelperService) {
     this.clear();
   }
 
@@ -81,4 +83,45 @@ export class InputMembersService {
     return jsonData;
   }
 
+  // 補助関数 ///////////////////////////////////////////////////////////////
+
+  public getNodeNo(memberNo: string) {
+    const jsonData = { ni: '', nj: '' };
+
+    const memberList: {} = this.getMemberJson('unity-members');
+    if (Object.keys(memberList).length <= 0) {
+      return jsonData;
+    }
+    if (!(memberNo in memberList)) {
+      return jsonData;
+    }
+    const member = memberList[memberNo];
+    jsonData['ni'] = member['ni']
+    jsonData['nj'] = member['nj']
+    return jsonData;
+  }
+
+  public getMemberLength(memberNo: string): number {
+    const node: {} = this.getNodeNo(memberNo);
+    const ni: string = node['ni'];
+    const nj: string = node['nj'];
+    if (ni === '' || nj === '') {
+      return null;
+    }
+    const iPos = this.node.getNodePos(ni)
+    const jPos = this.node.getNodePos(nj)
+    if (iPos == null || jPos == null) {
+      return null;
+    }
+    const xi: number = iPos['x'];
+    const yi: number = iPos['y'];
+    const zi: number = iPos['z'];
+    const xj: number = jPos['x'];
+    const yj: number = jPos['y'];
+    const zj: number = jPos['z'];
+
+    const result: number = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2);
+    return result;
+
+  }
 }
