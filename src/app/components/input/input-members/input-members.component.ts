@@ -17,7 +17,7 @@ export class InputMembersComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-members');
+        this.unity.chengeModeData('unity-members');
         try {
           for (let i = 0; i < changes.length; i++) {
             const target = changes[i];

@@ -17,7 +17,7 @@ export class InputFixNodeComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-fix_nodes:' + this.page.toString());
+        this.unity.chengeModeData('unity-fix_nodes:' + this.page.toString());
       }
     }
   };

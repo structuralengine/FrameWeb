@@ -18,7 +18,7 @@ export class InputLoadComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-loads:' + this.page.toString());
+        this.unity.chengeModeData('unity-loads:' + this.page.toString());
       }
     }
   };

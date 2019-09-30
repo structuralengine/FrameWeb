@@ -17,9 +17,9 @@ export class AppComponent {
   isContentsDailogShow: boolean;
   isCalculated: boolean;
 
-  constructor(platformLocation: PlatformLocation,
-    private _router: Router,
-    private unityConnector: UnityConnectorService ) {
+  constructor(private platformLocation: PlatformLocation,
+              private _router: Router,
+              private unityConnector: UnityConnectorService ) {
 
     const location = (platformLocation as any).location;
     this.baseUrl = location.origin + location.pathname;

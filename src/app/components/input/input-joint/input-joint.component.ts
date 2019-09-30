@@ -16,7 +16,7 @@ export class InputJointComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeData('unity-joints:' + this.page.toString());
+        this.unity.chengeModeData('unity-joints:' + this.page.toString());
       }
     }
   };

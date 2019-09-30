@@ -51,8 +51,7 @@ public class ExternalConnect : MonoBehaviour
     ReceiveUnity(message);
 #endif
   }
-
-
+  
   internal static void SendAngularSelectItemChenge(int id)
   {
 #if UNITY_EDITOR
@@ -69,25 +68,33 @@ public class ExternalConnect : MonoBehaviour
   /// <summary> Htmlから Jsonデータが一式届く </summary>
   public void ReceiveData(string strJson)
   {
+    UnityEngine.Debug.Log("Unity Function ReceiveData Called ----------------------------");
     mainFrameObject.InputDataChenge(strJson);
+    UnityEngine.Debug.Log("End ReceiveData ----------------------------------------------");
   }
 
   /// <summary> Htmlから 現在のモードのJsonデータが届く </summary>
   public void ReceiveModeData(string strJson)
   {
+    UnityEngine.Debug.Log("Unity Function ReceiveModeData Called ------------------------");
     mainFrameObject.InputModeDataChenge(strJson);
+    UnityEngine.Debug.Log("End ReceiveModeData ------------------------------------------");
   }
 
   /// <summary> Htmlから 計算結果のJsonデータが届く </summary>
   public void ReceiveResultData(string strJson)
   {
+    UnityEngine.Debug.Log("Unity Function ReceiveResultData Called ---------------------");
     mainFrameObject.ResultDataChenge(strJson);
+    UnityEngine.Debug.Log("End ReceiveResultData ---------------------------------------");
   }
 
   /// <summary> Htmlから キャプチャー画像の送付依頼がくる </summary>
   public void SendCapture()
   {
+    UnityEngine.Debug.Log("Unity Function SendCapture Called ---------------------------");
     StartCoroutine(_Execute());
+    UnityEngine.Debug.Log("End SendCapture ---------------------------------------------");
   }
 
   [DllImport("__Internal")]
@@ -106,6 +113,8 @@ public class ExternalConnect : MonoBehaviour
   /// <summary> Htmlから モードの変更通知がくる </summary>
   public void ChengeMode(string mode)
   {
+    UnityEngine.Debug.Log("Unity Function ChengeMode Called ----------------------------");
+
     InputModeType inputModeType = InputModeType.None;
 
     string[] values = mode.Split(':');
@@ -167,14 +176,18 @@ public class ExternalConnect : MonoBehaviour
       default:
         return;
     }
+
+    UnityEngine.Debug.Log("End ChengeMode ----------------------------------------------");
+
   }
 
   /// <summary> Htmlから セレクトアイテム変更の通知がくる </summary>
   /// <param name="i">セレクトアイテムid</param>
   public void SelectItemChange(string id)
   {
-    int i = int.Parse(id);
-    mainFrameObject.SelectItemChange(i);
+    UnityEngine.Debug.Log("Unity Function SelectItemChange Called ----------");
+    mainFrameObject.SelectItemChange(int.Parse(id));
+    UnityEngine.Debug.Log("-------------------------------------------------");
   }
 
   #endregion
@@ -227,26 +240,19 @@ public class ExternalConnect : MonoBehaviour
       switch (methodName)
       {
         case "ReceiveData":
-          object output1 = objJson["strJson"];
-          string strJson1 = Json.Serialize(output1);
-          this.ReceiveData(strJson1);
+          this.ReceiveData(objJson["value"].ToString());
           break;
 
         case "ChengeMode":
-          string inputModeType = objJson["inputModeType"].ToString();
-          this.ChengeMode(inputModeType);
+          this.ChengeMode(objJson["value"].ToString());
           break;
 
         case "ReceiveModeData":
-          object output3 = objJson["strJson"];
-          string strJson2 = Json.Serialize(output3);
-          this.ReceiveModeData(strJson2);
+           this.ReceiveModeData(objJson["value"].ToString());
           break;
 
         case "ReceiveResultData":
-          object output4 = objJson["strJson"];
-          string strJson3 = Json.Serialize(output4);
-          this.ReceiveResultData(strJson3);
+          this.ReceiveResultData(objJson["value"].ToString());
           break;
 
         case "SendCapture":
@@ -254,8 +260,7 @@ public class ExternalConnect : MonoBehaviour
           break;
 
         case "SelectItemChange":
-          string id = objJson["id"].ToString();
-          this.SelectItemChange(id);
+          this.SelectItemChange(objJson["value"].ToString());
           break;
 
         default:
@@ -305,8 +310,6 @@ public class ExternalConnect : MonoBehaviour
   {
     this.DoTestCode();
   }
-
-
 
   /// 指定のオブジェクトのTextを探す
   public Text FindText(GameObject target)

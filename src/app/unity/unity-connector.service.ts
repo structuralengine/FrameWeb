@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import * as FileSaver from 'file-saver';
+
 import { InputDataService } from '../providers/input-data.service';
 import { ResultDataService } from '../providers/result-data.service';
 
@@ -7,8 +9,9 @@ import { ResultDataService } from '../providers/result-data.service';
 })
 
 export class UnityConnectorService {
-  unityInstance: any;
-  inputMode: string;
+
+  private unityInstance: any;
+  private inputMode: string;
 
   constructor(private input: InputDataService,
               private result: ResultDataService) { 
@@ -21,9 +24,9 @@ export class UnityConnectorService {
 
 
   // #region unity からメッセージを受け取る
-  public ReceiveUnity(messageValue: string) {
+  public ReceiveUnity(message: string) {
 
-    switch (messageValue) {
+    switch (message) {
       case 'GetInputJSON':
         this.chengeData();
         break;
@@ -45,42 +48,54 @@ export class UnityConnectorService {
 
   // #region unity にメッセージを送る
 
-  // 入力の変更時の処理
-  public sendResultData() {
-    const strJson: string = this.result.getResultText();
-    console.log('%c' + strJson, 'color: magenta');
-    this.sendMessageToUnity('ExternalConnect', 'ReceiveResultData', strJson);
+  // 全ての入力データを通知する
+  public chengeData() {
+    const strJson: string = this.input.getInputText('unity');
+    this.unityInstance.SendMessage('ExternalConnect', 'ReceiveData', strJson);
+    // テストJson をダウンロード
+    this.downloadTestJson('ReceiveData', strJson);
   }
 
-  public chengeData(mode: string = 'unity') {
+  // 現在アクティブなモードのデータが変更したことを通知する
+  public chengeModeData(mode: string) {
     const strJson: string = this.input.getInputText(mode);
-    console.log('%c' + mode, 'color: green');
-    console.log('%c' + strJson, 'color: red');
-    const funcName: string = (mode === 'unity') ? 'ReceiveData' : 'ReceiveModeData';
-    this.sendMessageToUnity('ExternalConnect', funcName, strJson);
+    this.unityInstance.SendMessage('ExternalConnect', 'ReceiveModeData', strJson);
+    // テストJson をダウンロード
+    this.downloadTestJson('ReceiveModeData', strJson);
   }
 
+  // モードが変更したことを通知する
   public ChengeMode(inputModeName: string) {
     this.inputMode = inputModeName;
-    this.sendMessageToUnity('ExternalConnect', 'ChengeMode', inputModeName);
+    this.unityInstance.SendMessage('ExternalConnect', 'ChengeMode', inputModeName);
+    // テストJson をダウンロード
+    this.downloadTestJson('ChengeMode', inputModeName);
   }
 
+  // 全ての解析結果データを通知する
+  public sendResultData() {
+    const strJson: string = this.result.getResultText();
+    this.unityInstance.SendMessage('ExternalConnect', 'ReceiveResultData', strJson);
+    // テストJson をダウンロード
+    this.downloadTestJson('ReceiveResultData', strJson);
+  }
 
+  // 選択アイテムを通知する
   public SelectItemChange(id: string) {
-    this.sendMessageToUnity('ExternalConnect', 'SelectItemChange', id);
+    this.unityInstance.SendMessage('ExternalConnect', 'SelectItemChange', id);
+    // テストJson をダウンロード
+    this.downloadTestJson('SelectItemChange', id);
   }
 
-  private sendMessageToUnity(objectName: string, methodName: string, messageValue: any = '') {
-    try {
-      if (messageValue === '') {
-        this.unityInstance.SendMessage(objectName, methodName);
-      } else {
-        this.unityInstance.SendMessage(objectName, methodName, messageValue);
-      }
-    } catch(e){
-      console.log('sendMessageToUnityでエラー');
-      console.log(e);
-    }
+  // テストJson をダウンロード
+  private testJsonIndex: number = 0;
+  private downloadTestJson(MethodName: string, value: string): void {
+    // return // 出荷時は return を有効にする
+    const strJson: string = '{methodName: ' + MethodName + ', value: ' + value + '}';
+    const blob = new window.Blob([strJson], { type: 'text/plain' });
+    this.testJsonIndex ++;
+    const fileName: string = this.testJsonIndex.toString() + '_' + MethodName + '.json';
+    FileSaver.saveAs(blob, fileName);
   }
   // #endregion
 

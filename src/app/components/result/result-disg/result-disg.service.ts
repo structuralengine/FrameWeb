@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataHelperService } from '../../../providers/data-helper.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ export class ResultDisgService {
   public DISG_ROWS_COUNT: number;
   public disg: any;
 
-  constructor(private helper: DataHelperService) {
+  constructor(private helper: DataHelperModule) {
     this.clear();
   }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataHelperService } from '../../../providers/data-helper.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 import { InputMembersService } from '../input-members/input-members.service'
 
 @Injectable({
@@ -11,7 +11,7 @@ export class InputLoadService {
   public load: any[];
 
   constructor(private member: InputMembersService,
-              private helper: DataHelperService) {
+              private helper: DataHelperModule) {
     this.clear();
   }
 

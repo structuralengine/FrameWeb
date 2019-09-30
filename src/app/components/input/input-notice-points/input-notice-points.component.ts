@@ -44,7 +44,7 @@ export class InputNoticePointsComponent implements OnInit {
           this.dataset[row] = notice_points;
           console.log(hotInstance.render());
         }
-        this.unity.chengeData('unity-notice_points');
+        this.unity.chengeModeData('unity-notice_points');
       }
     }
   };

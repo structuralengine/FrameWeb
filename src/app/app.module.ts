@@ -19,7 +19,7 @@ import { HotTableModule } from '@handsontable/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { InputDataService } from './providers/input-data.service';
-import { DataHelperService } from './providers/data-helper.service';
+import { DataHelperModule } from './providers/data-helper.module';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
 import { UnityConnectorService } from './unity/unity-connector.service';
@@ -84,7 +84,8 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
     DragDropModule,
     BrowserAnimationsModule,
     NgbModule.forRoot(),
-    HotTableModule
+    HotTableModule,
+    DataHelperModule
   ],
   declarations: [
     AppComponent,
@@ -123,7 +124,6 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
   ],
   providers: [
     InputDataService,
-    DataHelperService,
     InputNodesService,
     InputMembersService,
     InputFixNodeService,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataHelperService } from '../../../providers/data-helper.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,7 @@ import { DataHelperService } from '../../../providers/data-helper.service';
 export class InputElementsService {
   public element: any;
 
-  constructor(private helper: DataHelperService) {
+  constructor(private helper: DataHelperModule) {
     this.clear();
   }
 

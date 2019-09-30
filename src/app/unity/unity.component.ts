@@ -3,9 +3,6 @@ import { UnityLoader } from './UnityLoader.js';
 import { UnityProgress } from './UnityProgress.js';
 import { UnityConnectorService } from './unity-connector.service';
 
-
-import { InputNodesService } from '../components/input/input-nodes/input-nodes.service';
-
 declare var window: any;
 
 @Component({
@@ -14,14 +11,13 @@ declare var window: any;
   styleUrls: ['./unity.component.css']
 })
 export class UnityComponent implements OnInit {
-  unityInstance: any;
+  
   @Input() appLocation: String;
   @Input() appWidth: String;
   @Input() appHeight: String;
 
   constructor(private zone: NgZone,
-              private unityConnector: UnityConnectorService,
-              private node: InputNodesService) { }
+              private unityConnector: UnityConnectorService) { }
 
   ngOnInit() {
     window['UnityLoader'] = UnityLoader;
@@ -29,30 +25,22 @@ export class UnityComponent implements OnInit {
 
     window['angularComponentReference'] = {
       zone: this.zone,
-      componentFnction1: (value) => this.unityConnector.ReceiveUnity(value),
-      componentFnction2: (value) => this.unityConnector.ReceiveUnitySelectItemChenge(value),
-      getNodeJson: () => this.node.getNodeText(),
+      fnction1: (value) => this.unityConnector.ReceiveUnity(value),
+      fnction2: (value) => this.unityConnector.ReceiveUnitySelectItemChenge(value),
       component: this,
     };
 
     window['ReceiveUnity'] = function (value: any) {
       window.angularComponentReference.zone.run(function () {
-        window.angularComponentReference.componentFnction1(value);
+        window.angularComponentReference.fnction1(value);
       });
     };
 
     window['ReceiveUnitySelectItemChenge'] = function (value: any) {
       window.angularComponentReference.zone.run(function () {
-        window.angularComponentReference.componentFnction2(value);
+        window.angularComponentReference.fnction2(value);
       });
     };
-
-    window['GetNodeData'] = function () {
-      window.angularComponentReference.zone.run(function () {
-        window.angularComponentReference.getNodeJson();
-      });
-    };
-
 
     if (this.appLocation) {
       this.loadProject(this.appLocation);
@@ -60,8 +48,8 @@ export class UnityComponent implements OnInit {
   }
 
   public loadProject(path) {
-    this.unityInstance = UnityLoader.instantiate('unityContainer', path);
-    this.unityConnector.setUnityInstance(this.unityInstance);
+    const unityInstance: any  = UnityLoader.instantiate('unityContainer', path);
+    this.unityConnector.setUnityInstance(unityInstance);
   }
 
 }
