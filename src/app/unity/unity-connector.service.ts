@@ -91,7 +91,13 @@ export class UnityConnectorService {
   private testJsonIndex: number = 0;
   private downloadTestJson(MethodName: string, value: string): void {
     // return // 出荷時は return を有効にする
-    const strJson: string = '{methodName: ' + MethodName + ', value: ' + value + '}';
+    let strJson: string = '{"methodName": "' + MethodName + '", "value": ';
+    if ( value.slice(0, 1) === '{') {
+      strJson += value + '}';
+    } else {
+      strJson += '"' + value + '"}';
+    }
+
     const blob = new window.Blob([strJson], { type: 'text/plain' });
     this.testJsonIndex ++;
     const fileName: string = this.testJsonIndex.toString() + '_' + MethodName + '.json';

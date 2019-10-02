@@ -202,7 +202,7 @@ public class ExternalConnect : MonoBehaviour
   {
     //ファイルを取得
     string path = Application.dataPath + "/Resources/Test/";
-    string[] files = System.IO.Directory.GetFiles(path, string.Format("{0}*.json", this.stepNo));
+    string[] files = System.IO.Directory.GetFiles(path, string.Format("{0}_*.json", this.stepNo));
 
     // ファイルを読み込む
     TextAsset textAsset = null;
@@ -240,7 +240,7 @@ public class ExternalConnect : MonoBehaviour
       switch (methodName)
       {
         case "ReceiveData":
-          this.ReceiveData(objJson["value"].ToString());
+          this.ReceiveData(Json.Serialize(objJson["value"]));
           break;
 
         case "ChengeMode":
@@ -248,11 +248,11 @@ public class ExternalConnect : MonoBehaviour
           break;
 
         case "ReceiveModeData":
-           this.ReceiveModeData(objJson["value"].ToString());
+           this.ReceiveModeData(Json.Serialize(objJson["value"]));
           break;
 
         case "ReceiveResultData":
-          this.ReceiveResultData(objJson["value"].ToString());
+          this.ReceiveResultData(Json.Serialize(objJson["value"]));
           break;
 
         case "SendCapture":
@@ -279,7 +279,7 @@ public class ExternalConnect : MonoBehaviour
     GameObject TestButton = GameObject.Find("TestButton");
 
     //ファイルを取得
-    files = System.IO.Directory.GetFiles(path, string.Format("{0}*.json", this.stepNo));
+    files = System.IO.Directory.GetFiles(path, string.Format("{0}_*.json", this.stepNo));
 
     // ファイルを読み込む
     stepName = null;

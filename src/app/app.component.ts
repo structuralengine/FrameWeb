@@ -49,6 +49,7 @@ export class AppComponent {
 
     this.isContentsDailogShow = true;
     this.setDialogHeight();
+
   }
 
   // アクティブになっているボタンを全て非アクティブにする
