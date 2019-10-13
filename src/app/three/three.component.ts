@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { ThreeService } from './three.service';
 
 @Component({
@@ -8,7 +8,9 @@ import { ThreeService } from './three.service';
 })
 export class ThreeComponent implements OnInit {
 
-  @ViewChild('rendererCanvas', {static: true})
+  @ViewChild('rendererCanvas', { static: true })
+  @HostListener('document:mousemove', ['$event'])
+    
   public rendererCanvas: ElementRef<HTMLCanvasElement>;
 
   constructor(private three: ThreeService) { }
@@ -16,6 +18,11 @@ export class ThreeComponent implements OnInit {
   ngOnInit() {
     this.three.createScene(this.rendererCanvas);
     this.three.animate();
+  }
+
+  onMouseMove(e) {
+    //https://ics.media/tutorial-three/raycast/
+    console.log(e);
   }
 
 }

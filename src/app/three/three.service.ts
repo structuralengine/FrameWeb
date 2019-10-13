@@ -1,4 +1,4 @@
-import { Injectable, ElementRef, OnDestroy, NgZone, HostListener } from '@angular/core';
+import { Injectable, ElementRef, OnDestroy, NgZone } from '@angular/core';
 
 import * as THREE from 'three';
 import { Vector3, Object3D, Font } from 'three';
@@ -7,7 +7,6 @@ import { Vector3, Object3D, Font } from 'three';
   providedIn: 'root'
 })
 export class ThreeService {
-  @HostListener('document:mousemove', ['$event'])
 
   private canvas: HTMLCanvasElement;
   private renderer: THREE.WebGLRenderer;
@@ -98,10 +97,7 @@ export class ThreeService {
     this.mouse = new THREE.Vector2();
 
   }
-  onMouseMove(e) {
-    //https://ics.media/tutorial-three/raycast/
-    console.log(e);
-  }
+
 
   animate(): void {
     // We have to run this outside angular zones,
