@@ -27,7 +27,7 @@ public class FrameDataService : FrameWeb
 
     #region 物体の大きさを制御する変数
 
-    private float NODESCALE = 0.3f;
+    private float NODESCALE = 0.1f;
 
     private float maxNodeDistance;
     private float minNodeDistance;

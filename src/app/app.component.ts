@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { UnityConnectorService } from './providers/unity-connector.service';
+import { UnityConnectorService } from './unity/unity-connector.service';
 
 @Component({
   selector: 'app-root',
@@ -17,9 +17,9 @@ export class AppComponent {
   isContentsDailogShow: boolean;
   isCalculated: boolean;
 
-  constructor(platformLocation: PlatformLocation,
-    private _router: Router,
-    private unityConnector: UnityConnectorService ) {
+  constructor(private platformLocation: PlatformLocation,
+              private _router: Router,
+              private unityConnector: UnityConnectorService ) {
 
     const location = (platformLocation as any).location;
     this.baseUrl = location.origin + location.pathname;
@@ -49,6 +49,7 @@ export class AppComponent {
 
     this.isContentsDailogShow = true;
     this.setDialogHeight();
+
   }
 
   // アクティブになっているボタンを全て非アクティブにする

@@ -8,9 +8,10 @@ import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 
 import { UserInfoService } from '../../providers/user-info.service';
 import * as FileSaver from 'file-saver';
-import { FrameDataService } from '../../providers/frame-data.service';
-import { ReadDataService } from '../../providers/read-data.service';
-import { UnityConnectorService } from '../../providers/unity-connector.service';
+
+import { InputDataService } from '../../providers/input-data.service';
+import { ResultDataService } from '../../providers/result-data.service';
+import { UnityConnectorService } from '../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-menu',
@@ -27,8 +28,8 @@ export class MenuComponent implements OnInit {
   constructor(private modalService: NgbModal,
     private app: AppComponent,
     private user: UserInfoService,
-    private InputData: FrameDataService,
-    private ResultData: ReadDataService,
+    private InputData: InputDataService,
+    private ResultData: ResultDataService,
     private http: Http,
     private unity: UnityConnectorService) {
     this.loggedIn = this.user.loggedIn;
@@ -55,7 +56,7 @@ export class MenuComponent implements OnInit {
     this.fileToText(file)
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
-        this.ResultData.loadInputData(text); // データを読み込む
+        this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
         this.unity.chengeData();
       })

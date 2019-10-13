@@ -2,28 +2,28 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 
-import { InputNodesComponent } from './components/input-nodes/input-nodes.component';
-import { InputMembersComponent } from './components/input-members/input-members.component';
-import { InputFixNodeComponent } from './components/input-fix-node/input-fix-node.component';
-import { InputElementsComponent } from './components/input-elements/input-elements.component';
-import { InputJointComponent } from './components/input-joint/input-joint.component';
-import { InputNoticePointsComponent } from './components/input-notice-points/input-notice-points.component';
-import { InputFixMemberComponent } from './components/input-fix-member/input-fix-member.component';
-import { InputLoadNameComponent } from './components/input-load-name/input-load-name.component';
-import { InputLoadComponent } from './components/input-load/input-load.component';
-import { InputDefineComponent } from './components/input-define/input-define.component';
-import { InputCombineComponent } from './components/input-combine/input-combine.component';
-import { InputPickupComponent } from './components/input-pickup/input-pickup.component';
+import { InputNodesComponent } from './components/input/input-nodes/input-nodes.component';
+import { InputMembersComponent } from './components/input/input-members/input-members.component';
+import { InputFixNodeComponent } from './components/input/input-fix-node/input-fix-node.component';
+import { InputElementsComponent } from './components/input/input-elements/input-elements.component';
+import { InputJointComponent } from './components/input/input-joint/input-joint.component';
+import { InputNoticePointsComponent } from './components/input/input-notice-points/input-notice-points.component';
+import { InputFixMemberComponent } from './components/input/input-fix-member/input-fix-member.component';
+import { InputLoadNameComponent } from './components/input/input-load/input-load-name.component';
+import { InputLoadComponent } from './components/input/input-load/input-load.component';
+import { InputDefineComponent } from './components/input/input-define/input-define.component';
+import { InputCombineComponent } from './components/input/input-combine/input-combine.component';
+import { InputPickupComponent } from './components/input/input-pickup/input-pickup.component';
 
-import { ResultDisgComponent } from './components/result-disg/result-disg.component';
-import { ResultReacComponent } from './components/result-reac/result-reac.component';
-import { ResultFsecComponent } from './components/result-fsec/result-fsec.component';
-import { ResultCombineDisgComponent } from './components/result-combine-disg/result-combine-disg.component';
-import { ResultCombineReacComponent } from './components/result-combine-reac/result-combine-reac.component';
-import { ResultCombineFsecComponent } from './components/result-combine-fsec/result-combine-fsec.component';
-import { ResultPickupDisgComponent } from './components/result-pickup-disg/result-pickup-disg.component';
-import { ResultPickupReacComponent } from './components/result-pickup-reac/result-pickup-reac.component';
-import { ResultPickupFsecComponent } from './components/result-pickup-fsec/result-pickup-fsec.component';
+import { ResultDisgComponent } from './components/result/result-disg/result-disg.component';
+import { ResultReacComponent } from './components/result/result-reac/result-reac.component';
+import { ResultFsecComponent } from './components/result/result-fsec/result-fsec.component';
+import { ResultCombineDisgComponent } from './components/result/result-combine-disg/result-combine-disg.component';
+import { ResultCombineReacComponent } from './components/result/result-combine-reac/result-combine-reac.component';
+import { ResultCombineFsecComponent } from './components/result/result-combine-fsec/result-combine-fsec.component';
+import { ResultPickupDisgComponent } from './components/result/result-pickup-disg/result-pickup-disg.component';
+import { ResultPickupReacComponent } from './components/result/result-pickup-reac/result-pickup-reac.component';
+import { ResultPickupFsecComponent } from './components/result/result-pickup-fsec/result-pickup-fsec.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/input-nodes', pathMatch: 'full' },

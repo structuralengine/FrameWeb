@@ -51,3 +51,4 @@ Thumbs.db
 # Test
 /test
 /unity-src/Assets/Resources/Test/*
+unity-src/.vs/
