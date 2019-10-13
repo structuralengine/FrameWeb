@@ -63,8 +63,8 @@ import { ResultPickupFsecService } from './components/result/result-pickup-fsec/
 import { ResultCombineFsecComponent } from './components/result/result-combine-fsec/result-combine-fsec.component';
 import { ResultCombineFsecService } from './components/result/result-combine-fsec/result-combine-fsec.service';
 
-import { ThreeComponent } from './three/three/three.component';
-import { ThreeService } from './three/three/three.service';
+import { ThreeComponent } from './three/three.component';
+import { ThreeService } from './three/three.service';
 
 @NgModule({
   imports: [
