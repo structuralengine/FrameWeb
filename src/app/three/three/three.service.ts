@@ -1,4 +1,4 @@
-import { Injectable, ElementRef, OnDestroy, NgZone } from '@angular/core';
+import { Injectable, ElementRef, OnDestroy, NgZone, HostListener } from '@angular/core';
 
 import * as THREE from 'three';
 import { Vector3, Object3D, Font } from 'three';
@@ -7,6 +7,8 @@ import { Vector3, Object3D, Font } from 'three';
   providedIn: 'root'
 })
 export class ThreeService {
+  @HostListener('document:mousemove', ['$event'])
+
   private canvas: HTMLCanvasElement;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
@@ -23,7 +25,12 @@ export class ThreeService {
 
   private frameId: number = null;
 
-  public constructor(private ngZone: NgZone) { }
+
+  // マウス座標管理用のベクトルを作成
+  private mouse: THREE.Vector2;
+
+
+  public constructor(private ngZone: NgZone) {}
 
   public ngOnDestroy() {
     if (this.frameId != null) {
@@ -32,7 +39,7 @@ export class ThreeService {
   }
 
   createScene(canvas: ElementRef<HTMLCanvasElement>): void {
-    // The first step is to get the reference of the canvas element from our HTML document
+
     this.canvas = canvas.nativeElement;
 
     this.renderer = new THREE.WebGLRenderer({
@@ -44,8 +51,6 @@ export class ThreeService {
 
     // create the scene
     this.scene = new THREE.Scene();
-
-    this.objGroup = new THREE.Group();
 
     // カメラの配置
     this.camera = new THREE.PerspectiveCamera(
@@ -64,38 +69,38 @@ export class ThreeService {
     this.lightDirec.position.set(0, 10, 10);
     this.scene.add(this.lightDirec);
 
-    // 頭？
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('assets/img/logo.png');
-    const material = new THREE.MeshStandardMaterial({ map: texture });
-    this.cubeHead = new THREE.Mesh(geometry, material);
-    this.cubeHead.position.x = 2;
+    // データ
+    this.objGroup = new THREE.Group();
+  
+    const meshList = [];
+    for (let i = 0; i < 200; i++) {
+      const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const geometry = new THREE.BoxBufferGeometry(50, 50, 50);
 
-    // 左手？
-    const geoLeftHand = new THREE.BoxGeometry(0.6, 0.1, 0.1);
-    const matLeftHand = new THREE.MeshStandardMaterial({ color: 0x004f00 });
-    this.cubeLeftHand = new THREE.Mesh(geoLeftHand, matLeftHand);
-    this.cubeLeftHand.position.x = 1.3;
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = (Math.random() - 0.5) * 800;
+      mesh.position.y = (Math.random() - 0.5) * 800;
+      mesh.position.z = (Math.random() - 0.5) * 800;
+      mesh.rotation.x = Math.random() * 2 * Math.PI;
+      mesh.rotation.y = Math.random() * 2 * Math.PI;
+      mesh.rotation.z = Math.random() * 2 * Math.PI;
+      // 配列に保存
+      this.objGroup.add(mesh);
 
-    // 右手？
-    const geoRightHand = new THREE.BoxGeometry(0.6, 0.1, 0.1);
-    const matRightHand = new THREE.MeshStandardMaterial({ color: 0x004f00 });
-    this.cubeRightHand = new THREE.Mesh(geoRightHand, matRightHand);
-    this.cubeRightHand.position.x = 2.8;
-
-    // 胴体？
-    const geoCone = new THREE.ConeGeometry(1, 2, 8);
-    const matCone = new THREE.MeshStandardMaterial({ color: 0x774f77 });
-    this.cone = new THREE.Mesh(geoCone, matCone);
-    this.cone.position.x = 2;
-    this.cone.position.y = -1;
-
-    // 頭・左手・右手のグループ化
-    this.objGroup.add(this.cubeHead, this.cubeLeftHand, this.cubeRightHand, this.cone);
+       // マウスとの交差を調べたいものは配列に格納する
+      meshList.push(mesh);
+    }
 
     // シーン追加
     this.scene.add(this.objGroup);
+
+    // マウス
+    this.mouse = new THREE.Vector2();
+
+  }
+  onMouseMove(e) {
+    //https://ics.media/tutorial-three/raycast/
+    console.log(e);
   }
 
   animate(): void {
@@ -109,6 +114,8 @@ export class ThreeService {
       window.addEventListener('resize', () => {
         this.resize();
       });
+
+      
     });
   }
 
