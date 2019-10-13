@@ -19,7 +19,7 @@ public class DirectionArrow : MonoBehaviour
 		_meshTransform = _meshObject.transform;
 		_meshTransform.parent = this.gameObject.transform;
 
-    _meshFileter   = _meshObject.AddComponent<MeshFilter>();
+        _meshFileter   = _meshObject.AddComponent<MeshFilter>();
 		_meshRender    = _meshObject.AddComponent<MeshRenderer>();
 
 		Mesh	mesh = new Mesh();
