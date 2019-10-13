@@ -3,7 +3,6 @@ import { ResultPickupDisgService } from './result-pickup-disg.service';
 import { ResultDisgService } from '../result-disg/result-disg.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-pickup-disg',
@@ -24,8 +23,7 @@ export class ResultPickupDisgComponent implements OnInit {
   constructor(private data: ResultPickupDisgService,
               private disg: ResultDisgService,
               private pickup: InputPickupService,
-              private result: ResultDataService,
-              private unity: UnityConnectorService) {
+              private result: ResultDataService) {
     this.dataset = new Array();
   }
 
@@ -49,6 +47,6 @@ export class ResultPickupDisgComponent implements OnInit {
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
 
-    this.unity.ChengeMode('pik_disg:' + currentPage.toString());
+    // this.unity.ChengeMode('pik_disg:' + currentPage.toString());
  }
 }

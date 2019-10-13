@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-joint',
@@ -16,13 +15,12 @@ export class InputJointComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeModeData('unity-joints:' + this.page.toString());
+        // this.unity.chengeModeData('unity-joints:' + this.page.toString());
       }
     }
   };
 
-  constructor(private input: InputJointService,
-              private unity: UnityConnectorService) {
+  constructor(private input: InputJointService) {
     this.dataset = new Array();
     this.page = 1;
   }
@@ -41,6 +39,6 @@ export class InputJointComponent implements OnInit {
       const joint = this.input.getJointColumns(this.page, i);
       this.dataset.push(joint);
     }
-    this.unity.ChengeMode('joints:' + currentPage.toString());
+    // this.unity.ChengeMode('joints:' + currentPage.toString());
   }
 }

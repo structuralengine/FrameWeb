@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from './input-members.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-members',
@@ -17,7 +16,7 @@ export class InputMembersComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeModeData('unity-members');
+        // this.unity.chengeModeData('unity-members');
         try {
           for (let i = 0; i < changes.length; i++) {
             const target = changes[i];
@@ -49,14 +48,13 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
-  constructor(private data: InputMembersService,
-              private unity: UnityConnectorService) {
+  constructor(private data: InputMembersService) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
-    this.unity.ChengeMode('members');
+    // this.unity.ChengeMode('members');
   }
 
   loadPage(currentPage: number) {

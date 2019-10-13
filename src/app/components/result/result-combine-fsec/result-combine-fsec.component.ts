@@ -3,7 +3,6 @@ import { ResultCombineFsecService } from './result-combine-fsec.service';
 import { ResultFsecService } from '../result-fsec/result-fsec.service';
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-combine-fsec',
@@ -24,8 +23,7 @@ export class ResultCombineFsecComponent implements OnInit {
   constructor(private data: ResultCombineFsecService,
               private fsec: ResultFsecService,
               private comb: InputCombineService,
-              private result: ResultDataService,
-              private unity: UnityConnectorService) {
+              private result: ResultDataService) {
     this.dataset = new Array();
   }
 
@@ -49,6 +47,6 @@ export class ResultCombineFsecComponent implements OnInit {
       this.load_name = this.comb.getCombineName(currentPage);
     }
 
-    this.unity.ChengeMode('comb_fsec:' + currentPage.toString());
+    // this.unity.ChengeMode('comb_fsec:' + currentPage.toString());
   }
 }

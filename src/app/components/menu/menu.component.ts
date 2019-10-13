@@ -11,7 +11,6 @@ import * as FileSaver from 'file-saver';
 
 import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
-import { UnityConnectorService } from '../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-menu',
@@ -30,8 +29,7 @@ export class MenuComponent implements OnInit {
     private user: UserInfoService,
     private InputData: InputDataService,
     private ResultData: ResultDataService,
-    private http: Http,
-    private unity: UnityConnectorService) {
+    private http: Http) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -45,7 +43,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.app.isCalculated = false;
-    this.unity.chengeData();
+    // this.unity.chengeData();
   }
 
   // ファイルを開く
@@ -58,7 +56,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
-        this.unity.chengeData();
+        // this.unity.chengeData();
       })
       .catch(err => console.log(err));
   }
@@ -121,7 +119,7 @@ export class MenuComponent implements OnInit {
         } else {
           this.loadResultData(response.text());
           this.app.isCalculated = true;
-          this.unity.sendResultData();
+          // this.unity.sendResultData();
         }
         modalRef.close();
       },

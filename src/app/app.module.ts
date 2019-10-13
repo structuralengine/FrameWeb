@@ -1,34 +1,24 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
-
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { AppRoutingModule } from './app-routing.module';
-
-
-import { WebviewDirective } from './directives/webview.directive';
-
-import { AppComponent } from './app.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HotTableModule } from '@handsontable/angular';
 
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 
 import { InputDataService } from './providers/input-data.service';
 import { DataHelperModule } from './providers/data-helper.module';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
-import { UnityConnectorService } from './unity/unity-connector.service';
 
 import { MenuComponent } from './components/menu/menu.component';
 import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
 import { WaitDialogComponent } from './components/wait-dialog/wait-dialog.component';
-
-import { UnityComponent } from './unity/unity.component';
 
 import { InputNodesComponent } from './components/input/input-nodes/input-nodes.component';
 import { InputNodesService } from './components/input/input-nodes/input-nodes.service';
@@ -73,24 +63,25 @@ import { ResultPickupFsecService } from './components/result/result-pickup-fsec/
 import { ResultCombineFsecComponent } from './components/result/result-combine-fsec/result-combine-fsec.component';
 import { ResultCombineFsecService } from './components/result/result-combine-fsec/result-combine-fsec.service';
 
+import { ThreeComponent } from './three/three/three.component';
+import { ThreeService } from './three/three/three.service';
+
 @NgModule({
   imports: [
     BrowserModule,
+    AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     HttpModule,
-    AppRoutingModule,
     DragDropModule,
     BrowserAnimationsModule,
-    NgbModule.forRoot(),
+    NgbModule,
     HotTableModule,
     DataHelperModule
   ],
   declarations: [
     AppComponent,
-    WebviewDirective,
-    UnityComponent,
     MenuComponent,
     LoginDialogComponent,
     WaitDialogComponent,
@@ -116,7 +107,8 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
     ResultCombineReacComponent,
     ResultPickupReacComponent,
     ResultPickupFsecComponent,
-    ResultCombineFsecComponent
+    ResultCombineFsecComponent,
+    ThreeComponent
   ],
   entryComponents: [
     LoginDialogComponent,
@@ -148,7 +140,7 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
     ResultCombineFsecService,
 
     UserInfoService,
-    UnityConnectorService
+    ThreeService
   ],
   bootstrap: [
     AppComponent

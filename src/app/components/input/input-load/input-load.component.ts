@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-load',
@@ -18,13 +17,12 @@ export class InputLoadComponent implements OnInit {
   hotTableSettings = {
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeModeData('unity-loads:' + this.page.toString());
+        // this.unity.chengeModeData('unity-loads:' + this.page.toString());
       }
     }
   };
 
-  constructor(private data: InputLoadService,
-              private unity: UnityConnectorService) {
+  constructor(private data: InputLoadService) {
     this.dataset = new Array();
   }
 
@@ -47,6 +45,6 @@ export class InputLoadComponent implements OnInit {
     const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
-    this.unity.ChengeMode('loads:' + currentPage.toString());
+    // this.unity.ChengeMode('loads:' + currentPage.toString());
   }
 }

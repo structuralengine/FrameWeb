@@ -3,7 +3,6 @@ import { ResultPickupFsecService } from './result-pickup-fsec.service';
 import { ResultFsecService } from '../result-fsec/result-fsec.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-pickup-fsec',
@@ -24,8 +23,7 @@ export class ResultPickupFsecComponent implements OnInit {
   constructor(private data: ResultPickupFsecService,
               private fsec: ResultFsecService,
               private pickup: InputPickupService,
-              private result: ResultDataService,
-              private unity: UnityConnectorService) {
+              private result: ResultDataService) {
     this.dataset = new Array();
   }
 
@@ -48,6 +46,6 @@ export class ResultPickupFsecComponent implements OnInit {
       }
       this.load_name = this.pickup.getPickUpName(currentPage);
     }
-    this.unity.ChengeMode('pik_fsec:' + currentPage.toString());
+    // this.unity.ChengeMode('pik_fsec:' + currentPage.toString());
   }
 }

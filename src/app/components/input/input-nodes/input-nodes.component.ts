@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputNodesService } from './input-nodes.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Component({
@@ -28,20 +27,19 @@ export class InputNodesComponent implements OnInit {
     },
     afterChange: (hotInstance, changes, source) => {
       if (changes != null) {
-        this.unity.chengeModeData('unity-nodes');
+        // this.unity.chengeModeData('unity-nodes');
       }
     }
   };
 
   constructor(private data: InputNodesService,
-              private unity: UnityConnectorService,
               private helper: DataHelperModule) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
-    this.unity.ChengeMode('nodes');
+    // this.unity.ChengeMode('nodes');
   }
 
   loadPage(currentPage: number) {

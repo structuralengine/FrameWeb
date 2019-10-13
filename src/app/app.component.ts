@@ -1,8 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { PlatformLocation } from '@angular/common';
+import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-
-import { UnityConnectorService } from './unity/unity-connector.service';
 
 @Component({
   selector: 'app-root',
@@ -10,38 +7,23 @@ import { UnityConnectorService } from './unity/unity-connector.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  @ViewChild('unityView') unityView;
-  baseUrl: string;
-  project: string;
 
   isContentsDailogShow: boolean;
   isCalculated: boolean;
 
-  constructor(private platformLocation: PlatformLocation,
-              private _router: Router,
-              private unityConnector: UnityConnectorService ) {
-
-    const location = (platformLocation as any).location;
-    this.baseUrl = location.origin + location.pathname;
-    console.log('baseUrl', this.baseUrl);
-
-    // custom property
+  constructor(private _router: Router) {
     this.isContentsDailogShow = false;
     this.isCalculated = false;
+   }
 
-  }
+  ngOnInit() { }
 
-  ngOnInit() {
-    this.project = 'unity';
-    this.unityView.loadProject(`${this.baseUrl}assets/unity/Build/unity.json`);
-  }
-
-  dialogClose(): void{
+  public dialogClose(): void {
     this.isContentsDailogShow = false;
     this.deactiveButtons();
   }
 
-  contentsDailogShow(id): void{
+  public contentsDailogShow(id): void {
 
     this.deactiveButtons();
 
@@ -54,7 +36,7 @@ export class AppComponent {
 
   // アクティブになっているボタンを全て非アクティブにする
   deactiveButtons() {
-    for(let i = 0; i <= 11; i++) {
+    for (let i = 0; i <= 11; i++) {
       const data = document.getElementById(i + '');
       if (data != null) {
         if (data.classList.contains('active')) {
@@ -74,7 +56,7 @@ export class AppComponent {
       const container = document.getElementsByClassName('container');
       const headerSize = container[0].clientHeight + header[0].clientHeight + 30;
 
-      dialog.style.height = window.innerHeight - headerSize  + 'px';
+      dialog.style.height = window.innerHeight - headerSize + 'px';
       console.log('dialog height:' + dialog.style.height);
 
     }, 100);

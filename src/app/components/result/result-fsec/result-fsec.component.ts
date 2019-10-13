@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultFsecService } from './result-fsec.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-result-fsec',
@@ -16,8 +15,7 @@ export class ResultFsecComponent implements OnInit {
   collectionSize: number;
 
   constructor(private data: ResultFsecService,
-              private load: InputLoadService,
-              private unity: UnityConnectorService) {
+              private load: InputLoadService) {
     this.dataset = new Array();
   }
 
@@ -38,6 +36,6 @@ export class ResultFsecComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.unity.ChengeMode('fsec:' + currentPage.toString());
+    // this.unity.ChengeMode('fsec:' + currentPage.toString());
   }
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from '../input-members/input-members.service';
 import { InputNoticePointsService } from './input-notice-points.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-notice-points',
@@ -44,14 +43,13 @@ export class InputNoticePointsComponent implements OnInit {
           this.dataset[row] = notice_points;
           console.log(hotInstance.render());
         }
-        this.unity.chengeModeData('unity-notice_points');
+        // this.unity.chengeModeData('unity-notice_points');
       }
     }
   };
 
   constructor(private data: InputNoticePointsService,
-              private member: InputMembersService,
-              private unity: UnityConnectorService) {
+              private member: InputMembersService) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -65,7 +63,7 @@ export class InputNoticePointsComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage(1);
-    this.unity.ChengeMode('notice_points');
+    // this.unity.ChengeMode('notice_points');
   }
 
   loadPage(currentPage: number) {
