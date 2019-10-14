@@ -6,7 +6,7 @@ import { Vector3, Object3D, Font } from 'three';
 @Injectable({
   providedIn: 'root'
 })
-export class ThreeService {
+export class ThreeService implements OnDestroy {
 
   private canvas: HTMLCanvasElement;
   private renderer: THREE.WebGLRenderer;
@@ -29,7 +29,7 @@ export class ThreeService {
   private mouse: THREE.Vector2;
 
 
-  public constructor(private ngZone: NgZone) {}
+  public constructor(private ngZone: NgZone) { }
 
   public ngOnDestroy() {
     if (this.frameId != null) {
@@ -70,7 +70,7 @@ export class ThreeService {
 
     // データ
     this.objGroup = new THREE.Group();
-  
+
     const meshList = [];
     for (let i = 0; i < 200; i++) {
       const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
@@ -86,7 +86,7 @@ export class ThreeService {
       // 配列に保存
       this.objGroup.add(mesh);
 
-       // マウスとの交差を調べたいものは配列に格納する
+      // マウスとの交差を調べたいものは配列に格納する
       meshList.push(mesh);
     }
 
@@ -111,7 +111,7 @@ export class ThreeService {
         this.resize();
       });
 
-      
+
     });
   }
 
@@ -147,5 +147,31 @@ export class ThreeService {
     // 回転オフ
     this.isRotate = false;
   }
+
+  tick(prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
+    /* レイキャスト = マウス位置からまっすぐに伸びる光線ベクトルを生成
+    raycaster.setFromCamera(mouse, camera);
+
+    // その光線とぶつかったオブジェクトを得る
+    const intersects = raycaster.intersectObjects(meshList);
+
+    meshList.map(mesh => {
+      // 交差しているオブジェクトが1つ以上存在し、
+      // 交差しているオブジェクトの1番目(最前面)のものだったら
+      if (intersects.length > 0 && mesh === intersects[0].object) {
+        // 色を赤くする
+        mesh.material.color.setHex(0xff0000);
+      } else {
+        // それ以外は元の色にする
+        mesh.material.color.setHex(0xffffff);
+      }
+    });
+
+    // レンダリング
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+    */
+  }
+
 
 }
