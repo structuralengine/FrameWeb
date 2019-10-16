@@ -75,7 +75,7 @@ export class ThreeService implements OnDestroy {
     var light = new THREE.SpotLight( 0xffffff, 1.5 );
     light.position.set( 0, 1500, 200 );
     light.castShadow = true;
-    light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 200, 2000 ) );
+    light.shadow = new THREE.SpotLightShadow( new THREE.PerspectiveCamera( 70, 1, 200, 2000 ) );
     light.shadow.bias = - 0.000222;
     light.shadow.mapSize.width = 1024;
     light.shadow.mapSize.height = 1024;
@@ -92,8 +92,8 @@ export class ThreeService implements OnDestroy {
 
     var helper = new THREE.GridHelper( 2000, 100 );
     helper.position.y = - 199;
-    helper.material.opacity = 0.25;
-    helper.material.transparent = true;
+    helper.material['opacity'] = 0.25;
+    helper.material['transparent'] = true;
     this.scene.add( helper );
 
     this.renderer = new THREE.WebGLRenderer({
@@ -110,7 +110,7 @@ export class ThreeService implements OnDestroy {
 
     gui.add( this.params, 'uniform' );
     gui.add( this.params, 'tension', 0, 1 ).step( 0.01 ).onChange( function ( value ) {
-      self.splines.uniform.tension = value;
+      self.splines['uniform']['tension'] = value;
       self.updateSplineOutline();
     } );
     gui.add( this.params, 'centripetal' );
@@ -176,29 +176,29 @@ export class ThreeService implements OnDestroy {
     var geometry = new THREE.BufferGeometry();
     geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( this.ARC_SEGMENTS * 3 ), 3 ) );
     var curve = new THREE.CatmullRomCurve3( this.positions );
-    curve.curveType = 'catmullrom';
-    curve.mesh = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
+    curve['curveType'] = 'catmullrom';
+    curve['mesh'] = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
       color: 0xff0000,
       opacity: 0.35
     } ) );
-    curve.mesh.castShadow = true;
-    this.splines.uniform = curve;
+    curve['mesh']['castShadow'] = true;
+    this.splines['uniform'] = curve;
     curve = new THREE.CatmullRomCurve3( this.positions );
-    curve.curveType = 'centripetal';
-    curve.mesh = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
+    curve['curveType'] = 'centripetal';
+    curve['mesh'] = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
       color: 0x00ff00,
       opacity: 0.35
     } ) );
-    curve.mesh.castShadow = true;
-    this.splines.centripetal = curve;
+    curve['mesh']['castShadow'] = true;
+    this.splines['centripetal'] = curve;
     curve = new THREE.CatmullRomCurve3( this.positions );
-    curve.curveType = 'chordal';
-    curve.mesh = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
+    curve['curveType'] = 'chordal';
+    curve['mesh'] = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
       color: 0x0000ff,
       opacity: 0.35
     } ) );
-    curve.mesh.castShadow = true;
-    this.splines.chordal = curve;
+    curve['mesh']['castShadow'] = true;
+    this.splines['chordal'] = curve;
     for ( var k in this.splines ) {
       var spline = this.splines[ k ];
       this.scene.add( spline.mesh );
@@ -244,20 +244,20 @@ export class ThreeService implements OnDestroy {
     return object;
   }
   addPoint(): void {
-    if (this.self) {
-      this.self.splinePointsLength ++;
-      this.self.positions.push( this.self.addSplineObject(undefined).position );
-      this.self.updateSplineOutline();
-    }
+    //if (this.self) {
+      this.splinePointsLength ++;
+      this.positions.push( this.addSplineObject(undefined).position );
+      this.updateSplineOutline();
+    //}
   }
   removePoint() {
-    if ( this.self.splinePointsLength <= 4 ) {
+    if ( this.splinePointsLength <= 4 ) {
       return;
     }
-    this.self.splinePointsLength --;
-    this.self.positions.pop();
-    this.self.scene.remove( this.self.splineHelperObjects.pop() );
-    this.self.updateSplineOutline();
+    this.splinePointsLength --;
+    this.positions.pop();
+    this.scene.remove( this.splineHelperObjects.pop() );
+    this.updateSplineOutline();
   }
   updateSplineOutline() {
     for ( var k in this.splines ) {
@@ -274,8 +274,8 @@ export class ThreeService implements OnDestroy {
   }
   exportSpline() {
     var strplace = [];
-    for ( var i = 0; i < this.self.splinePointsLength; i ++ ) {
-      var p = this.self.splineHelperObjects[ i ].position;
+    for ( var i = 0; i < this.splinePointsLength; i ++ ) {
+      var p = this.splineHelperObjects[ i ].position;
       strplace.push( 'new THREE.Vector3(' + p.x + ', ' + p.y + ', ' + p.z + ')' );
     }
     console.log( strplace.join( ',\n' ) );
@@ -316,9 +316,9 @@ export class ThreeService implements OnDestroy {
     }
 
     if (this.renderer) {
-      this.splines.uniform.mesh.visible = this.params.uniform;
-      this.splines.centripetal.mesh.visible = this.params.centripetal;
-      this.splines.chordal.mesh.visible = this.params.chordal;
+      this.splines['uniform']['mesh']['visible'] = this.params.uniform;
+      this.splines['centripetal']['mesh']['visible'] = this.params.centripetal;
+      this.splines['chordal']['mesh']['visible'] = this.params.chordal;
       this.renderer.render(this.scene, this.camera);
     }
   }
