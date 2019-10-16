@@ -45,10 +45,9 @@ export class ThreeService implements OnDestroy {
 
   private splines = {};
 
-  // マウス座標管理用のベクトルを作成
-  private mouse: THREE.Vector2;
-
-  public constructor(private ngZone: NgZone) { }
+  public constructor(private ngZone: NgZone) { 
+    THREE.Object3D.DefaultUp.set(0, 0, 1);
+  }
 
   public ngOnDestroy() {
     if (this.frameId != null) {
@@ -67,8 +66,13 @@ export class ThreeService implements OnDestroy {
 
     // カメラの配置
     this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-    this.camera.position.set( 0, 250, 1000 );
+    this.camera.position.set( 0, -500, 500 );
     this.scene.add( this.camera );
+
+      //軸の長さ１０００
+      var axis = new THREE.AxesHelper(1000);   
+      //sceneに追加
+        this.scene.add(axis);
 
     // 環境光源
     this.scene.add( new THREE.AmbientLight( 0xf0f0f0 ) );
@@ -85,13 +89,13 @@ export class ThreeService implements OnDestroy {
     planeGeometry.rotateX( - Math.PI / 2 );
     var planeMaterial = new THREE.ShadowMaterial( { opacity: 0.2 } );
 
-    var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-    plane.position.y = - 200;
-    plane.receiveShadow = true;
-    this.scene.add( plane );
+    // var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+    // plane.position.y = - 200;
+    // plane.receiveShadow = true;
+    // this.scene.add( plane );
 
     var helper = new THREE.GridHelper( 2000, 100 );
-    helper.position.y = - 199;
+    helper.geometry.rotateX( Math.PI / 2 );
     helper.material['opacity'] = 0.25;
     helper.material['transparent'] = true;
     this.scene.add( helper );
