@@ -35,63 +35,11 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     // this.cx.lineCap = 'round';
     // this.cx.strokeStyle = '#000';
 
-    this.captureEvents(canvasEl);
+    // this.captureEvents(canvasEl);
   }
 
   show(e: any){
-    console.log(e);
-  }
-
-  private captureEvents(canvasEl: HTMLCanvasElement) {
-    // this will capture all mousedown events from the canvas element
-    fromEvent(canvasEl, 'mousedown')
-      .pipe(
-        switchMap((e) => {
-          // after a mouse down, we'll record all mouse moves
-          return fromEvent(canvasEl, 'mousemove')
-            .pipe(
-              // we'll stop (and unsubscribe) once the user releases the mouse
-              // this will trigger a 'mouseup' event    
-              takeUntil(fromEvent(canvasEl, 'mouseup')),
-              // we'll also stop (and unsubscribe) once the mouse leaves the canvas (mouseleave event)
-              takeUntil(fromEvent(canvasEl, 'mouseleave')),
-              // pairwise lets us get the previous value to draw a line from
-              // the previous point to the current point    
-              pairwise()
-            )
-        })
-      )
-      .subscribe((res: [MouseEvent, MouseEvent]) => {
-        console.log('ngfgngf');
-        const rect = canvasEl.getBoundingClientRect();
-
-        // previous and current position with the offset
-        const prevPos = {
-          x: res[0].clientX - rect.left,
-          y: res[0].clientY - rect.top
-        };
-
-        const currentPos = {
-          x: res[1].clientX - rect.left,
-          y: res[1].clientY - rect.top
-        };
-
-        // this method we'll implement soon to do the actual drawing
-        this.drawOnCanvas(prevPos, currentPos);
-        this.three.tick(prevPos, currentPos);
-      });
-  }
-
-  private drawOnCanvas(prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
-    if (!this.cx) { return; }
-
-    this.cx.beginPath();
-
-    if (prevPos) {
-      this.cx.moveTo(prevPos.x, prevPos.y); // from
-      this.cx.lineTo(currentPos.x, currentPos.y);
-      this.cx.stroke();
-    }
+    // console.log(e);
   }
 
 }
