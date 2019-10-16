@@ -29,6 +29,7 @@ export class ThreeService implements OnDestroy {
   private transformControl;
   private ARC_SEGMENTS = 200;
   private hiding;
+  public static _INSTANCE;
 
   private geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
 
@@ -39,8 +40,7 @@ export class ThreeService implements OnDestroy {
     chordal: true,
     addPoint: this.addPoint,
     removePoint: this.removePoint,
-    exportSpline: this.exportSpline,
-    self: undefined
+    exportSpline: this.exportSpline
   };
 
   private splines = {};
@@ -59,7 +59,7 @@ export class ThreeService implements OnDestroy {
   createScene(canvas: ElementRef<HTMLCanvasElement>): void {
     this.canvas = canvas.nativeElement;
 
-    this.params.self = this;
+    ThreeService._INSTANCE = this;
 
     // create the scene
     this.scene = new THREE.Scene();
@@ -244,38 +244,36 @@ export class ThreeService implements OnDestroy {
     return object;
   }
   addPoint(): void {
-    //if (this.self) {
-      this.splinePointsLength ++;
-      this.positions.push( this.addSplineObject(undefined).position );
-      this.updateSplineOutline();
-    //}
+    ThreeService._INSTANCE.splinePointsLength ++;
+    ThreeService._INSTANCE.positions.push( ThreeService._INSTANCE.addSplineObject(undefined).position );
+    ThreeService._INSTANCE.updateSplineOutline();
   }
   removePoint() {
-    if ( this.splinePointsLength <= 4 ) {
+    if ( ThreeService._INSTANCE.splinePointsLength <= 4 ) {
       return;
     }
-    this.splinePointsLength --;
-    this.positions.pop();
-    this.scene.remove( this.splineHelperObjects.pop() );
-    this.updateSplineOutline();
+    ThreeService._INSTANCE.splinePointsLength --;
+    ThreeService._INSTANCE.positions.pop();
+    ThreeService._INSTANCE.scene.remove( ThreeService._INSTANCE.splineHelperObjects.pop() );
+    ThreeService._INSTANCE.updateSplineOutline();
   }
   updateSplineOutline() {
-    for ( var k in this.splines ) {
-      var spline = this.splines[ k ];
+    for ( var k in ThreeService._INSTANCE.splines ) {
+      var spline = ThreeService._INSTANCE.splines[ k ];
       var splineMesh = spline.mesh;
       var position = splineMesh.geometry.attributes.position;
-      for ( var i = 0; i < this.ARC_SEGMENTS; i ++ ) {
-        var t = i / ( this.ARC_SEGMENTS - 1 );
-        spline.getPoint( t, this.point );
-        position.setXYZ( i, this.point.x, this.point.y, this.point.z );
+      for ( var i = 0; i < ThreeService._INSTANCE.ARC_SEGMENTS; i ++ ) {
+        var t = i / ( ThreeService._INSTANCE.ARC_SEGMENTS - 1 );
+        spline.getPoint( t, ThreeService._INSTANCE.point );
+        position.setXYZ( i, ThreeService._INSTANCE.point.x, ThreeService._INSTANCE.point.y, ThreeService._INSTANCE.point.z );
       }
       position.needsUpdate = true;
     }
   }
   exportSpline() {
     var strplace = [];
-    for ( var i = 0; i < this.splinePointsLength; i ++ ) {
-      var p = this.splineHelperObjects[ i ].position;
+    for ( var i = 0; i < ThreeService._INSTANCE.splinePointsLength; i ++ ) {
+      var p = ThreeService._INSTANCE.splineHelperObjects[ i ].position;
       strplace.push( 'new THREE.Vector3(' + p.x + ', ' + p.y + ', ' + p.z + ')' );
     }
     console.log( strplace.join( ',\n' ) );
@@ -304,7 +302,6 @@ export class ThreeService implements OnDestroy {
   }
 
   render() {
-    // let self = this;
     this.frameId = requestAnimationFrame(() => {
       if (this.renderer)
         this.render();
