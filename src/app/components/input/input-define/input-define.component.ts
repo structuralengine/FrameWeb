@@ -18,8 +18,15 @@ export class InputDefineComponent implements OnInit {
   rowHeaders: any[];
 
   hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
+    afterChange: (...x: any[]) => {
+      let changes: any = undefined;
+      for (let i = 0; i < x.length; i++) {
+        if (Array.isArray(x[i])) {
+          changes = x[i];
+          break;
+        }
+      }
+      if (changes !== undefined) {
         this.result.isCombinePickupChenge = true;
       }
     }

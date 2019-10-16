@@ -15,19 +15,22 @@ export class InputNodesComponent implements OnInit {
   public page: number;
 
   hotTableSettings = {
-    beforeChange: (source, changes) => {
+    beforeChange: (... x: any[]) => {
       try {
+        let changes: any = undefined;
+        for(let i = 0; i < x.length; i++){
+          if(Array.isArray(x[i])){
+            changes = x[i];
+            break;
+          }
+        }
+        if(changes === undefined){return;}
         for (let i = 0; i < changes.length; i++) {
           const value: number = this.helper.toNumber(changes[i][3]);
           changes[i][3] = value.toFixed(3);
         }
       } catch (e) {
         console.log(e);
-      }
-    },
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        // this.unity.chengeModeData('unity-nodes');
       }
     }
   };

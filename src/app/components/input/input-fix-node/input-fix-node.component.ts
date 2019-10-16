@@ -13,13 +13,7 @@ export class InputFixNodeComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        // this.unity.chengeModeData('unity-fix_nodes:' + this.page.toString());
-      }
-    }
-  };
+  hotTableSettings = {};
 
   constructor(private data: InputFixNodeService) {
 

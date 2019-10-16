@@ -14,13 +14,7 @@ export class InputLoadComponent implements OnInit {
   page: number;
   load_name: string;
 
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        // this.unity.chengeModeData('unity-loads:' + this.page.toString());
-      }
-    }
-  };
+  hotTableSettings = {};
 
   constructor(private data: InputLoadService) {
     this.dataset = new Array();

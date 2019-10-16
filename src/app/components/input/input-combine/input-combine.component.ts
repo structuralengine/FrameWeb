@@ -9,7 +9,7 @@ import { ResultDataService } from '../../../providers/result-data.service';
   templateUrl: './input-combine.component.html',
   styleUrls: ['./input-combine.component.scss']
 })
-  
+
 export class InputCombineComponent implements OnInit {
 
   ROWS_COUNT = 20;
@@ -21,17 +21,24 @@ export class InputCombineComponent implements OnInit {
   rowHeaders: any[];
 
   hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
+    afterChange: (...x: any[]) => {
+      let changes: any = undefined;
+      for (let i = 0; i < x.length; i++) {
+        if (Array.isArray(x[i])) {
+          changes = x[i];
+          break;
+        }
+      }
+      if (changes !== undefined) {
         this.result.isCombinePickupChenge = true;
       }
     }
   };
 
   constructor(private data: InputCombineService,
-              private define: InputDefineService,
-              private load: InputLoadService,
-              private result: ResultDataService) {
+    private define: InputDefineService,
+    private load: InputLoadService,
+    private result: ResultDataService) {
 
     this.page = 1;
     this.combineData = new Array();

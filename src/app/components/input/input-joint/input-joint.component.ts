@@ -12,13 +12,7 @@ export class InputJointComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        // this.unity.chengeModeData('unity-joints:' + this.page.toString());
-      }
-    }
-  };
+  hotTableSettings = {};
 
   constructor(private input: InputJointService) {
     this.dataset = new Array();

@@ -18,9 +18,17 @@ export class InputNoticePointsComponent implements OnInit {
 
   hotTableSettings = {
 
-    afterChange: (hotInstance, changes, source) => {
-
-      if (changes != null) {
+    afterChange: (...x: any[]) => {
+      let hotInstance: any;
+      let changes: any = undefined;
+      for (let i = 0; i < x.length; i++) {
+        if (Array.isArray(x[i])) {
+          hotInstance = x[i-1];
+          changes = x[i];
+          break;
+        }
+      }
+      if (changes !== undefined) {
         for (let i = 0; changes.Length; i++) {
           const target = changes[i];
           const row: number = target[0];

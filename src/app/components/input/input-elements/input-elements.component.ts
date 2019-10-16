@@ -13,13 +13,7 @@ export class InputElementsComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        // this.unity.chengeModeData('unity-elements:' + this.page.toString());
-      }
-    }
-  };
+  hotTableSettings = { };
 
   constructor(private data: InputElementsService) {
     
