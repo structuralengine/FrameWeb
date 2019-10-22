@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 import Stats from './libs/stats.module.js';
 import { GUI } from './libs/dat.gui.module.js';
@@ -14,7 +14,7 @@ import { ThreeService } from './three.service';
   templateUrl: './three.component.html',
   styleUrls: ['./three.component.scss']
 })
-export class ThreeComponent implements OnInit {
+export class ThreeComponent implements OnInit, OnDestroy {
 
   @ViewChild('myCanvas', { static: true }) public myCanvas: ElementRef;
 
@@ -87,11 +87,12 @@ export class ThreeComponent implements OnInit {
     // 環境光源
     this.scene.add(new THREE.AmbientLight(0xf0f0f0));
 
-    var helper = new THREE.GridHelper(2000, 100);
-    helper.geometry.rotateX(Math.PI / 2);
-    helper.material['opacity'] = 0.25;
-    helper.material['transparent'] = true;
-    this.scene.add(helper);
+    // 床面
+    const floor = new THREE.GridHelper(2000, 100);
+    floor.geometry.rotateX(Math.PI / 2);
+    floor.material['opacity'] = 0.25;
+    floor.material['transparent'] = true;
+    this.scene.add(floor);
     
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -170,41 +171,47 @@ export class ThreeComponent implements OnInit {
       this.positions.push(this.splineHelperObjects[i].position);
     }
 
-    var geometry = new THREE.BufferGeometry();
-    geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
-    var curve = new THREE.CatmullRomCurve3(this.positions);
-    curve['curveType'] = 'catmullrom';
-    curve['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-      color: 0xff0000,
-      opacity: 0.35
-    }));
-    curve['mesh']['castShadow'] = true;
-    this.splines['uniform'] = curve;
-    curve = new THREE.CatmullRomCurve3(this.positions);
-    curve['curveType'] = 'centripetal';
-    curve['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-      color: 0x00ff00,
-      opacity: 0.35
-    }));
-    curve['mesh']['castShadow'] = true;
-    this.splines['centripetal'] = curve;
-    curve = new THREE.CatmullRomCurve3(this.positions);
-    curve['curveType'] = 'chordal';
-    curve['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-      color: 0x0000ff,
-      opacity: 0.35
-    }));
-    curve['mesh']['castShadow'] = true;
-    this.splines['chordal'] = curve;
-    for (var k in this.splines) {
-      var spline = this.splines[k];
-      this.scene.add(spline.mesh);
-    }
+    // const geometry = new THREE.BufferGeometry();
+    // geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
 
-    this.load([new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
-    new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
-    new THREE.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
-    new THREE.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)]);
+    // const curve1 = new THREE.CatmullRomCurve3(this.positions);
+    // curve1['curveType'] = 'catmullrom';
+    // curve1['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+    //   color: 0xff0000,
+    //   opacity: 0.35
+    // }));
+    // curve1['mesh']['castShadow'] = true;
+    // this.splines['uniform'] = curve1;
+
+    // const curve2 = new THREE.CatmullRomCurve3(this.positions);
+    // curve2['curveType'] = 'centripetal';
+    // curve2['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+    //   color: 0x00ff00,
+    //   opacity: 0.35
+    // }));
+    // curve2['mesh']['castShadow'] = true;
+    // this.splines['centripetal'] = curve2;
+
+    // const curve3 = new THREE.CatmullRomCurve3(this.positions);
+    // curve3['curveType'] = 'chordal';
+    // curve3['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+    //   color: 0x0000ff,
+    //   opacity: 0.35
+    // }));
+    // curve3['mesh']['castShadow'] = true;
+    // this.splines['chordal'] = curve3;
+
+    // for (var k in this.splines) {
+    //   var spline = this.splines[k];
+    //   this.scene.add(spline.mesh);
+    // }
+
+    // this.load([
+    //   new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
+    //   new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
+    //   new THREE.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
+    //   new THREE.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)
+    // ]);
   }
 
   delayHideTransform() {
@@ -278,18 +285,18 @@ export class ThreeComponent implements OnInit {
     prompt('copy and paste code', code);
   }
 
-  load(new_positions) {
-    while (new_positions.length > this.positions.length) {
-      this.addPoint();
-    }
-    while (new_positions.length < this.positions.length) {
-      this.removePoint();
-    }
-    for (var i = 0; i < this.positions.length; i++) {
-      this.positions[i].copy(new_positions[i]);
-    }
-    this.updateSplineOutline();
-  }
+  // load(new_positions) {
+  //   while (new_positions.length > this.positions.length) {
+  //     this.addPoint();
+  //   }
+  //   while (new_positions.length < this.positions.length) {
+  //     this.removePoint();
+  //   }
+  //   for (var i = 0; i < this.positions.length; i++) {
+  //     this.positions[i].copy(new_positions[i]);
+  //   }
+  //   this.updateSplineOutline();
+  // }
 
 
   animate(): void {
@@ -310,9 +317,9 @@ export class ThreeComponent implements OnInit {
     }
 
     if (this.renderer) {
-      this.splines['uniform']['mesh']['visible'] = this.params.uniform;
-      this.splines['centripetal']['mesh']['visible'] = this.params.centripetal;
-      this.splines['chordal']['mesh']['visible'] = this.params.chordal;
+      // this.splines['uniform']['mesh']['visible'] = this.params.uniform;
+      // this.splines['centripetal']['mesh']['visible'] = this.params.centripetal;
+      // this.splines['chordal']['mesh']['visible'] = this.params.chordal;
       this.renderer.render(this.scene, this.camera);
     }
   }
