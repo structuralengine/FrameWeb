@@ -21,34 +21,11 @@ export class ThreeComponent implements OnInit, OnDestroy {
   private canvas: HTMLCanvasElement;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
-  private scene: THREE.Scene;
-  private objGroup: THREE.Group;
-  private isRotate: boolean;
 
   private frameId: number = null;
   private stats: Stats;
-  private splineHelperObjects = [];
-  private splinePointsLength = 4;
-  private positions = [];
-  private point = new THREE.Vector3();
   private transformControl;
-  private ARC_SEGMENTS = 200;
   private hiding;
-  public static _INSTANCE;
-
-  private geometry = new THREE.BoxBufferGeometry(20, 20, 20);
-
-  private params = {
-    uniform: true,
-    tension: 0.5,
-    centripetal: true,
-    chordal: true,
-    addPoint: this.addPoint,
-    removePoint: this.removePoint,
-    exportSpline: this.exportSpline
-  };
-
-  private splines = {};
 
   constructor(private three: ThreeService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
@@ -57,6 +34,7 @@ export class ThreeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.canvas = this.myCanvas.nativeElement;
     this.createScene();
+    /* テストコード */ this.three.defultTestObject(); 
     this.animate();
   }
 
@@ -68,32 +46,25 @@ export class ThreeComponent implements OnInit, OnDestroy {
 
   createScene(): void {
 
-    ThreeService._INSTANCE = this;
-
     // create the scene
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf0f0f0);
+    this.three.scene = new THREE.Scene();
+    this.three.scene.background = new THREE.Color(0xf0f0f0);
 
     // カメラの配置
     this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
     this.camera.position.set(0, -500, 500);
-    this.scene.add(this.camera);
-
-    // //軸の長さ1000
-    // var axis = new THREE.AxesHelper(1000);
-    // //sceneに追加
-    // this.scene.add(axis);
+    this.three.scene.add(this.camera);
 
     // 環境光源
-    this.scene.add(new THREE.AmbientLight(0xf0f0f0));
+    this.three.scene.add(new THREE.AmbientLight(0xf0f0f0));
 
     // 床面
     const floor = new THREE.GridHelper(2000, 100);
     floor.geometry.rotateX(Math.PI / 2);
     floor.material['opacity'] = 0.25;
     floor.material['transparent'] = true;
-    this.scene.add(floor);
-    
+    this.three.scene.add(floor);
+
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       alpha: true,    // transparent background
@@ -104,114 +75,48 @@ export class ThreeComponent implements OnInit, OnDestroy {
 
     this.stats = new Stats();
     this.canvas.appendChild(this.stats.dom);
-    // var gui = new GUI();
 
-    // gui.add(this.params, 'uniform');
-    // gui.add(this.params, 'tension', 0, 1).step(0.01).onChange(function (value) {
-    //   self.splines['uniform']['tension'] = value;
-    //   self.updateSplineOutline();
-    // });
-    // gui.add(this.params, 'centripetal');
-    // gui.add(this.params, 'chordal');
-    // gui.add(this.params, 'addPoint');
-    // gui.add(this.params, 'removePoint');
-    // gui.add(this.params, 'exportSpline');
-    // gui.open();
 
-    let self = this;
     // Controls
-    var controls = new OrbitControls(this.camera, this.renderer.domElement);
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.damping = 0.2;
-    controls.addEventListener('change', self.render);
-    controls.addEventListener('start', function () {
-      self.cancelHideTransform();
+    controls.addEventListener('change', this.render);
+    controls.addEventListener('start', () => {
+      this.cancelHideTransform();
     });
-    controls.addEventListener('end', function () {
-      self.delayHideTransform();
+    controls.addEventListener('end', () => {
+      this.delayHideTransform();
     });
 
     this.transformControl = new TransformControls(this.camera, this.renderer.domElement);
-    this.transformControl.addEventListener('change', self.render);
-    this.transformControl.addEventListener('dragging-changed', function (event) {
+    this.transformControl.addEventListener('change', this.render);
+    this.transformControl.addEventListener('dragging-changed', (event) => {
       controls.enabled = !event.value;
     });
-    this.scene.add(this.transformControl);
+
+    this.three.scene.add(this.transformControl);
+
     // Hiding transform situation is a little in a mess :()
-    this.transformControl.addEventListener('change', function () {
-      self.cancelHideTransform();
+    this.transformControl.addEventListener('change', () => {
+      this.cancelHideTransform();
     });
-    this.transformControl.addEventListener('mouseDown', function () {
-      self.cancelHideTransform();
+    this.transformControl.addEventListener('mouseDown', () => {
+      this.cancelHideTransform();
     });
-    this.transformControl.addEventListener('mouseUp', function () {
-      self.delayHideTransform();
-    });
-    this.transformControl.addEventListener('objectChange', function () {
-      self.updateSplineOutline();
+    this.transformControl.addEventListener('mouseUp', () => {
+      this.delayHideTransform();
     });
 
-    var dragcontrols = new DragControls(this.splineHelperObjects, this.camera, this.renderer.domElement); //
+    const dragcontrols = new DragControls(this.three.splineHelperObjects, this.camera, this.renderer.domElement);
     dragcontrols.enabled = false;
-    dragcontrols.addEventListener('hoveron', function (event) {
-      self.transformControl.attach(event.object);
-      self.cancelHideTransform();
+    dragcontrols.addEventListener('hoveron', (event) => {
+      this.transformControl.attach(event.object);
+      this.cancelHideTransform();
     });
-    dragcontrols.addEventListener('hoveroff', function () {
-      self.delayHideTransform();
+    dragcontrols.addEventListener('hoveroff', () => {
+      this.delayHideTransform();
     });
 
-    /*******
-     * Curves
-     *********/
-    for (var i = 0; i < this.splinePointsLength; i++) {
-      this.addSplineObject(this.positions[i]);
-    }
-    this.positions = [];
-    for (var i = 0; i < this.splinePointsLength; i++) {
-      this.positions.push(this.splineHelperObjects[i].position);
-    }
-
-    // const geometry = new THREE.BufferGeometry();
-    // geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
-
-    // const curve1 = new THREE.CatmullRomCurve3(this.positions);
-    // curve1['curveType'] = 'catmullrom';
-    // curve1['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-    //   color: 0xff0000,
-    //   opacity: 0.35
-    // }));
-    // curve1['mesh']['castShadow'] = true;
-    // this.splines['uniform'] = curve1;
-
-    // const curve2 = new THREE.CatmullRomCurve3(this.positions);
-    // curve2['curveType'] = 'centripetal';
-    // curve2['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-    //   color: 0x00ff00,
-    //   opacity: 0.35
-    // }));
-    // curve2['mesh']['castShadow'] = true;
-    // this.splines['centripetal'] = curve2;
-
-    // const curve3 = new THREE.CatmullRomCurve3(this.positions);
-    // curve3['curveType'] = 'chordal';
-    // curve3['mesh'] = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-    //   color: 0x0000ff,
-    //   opacity: 0.35
-    // }));
-    // curve3['mesh']['castShadow'] = true;
-    // this.splines['chordal'] = curve3;
-
-    // for (var k in this.splines) {
-    //   var spline = this.splines[k];
-    //   this.scene.add(spline.mesh);
-    // }
-
-    // this.load([
-    //   new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
-    //   new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
-    //   new THREE.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
-    //   new THREE.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)
-    // ]);
   }
 
   delayHideTransform() {
@@ -220,107 +125,29 @@ export class ThreeComponent implements OnInit, OnDestroy {
   }
 
   cancelHideTransform() {
-    if (this.hiding) clearTimeout(this.hiding);
+    if (this.hiding) { clearTimeout(this.hiding); }
   }
 
   hideTransform() {
-    let self = this;
-    this.hiding = setTimeout(function () {
+    const self = this;
+    this.hiding = setTimeout(() => {
       self.transformControl.detach(self.transformControl.object);
     }, 2500);
   }
 
-  addSplineObject(position) {
-    var material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
-    var object = new THREE.Mesh(this.geometry, material);
-    if (position) {
-      object.position.copy(position);
-    } else {
-      object.position.x = Math.random() * 1000 - 500;
-      object.position.y = Math.random() * 600;
-      object.position.z = Math.random() * 800 - 400;
-    }
-    object.castShadow = true;
-    object.receiveShadow = true;
-    this.scene.add(object);
-    this.splineHelperObjects.push(object);
-
-    return object;
-  }
-  addPoint(): void {
-    ThreeService._INSTANCE.splinePointsLength++;
-    ThreeService._INSTANCE.positions.push(ThreeService._INSTANCE.addSplineObject(undefined).position);
-    ThreeService._INSTANCE.updateSplineOutline();
-  }
-  removePoint() {
-    if (ThreeService._INSTANCE.splinePointsLength <= 4) {
-      return;
-    }
-    ThreeService._INSTANCE.splinePointsLength--;
-    ThreeService._INSTANCE.positions.pop();
-    ThreeService._INSTANCE.scene.remove(ThreeService._INSTANCE.splineHelperObjects.pop());
-    ThreeService._INSTANCE.updateSplineOutline();
-  }
-  updateSplineOutline() {
-    for (var k in ThreeService._INSTANCE.splines) {
-      var spline = ThreeService._INSTANCE.splines[k];
-      var splineMesh = spline.mesh;
-      var position = splineMesh.geometry.attributes.position;
-      for (var i = 0; i < ThreeService._INSTANCE.ARC_SEGMENTS; i++) {
-        var t = i / (ThreeService._INSTANCE.ARC_SEGMENTS - 1);
-        spline.getPoint(t, ThreeService._INSTANCE.point);
-        position.setXYZ(i, ThreeService._INSTANCE.point.x, ThreeService._INSTANCE.point.y, ThreeService._INSTANCE.point.z);
-      }
-      position.needsUpdate = true;
-    }
-  }
-  exportSpline() {
-    var strplace = [];
-    for (var i = 0; i < ThreeService._INSTANCE.splinePointsLength; i++) {
-      var p = ThreeService._INSTANCE.splineHelperObjects[i].position;
-      strplace.push('new THREE.Vector3(' + p.x + ', ' + p.y + ', ' + p.z + ')');
-    }
-    console.log(strplace.join(',\n'));
-    var code = '[' + (strplace.join(',\n\t')) + ']';
-    prompt('copy and paste code', code);
-  }
-
-  // load(new_positions) {
-  //   while (new_positions.length > this.positions.length) {
-  //     this.addPoint();
-  //   }
-  //   while (new_positions.length < this.positions.length) {
-  //     this.removePoint();
-  //   }
-  //   for (var i = 0; i < this.positions.length; i++) {
-  //     this.positions[i].copy(new_positions[i]);
-  //   }
-  //   this.updateSplineOutline();
-  // }
-
-
   animate(): void {
-    // requestAnimationFrame( animate );
     this.render();
     this.stats.update();
   }
 
   render() {
     this.frameId = requestAnimationFrame(() => {
-      if (this.renderer)
+      if (this.renderer) {
         this.render();
+      }
     });
-
-    // VTuberを回す
-    if (this.isRotate) {
-      this.objGroup.rotation.x += 0.05;
-    }
-
     if (this.renderer) {
-      // this.splines['uniform']['mesh']['visible'] = this.params.uniform;
-      // this.splines['centripetal']['mesh']['visible'] = this.params.centripetal;
-      // this.splines['chordal']['mesh']['visible'] = this.params.chordal;
-      this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.three.scene, this.camera);
     }
   }
 }
