@@ -71,7 +71,9 @@ export class ThreeComponent implements OnInit, OnDestroy {
       antialias: true // smooth edges
     });
     this.renderer.shadowMap.enabled = true;
-    this.renderer.setSize(window.innerWidth, window.innerHeight - 105);
+    // this.renderer.setSize(window.innerWidth, window.innerHeight - 105);
+    this.onWindowResize();
+    window.addEventListener( 'resize', this.onWindowResize, false );
 
     this.stats = new Stats();
     this.canvas.appendChild(this.stats.dom);
@@ -88,35 +90,41 @@ export class ThreeComponent implements OnInit, OnDestroy {
       this.delayHideTransform();
     });
 
-    this.transformControl = new TransformControls(this.camera, this.renderer.domElement);
-    this.transformControl.addEventListener('change', this.render);
-    this.transformControl.addEventListener('dragging-changed', (event) => {
-      controls.enabled = !event.value;
-    });
+    // this.transformControl = new TransformControls(this.camera, this.renderer.domElement);
+    // this.transformControl.addEventListener('change', this.render);
+    // this.transformControl.addEventListener('dragging-changed', (event) => {
+    //   controls.enabled = !event.value;
+    // });
 
-    this.three.scene.add(this.transformControl);
+    // this.three.scene.add(this.transformControl);
 
     // Hiding transform situation is a little in a mess :()
-    this.transformControl.addEventListener('change', () => {
-      this.cancelHideTransform();
-    });
-    this.transformControl.addEventListener('mouseDown', () => {
-      this.cancelHideTransform();
-    });
-    this.transformControl.addEventListener('mouseUp', () => {
-      this.delayHideTransform();
-    });
+    // this.transformControl.addEventListener('change', () => {
+    //   this.cancelHideTransform();
+    // });
+    // this.transformControl.addEventListener('mouseDown', () => {
+    //   this.cancelHideTransform();
+    // });
+    // this.transformControl.addEventListener('mouseUp', () => {
+    //   this.delayHideTransform();
+    // });
 
     const dragcontrols = new DragControls(this.three.splineHelperObjects, this.camera, this.renderer.domElement);
     dragcontrols.enabled = false;
     dragcontrols.addEventListener('hoveron', (event) => {
-      this.transformControl.attach(event.object);
+      // this.transformControl.attach(event.object);
       this.cancelHideTransform();
     });
     dragcontrols.addEventListener('hoveroff', () => {
       this.delayHideTransform();
     });
 
+  }
+   onWindowResize() {
+//    this.camera.aspect = window.innerWidth / window.innerHeight;
+//    this.camera.updateProjectionMatrix();
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+//    this.renderer.setSize(window.innerWidth, window.innerHeight - 105);
   }
 
   delayHideTransform() {
@@ -131,7 +139,7 @@ export class ThreeComponent implements OnInit, OnDestroy {
   hideTransform() {
     const self = this;
     this.hiding = setTimeout(() => {
-      self.transformControl.detach(self.transformControl.object);
+      // self.transformControl.detach(self.transformControl.object);
     }, 2500);
   }
 
@@ -139,6 +147,7 @@ export class ThreeComponent implements OnInit, OnDestroy {
     this.render();
     this.stats.update();
   }
+
 
   render() {
     this.frameId = requestAnimationFrame(() => {
