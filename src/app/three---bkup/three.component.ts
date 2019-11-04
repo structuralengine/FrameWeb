@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 import Stats from './libs/stats.module.js';
 import { GUI } from './libs/dat.gui.module.js';
@@ -14,7 +14,7 @@ import { ThreeService } from './three.service';
   templateUrl: './three.component.html',
   styleUrls: ['./three.component.scss']
 })
-export class ThreeComponent implements OnInit, OnDestroy {
+export class ThreeComponent implements AfterViewInit, OnInit, OnDestroy {
 
   @ViewChild('myCanvas', { static: true }) public myCanvas: ElementRef;
 
@@ -32,9 +32,12 @@ export class ThreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+  }
+  ngAfterViewInit() {
     this.canvas = this.myCanvas.nativeElement;
     this.createScene();
-    /* テストコード */ this.three.defultTestObject(); 
+    /* テストコード */ this.three.defultTestObject();
     this.animate();
   }
 
@@ -72,8 +75,10 @@ export class ThreeComponent implements OnInit, OnDestroy {
     });
     this.renderer.shadowMap.enabled = true;
     // this.renderer.setSize(window.innerWidth, window.innerHeight - 105);
+    // 初期化のために実行
     this.onWindowResize();
-    window.addEventListener( 'resize', this.onWindowResize, false );
+    // リサイズイベント発生時に実行
+    window.addEventListener('resize', this.onWindowResize);
 
     this.stats = new Stats();
     this.canvas.appendChild(this.stats.dom);
@@ -120,11 +125,16 @@ export class ThreeComponent implements OnInit, OnDestroy {
     });
 
   }
-   onWindowResize() {
-//    this.camera.aspect = window.innerWidth / window.innerHeight;
-//    this.camera.updateProjectionMatrix();
-    this.renderer.setSize( window.innerWidth, window.innerHeight );
-//    this.renderer.setSize(window.innerWidth, window.innerHeight - 105);
+  onWindowResize() {
+    // サイズを取得
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    // レンダラーのサイズを調整する
+    this.renderer.setPixelRatio(devicePixelRatio);
+    this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+    // カメラのアスペクト比を正す
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
   }
 
   delayHideTransform() {
