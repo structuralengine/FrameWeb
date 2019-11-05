@@ -96,17 +96,25 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   public onMouseDown(event: MouseEvent) {
-    console.log('onMouseDown');
+    // マウス位置とぶつかったオブジェクトを検出する
+    const mouse: THREE.Vector2 = this.getMousePosition(event);
+    this.detectObject(mouse, 'click');
+    // レンダリング
+    this.render();
   }
 
   public onMouseUp(event: MouseEvent) {
-    console.log('onMouseUp');
+    // マウス位置とぶつかったオブジェクトを検出する
+    const mouse: THREE.Vector2 = this.getMousePosition(event);
+    this.detectObject(mouse, 'select');
+    // レンダリング
+    this.render();
   }
 
   public onMouseMove(event: MouseEvent) {
     // マウス位置とぶつかったオブジェクトを検出する
     const mouse: THREE.Vector2 = this.getMousePosition(event);
-    this.detectObject(mouse);
+    this.detectObject(mouse, 'hover');
     // レンダリング
     this.render();
   }
@@ -121,10 +129,10 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
-  private detectObject(mouse: THREE.Vector2): void {
+  private detectObject(mouse: THREE.Vector2 , action: string): void {
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, this.camera);
-    this.scene.detectObject(raycaster);
+    this.scene.detectObject(raycaster, action);
   }
 
   @HostListener('window:resize', ['$event'])

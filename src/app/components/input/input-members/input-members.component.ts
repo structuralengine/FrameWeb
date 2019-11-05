@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from './input-members.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-members',
@@ -25,7 +26,6 @@ export class InputMembersComponent implements OnInit {
         }
       }
       if (changes !== undefined) {
-        // this.unity.chengeModeData('unity-members');
         try {
           for (let i = 0; i < changes.length; i++) {
             const target = changes[i];
@@ -57,13 +57,14 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
-  constructor(private data: InputMembersService) {
+  constructor(private data: InputMembersService,
+              private three: ThreeService) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
-    // this.unity.ChengeMode('members');
+    this.three.ChengeMode('members');
   }
 
   loadPage(currentPage: number) {

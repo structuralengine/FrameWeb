@@ -11,6 +11,7 @@ import * as FileSaver from 'file-saver';
 
 import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
+import { ThreeService } from '../three/three.service';
 
 @Component({
   selector: 'app-menu',
@@ -25,11 +26,12 @@ export class MenuComponent implements OnInit {
   fileName: string;
 
   constructor(private modalService: NgbModal,
-    private app: AppComponent,
-    private user: UserInfoService,
-    private InputData: InputDataService,
-    private ResultData: ResultDataService,
-    private http: Http) {
+              private app: AppComponent,
+              private user: UserInfoService,
+              private InputData: InputDataService,
+              private ResultData: ResultDataService,
+              private http: Http,
+              private three: ThreeService) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -43,7 +45,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.app.isCalculated = false;
-    // this.unity.chengeData();
+    this.three.ClearData();
   }
 
   // ファイルを開く
@@ -56,7 +58,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
-        // this.unity.chengeData();
+        this.three.chengeData();
       })
       .catch(err => console.log(err));
   }
@@ -119,7 +121,7 @@ export class MenuComponent implements OnInit {
         } else {
           this.loadResultData(response.text());
           this.app.isCalculated = true;
-          // this.unity.sendResultData();
+          this.three.chengeData();
         }
         modalRef.close();
       },

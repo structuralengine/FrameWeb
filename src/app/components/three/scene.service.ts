@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
+import { ThreeService } from 'src/app/three---bkup/three.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,49 +9,87 @@ export class SceneService {
 
   public scene: THREE.Scene;
 
-  public splineHelperObjects: THREE.Mesh[];
-  public splinePointsLength: number;
-  public positions: any[];
+  public splineHelperObjects: THREE.Mesh[]; // 選択可能なアイテム
+  // public splinePointsLength: number;
+  // public positions: any[];
 
   public geometry: THREE.BoxBufferGeometry;
-  public meshList: any[];
 
-  public constructor() {
+  private selectionItem: any;
+
+  public constructor(three: ThreeService) {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xf0f0f0);
 
     this.geometry = new THREE.BoxBufferGeometry(20, 20, 20);
     this.splineHelperObjects = [];
-    this.splinePointsLength = 4;
-    this.positions = [];
+    // this.splinePointsLength = 4;
+    // this.positions = [];
 
-    this.meshList = [];
+    this.selectionItem = null;
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
-  public detectObject(raycaster: THREE.Raycaster): void {
-    const intersects = raycaster.intersectObjects(this.splineHelperObjects);
-    // 交差しているオブジェクトが1つ以上存在し、
-    // 交差しているオブジェクトの1番目(最前面)のものだったら
-    this.splineHelperObjects.map(mesh => {
-      // 交差しているオブジェクトが1つ以上存在し、
-      // 交差しているオブジェクトの1番目(最前面)のものだったら
-      if (intersects.length > 0 && mesh === intersects[0].object) {
-        // 色を赤くする
-        mesh.material['color'].setHex(0xff0000);
-        mesh.material['opacity'] = 0.25;
+  public detectObject(raycaster: THREE.Raycaster, action: string): void {
 
-      } else {
-        // それ以外は元の色にする
-        mesh.material['color'].setHex(0x000000);
-        mesh.material['opacity'] = 1.00;
-      }
-    });
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.splineHelperObjects);
+
+    switch (action) {
+      case 'click':
+        this.splineHelperObjects.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
+
+      case 'select':
+          this.selectionItem = null;
+          this.splineHelperObjects.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+            this.selectionItem = item;
+          } else {
+            // それ以外は元の色にする
+            item.material['color'].setHex(0x000000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
+
+      case 'hover':
+        this.splineHelperObjects.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 0.25;
+          } else {
+            if ( item === this.selectionItem ) {
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 1.00;
+            } else {
+              // それ以外は元の色にする
+              item.material['color'].setHex(0x000000);
+              item.material['opacity'] = 1.00;
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
+    }
+
   }
 
   /*******
   * Curves
-  *********/
+  *********//*
   defultTestObject() {
     for (let i = 0; i < this.splinePointsLength; i++) {
       this.addSplineObject(this.positions[i]);
@@ -92,6 +131,7 @@ export class SceneService {
     this.positions.pop();
     this.scene.remove(this.splineHelperObjects.pop());
   }
+*/
 
 
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputFixNodeService } from './input-fix-node.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-fix-node',
@@ -15,7 +16,8 @@ export class InputFixNodeComponent implements OnInit {
 
   hotTableSettings = {};
 
-  constructor(private data: InputFixNodeService) {
+  constructor(private data: InputFixNodeService,
+              private three: ThreeService) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -35,6 +37,6 @@ export class InputFixNodeComponent implements OnInit {
       const fix_node = this.data.getFixNodeColumns(this.page, i);
       this.dataset.push(fix_node);
     }
-    // this.unity.ChengeMode('fix_nodes:' + currentPage.toString());
+    this.three.ChengeMode('fix_nodes', currentPage);
   }
 }

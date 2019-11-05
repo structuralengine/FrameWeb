@@ -3,6 +3,7 @@ import { ResultPickupReacService } from './result-pickup-reac.service';
 import { ResultReacService } from '../result-reac/result-reac.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
 import { ResultDataService } from '../../../providers/result-data.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-result-pickup-reac',
@@ -23,7 +24,8 @@ export class ResultPickupReacComponent implements OnInit {
   constructor(private data: ResultPickupReacService,
               private reac: ResultReacService,
               private pickup: InputPickupService,
-              private result: ResultDataService) {
+              private result: ResultDataService,
+              private three: ThreeService) {
     this.dataset = new Array();
   }
 
@@ -47,6 +49,6 @@ export class ResultPickupReacComponent implements OnInit {
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
 
-    // this.unity.ChengeMode('pik_reac:' + currentPage.toString());
+    this.three.ChengeMode('pik_reac', currentPage);
   }
 }

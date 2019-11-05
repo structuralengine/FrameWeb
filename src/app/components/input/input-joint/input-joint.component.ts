@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-joint',
@@ -14,7 +15,8 @@ export class InputJointComponent implements OnInit {
 
   hotTableSettings = {};
 
-  constructor(private input: InputJointService) {
+  constructor(private input: InputJointService,
+              private three: ThreeService) {
     this.dataset = new Array();
     this.page = 1;
   }
@@ -33,6 +35,6 @@ export class InputJointComponent implements OnInit {
       const joint = this.input.getJointColumns(this.page, i);
       this.dataset.push(joint);
     }
-    // this.unity.ChengeMode('joints:' + currentPage.toString());
+    this.three.ChengeMode('joints', currentPage);
   }
 }
