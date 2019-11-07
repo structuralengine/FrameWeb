@@ -33,6 +33,9 @@ export class InputNodesComponent implements OnInit {
       } catch (e) {
         console.log(e);
       }
+    },
+    afterChange: (... x: any[]) => {
+      this.three.chengeData();
     }
   };
 

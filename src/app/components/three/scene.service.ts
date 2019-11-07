@@ -9,11 +9,11 @@ export class SceneService {
 
   public scene: THREE.Scene;
 
-  public splineHelperObjects: THREE.Mesh[]; // 選択可能なアイテム
+  public selectiveObjects: THREE.Mesh[]; // 選択可能なアイテム
   // public splinePointsLength: number;
   // public positions: any[];
 
-  public geometry: THREE.BoxBufferGeometry;
+  // public geometry: THREE.BoxBufferGeometry;
 
   private selectionItem: any;
 
@@ -21,8 +21,8 @@ export class SceneService {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xf0f0f0);
 
-    this.geometry = new THREE.BoxBufferGeometry(20, 20, 20);
-    this.splineHelperObjects = [];
+    // this.geometry = new THREE.BoxBufferGeometry(20, 20, 20);
+    this.selectiveObjects = [];
     // this.splinePointsLength = 4;
     // this.positions = [];
 
@@ -33,11 +33,11 @@ export class SceneService {
   public detectObject(raycaster: THREE.Raycaster, action: string): void {
 
     // 交差しているオブジェクトを取得
-    const intersects = raycaster.intersectObjects(this.splineHelperObjects);
+    const intersects = raycaster.intersectObjects(this.selectiveObjects);
 
     switch (action) {
       case 'click':
-        this.splineHelperObjects.map(item => {
+        this.selectiveObjects.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
             item.material['color'].setHex(0xff0000);
@@ -48,7 +48,7 @@ export class SceneService {
 
       case 'select':
           this.selectionItem = null;
-          this.splineHelperObjects.map(item => {
+          this.selectiveObjects.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
             item.material['color'].setHex(0xff0000);
@@ -63,7 +63,7 @@ export class SceneService {
         break;
 
       case 'hover':
-        this.splineHelperObjects.map(item => {
+        this.selectiveObjects.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
             item.material['color'].setHex(0xff0000);
@@ -96,7 +96,7 @@ export class SceneService {
     }
     this.positions = [];
     for (let i = 0; i < this.splinePointsLength; i++) {
-      this.positions.push(this.splineHelperObjects[i].position);
+      this.positions.push(this.selectiveObjects[i].position);
     }
   }
 
@@ -113,7 +113,7 @@ export class SceneService {
     object.castShadow = true;
     object.receiveShadow = true;
     this.scene.add(object);
-    this.splineHelperObjects.push(object);
+    this.selectiveObjects.push(object);
 
     return object;
   }
@@ -129,7 +129,7 @@ export class SceneService {
     }
     this.splinePointsLength--;
     this.positions.pop();
-    this.scene.remove(this.splineHelperObjects.pop());
+    this.scene.remove(this.selectiveObjects.pop());
   }
 */
 

@@ -38,7 +38,9 @@ export class ThreeComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.createScene();
-    /* テストコード */ this.scene.defultTestObject();
+    /* テストコード 
+    this.scene.defultTestObject();
+    */
     this.render();
   }
 
