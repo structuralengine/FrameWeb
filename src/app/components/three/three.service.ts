@@ -20,6 +20,7 @@ export class ThreeService {
   }
 
   public chengeData(): void {
+    // 入力データを入手
     const jsonData = this.input.node.getNodeJson('calc');
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) { return; }
@@ -51,9 +52,7 @@ export class ThreeService {
         this.scene.scene.add(mesh);
       }
     }
-
-
-
+    this.scene.render();
   }
 
   public ClearData(): void {

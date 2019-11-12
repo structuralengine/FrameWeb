@@ -17,9 +17,7 @@ export class ThreeComponent implements AfterViewInit {
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
 
-  private renderer: THREE.WebGLRenderer;
-  private camera: THREE.PerspectiveCamera;
-
+  // カメラの制御関数
   private fieldOfView = 70;
   private nearClippingPane = 1;
   private farClippingPane = 10000;
@@ -32,7 +30,7 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   constructor(private scene: SceneService) {
-    this.render = this.render.bind(this);
+    // this.scene.render = this.scene.render.bind(this);
     THREE.Object3D.DefaultUp.set(0, 0, 1);
   }
 
@@ -41,7 +39,7 @@ export class ThreeComponent implements AfterViewInit {
     /* テストコード 
     this.scene.defultTestObject();
     */
-    this.render();
+    this.scene.render();
   }
 
   private createScene() {
@@ -58,14 +56,14 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   private createCamera() {
-    this.camera = new THREE.PerspectiveCamera(
+    this.scene.camera = new THREE.PerspectiveCamera(
       this.fieldOfView,
       this.getAspectRatio(),
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, -500, 500);
-    this.scene.scene.add(this.camera);
+    this.scene.camera.position.set(0, -500, 500);
+    this.scene.scene.add(this.scene.camera);
   }
 
   private createLight() {
@@ -81,20 +79,20 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   private createRender() {
-    this.renderer = new THREE.WebGLRenderer({
+    this.scene.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       alpha: true,    // transparent background
       antialias: true // smooth edges
     });
-    this.renderer.setPixelRatio(devicePixelRatio);
-    this.renderer.setSize(window.innerWidth, window.innerHeight - 120);
-    this.renderer.shadowMap.enabled = true;
+    this.scene.renderer.setPixelRatio(devicePixelRatio);
+    this.scene.renderer.setSize(window.innerWidth, window.innerHeight - 120);
+    this.scene.renderer.shadowMap.enabled = true;
   }
 
   public addControls() {
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    const controls = new OrbitControls(this.scene.camera, this.scene.renderer.domElement);
     controls.damping = 0.2;
-    controls.addEventListener('change', this.render);
+    controls.addEventListener('change', this.scene.render);
   }
 
   public onMouseDown(event: MouseEvent) {
@@ -102,7 +100,7 @@ export class ThreeComponent implements AfterViewInit {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
     this.detectObject(mouse, 'click');
     // レンダリング
-    this.render();
+    this.scene.render();
   }
 
   public onMouseUp(event: MouseEvent) {
@@ -110,7 +108,7 @@ export class ThreeComponent implements AfterViewInit {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
     this.detectObject(mouse, 'select');
     // レンダリング
-    this.render();
+    this.scene.render();
   }
 
   public onMouseMove(event: MouseEvent) {
@@ -118,12 +116,12 @@ export class ThreeComponent implements AfterViewInit {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
     this.detectObject(mouse, 'hover');
     // レンダリング
-    this.render();
+    this.scene.render();
   }
 
   private getMousePosition(event: MouseEvent): THREE.Vector2 {
     event.preventDefault();
-    const rect = this.renderer.domElement.getBoundingClientRect();
+    const rect = this.scene.renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -133,21 +131,19 @@ export class ThreeComponent implements AfterViewInit {
   // マウス位置とぶつかったオブジェクトを検出する
   private detectObject(mouse: THREE.Vector2 , action: string): void {
     const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.camera);
+    raycaster.setFromCamera(mouse, this.scene.camera);
     this.scene.detectObject(raycaster, action);
   }
 
   @HostListener('window:resize', ['$event'])
   public onResize(event: Event) {
-    this.camera.aspect = this.getAspectRatio();
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight - 120);
-    this.render();
+    this.scene.camera.aspect = this.getAspectRatio();
+    this.scene.camera.updateProjectionMatrix();
+    this.scene.renderer.setSize(window.innerWidth, window.innerHeight - 120);
+    this.scene.render();
   }
 
-  public render() {
-    this.renderer.render(this.scene.scene, this.camera);
-  }
+
 
   private getAspectRatio(): number {
     if (this.canvas.clientHeight === 0) {

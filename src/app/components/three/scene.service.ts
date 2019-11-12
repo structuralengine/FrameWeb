@@ -8,12 +8,10 @@ import { ThreeService } from 'src/app/three---bkup/three.service';
 export class SceneService {
 
   public scene: THREE.Scene;
+  public renderer: THREE.WebGLRenderer;
+  public camera: THREE.PerspectiveCamera;
 
   public selectiveObjects: THREE.Mesh[]; // 選択可能なアイテム
-  // public splinePointsLength: number;
-  // public positions: any[];
-
-  // public geometry: THREE.BoxBufferGeometry;
 
   private selectionItem: any;
 
@@ -21,12 +19,12 @@ export class SceneService {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xf0f0f0);
 
-    // this.geometry = new THREE.BoxBufferGeometry(20, 20, 20);
     this.selectiveObjects = [];
-    // this.splinePointsLength = 4;
-    // this.positions = [];
 
     this.selectionItem = null;
+
+    this.render = this.render.bind(this);
+
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
@@ -133,5 +131,7 @@ export class SceneService {
   }
 */
 
-
+  public render() {
+    this.renderer.render(this.scene, this.camera);
+  }
 }
