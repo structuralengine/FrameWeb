@@ -1,34 +1,96 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
-import { ThreeService } from 'src/app/three---bkup/three.service';
+import { ThreeComponent } from './three.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SceneService {
 
-  public scene: THREE.Scene;
+  // シーン
+  private scene: THREE.Scene;
+
+  // レンダラー
   public renderer: THREE.WebGLRenderer;
+
+  // カメラ
   public camera: THREE.PerspectiveCamera;
+  private fieldOfView = 70;
+  private nearClippingPane = 1;
+  private farClippingPane = 10000;
 
-  public selectiveObjects: THREE.Mesh[]; // 選択可能なアイテム
+  // 選択可能なアイテム
+  public selectiveObjects: THREE.Mesh[];
 
+  // 選択中のアイテム
   private selectionItem: any;
 
-  public constructor(three: ThreeService) {
+  // 初期化
+  public constructor() {
+    // シーンを作成
     this.scene = new THREE.Scene();
+    // シーンの背景を白に設定
     this.scene.background = new THREE.Color(0xf0f0f0);
-
-    this.selectiveObjects = [];
-
-    this.selectionItem = null;
-
+    // レンダラーをバインド
     this.render = this.render.bind(this);
+    // 選択可能なアイテムを初期化
+    this.selectiveObjects = [];
+    // 選択中のアイテム null に
+    this.selectionItem = null;
+  }
 
+  // シーンにオブジェクトを追加する
+  public add(...threeObject: THREE.Object3D[]): void {
+      for (const obj of threeObject) {
+        this.scene.add(obj);
+      }
+  }
+
+
+  // カメラの初期化
+  public createCamera(aspectRatio: number ) {
+    this.camera = new THREE.PerspectiveCamera(
+      this.fieldOfView,
+      aspectRatio,
+      this.nearClippingPane,
+      this.farClippingPane
+    );
+    this.camera.position.set(0, -500, 500);
+    this.scene.add(this.camera);
+  }
+
+
+  // レンダラーを初期化する
+  public createRender(canvasElement: HTMLCanvasElement,
+                      deviceRatio: number,
+                      Width: number,
+                      Height: number): void {
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: canvasElement,
+      alpha: true,    // transparent background
+      antialias: true // smooth edges
+    });
+    this.renderer.setPixelRatio(deviceRatio);
+    this.renderer.setSize(Width, Height);
+    this.renderer.shadowMap.enabled = true;
+  }
+
+  // リサイズ
+  public onResize(deviceRatio: number,
+                  Width: number,
+                  Height: number): void {
+    this.camera.aspect = deviceRatio;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(Width, Height);
+    this.render();
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
-  public detectObject(raycaster: THREE.Raycaster, action: string): void {
+  public detectObject(mouse: THREE.Vector2 , action: string): void {
+
+    // 物体とマウスの交差判定に用いるレイキャスト
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, this.camera);
 
     // 交差しているオブジェクトを取得
     const intersects = raycaster.intersectObjects(this.selectiveObjects);
@@ -82,56 +144,12 @@ export class SceneService {
       default:
         return;
     }
-
+    this.render();
   }
 
-  /*******
-  * Curves
-  *********//*
-  defultTestObject() {
-    for (let i = 0; i < this.splinePointsLength; i++) {
-      this.addSplineObject(this.positions[i]);
-    }
-    this.positions = [];
-    for (let i = 0; i < this.splinePointsLength; i++) {
-      this.positions.push(this.selectiveObjects[i].position);
-    }
-  }
-
-  addSplineObject(position) {
-    const material = new THREE.MeshLambertMaterial({ color: 0x000000 });
-    const object = new THREE.Mesh(this.geometry, material);
-    if (position) {
-      object.position.copy(position);
-    } else {
-      object.position.x = Math.random() * 1000 - 500;
-      object.position.y = Math.random() * 600;
-      object.position.z = Math.random() * 800 - 400;
-    }
-    object.castShadow = true;
-    object.receiveShadow = true;
-    this.scene.add(object);
-    this.selectiveObjects.push(object);
-
-    return object;
-  }
-
-  addPoint(): void {
-    this.splinePointsLength++;
-    this.positions.push(this.addSplineObject(undefined).position);
-  }
-
-  removePoint() {
-    if (this.splinePointsLength <= 4) {
-      return;
-    }
-    this.splinePointsLength--;
-    this.positions.pop();
-    this.scene.remove(this.selectiveObjects.pop());
-  }
-*/
-
+  // レンダリングする
   public render() {
     this.renderer.render(this.scene, this.camera);
   }
+
 }

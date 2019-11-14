@@ -49,7 +49,7 @@ export class ThreeService {
         mesh.position.y = jsonData[key].y;
         mesh.position.z = jsonData[key].z;
         this.scene.selectiveObjects.push(mesh);
-        this.scene.scene.add(mesh);
+        this.scene.add(mesh);
       }
     }
     this.scene.render();
