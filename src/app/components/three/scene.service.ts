@@ -186,10 +186,29 @@ export class SceneService {
   public getBoundingClientRect(): ClientRect | DOMRect  {
     return this.renderer.domElement.getBoundingClientRect();
   }
+
   // シーンにオブジェクトを追加する
   public add(...threeObject: THREE.Object3D[]): void {
     for (const obj of threeObject) {
       this.scene.add(obj);
+    }
+  }
+  
+  // シーンのオブジェクトを削除する
+  public remove(...threeObject: THREE.Object3D[]): void {
+    for (const obj of threeObject) {
+      this.scene.remove(obj);
+    }
+  }
+
+  // シーンにオブジェクトを削除する
+  public removeByName(...threeName: string[]): void {
+    for (const name of threeName) {
+      const target = this.scene.getObjectByName(name);
+      if (target === undefined) {
+        continue;
+      }
+      this.scene.remove(target);
     }
   }
 

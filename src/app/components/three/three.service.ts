@@ -21,12 +21,7 @@ export class ThreeService {
   // アイテム
   private scale: number; // オブジェクトの大きさ
 
-  private geometry: THREE.SphereBufferGeometry;
-  private material: THREE.MeshLambertMaterial;
-
-
-  constructor(private input: InputDataService,
-              private scene: SceneService,
+  constructor(public scene: SceneService,
               private node: ThreeNodesService,
               private member: ThreeMembersService,
               private fixNode: ThreeFixNodeService,
@@ -35,60 +30,20 @@ export class ThreeService {
               private pointLoad: ThreePointLoadService,
               private memberLoad: ThreeMemberLoadService
               ) {
-
-    this.geometry = new THREE.SphereBufferGeometry(0.1);
-    this.material = new THREE.MeshLambertMaterial({ color: 0x000000 });
-
-
   }
 
-
-
-
-
-
-
-
-  
   public chengeData(): void {
-
-    // 入力データを入手
-    const jsonData = this.input.node.getNodeJson('calc');
-    const jsonKeys = Object.keys(jsonData);
-    if (jsonKeys.length <= 0) { return; }
-
-    // 入力データに無い要素を排除する
-    const filtered = this.scene.selectiveObjects.filter((target) => {
-      return (jsonKeys.find((key) => key = target.name) !== undefined);
-    });
-    this.scene.selectiveObjects = filtered;
-
-    // 新しい入力を適用する
-    for (const key of jsonKeys) {
-      const item = this.scene.selectiveObjects.find((target) => {
-        return (target.name === key);
-      });
-      if (item !== undefined) {
-        // すでに同じ名前の要素が存在している場合座標の更新のみ
-        item.position.x = jsonData[key].x;
-        item.position.y = jsonData[key].y;
-        item.position.z = jsonData[key].z;
-      } else {
-        // 要素をシーンに追加
-        const mesh = new THREE.Mesh(this.geometry, this.material);
-        mesh.name = key;
-        mesh.position.x = jsonData[key].x;
-        mesh.position.y = jsonData[key].y;
-        mesh.position.z = jsonData[key].z;
-        this.scene.selectiveObjects.push(mesh);
-        this.scene.add(mesh);
-      }
-    }
+    // 節点データの更新
+    this.node.chengeData(this.scene);
+    // 再描画
     this.scene.render();
-    
   }
 
   public ClearData(): void {
+    // 節点データの削除
+    this.node.ClearData(this.scene);
+    // 再描画
+    this.scene.render();
 
   }
 
