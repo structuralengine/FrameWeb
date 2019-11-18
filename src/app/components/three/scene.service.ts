@@ -19,6 +19,19 @@ export class SceneService {
   private nearClippingPane = 1;
   private farClippingPane = 10000;
 
+  // アイテム
+  private Node: THREE.CircleBufferGeometry; // 節点
+  private Member: THREE.Line; // メンバー
+  private FixNode: THREE.BoxBufferGeometry; // 支点
+  private FixMember: THREE.BoxBufferGeometry; // 分布バネ
+  private Joint: THREE.RingBufferGeometry; // 結合
+  private PointLoad: THREE.BoxBufferGeometry; // 集中荷重
+  private PointMomentLoad: THREE.BoxBufferGeometry; // 集中モーメント荷重
+  private MemberLoad: THREE.BoxBufferGeometry; // 分布荷重
+  private MemberAxsialLoad: THREE.BoxBufferGeometry; // 平行方向分布荷重
+  private MemberMomentLoad: THREE.BoxBufferGeometry; // ねじりモーメント荷重
+  private result: THREE.BoxBufferGeometry; // モーメント図
+
   // 選択可能なアイテム
   public selectiveObjects: THREE.Mesh[];
 
