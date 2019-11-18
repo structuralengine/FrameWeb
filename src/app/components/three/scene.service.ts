@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { ThreeComponent } from './three.component';
+import { GUI } from './libs/dat.gui.module.js';
+import { OrbitControls } from './libs/OrbitControls.js';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -11,26 +15,13 @@ export class SceneService {
   private scene: THREE.Scene;
 
   // レンダラー
-  public renderer: THREE.WebGLRenderer;
+  private renderer: THREE.WebGLRenderer;
 
   // カメラ
-  public camera: THREE.PerspectiveCamera;
+  private camera: THREE.PerspectiveCamera;
   private fieldOfView = 70;
   private nearClippingPane = 1;
   private farClippingPane = 10000;
-
-  // アイテム
-  private Node: THREE.CircleBufferGeometry; // 節点
-  private Member: THREE.Line; // メンバー
-  private FixNode: THREE.BoxBufferGeometry; // 支点
-  private FixMember: THREE.BoxBufferGeometry; // 分布バネ
-  private Joint: THREE.RingBufferGeometry; // 結合
-  private PointLoad: THREE.BoxBufferGeometry; // 集中荷重
-  private PointMomentLoad: THREE.BoxBufferGeometry; // 集中モーメント荷重
-  private MemberLoad: THREE.BoxBufferGeometry; // 分布荷重
-  private MemberAxsialLoad: THREE.BoxBufferGeometry; // 平行方向分布荷重
-  private MemberMomentLoad: THREE.BoxBufferGeometry; // ねじりモーメント荷重
-  private result: THREE.BoxBufferGeometry; // モーメント図
 
   // 選択可能なアイテム
   public selectiveObjects: THREE.Mesh[];
@@ -46,19 +37,39 @@ export class SceneService {
     this.scene.background = new THREE.Color(0xf0f0f0);
     // レンダラーをバインド
     this.render = this.render.bind(this);
+
+
     // 選択可能なアイテムを初期化
     this.selectiveObjects = [];
     // 選択中のアイテム null に
     this.selectionItem = null;
+
   }
 
-  // シーンにオブジェクトを追加する
-  public add(...threeObject: THREE.Object3D[]): void {
-      for (const obj of threeObject) {
-        this.scene.add(obj);
-      }
+  public OnInit(aspectRatio: number,
+                canvasElement: HTMLCanvasElement,
+                deviceRatio: number,
+                Width: number,
+                Height: number): void {
+        // カメラ
+        this.createCamera(aspectRatio);
+        // 環境光源
+        this.add(new THREE.AmbientLight(0xf0f0f0));
+        // レンダラー
+        this.createRender(canvasElement,
+                          deviceRatio,
+                          Width,
+                          Height);
+        // コントロール
+        this.addControls();
   }
 
+  // コントロール
+  public addControls() {
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    controls.damping = 0.2;
+    controls.addEventListener('change', this.render);
+  }
 
   // カメラの初期化
   public createCamera(aspectRatio: number ) {
@@ -70,8 +81,14 @@ export class SceneService {
     );
     this.camera.position.set(0, -500, 500);
     this.scene.add(this.camera);
-  }
+    
+    // const gui = new GUI();
+    // const self = this;
+    // gui.add( {tension: 0.5}, 'tension', 0, 1 ).step( 0.01 ).onChange( (value) => {
+    //   self.scale = value;
+    // } );
 
+  }
 
   // レンダラーを初期化する
   public createRender(canvasElement: HTMLCanvasElement,
@@ -163,6 +180,17 @@ export class SceneService {
   // レンダリングする
   public render() {
     this.renderer.render(this.scene, this.camera);
+  }
+
+  // レンダリングのサイズを取得する
+  public getBoundingClientRect(): ClientRect | DOMRect  {
+    return this.renderer.domElement.getBoundingClientRect();
+  }
+  // シーンにオブジェクトを追加する
+  public add(...threeObject: THREE.Object3D[]): void {
+    for (const obj of threeObject) {
+      this.scene.add(obj);
+    }
   }
 
 }

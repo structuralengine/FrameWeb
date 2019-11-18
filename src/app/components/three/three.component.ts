@@ -26,28 +26,15 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // カメラ
-    this.scene.createCamera(this.getAspectRatio());
-    // 環境光源
-    this.scene.add(new THREE.AmbientLight(0xf0f0f0));
-    // レンダラー
-    this.scene.createRender(this.canvas,
-                            devicePixelRatio,
-                            window.innerWidth,
-                            window.innerHeight - 120);
-    // コントロール
-    this.addControls();
+    this.scene.OnInit(this.getAspectRatio(),
+                      this.canvas,
+                      devicePixelRatio,
+                      window.innerWidth,
+                      window.innerHeight - 120);
     // 床面を生成する
     this.createFloor();
     // レンダリングする
     this.scene.render();
-  }
-
-  // コントロール
-  public addControls() {
-    const controls = new OrbitControls(this.scene.camera, this.scene.renderer.domElement);
-    controls.damping = 0.2;
-    controls.addEventListener('change', this.scene.render);
   }
 
   // 床面を生成する
@@ -80,7 +67,7 @@ export class ThreeComponent implements AfterViewInit {
   // マウス位置とぶつかったオブジェクトを検出する
   private getMousePosition(event: MouseEvent): THREE.Vector2 {
     event.preventDefault();
-    const rect = this.scene.renderer.domElement.getBoundingClientRect();
+    const rect = this.scene.getBoundingClientRect();
     const mouse = new THREE.Vector2();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
