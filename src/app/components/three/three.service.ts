@@ -18,8 +18,10 @@ import { ThreeMemberLoadService } from './geometry/three-member-load.service';
 })
 export class ThreeService {
 
-  // アイテム
+  private mode: string;
   private scale: number; // オブジェクトの大きさ
+
+  public selectiveObjects: THREE.Mesh[]; // 選択可能なアイテム
 
   constructor(public scene: SceneService,
               private node: ThreeNodesService,
@@ -30,11 +32,120 @@ export class ThreeService {
               private pointLoad: ThreePointLoadService,
               private memberLoad: ThreeMemberLoadService
               ) {
+      this.selectiveObjects = []; // 選択可能なアイテムを初期化
+    }
+
+
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(mouse: THREE.Vector2 , action: string): void {
+
+    // 物体とマウスの交差判定に用いるレイキャスト
+    const raycaster = this.scene.getRaycaster(mouse);
+
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.selectiveObjects);
+
+    switch (action) {
+      case 'click':
+        this.selectiveObjects.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
+
+      case 'select':
+          this.selectionItem = null;
+          this.selectiveObjects.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+            this.selectionItem = item;
+          } else {
+            // それ以外は元の色にする
+            item.material['color'].setHex(0x000000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
+
+      case 'hover':
+        this.selectiveObjects.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 0.25;
+          } else {
+            if ( item === this.selectionItem ) {
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 1.00;
+            } else {
+              // それ以外は元の色にする
+              item.material['color'].setHex(0x000000);
+              item.material['opacity'] = 1.00;
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
+    }
+    this.scene.render();
   }
 
+
   public chengeData(): void {
-    // 節点データの更新
-    this.node.chengeData(this.scene);
+    switch (this.mode) {
+      case 'nodes': // 節点データの更新
+        this.node.chengeData(this.scene);
+        break;
+
+      case 'fix_nodes':
+        break;
+
+      case 'members':
+        break;
+
+      case 'joints':
+        break;
+
+      case 'loads':
+        break;
+
+      case 'notice_points':
+        break;
+
+      case 'comb_disg':
+        break;
+
+      case 'comb_fsec':
+        break;
+
+      case 'comb_reac':
+        break;
+
+      case 'disg':
+        break;
+
+      case 'fsec':
+        break;
+
+      case 'pik_disg':
+        break;
+
+      case 'pik_fsec':
+        break;
+
+      case 'pik_reac':
+        break;
+
+      case 'reac':
+        break;
+    }
     // 再描画
     this.scene.render();
   }
@@ -48,6 +159,7 @@ export class ThreeService {
   }
 
   public ChengeMode(ModeName: string, currentPage: number = null): void {
+    this.mode = ModeName;
 
     switch (ModeName) {
       case 'nodes':

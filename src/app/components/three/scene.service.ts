@@ -5,7 +5,6 @@ import { GUI } from './libs/dat.gui.module.js';
 import { OrbitControls } from './libs/OrbitControls.js';
 
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,15 +18,8 @@ export class SceneService {
 
   // カメラ
   private camera: THREE.PerspectiveCamera;
-  private fieldOfView = 70;
-  private nearClippingPane = 1;
-  private farClippingPane = 10000;
 
-  // 選択可能なアイテム
-  public selectiveObjects: THREE.Mesh[];
 
-  // 選択中のアイテム
-  private selectionItem: any;
 
   // 初期化
   public constructor() {
@@ -37,12 +29,6 @@ export class SceneService {
     this.scene.background = new THREE.Color(0xf0f0f0);
     // レンダラーをバインド
     this.render = this.render.bind(this);
-
-
-    // 選択可能なアイテムを初期化
-    this.selectiveObjects = [];
-    // 選択中のアイテム null に
-    this.selectionItem = null;
 
   }
 
@@ -71,15 +57,22 @@ export class SceneService {
     controls.addEventListener('change', this.render);
   }
 
+   // 物体とマウスの交差判定に用いるレイキャスト
+  public getRaycaster(mouse: THREE.Vector2): THREE.Raycaster { 
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, this.camera);
+    return raycaster;
+  }
+
   // カメラの初期化
   public createCamera(aspectRatio: number ) {
     this.camera = new THREE.PerspectiveCamera(
-      this.fieldOfView,
+      70,
       aspectRatio,
-      this.nearClippingPane,
-      this.farClippingPane
+      0.1,
+      1000
     );
-    this.camera.position.set(0, -500, 500);
+    this.camera.position.set(0, -50, 20);
     this.scene.add(this.camera);
     
     // const gui = new GUI();

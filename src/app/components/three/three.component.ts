@@ -7,6 +7,7 @@ import { DragControls } from './libs/DragControls.js';
 import { TransformControls } from './libs/TransformControls.js';
 
 import { SceneService } from './scene.service';
+import { ThreeService } from './three.service';
 
 @Component({
   selector: 'app-three',
@@ -21,7 +22,8 @@ export class ThreeComponent implements AfterViewInit {
     return this.canvasRef.nativeElement;
   }
 
-  constructor(private scene: SceneService) {
+  constructor(private scene: SceneService,
+              private three: ThreeService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
   }
 
@@ -39,7 +41,7 @@ export class ThreeComponent implements AfterViewInit {
 
   // 床面を生成する
   private createFloor() {
-    const floor = new THREE.GridHelper(2000, 100);
+    const floor = new THREE.GridHelper(200, 200);
     floor.geometry.rotateX(Math.PI / 2);
     floor.material['opacity'] = 0.25;
     floor.material['transparent'] = true;
@@ -49,19 +51,19 @@ export class ThreeComponent implements AfterViewInit {
   // マウスクリック時のイベント
   public onMouseDown(event: MouseEvent) {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
-    this.scene.detectObject(mouse, 'click');
+    this.three.detectObject(mouse, 'click');
   }
 
   // マウスクリック時のイベント
   public onMouseUp(event: MouseEvent) {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
-    this.scene.detectObject(mouse, 'select');
+    this.three.detectObject(mouse, 'select');
   }
 
   // マウス移動時のイベント
   public onMouseMove(event: MouseEvent) {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
-    this.scene.detectObject(mouse, 'hover');
+    this.three.detectObject(mouse, 'hover');
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
