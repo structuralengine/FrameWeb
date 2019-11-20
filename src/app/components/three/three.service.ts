@@ -22,6 +22,7 @@ export class ThreeService {
   private scale: number; // オブジェクトの大きさ
 
   public selectiveObjects: THREE.Mesh[]; // 選択可能なアイテム
+  private selectionItem: THREE.Mesh; // 選択中のアイテム
 
   constructor(public scene: SceneService,
               private node: ThreeNodesService,
@@ -102,6 +103,7 @@ export class ThreeService {
     switch (this.mode) {
       case 'nodes': // 節点データの更新
         this.node.chengeData(this.scene);
+        this.selectiveObjects = this.node.getSelectiveObject();
         break;
 
       case 'fix_nodes':
@@ -159,10 +161,17 @@ export class ThreeService {
   }
 
   public ChengeMode(ModeName: string, currentPage: number = null): void {
+
+    if (this.mode === ModeName) {
+      return;
+    }
+     
     this.mode = ModeName;
 
     switch (ModeName) {
       case 'nodes':
+          this.selectiveObjects = this.node.getSelectiveObject();
+          this.selectionItem = null;
         break;
 
       case 'fix_nodes':

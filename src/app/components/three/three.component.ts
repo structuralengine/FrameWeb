@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener, Renderer2 } from '@angular/core';
 import * as THREE from 'three';
 
 import Stats from './libs/stats.module.js';
@@ -8,6 +8,7 @@ import { TransformControls } from './libs/TransformControls.js';
 
 import { SceneService } from './scene.service';
 import { ThreeService } from './three.service';
+import { SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-three',
@@ -17,7 +18,7 @@ import { ThreeService } from './three.service';
 export class ThreeComponent implements AfterViewInit {
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
-
+  
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
   }
@@ -33,14 +34,25 @@ export class ThreeComponent implements AfterViewInit {
                       devicePixelRatio,
                       window.innerWidth,
                       window.innerHeight - 120);
+
+    // ラベルを表示する用のレンダラーを HTML に配置する
+    const element = this.scene.labelRendererDomElement();
+    // element.addEventListener('mouseDown', this.onMouseDown());
+    // element.addEventListener('mouseUp', this.onMouseUp());
+    // element.addEventListener('mouseMove', this.onMouseMove());
+    
+    const div = document.getElementById('myCanvas'); // ボタンを置きたい場所の手前の要素を取得
+    div.parentNode.insertBefore(element, div.nextSibling); // ボタンを置きたい場所にaタグを追加
+
     // 床面を生成する
-    this.createFloor();
+    this.createHelper();
+
     // レンダリングする
     this.scene.render();
   }
 
   // 床面を生成する
-  private createFloor() {
+  private createHelper() {
     const floor = new THREE.GridHelper(200, 200);
     floor.geometry.rotateX(Math.PI / 2);
     floor.material['opacity'] = 0.25;
@@ -49,18 +61,21 @@ export class ThreeComponent implements AfterViewInit {
   }
 
   // マウスクリック時のイベント
+  @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent) {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
     this.three.detectObject(mouse, 'click');
   }
 
   // マウスクリック時のイベント
+  @HostListener('mouseup', ['$event'])
   public onMouseUp(event: MouseEvent) {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
     this.three.detectObject(mouse, 'select');
   }
 
   // マウス移動時のイベント
+  @HostListener('mousemove', ['$event'])
   public onMouseMove(event: MouseEvent) {
     const mouse: THREE.Vector2 = this.getMousePosition(event);
     this.three.detectObject(mouse, 'hover');

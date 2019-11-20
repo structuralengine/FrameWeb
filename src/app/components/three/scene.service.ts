@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { ThreeComponent } from './three.component';
 import { GUI } from './libs/dat.gui.module.js';
 import { OrbitControls } from './libs/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from './libs/CSS2DRenderer.js';
+import { SafeHtml } from '@angular/platform-browser';
 
 
 @Injectable({
@@ -15,11 +17,10 @@ export class SceneService {
 
   // レンダラー
   private renderer: THREE.WebGLRenderer;
+  private labelRenderer: CSS2DRenderer;
 
   // カメラ
   private camera: THREE.PerspectiveCamera;
-
-
 
   // 初期化
   public constructor() {
@@ -29,7 +30,6 @@ export class SceneService {
     this.scene.background = new THREE.Color(0xf0f0f0);
     // レンダラーをバインド
     this.render = this.render.bind(this);
-
   }
 
   public OnInit(aspectRatio: number,
@@ -52,13 +52,13 @@ export class SceneService {
 
   // コントロール
   public addControls() {
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    const controls = new OrbitControls(this.camera, this.labelRenderer.domElement);
     controls.damping = 0.2;
     controls.addEventListener('change', this.render);
   }
 
    // 物体とマウスの交差判定に用いるレイキャスト
-  public getRaycaster(mouse: THREE.Vector2): THREE.Raycaster { 
+  public getRaycaster(mouse: THREE.Vector2): THREE.Raycaster {
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, this.camera);
     return raycaster;
@@ -74,7 +74,7 @@ export class SceneService {
     );
     this.camera.position.set(0, -50, 20);
     this.scene.add(this.camera);
-    
+
     // const gui = new GUI();
     // const self = this;
     // gui.add( {tension: 0.5}, 'tension', 0, 1 ).step( 0.01 ).onChange( (value) => {
@@ -96,7 +96,16 @@ export class SceneService {
     this.renderer.setPixelRatio(deviceRatio);
     this.renderer.setSize(Width, Height);
     this.renderer.shadowMap.enabled = true;
+
+    this.labelRenderer = new CSS2DRenderer();
+    this.labelRenderer.setSize(Width, Height);
+    this.labelRenderer.domElement.style.position = 'absolute';
   }
+
+  public labelRendererDomElement(): Node {
+    return this.labelRenderer.domElement;
+  }
+
 
   // リサイズ
   public onResize(deviceRatio: number,
@@ -105,74 +114,15 @@ export class SceneService {
     this.camera.aspect = deviceRatio;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(Width, Height);
-    this.render();
-  }
-
-  // マウス位置とぶつかったオブジェクトを検出する
-  public detectObject(mouse: THREE.Vector2 , action: string): void {
-
-    // 物体とマウスの交差判定に用いるレイキャスト
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.camera);
-
-    // 交差しているオブジェクトを取得
-    const intersects = raycaster.intersectObjects(this.selectiveObjects);
-
-    switch (action) {
-      case 'click':
-        this.selectiveObjects.map(item => {
-          if (intersects.length > 0 && item === intersects[0].object) {
-            // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 1.00;
-          }
-        });
-        break;
-
-      case 'select':
-          this.selectionItem = null;
-          this.selectiveObjects.map(item => {
-          if (intersects.length > 0 && item === intersects[0].object) {
-            // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 1.00;
-            this.selectionItem = item;
-          } else {
-            // それ以外は元の色にする
-            item.material['color'].setHex(0x000000);
-            item.material['opacity'] = 1.00;
-          }
-        });
-        break;
-
-      case 'hover':
-        this.selectiveObjects.map(item => {
-          if (intersects.length > 0 && item === intersects[0].object) {
-            // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 0.25;
-          } else {
-            if ( item === this.selectionItem ) {
-              item.material['color'].setHex(0xff0000);
-              item.material['opacity'] = 1.00;
-            } else {
-              // それ以外は元の色にする
-              item.material['color'].setHex(0x000000);
-              item.material['opacity'] = 1.00;
-            }
-          }
-        });
-        break;
-
-      default:
-        return;
-    }
+    this.labelRenderer.setSize(Width, Height);
     this.render();
   }
 
   // レンダリングする
   public render() {
     this.renderer.render(this.scene, this.camera);
+    this.labelRenderer.render(this.scene, this.camera);
+
   }
 
   // レンダリングのサイズを取得する
