@@ -11,7 +11,6 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 export class ThreeNodesService {
 
   private geometry: THREE.SphereBufferGeometry;
-  private material: THREE.MeshLambertMaterial;
 
   private baseScale: number; // 最近点から求めるスケール
   private scale: number;     // 外部から調整するためのスケール
@@ -20,7 +19,7 @@ export class ThreeNodesService {
   constructor(private node: InputNodesService) {
     this.scale = 1;
     this.geometry = new THREE.SphereBufferGeometry(1);
-    this.material = new THREE.MeshLambertMaterial({ color: 0x00bbff });
+    // this.material = new THREE.MeshLambertMaterial({ color: 0x00bbff });
     this.nodeList = new Array();
   }
   public getSelectiveObject(): THREE.Mesh[] {
@@ -61,7 +60,8 @@ export class ThreeNodesService {
         item.position.z = jsonData[key].z;
       } else {
         // 要素をシーンに追加
-        const mesh = new THREE.Mesh(this.geometry, this.material);
+        const mesh = new THREE.Mesh(this.geometry,
+          new THREE.MeshLambertMaterial({ color: 0xff0000 }));
         mesh.name = key;
         mesh.position.x = jsonData[key].x;
         mesh.position.y = jsonData[key].y;
@@ -77,6 +77,7 @@ export class ThreeNodesService {
         moonDiv.style.marginTop = '-1em';
         const moonLabel = new CSS2DObject( moonDiv );
         moonLabel.position.set( 0, 0.27, 0 );
+        moonLabel.name = 'font';
         mesh.add( moonLabel );
 
       }
@@ -130,6 +131,20 @@ export class ThreeNodesService {
       item.scale.x = this.baseScale * this.scale;
       item.scale.y = this.baseScale * this.scale;
       item.scale.z = this.baseScale * this.scale;
+    }
+  }
+
+  // 文字を消す
+  public Disable(): void {
+    for (const mesh of this.nodeList) {
+      mesh.getObjectByName('font').visible = false;
+    }
+  }
+
+  // 文字を表示する
+  public Enable(): void {
+    for (const mesh of this.nodeList) {
+      mesh.getObjectByName('font').visible = true;
     }
   }
 

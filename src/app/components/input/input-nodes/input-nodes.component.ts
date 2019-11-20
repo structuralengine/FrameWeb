@@ -16,16 +16,16 @@ export class InputNodesComponent implements OnInit {
   public page: number;
 
   hotTableSettings = {
-    beforeChange: (... x: any[]) => {
+    beforeChange: (...x: any[]) => {
       try {
         let changes: any = undefined;
-        for(let i = 0; i < x.length; i++){
-          if(Array.isArray(x[i])){
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
             changes = x[i];
             break;
           }
         }
-        if(changes === undefined){return;}
+        if (changes === undefined) { return; }
         for (let i = 0; i < changes.length; i++) {
           const value: number = this.helper.toNumber(changes[i][3]);
           changes[i][3] = value.toFixed(3);
@@ -34,14 +34,14 @@ export class InputNodesComponent implements OnInit {
         console.log(e);
       }
     },
-    afterChange: (... x: any[]) => {
+    afterChange: (...x: any[]) => {
       this.three.chengeData();
     }
   };
 
   constructor(private data: InputNodesService,
-              private helper: DataHelperModule,
-              private three: ThreeService) {
+    private helper: DataHelperModule,
+    private three: ThreeService) {
     this.page = 1;
   }
 

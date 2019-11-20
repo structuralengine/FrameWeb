@@ -37,10 +37,6 @@ export class ThreeComponent implements AfterViewInit {
 
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.labelRendererDomElement();
-    // element.addEventListener('mouseDown', this.onMouseDown());
-    // element.addEventListener('mouseUp', this.onMouseUp());
-    // element.addEventListener('mouseMove', this.onMouseMove());
-    
     const div = document.getElementById('myCanvas'); // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling); // ボタンを置きたい場所にaタグを追加
 

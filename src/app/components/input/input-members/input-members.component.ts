@@ -25,35 +25,38 @@ export class InputMembersComponent implements OnInit {
           break;
         }
       }
-      if (changes !== undefined) {
-        try {
-          for (let i = 0; i < changes.length; i++) {
-            const target = changes[i];
-            const row: number = target[0];
-            const column: string = target[1];
-            const old_value: any = target[2];
-            const new_value: any = target[3];
-            if (column !== 'ni' && column !== 'nj') {
-              continue;
-            }
-            if (old_value === new_value) {
-              continue;
-            }
-            const member: {} = this.dataset[row];
-            const m: string = member['id'];
-            if (m === '') {
-              continue;
-            }
-            const l: number = this.data.getMemberLength(m);
-            if (l != null) {
-              this.dataset[row]['L'] = l.toFixed(3);
-              hotInstance.render();
-            }
-          }
-        } catch (e) {
-          console.log(e);
-        }
+      if (changes === undefined) {
+        return ;
       }
+      try {
+        for (let i = 0; i < changes.length; i++) {
+          const target = changes[i];
+          const row: number = target[0];
+          const column: string = target[1];
+          const old_value: any = target[2];
+          const new_value: any = target[3];
+          if (column !== 'ni' && column !== 'nj') {
+            continue;
+          }
+          if (old_value === new_value) {
+            continue;
+          }
+          const member: {} = this.dataset[row];
+          const m: string = member['id'];
+          if (m === '') {
+            continue;
+          }
+          const l: number = this.data.getMemberLength(m);
+          if (l != null) {
+            this.dataset[row]['L'] = l.toFixed(3);
+            hotInstance.render();
+          }
+        }
+        this.three.chengeData();
+      } catch (e) {
+        console.log(e);
+      }
+
     }
   };
 
