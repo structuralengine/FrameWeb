@@ -58,6 +58,9 @@ export class ThreeMembersService {
       const nj = jsonData[key].nj;
       const i = nodeData[ni];
       const j = nodeData[nj];
+      if ( i === undefined || j === undefined ) {
+        continue;
+      }
 
       // 既に存在しているか確認する
       const item = this.memberList.find((target) => {
@@ -65,9 +68,15 @@ export class ThreeMembersService {
       });
       if (item !== undefined) {
         // すでに同じ名前の要素が存在している場合座標の更新
-        item.position.x = jsonData[key].x;
-        item.position.y = jsonData[key].y;
-        item.position.z = jsonData[key].z;
+        const geometry: THREE.Geometry | THREE.BufferGeometry = item.geometry;
+        const vertices: THREE.Vector3 = geometry['vertices'];
+        // 頂点座標の追加
+        vertices[0].x = i.x;
+        vertices[0].y = i.y;
+        vertices[0].z = i.z;
+        vertices[1].x = j.x;
+        vertices[1].y = j.y;
+        vertices[1].z = j.z;
       } else {
         // 要素をシーンに追加
         const geometry = new THREE.Geometry();
@@ -77,20 +86,20 @@ export class ThreeMembersService {
 
         // 線オブジェクトの生成	
         const line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x990000} ) );
-
+        line.name = key;
         // sceneにlineを追加
         this.memberList.push(line);
         scene.add( line );
 
         // 文字をシーンに追加
-        // const moonDiv = document.createElement( 'div' );
-        // moonDiv.className = 'label';
-        // moonDiv.textContent = key;
-        // moonDiv.style.marginTop = '-1em';
-        // const moonLabel = new CSS2DObject( moonDiv );
-        // moonLabel.position.set( 0, 0.27, 0 );
-        // moonLabel.name = 'font';
-        // mesh.add( moonLabel );
+        const moonDiv = document.createElement( 'div' );
+        moonDiv.className = 'label';
+        moonDiv.textContent = key;
+        moonDiv.style.marginTop = '-1em';
+        const moonLabel = new CSS2DObject( moonDiv );
+        moonLabel.position.set( 0, 0.27, 0 );
+        moonLabel.name = 'font';
+        line.add( moonLabel );
 
       }
     }
