@@ -15,11 +15,11 @@ export class ThreeNodesService {
   private baseScale: number; // 最近点から求めるスケール
   private scale: number;     // 外部から調整するためのスケール
   private nodeList: THREE.Mesh[];
+  private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   constructor(private node: InputNodesService) {
     this.scale = 1;
     this.geometry = new THREE.SphereBufferGeometry(1);
-    // this.material = new THREE.MeshLambertMaterial({ color: 0x00bbff });
     this.nodeList = new Array();
   }
   public getSelectiveObject(): THREE.Mesh[] {
@@ -145,6 +145,68 @@ export class ThreeNodesService {
   public Enable(): void {
     for (const mesh of this.nodeList) {
       mesh.getObjectByName('font').visible = true;
+    }
+  }
+
+
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(raycaster: THREE.Raycaster , action: string): void {
+
+    if (this.nodeList.length === 0) {
+      return; // 対象がなければ何もしない
+    }
+
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.nodeList);
+
+    switch (action) {
+      case 'click':
+        this.nodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
+
+      case 'select':
+          this.selectionItem = null;
+          this.nodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+            this.selectionItem = item;
+          } else {
+            // それ以外は元の色にする
+            item.material['color'].setHex(0x000000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
+
+      case 'hover':
+        this.nodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 0.25;
+          } else {
+            if ( item === this.selectionItem ) {
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 1.00;
+            } else {
+              // それ以外は元の色にする
+              item.material['color'].setHex(0x000000);
+              item.material['opacity'] = 1.00;
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
     }
   }
 

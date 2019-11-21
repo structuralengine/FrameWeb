@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SceneService } from '../scene.service';
+import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
 import { InputMembersService } from '../../../components/input/input-members/input-members.service';
 import * as THREE from 'three';
 import { NumberValueAccessor } from '@angular/forms';
@@ -12,7 +13,8 @@ export class ThreeMembersService {
 
   private memberList: THREE.Line[];
 
-  constructor(private member: InputMembersService) {
+  constructor(private node: InputNodesService,
+              private member: InputMembersService) {
     this.memberList = new Array();
   }
   public getSelectiveObject(): THREE.Line[] {
@@ -21,7 +23,15 @@ export class ThreeMembersService {
 
   public chengeData(scene: SceneService): void {
 
-    // 入力データを入手
+    // 格点データを入手
+    const nodeData = this.node.getNodeJson('calc');
+    const nodeKeys = Object.keys(nodeData);
+    if (nodeKeys.length <= 0) {
+      this.ClearData(scene);
+      return;
+    }
+
+    // メンバーデータを入手
     const jsonData = this.member.getMemberJson('calc');
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
@@ -42,6 +52,13 @@ export class ThreeMembersService {
 
     // 新しい入力を適用する
     for (const key of jsonKeys) {
+
+      // 節点データを集計する
+      const ni = jsonData[key].ni;
+      const nj = jsonData[key].nj;
+      const i = nodeData[ni];
+      const j = nodeData[nj];
+
       // 既に存在しているか確認する
       const item = this.memberList.find((target) => {
         return (target.name === key);
@@ -55,8 +72,8 @@ export class ThreeMembersService {
         // 要素をシーンに追加
         const geometry = new THREE.Geometry();
         // 頂点座標の追加
-        geometry.vertices.push( new THREE.Vector3( 150, 0, 0) );
-        geometry.vertices.push( new THREE.Vector3( 0, 150, 0) );
+        geometry.vertices.push( new THREE.Vector3( i.x, i.y, i.z) );
+        geometry.vertices.push( new THREE.Vector3( j.x, j.y, j.z) );
 
         // 線オブジェクトの生成	
         const line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x990000} ) );
