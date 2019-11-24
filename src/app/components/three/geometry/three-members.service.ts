@@ -39,78 +39,64 @@ export class ThreeMembersService {
       return;
     }
 
-    // 入力データに無い要素を排除する
-    for (let i = this.memberList.length - 1; i >= 0; i--) {
-      const item = jsonKeys.find((key) => {
-        return key === this.memberList[i].name;
-      });
-      if (item === undefined) {
-        scene.remove(this.memberList[i]);
-        this.memberList.splice(i, 1);
-      }
-    }
+    // 要素を排除する
+    this.ClearData(scene);
 
     // 新しい入力を適用する
     for (const key of jsonKeys) {
 
       // 節点データを集計する
-      const ni = jsonData[key].ni;
-      const nj = jsonData[key].nj;
+      const member = jsonData[key];
+      const ni = member.ni;
+      const nj = member.nj;
       const i = nodeData[ni];
       const j = nodeData[nj];
       if ( i === undefined || j === undefined ) {
         continue;
       }
 
-      // 既に存在しているか確認する
-      const item = this.memberList.find((target) => {
-        return (target.name === key);
-      });
-      if (item !== undefined) {
-        // すでに同じ名前の要素が存在している場合座標の更新
-        const geometry: THREE.Geometry | THREE.BufferGeometry = item.geometry;
-        const vertices: THREE.Vector3 = geometry['vertices'];
-        // 頂点座標の追加
-        vertices[0].x = i.x;
-        vertices[0].y = i.y;
-        vertices[0].z = i.z;
-        vertices[1].x = j.x;
-        vertices[1].y = j.y;
-        vertices[1].z = j.z;
-      } else {
-        // 要素をシーンに追加
-        const geometry = new THREE.Geometry();
-        // 頂点座標の追加
-        geometry.vertices.push( new THREE.Vector3( i.x, i.y, i.z) );
-        geometry.vertices.push( new THREE.Vector3( j.x, j.y, j.z) );
+      // 要素をシーンに追加
+      const geometry = new THREE.Geometry();
+      // 頂点座標の追加
+      geometry.vertices.push( new THREE.Vector3( i.x, i.y, i.z) );
+      geometry.vertices.push( new THREE.Vector3( j.x, j.y, j.z) );
 
-        // 線オブジェクトの生成	
-        const line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x990000} ) );
-        line.name = key;
-        // sceneにlineを追加
-        this.memberList.push(line);
-        scene.add( line );
+      // 線オブジェクトの生成
+      const line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x990000} ) );
+      line.name = key;
 
-        // 文字をシーンに追加
-        const moonDiv = document.createElement( 'div' );
-        moonDiv.className = 'label';
-        moonDiv.textContent = key;
-        moonDiv.style.marginTop = '-1em';
-        const moonLabel = new CSS2DObject( moonDiv );
-        moonLabel.position.set( 0, 0.27, 0 );
-        moonLabel.name = 'font';
-        line.add( moonLabel );
+      // sceneにlineを追加
+      this.memberList.push(line);
+      scene.add( line );
 
-      }
+      // 文字をシーンに追加
+      const moonDiv = document.createElement( 'div' );
+      moonDiv.className = 'label';
+      moonDiv.textContent = key;
+      moonDiv.style.marginTop = '-1em';
+      const moonLabel = new CSS2DObject( moonDiv );
+      const x: number = (i.x + j.x) / 2;
+      const y: number = (i.y + j.y) / 2;
+      const z: number = (i.z + j.z) / 2;
+      moonLabel.position.set( x, y, z );
+      moonLabel.name = 'font';
+      line.add( moonLabel );
+
+      // ローカル座標を示す線を追加
+      const zAxis = this.member.localZaxis(x, y, z, j.x, j.y, j.z, member.cg);
+
     }
-    // サイズを調整する
-    // this.setBaseScale();
-    // this.onResize();
   }
 
   // データをクリアする
   public ClearData(scene: SceneService): void {
     for (const mesh of this.memberList) {
+      // 文字を削除する
+      while ( mesh.children.length > 0 ) {
+        const object = mesh.children[ 0 ];
+        object.parent.remove( object );
+      }
+      // 線を削除する
       scene.remove(mesh);
     }
     this.memberList = new Array();

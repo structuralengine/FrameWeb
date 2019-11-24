@@ -38,6 +38,7 @@ export class ThreeService {
     switch (this.mode) {
       case 'nodes': // 節点データの更新
         this.node.chengeData(this.scene);
+        this.member.chengeData(this.scene);
         break;
 
       case 'fix_nodes':
@@ -103,53 +104,37 @@ export class ThreeService {
 
     this.mode = ModeName;
 
-    if ( this.mode === 'nodes') {
+ 
+    if ( this.mode === 'nodes'
+    || this.mode === 'fix_nodes'
+    || this.mode === 'disg'
+    || this.mode === 'comb_disg'
+    || this.mode === 'pik_disg'
+    || this.mode === 'reac'
+    || this.mode === 'comb_reac'
+    || this.mode === 'pik_reac'
+    ) {
       this.node.Enable();
     } else {
       this.node.Disable();
     }
 
-    if ( this.mode === 'fix_nodes') {
+    if ( this.mode === 'members'
+      || this.mode === 'joints'
+      || this.mode === 'notice_points'
+      || this.mode === 'fsec'
+      || this.mode === 'comb_fsec'
+      || this.mode === 'pik_fsec'
+    ) {
+      this.member.Enable();
     } else {
-      // this.node.Disable();
-    }
-
-    if ( this.mode === 'members') {
-    } else {
-      // this.node.Disable();
-    }
-
-    if ( this.mode === 'joints') {
-    } else {
-      // this.node.Disable();
+      this.member.Disable();
     }
 
     if ( this.mode === 'loads') {
+    
     } else {
-      // this.node.Disable();
-    }
-
-    if ( this.mode === 'notice_points') {
-    } else {
-      // this.node.Disable();
-    }
-
-    if ( this.mode === 'comb_disg' || this.mode === 'disg'
-      || this.mode === 'pik_disg') {
-    } else {
-      // this.node.Disable();
-    }
-
-    if ( this.mode === 'comb_fsec' || this.mode === 'fsec'
-      || this.mode === 'pik_fsec') {
-    } else {
-      // this.node.Disable();
-    }
-
-    if ( this.mode === 'comb_reac' || this.mode === 'reac'
-      || this.mode === 'pik_reac') {
-    } else {
-      // this.node.Disable();
+    
     }
 
     // 再描画

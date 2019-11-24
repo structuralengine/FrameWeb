@@ -20,7 +20,7 @@ export class InputMembersComponent implements OnInit {
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
         if (Array.isArray(x[i])) {
-          hotInstance = x[i-1];
+          hotInstance = x[i - 1];
           changes = x[i];
           break;
         }
@@ -29,8 +29,7 @@ export class InputMembersComponent implements OnInit {
         return ;
       }
       try {
-        for (let i = 0; i < changes.length; i++) {
-          const target = changes[i];
+        for (const target of changes) {
           const row: number = target[0];
           const column: string = target[1];
           const old_value: any = target[2];

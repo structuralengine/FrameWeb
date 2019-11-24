@@ -42,6 +42,10 @@ export class ThreeNodesService {
         return key === this.nodeList[i].name;
       });
       if (item === undefined) {
+        while ( this.nodeList[i].children.length > 0 ) {
+          const object = this.nodeList[i].children[ 0 ];
+          object.parent.remove( object );
+        }
         scene.remove(this.nodeList[i]);
         this.nodeList.splice(i, 1);
       }
@@ -90,6 +94,12 @@ export class ThreeNodesService {
   // データをクリアする
   public ClearData(scene: SceneService): void {
     for (const mesh of this.nodeList) {
+      // 文字を削除する
+      while ( mesh.children.length > 0 ) {
+        const object = mesh.children[ 0 ];
+        object.parent.remove( object );
+      }
+      // オブジェクトを削除する
       scene.remove(mesh);
     }
     this.nodeList = new Array();

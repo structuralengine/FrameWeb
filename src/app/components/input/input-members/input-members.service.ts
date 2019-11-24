@@ -20,8 +20,7 @@ export class InputMembersService {
   public getMemberColumns(index: number): any {
 
     let result: any = null;
-    for (let i = 0; i < this.member.length; i++) {
-      const tmp = this.member[i];
+    for ( const tmp of this.member) {
       if (tmp['id'].toString() === index.toString()) {
         result = tmp;
         break;
@@ -88,7 +87,7 @@ export class InputMembersService {
   public getNodeNo(memberNo: string) {
     const jsonData = { ni: '', nj: '' };
 
-    const memberList: {} = this.getMemberJson('unity-members');
+    const memberList: {} = this.getMemberJson('calc');
     if (Object.keys(memberList).length <= 0) {
       return jsonData;
     }
@@ -124,4 +123,111 @@ export class InputMembersService {
     return result;
 
   }
+
+  public localZaxis(xi: number, yi: number, zi: number,
+                    xj: number, yj: number, zj: number,
+                    angle: number): any {
+
+    const M: number[][] = [[0], [0], [1]]; // z だけ1の行列
+    const tM: number[][] = this.tMatrix(xi, yi, zi, xj, yj, zj, angle);
+
+    const ttM: number[][] = this.Transpose(tM);
+    const rM: number[][] = this.dot(ttM, M);
+    const result = {
+      x: xi - rM[0][0],
+      y: yi + rM[1][0],
+      z: zi + rM[2][0]
+    };
+    return result;
+
+  }
+
+  // 座標変換行列
+  private tMatrix(xi: number, yi: number, zi: number,
+                  xj: number, yj: number, zj: number,
+                  angle: number): number[][] {
+
+    const memberList: {} = this.getMemberJson('calc');
+
+    let result: number[][] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    const DX: number = xj - xi;
+    const DY: number = yj - yi;
+    const DZ: number = zj - zi;
+    const EL: number = Math.sqrt(Math.pow(DX, 2) + Math.pow(DY, 2) + Math.pow(DZ, 2));
+
+    if ((DX === 0 && DY === 0)) {
+      result[0][0] = 0.0;
+      result[0][1] = 0.0;
+      result[0][2] = 1.0;
+      result[1][0] = Math.cos(angle);
+      result[1][1] = Math.sin(angle);
+      result[1][2] = 0.0;
+      result[2][0] = -Math.sin(angle);
+      result[2][1] = Math.cos(angle);
+      result[2][2] = 0.0;
+    } else {
+      const xL = DX / EL;
+      const XM = DY / EL;
+      const XN = DZ / EL;
+      const xlm = Math.sqrt(xL * xL + XM * XM);
+      const ts: number[][] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+      const tf: number[][] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+      ts[0][0] = xL;
+      ts[0][1] = XM;
+      ts[0][2] = XN;
+      ts[1][0] = -XM / xlm;
+      ts[1][1] = xL / xlm;
+      ts[1][2] = 0;
+      ts[2][0] = -XN * xL / xlm;
+      ts[2][1] = -XM * XN / xlm;
+      ts[2][2] = xlm;
+      tf[0][0] = 1;
+      tf[0][1] = 0;
+      tf[0][2] = 0;
+      tf[1][0] = 0;
+      tf[1][1] = Math.cos(angle);
+      tf[1][2] = Math.sin(angle);
+      tf[2][0] = 0;
+      tf[2][1] = -Math.sin(angle);
+      tf[2][2] = Math.cos(angle);
+
+      result = this.dot(ts, tf);
+    }
+    return result;
+  }
+
+  // 行列の掛け算
+  private  dot(matrix1: number[][], matrix2: number[][]): number[][] {
+    const res = new Array();
+    const row1 = matrix1.length;
+    const row2 = matrix2.length;
+    const col1 = matrix1[0].length;
+    const col2 = matrix2[0].length;
+
+    for (let i1 = 0; i1 < row1; i1++) {
+      res.push(new Array());
+      for (let i2 = 0; i2 < col2; i2++) {
+        res[i1].push(0);
+        for (let i3 = 0; i3 < col1; i3++) {
+          res[i1][i2] += matrix1[i1][i3] * matrix2[i3][i2];
+        }
+      }
+    }
+    return res;
+  }
+
+  // 転置行列
+  private Transpose(matrix: number[][]): number[][] {
+
+    const row = matrix.length;
+    const column = matrix[0].length;
+    const result = Array(column).fill(0).map(n => Array(row).fill(0));
+    for (let x = 0; x < column; x++) {
+      for (let y = 0; y < row; y++) {
+        result[y][x] = matrix[x][y];
+      }
+    }
+    return result;
+  }
+
 }
