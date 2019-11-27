@@ -49,32 +49,28 @@ export class ThreeMembersService {
 
       // 節点データを集計する
       const member = jsonData[key];
-      const ni = member.ni;
-      const nj = member.nj;
-      const i = nodeData[ni];
-      const j = nodeData[nj];
+      const i = nodeData[member.ni];
+      const j = nodeData[member.nj];
       if (i === undefined || j === undefined) {
         continue;
       }
 
       const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
       const len: number = v.length();
-
+      if (len < 0.001) {
+        continue;
+      }
       const x: number = (i.x + j.x) / 2;
       const y: number = (i.y + j.y) / 2;
       const z: number = (i.z + j.z) / 2;
-
       // 要素をシーンに追加
       const geometry = new THREE.BoxGeometry(len, 1, 1);
-
       // 要素をシーンに追加
       const mesh = new THREE.Mesh(geometry,
-                   new THREE.MeshLambertMaterial({ color: 0x000000 }));
+                  new THREE.MeshLambertMaterial({ color: 0x000000 }));
       mesh.name = key;
-      if (len > 0.001) {
-        mesh.rotation.z = 0.5 * Math.PI + Math.acos(v.y / len);
-        mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
-      }
+      mesh.rotation.z = 0.5 * Math.PI + Math.acos(v.y / len);
+      mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
       mesh.position.set(x, y, z);
 
       this.memberList.push(mesh);
@@ -93,6 +89,8 @@ export class ThreeMembersService {
 
       // ローカル座標を示す線を追加
       const axis = this.localAxis(x, y, z, j.x, j.y, j.z, member.cg);
+      const az = new THREE.Vector3(axis.z.x, axis.z.y, axis.z.z);
+
       // x要素軸
       const xAxis = new THREE.Geometry();
       xAxis.vertices.push(new THREE.Vector3(x, y, z));

@@ -127,14 +127,11 @@ export class ThreeNodesService {
     let minDistance: number = Number.MAX_VALUE;
     for (const item1 of this.nodeList) {
       for (const item2 of this.nodeList) {
-        const x = item1.position.x - item2.position.x;
-        const y = item1.position.y - item2.position.y;
-        const z = item1.position.z - item2.position.z;
-        const l = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+        const l = item1.position.distanceTo(item2.position);
         if (l === 0) {
           continue;
         }
-        minDistance = (l < minDistance) ? l : minDistance;
+        minDistance = Math.min(l, minDistance);
       }
     }
     // baseScale を決定する
