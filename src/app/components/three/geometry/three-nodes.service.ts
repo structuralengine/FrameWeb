@@ -12,16 +12,25 @@ export class ThreeNodesService {
 
   private geometry: THREE.SphereBufferGeometry;
 
-  private baseScale: number; // 最近点から求めるスケール
-  private scale: number;     // 外部から調整するためのスケール
+  private _baseScale: number;   // 最近点から求めるスケール
+  private scale: number;      // 外部から調整するためのスケール
   private nodeList: THREE.Mesh[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   constructor(private node: InputNodesService) {
     this.scale = 1;
+    this._baseScale = null;
     this.geometry = new THREE.SphereBufferGeometry(1);
     this.nodeList = new Array();
   }
+
+  public baseScale(): number {
+    if (this._baseScale === null) {
+      this.setBaseScale();
+    }
+    return this._baseScale;
+  }
+
   public getSelectiveObject(): THREE.Mesh[] {
     return this.nodeList;
   }
@@ -113,7 +122,7 @@ export class ThreeNodesService {
 
   // 最近点からスケールを求める
   private setBaseScale(): void {
-    this.baseScale = 1;
+    this._baseScale = 1;
     // 最近傍点を探す
     let minDistance: number = Number.MAX_VALUE;
     for (const item1 of this.nodeList) {
@@ -131,16 +140,16 @@ export class ThreeNodesService {
     // baseScale を決定する
     if (minDistance !== Number.MAX_VALUE) {
       // baseScale は最近点の 1/20 とする
-      this.baseScale = minDistance / 20;
+      this._baseScale = minDistance / 20;
     }
   }
 
   // スケールを反映する
   private onResize(): void {
     for (const item of this.nodeList) {
-      item.scale.x = this.baseScale * this.scale;
-      item.scale.y = this.baseScale * this.scale;
-      item.scale.z = this.baseScale * this.scale;
+      item.scale.x = this.baseScale() * this.scale;
+      item.scale.y = this.baseScale() * this.scale;
+      item.scale.z = this.baseScale() * this.scale;
     }
   }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SceneService } from '../scene.service';
 import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
 import { InputMembersService } from '../../../components/input/input-members/input-members.service';
+import { ThreeNodesService } from './three-nodes.service';
 import * as THREE from 'three';
 import { NumberValueAccessor } from '@angular/forms';
 import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
@@ -11,13 +12,14 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 })
 export class ThreeMembersService {
 
-  private memberList: THREE.Line[];
+  private memberList: THREE.Mesh[];
 
-  constructor(private node: InputNodesService,
+  constructor(private nodeThree: ThreeNodesService,
+              private node: InputNodesService,
               private member: InputMembersService) {
     this.memberList = new Array();
   }
-  public getSelectiveObject(): THREE.Line[] {
+  public getSelectiveObject(): THREE.Mesh[] {
     return this.memberList;
   }
 
@@ -55,22 +57,28 @@ export class ThreeMembersService {
         continue;
       }
 
+      const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
+      const len: number = v.length();
+
+      const x: number = (i.x + j.x) / 2;
+      const y: number = (i.y + j.y) / 2;
+      const z: number = (i.z + j.z) / 2;
+
       // 要素をシーンに追加
-      const geometry = new THREE.Geometry();
-      // 頂点座標の追加
-      geometry.vertices.push(new THREE.Vector3(i.x, i.y, i.z));
-      geometry.vertices.push(new THREE.Vector3(j.x, j.y, j.z));
+      const geometry = new THREE.BoxGeometry(len, 1, 1);
 
-      // 線オブジェクトの生成
-      const material = new THREE.LineBasicMaterial({color: 0x000000});
-      material.linewidth = 10;
+      // 要素をシーンに追加
+      const mesh = new THREE.Mesh(geometry,
+                   new THREE.MeshLambertMaterial({ color: 0x000000 }));
+      mesh.name = key;
+      if (len > 0.001) {
+        mesh.rotation.z = 0.5 * Math.PI + Math.acos(v.y / len);
+        mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
+      }
+      mesh.position.set(x, y, z);
 
-      const line = new THREE.Line(geometry, material);
-      line.name = key;
-
-      // sceneにlineを追加
-      this.memberList.push(line);
-      scene.add(line);
+      this.memberList.push(mesh);
+      scene.add(mesh);
 
       // 文字をシーンに追加
       const moonDiv = document.createElement('div');
@@ -78,12 +86,10 @@ export class ThreeMembersService {
       moonDiv.textContent = key;
       moonDiv.style.marginTop = '-1em';
       const moonLabel = new CSS2DObject(moonDiv);
-      const x: number = (i.x + j.x) / 2;
-      const y: number = (i.y + j.y) / 2;
-      const z: number = (i.z + j.z) / 2;
-      moonLabel.position.set(x, y, z);
+
+      moonLabel.position.set(0, 0, 0);
       moonLabel.name = 'font';
-      line.add(moonLabel);
+      mesh.add(moonLabel);
 
       // ローカル座標を示す線を追加
       const axis = this.localAxis(x, y, z, j.x, j.y, j.z, member.cg);
@@ -93,21 +99,21 @@ export class ThreeMembersService {
       xAxis.vertices.push(new THREE.Vector3(axis.x.x, axis.x.y, axis.x.z));
       const xline = new THREE.Line(xAxis, new THREE.LineBasicMaterial({ color: 0xFF0000 }));
       xline.name = 'x';
-      line.add(xline);
+      mesh.add(xline);
       // y要素軸
       const yAxis = new THREE.Geometry();
       yAxis.vertices.push(new THREE.Vector3(x, y, z));
       yAxis.vertices.push(new THREE.Vector3(axis.y.x, axis.y.y, axis.y.z));
       const yline = new THREE.Line(yAxis, new THREE.LineBasicMaterial({ color: 0x00FF00 }));
       yline.name = 'y';
-      line.add(yline);
+      mesh.add(yline);
       // z要素軸
       const zAxis = new THREE.Geometry();
       zAxis.vertices.push(new THREE.Vector3(x, y, z));
       zAxis.vertices.push(new THREE.Vector3(axis.z.x, axis.z.y, axis.z.z));
       const zline = new THREE.Line(zAxis, new THREE.LineBasicMaterial({ color: 0x0000FF }));
       zline.name = 'z';
-      line.add(zline);
+      mesh.add(zline);
     }
   }
 
