@@ -18,7 +18,7 @@ import { SafeHtml } from '@angular/platform-browser';
 export class ThreeComponent implements AfterViewInit {
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
-  
+
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
   }
@@ -37,8 +37,8 @@ export class ThreeComponent implements AfterViewInit {
 
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.labelRendererDomElement();
-    const div = document.getElementById('myCanvas'); // ボタンを置きたい場所の手前の要素を取得
-    div.parentNode.insertBefore(element, div.nextSibling); // ボタンを置きたい場所にaタグを追加
+    const div = document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
+    div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
 
     // 床面を生成する
     this.createHelper();
@@ -49,9 +49,11 @@ export class ThreeComponent implements AfterViewInit {
 
   // 床面を生成する
   private createHelper() {
-    const floor = new THREE.GridHelper(200, 200);
+    const axisHelper = new THREE.AxesHelper(200);
+    this.scene.add(axisHelper);
+    const floor = new THREE.GridHelper(200, 400);
     floor.geometry.rotateX(Math.PI / 2);
-    floor.material['opacity'] = 0.25;
+    floor.material['opacity'] = 0.2;
     floor.material['transparent'] = true;
     this.scene.add(floor);
   }

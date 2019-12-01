@@ -33,56 +33,62 @@ export class ThreeService {
     }
 
 
-  public chengeData(): void {
+  public chengeData(mode: string = ''): void {
+    if ( mode === 'fileLoad') {
+      // ファイルを読み込んだ
+      this.node.chengeData(this.scene);
+      this.member.chengeData(this.scene);
+      return;
+    } else {
+      switch (this.mode) {
+        case 'nodes': // 節点データの更新
+          this.node.chengeData(this.scene);
+          this.member.chengeData(this.scene);
+          break;
 
-    switch (this.mode) {
-      case 'nodes': // 節点データの更新
-        this.node.chengeData(this.scene);
-        this.member.chengeData(this.scene);
-        break;
+        case 'fix_nodes':
+          break;
 
-      case 'fix_nodes':
-        break;
+        case 'members':
+          this.member.chengeData(this.scene);
+          break;
 
-      case 'members':
-        this.member.chengeData(this.scene);
-        break;
+        case 'joints':
+          break;
 
-      case 'joints':
-        break;
+        case 'loads':
+          break;
 
-      case 'loads':
-        break;
+        case 'notice_points':
+          break;
 
-      case 'notice_points':
-        break;
+        case 'comb_disg':
+          break;
 
-      case 'comb_disg':
-        break;
+        case 'comb_fsec':
+          break;
 
-      case 'comb_fsec':
-        break;
+        case 'comb_reac':
+          break;
 
-      case 'comb_reac':
-        break;
+        case 'disg':
+          break;
 
-      case 'disg':
-        break;
+        case 'fsec':
+          break;
 
-      case 'fsec':
-        break;
+        case 'pik_disg':
+          break;
 
-      case 'pik_disg':
-        break;
+        case 'pik_fsec':
+          break;
 
-      case 'pik_fsec':
-        break;
+        case 'pik_reac':
+          break;
 
-      case 'pik_reac':
-        break;
-
-      case 'reac':
-        break;
+        case 'reac':
+          break;
+      }
     }
     // 再描画
     this.scene.render();
@@ -91,6 +97,7 @@ export class ThreeService {
   public ClearData(): void {
     // 節点データの削除
     this.node.ClearData(this.scene);
+    this.member.ClearData(this.scene);
     // 再描画
     this.scene.render();
 
@@ -104,7 +111,6 @@ export class ThreeService {
 
     this.mode = ModeName;
 
- 
     if ( this.mode === 'nodes'
     || this.mode === 'fix_nodes'
     || this.mode === 'disg'
@@ -132,9 +138,9 @@ export class ThreeService {
     }
 
     if ( this.mode === 'loads') {
-    
+
     } else {
-    
+
     }
 
     // 再描画
@@ -149,23 +155,17 @@ export class ThreeService {
 
       switch (this.mode) {
         case 'nodes': // 節点データの更新
+        case 'fix_nodes':
           this.node.detectObject(raycaster, action);
           break;
 
-        case 'fix_nodes':
-          break;
-
         case 'members':
-          // this.member.detectObject(mouse, action);
-          break;
-
         case 'joints':
+        case 'notice_points':
+          this.member.detectObject(raycaster, action);
           break;
 
         case 'loads':
-          break;
-
-        case 'notice_points':
           break;
 
         case 'comb_disg':

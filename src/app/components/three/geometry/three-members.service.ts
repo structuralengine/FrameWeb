@@ -13,14 +13,21 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 export class ThreeMembersService {
 
   private memberList: THREE.Mesh[];
+  private axisList: THREE.Group[];
+  private isEnable: boolean;
+  private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   constructor(private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService) {
     this.memberList = new Array();
+    this.axisList = new Array();
+    this.isEnable = true;
   }
-  public getSelectiveObject(): THREE.Mesh[] {
-    return this.memberList;
+  
+  public baseScale(): number {
+    const scale = this.nodeThree.baseScale();
+    return scale * 0.2;
   }
 
   public chengeData(scene: SceneService): void {
@@ -64,12 +71,13 @@ export class ThreeMembersService {
       const y: number = (i.y + j.y) / 2;
       const z: number = (i.z + j.z) / 2;
       // 要素をシーンに追加
-      const geometry = new THREE.BoxGeometry(len, 1, 1);
+      const geometry = new THREE.CylinderGeometry(1, 1, len, 12);
+
       // 要素をシーンに追加
       const mesh = new THREE.Mesh(geometry,
                   new THREE.MeshLambertMaterial({ color: 0x000000 }));
-      mesh.name = key;
-      mesh.rotation.z = 0.5 * Math.PI + Math.acos(v.y / len);
+      mesh.name = 'member' + key;
+      mesh.rotation.z = Math.acos(v.y / len);
       mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
       mesh.position.set(x, y, z);
 
@@ -77,64 +85,84 @@ export class ThreeMembersService {
       scene.add(mesh);
 
       // 文字をシーンに追加
-      const moonDiv = document.createElement('div');
-      moonDiv.className = 'label';
-      moonDiv.textContent = key;
-      moonDiv.style.marginTop = '-1em';
-      const moonLabel = new CSS2DObject(moonDiv);
+      const div = document.createElement('div');
+      div.className = 'label';
+      div.textContent = key;
+      div.style.marginTop = '-1em';
+      const label = new CSS2DObject(div);
 
-      moonLabel.position.set(0, 0, 0);
-      moonLabel.name = 'font';
-      mesh.add(moonLabel);
+      label.position.set(0, 0, 0);
+      label.name = 'font';
+      label.visible = this.isEnable;
+      mesh.add(label);
 
       // ローカル座標を示す線を追加
+      const group = new THREE.Group();
       const axis = this.localAxis(x, y, z, j.x, j.y, j.z, member.cg);
-      const az = new THREE.Vector3(axis.z.x, axis.z.y, axis.z.z);
+      const origin = new THREE.Vector3(x, y, z);
+      const length = len * 0.2;
 
       // x要素軸
-      const xAxis = new THREE.Geometry();
-      xAxis.vertices.push(new THREE.Vector3(x, y, z));
-      xAxis.vertices.push(new THREE.Vector3(axis.x.x, axis.x.y, axis.x.z));
-      const xline = new THREE.Line(xAxis, new THREE.LineBasicMaterial({ color: 0xFF0000 }));
+      const dirX = new THREE.Vector3(axis.x.x, axis.x.y, axis.x.z);
+      const xline = new THREE.ArrowHelper( dirX, origin, length, 0xFF0000 );
       xline.name = 'x';
-      mesh.add(xline);
+      group.add(xline);
       // y要素軸
-      const yAxis = new THREE.Geometry();
-      yAxis.vertices.push(new THREE.Vector3(x, y, z));
-      yAxis.vertices.push(new THREE.Vector3(axis.y.x, axis.y.y, axis.y.z));
-      const yline = new THREE.Line(yAxis, new THREE.LineBasicMaterial({ color: 0x00FF00 }));
+      const dirY = new THREE.Vector3(axis.y.x, axis.y.y, axis.y.z);
+      const yline = new THREE.ArrowHelper( dirY, origin, length, 0x00FF00 );
       yline.name = 'y';
-      mesh.add(yline);
+      group.add(yline);
       // z要素軸
-      const zAxis = new THREE.Geometry();
-      zAxis.vertices.push(new THREE.Vector3(x, y, z));
-      zAxis.vertices.push(new THREE.Vector3(axis.z.x, axis.z.y, axis.z.z));
-      const zline = new THREE.Line(zAxis, new THREE.LineBasicMaterial({ color: 0x0000FF }));
+      const dirZ = new THREE.Vector3(axis.z.x, axis.z.y, axis.z.z);
+      const zline = new THREE.ArrowHelper( dirZ, origin, length, 0x0000FF );
       zline.name = 'z';
-      mesh.add(zline);
+      group.add(zline);
+
+      group.name = mesh.name + 'axis';
+      group.visible = false;
+      this.axisList.push(group);
+      scene.add( group );
     }
+    this.onResize();
   }
 
   // データをクリアする
   public ClearData(scene: SceneService): void {
+    // 線を削除する
     for (const mesh of this.memberList) {
       // 文字を削除する
       while (mesh.children.length > 0) {
         const object = mesh.children[0];
         object.parent.remove(object);
       }
-      // 線を削除する
       scene.remove(mesh);
     }
     this.memberList = new Array();
+
+    // ローカル座標を示す線を削除する
+    for (const group of this.axisList) {
+      scene.remove(group);
+    }
+    this.axisList = new Array();
   }
 
+  // スケールを反映する
+  private onResize(): void {
+    const scale: number = this.baseScale();
+    for (const item of this.memberList) {
+      item.scale.set(scale, 1, scale);
+    }
+  }
 
   // 文字を消す
   public Disable(): void {
     for (const mesh of this.memberList) {
       mesh.getObjectByName('font').visible = false;
     }
+    for (const group of this.axisList) {
+      group.visible = false;
+    }
+    this.isEnable = false;
   }
 
   // 文字を表示する
@@ -142,6 +170,7 @@ export class ThreeMembersService {
     for (const mesh of this.memberList) {
       mesh.getObjectByName('font').visible = true;
     }
+    this.isEnable = true;
   }
 
   // 部材座標軸を
@@ -194,19 +223,19 @@ export class ThreeMembersService {
     const tt = this.getInverse(t3);
 
     const X = {
-      x: xi + tt[0][0] * xM[0] + tt[0][1] * xM[1] + tt[0][2] * xM[2],
-      y: yi + tt[1][0] * xM[0] + tt[1][1] * xM[1] + tt[1][2] * xM[2],
-      z: zi + tt[2][0] * xM[0] + tt[2][1] * xM[1] + tt[2][2] * xM[2]
+      x: tt[0][0] * xM[0] + tt[0][1] * xM[1] + tt[0][2] * xM[2],
+      y: tt[1][0] * xM[0] + tt[1][1] * xM[1] + tt[1][2] * xM[2],
+      z: tt[2][0] * xM[0] + tt[2][1] * xM[1] + tt[2][2] * xM[2]
     };
     const Y = {
-      x: xi + tt[0][0] * yM[0] + tt[0][1] * yM[1] + tt[0][2] * yM[2],
-      y: yi + tt[1][0] * yM[0] + tt[1][1] * yM[1] + tt[1][2] * yM[2],
-      z: zi + tt[2][0] * yM[0] + tt[2][1] * yM[1] + tt[2][2] * yM[2]
+      x: tt[0][0] * yM[0] + tt[0][1] * yM[1] + tt[0][2] * yM[2],
+      y: tt[1][0] * yM[0] + tt[1][1] * yM[1] + tt[1][2] * yM[2],
+      z: tt[2][0] * yM[0] + tt[2][1] * yM[1] + tt[2][2] * yM[2]
     };
     const Z = {
-      x: xi + tt[0][0] * zM[0] + tt[0][1] * zM[1] + tt[0][2] * zM[2],
-      y: yi + tt[1][0] * zM[0] + tt[1][1] * zM[1] + tt[1][2] * zM[2],
-      z: zi + tt[2][0] * zM[0] + tt[2][1] * zM[1] + tt[2][2] * zM[2]
+      x: tt[0][0] * zM[0] + tt[0][1] * zM[1] + tt[0][2] * zM[2],
+      y: tt[1][0] * zM[0] + tt[1][1] * zM[1] + tt[1][2] * zM[2],
+      z: tt[2][0] * zM[0] + tt[2][1] * zM[1] + tt[2][2] * zM[2]
     };
     const result = {
       x: X,
@@ -246,6 +275,82 @@ export class ThreeMembersService {
     return tt;
   }
 
+    // マウス位置とぶつかったオブジェクトを検出する
+    public detectObject(raycaster: THREE.Raycaster , action: string): void {
+
+      if (this.memberList.length === 0) {
+        return; // 対象がなければ何もしない
+      }
+  
+      // 交差しているオブジェクトを取得
+      const intersects = raycaster.intersectObjects(this.memberList);
+  
+      switch (action) {
+        case 'click':
+          this.memberList.map(item => {
+            if (intersects.length > 0 && item === intersects[0].object) {
+              // 色を赤くする
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 1.00;
+            }
+          });
+          break;
+  
+        case 'select':
+          this.selectionItem = null;
+          this.memberList.map(item => {
+            if (intersects.length > 0 && item === intersects[0].object) {
+              // 色を赤くする
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 1.00;
+              this.selectionItem = item;
+
+            } else {
+              // それ以外は元の色にする
+              item.material['color'].setHex(0x000000);
+              item.material['opacity'] = 1.00;
+            }
+          });
+          // 選択されたアイテムの軸を表示する
+          if (this.selectionItem !== null ) {
+            this.axisList.map( item => {
+              const key: string = this.selectionItem.name + 'axis';
+              if (item.name === key) {
+                item.visible = true;
+              } else {
+                item.visible = false;
+              }
+            });
+          } else {
+            this.axisList.map( item => {
+              item.visible = false;
+            });
+          }
+          break;
+
+        case 'hover':
+          this.memberList.map(item => {
+            if (intersects.length > 0 && item === intersects[0].object) {
+              // 色を赤くする
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 0.25;
+            } else {
+              if ( item === this.selectionItem ) {
+                item.material['color'].setHex(0xff0000);
+                item.material['opacity'] = 1.00;
+              } else {
+                // それ以外は元の色にする
+                item.material['color'].setHex(0x000000);
+                item.material['opacity'] = 1.00;
+              }
+            }
+          });
+          break;
+  
+        default:
+          return;
+      }
+    }
 }
 
 

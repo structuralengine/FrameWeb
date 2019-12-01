@@ -37,17 +37,17 @@ export class SceneService {
                 deviceRatio: number,
                 Width: number,
                 Height: number): void {
-        // カメラ
-        this.createCamera(aspectRatio);
-        // 環境光源
-        this.add(new THREE.AmbientLight(0xf0f0f0));
-        // レンダラー
-        this.createRender(canvasElement,
-                          deviceRatio,
-                          Width,
-                          Height);
-        // コントロール
-        this.addControls();
+    // カメラ
+    this.createCamera(aspectRatio);
+    // 環境光源
+    this.add(new THREE.AmbientLight(0xf0f0f0));
+    // レンダラー
+    this.createRender(canvasElement,
+                      deviceRatio,
+                      Width,
+                      Height);
+    // コントロール
+    this.addControls();
   }
 
   // コントロール
@@ -136,7 +136,7 @@ export class SceneService {
       this.scene.add(obj);
     }
   }
-  
+
   // シーンのオブジェクトを削除する
   public remove(...threeObject: THREE.Object3D[]): void {
     for (const obj of threeObject) {

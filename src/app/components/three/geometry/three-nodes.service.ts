@@ -74,8 +74,8 @@ export class ThreeNodesService {
       } else {
         // 要素をシーンに追加
         const mesh = new THREE.Mesh(this.geometry,
-          new THREE.MeshLambertMaterial({ color: 0xff0000 }));
-        mesh.name = key;
+          new THREE.MeshLambertMaterial({ color: 0x000000 }));
+        mesh.name = 'node' + key;
         mesh.position.x = jsonData[key].x;
         mesh.position.y = jsonData[key].y;
         mesh.position.z = jsonData[key].z;
@@ -84,14 +84,14 @@ export class ThreeNodesService {
         scene.add(mesh);
 
         // 文字をシーンに追加
-        const moonDiv = document.createElement( 'div' );
-        moonDiv.className = 'label';
-        moonDiv.textContent = key;
-        moonDiv.style.marginTop = '-1em';
-        const moonLabel = new CSS2DObject( moonDiv );
-        moonLabel.position.set( 0, 0.27, 0 );
-        moonLabel.name = 'font';
-        mesh.add( moonLabel );
+        const div = document.createElement( 'div' );
+        div.className = 'label';
+        div.textContent = key;
+        div.style.marginTop = '-1em';
+        const label = new CSS2DObject( div );
+        label.position.set( 0, 0.27, 0 );
+        label.name = 'font';
+        mesh.add( label );
 
       }
     }
@@ -137,7 +137,7 @@ export class ThreeNodesService {
     // baseScale を決定する
     if (minDistance !== Number.MAX_VALUE) {
       // baseScale は最近点の 1/20 とする
-      this._baseScale = minDistance / 20;
+      this._baseScale = minDistance / 80;
     }
   }
 
