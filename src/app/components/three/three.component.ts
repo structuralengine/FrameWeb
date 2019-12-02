@@ -40,23 +40,10 @@ export class ThreeComponent implements AfterViewInit {
     const div = document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
 
-    // 床面を生成する
-    this.createHelper();
-
     // レンダリングする
-    this.scene.render();
+    this.scene.animate();
   }
 
-  // 床面を生成する
-  private createHelper() {
-    const axisHelper = new THREE.AxesHelper(200);
-    this.scene.add(axisHelper);
-    const floor = new THREE.GridHelper(200, 400);
-    floor.geometry.rotateX(Math.PI / 2);
-    floor.material['opacity'] = 0.2;
-    floor.material['transparent'] = true;
-    this.scene.add(floor);
-  }
 
   // マウスクリック時のイベント
   @HostListener('mousedown', ['$event'])

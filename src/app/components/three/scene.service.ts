@@ -22,6 +22,13 @@ export class SceneService {
   // カメラ
   private camera: THREE.PerspectiveCamera;
 
+  // helper
+  private axisHelper: THREE.AxesHelper;
+  private GridHelper: THREE.GridHelper;
+
+  // gui
+  private params: any;
+
   // 初期化
   public constructor() {
     // シーンを作成
@@ -30,6 +37,10 @@ export class SceneService {
     this.scene.background = new THREE.Color(0xf0f0f0);
     // レンダラーをバインド
     this.render = this.render.bind(this);
+    //
+    this.params = {
+      GridHelper: true
+    };
   }
 
   public OnInit(aspectRatio: number,
@@ -48,6 +59,33 @@ export class SceneService {
                       Height);
     // コントロール
     this.addControls();
+
+    // 床面を生成する
+    this.createHelper();
+
+    //
+    const gui = new GUI();
+    gui.add( this.params, 'GridHelper' ).onChange( ( value ) => {
+      // guiによる設定
+      this.axisHelper.visible = value;
+      this.GridHelper.visible = value;
+      this.render();
+    });
+    gui.open();
+    
+  }
+
+  // 床面を生成する
+  private createHelper() {
+    this.axisHelper = new THREE.AxesHelper(200);
+    this.scene.add(this.axisHelper);
+
+    this.GridHelper = new THREE.GridHelper(200, 400);
+    this.GridHelper.geometry.rotateX(Math.PI / 2);
+    this.GridHelper.material['opacity'] = 0.2;
+    this.GridHelper.material['transparent'] = true;
+    this.scene.add(this.GridHelper);
+
   }
 
   // コントロール
@@ -74,13 +112,6 @@ export class SceneService {
     );
     this.camera.position.set(0, -50, 20);
     this.scene.add(this.camera);
-
-    // const gui = new GUI();
-    // const self = this;
-    // gui.add( {tension: 0.5}, 'tension', 0, 1 ).step( 0.01 ).onChange( (value) => {
-    //   self.scale = value;
-    // } );
-
   }
 
   // レンダラーを初期化する
@@ -118,11 +149,15 @@ export class SceneService {
     this.render();
   }
 
+  public animate() {
+    requestAnimationFrame( this.animate );
+    this.render();
+  }
+
   // レンダリングする
   public render() {
     this.renderer.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
-
   }
 
   // レンダリングのサイズを取得する
