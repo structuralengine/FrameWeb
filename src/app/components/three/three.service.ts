@@ -35,13 +35,13 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
-  public chengeData(mode: string = ''): void {
+  public chengeData(mode: string = '', index: number = 0): void {
     if ( mode === 'fileLoad') {
       // ファイルを読み込んだ
       this.node.chengeData(this.scene);
       this.member.chengeData(this.scene);
-      this.pointLoad.chengeData(this.scene);
-      this.memberLoad.chengeData(this.scene);
+      this.pointLoad.chengeData(this.scene, index);
+      // this.memberLoad.chengeData(this.scene);
     } else {
       // 現在ん編集モードにおいてデータを変更した
       switch (this.mode) {
@@ -61,8 +61,8 @@ export class ThreeService {
           break;
 
         case 'loads':
-          this.pointLoad.chengeData(this.scene);
-          this.memberLoad.chengeData(this.scene);
+          this.pointLoad.chengeData(this.scene, index);
+          // this.memberLoad.chengeData(this.scene);
           break;
 
         case 'notice_points':
@@ -109,7 +109,7 @@ export class ThreeService {
     this.node.ClearData(this.scene);
     this.member.ClearData(this.scene);
     this.pointLoad.ClearData(this.scene);
-    this.memberLoad.ClearData(this.scene);
+    // this.memberLoad.ClearData(this.scene);
 
     // 再描画
     this.scene.render();

@@ -22,10 +22,18 @@ export class InputLoadService {
 
   public getLoadNameColumns(index: number): any {
 
+    let result = this.load_name.find( (tmp) => {
+      return tmp.id === index.toString();
+    });
+    if (result === undefined) {
+      result = { id: index, rate: '', symbol: '', name: '', fix_node: '', fix_member: '', element: '', joint: '' };
+      this.load_name.push(result);
+    }
+    return result;
+    /*
     let result: any = null;
-    for (let i = 0; i < this.load_name.length; i++) {
-      const tmp = this.load_name[i];
-      if (tmp['id'] === index.toString()) {
+    for ( const tmp of this.load_name) {
+      if (tmp.id === index.toString()) {
         result = tmp;
         break;
       }
@@ -36,6 +44,7 @@ export class InputLoadService {
       this.load_name.push(result);
     }
     return result;
+    */
   }
 
   public getLoadColumns(typNo: number, row: number): any {
@@ -293,7 +302,7 @@ export class InputLoadService {
   }
 
   // 節点荷重データ
-  private getNodeLoadJson(mode: string = 'file'): any {
+  public getNodeLoadJson(mode: string = 'file'): any {
 
     const targetCase = mode.replace('unity-loads:', '');
     const load_node = {};
