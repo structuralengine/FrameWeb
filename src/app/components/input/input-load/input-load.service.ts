@@ -317,8 +317,9 @@ export class InputLoadService {
       const tmp_node = new Array();
 
       const load: any[] = this.load[load_id];
-      for (let j = 0; j < load.length; j++) {
-        const row: {} = load[j];
+      for ( const row of load ) {
+      // for (let j = 0; j < load.length; j++) {
+        // const row: {} = load[j];
         const r = row['row'];
         const n = this.helper.toNumber(row['n']);
         let tx = this.helper.toNumber(row['tx']);
@@ -331,17 +332,17 @@ export class InputLoadService {
           rx != null || ry != null || rz != null)) {
 
           let item2 = {};
-          if (mode === 'calc') {
-            tx = (tx == null) ? 0 : tx;
-            ty = (ty == null) ? 0 : ty;
-            tz = (tz == null) ? 0 : tz;
-            rx = (rx == null) ? 0 : rx;
-            ry = (ry == null) ? 0 : ry;
-            rz = (rz == null) ? 0 : rz;
-            item2 = { n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
-          } else {
-            item2 = { row: r, n: row['n'], tx: row['tx'], ty: row['ty'], tz: row['tz'], rx: row['rx'], ry: row['ry'], rz: row['rz'] };
-          }
+          // if (mode === 'calc') {
+          tx = (tx == null) ? 0 : tx;
+          ty = (ty == null) ? 0 : ty;
+          tz = (tz == null) ? 0 : tz;
+          rx = (rx == null) ? 0 : rx;
+          ry = (ry == null) ? 0 : ry;
+          rz = (rz == null) ? 0 : rz;
+          item2 = { row: r, n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
+          // } else {
+          //   item2 = { row: r, n: row['n'], tx: row['tx'], ty: row['ty'], tz: row['tz'], rx: row['rx'], ry: row['ry'], rz: row['rz'] };
+          // }
           tmp_node.push(item2);
         }
       }
