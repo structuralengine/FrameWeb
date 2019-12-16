@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputFixMemberService } from './input-fix-member.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-fix-member',
@@ -13,16 +12,9 @@ export class InputFixMemberComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeModeData('unity-fix_members:' + this.page.toString());
-      }
-    }
-  };
+  hotTableSettings = {};
 
-  constructor(private data: InputFixMemberService,
-              private unity: UnityConnectorService) {
+  constructor(private data: InputFixMemberService) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -42,6 +34,5 @@ export class InputFixMemberComponent implements OnInit {
       const fix_member = this.data.getFixMemberColumns(this.page, i);
       this.dataset.push(fix_member);
     }
-    this.unity.ChengeMode('fix_members:' + currentPage.toString());
   }
 }

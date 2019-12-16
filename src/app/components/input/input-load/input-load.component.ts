@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-load',
@@ -16,15 +16,12 @@ export class InputLoadComponent implements OnInit {
   load_name: string;
 
   hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeModeData('unity-loads:' + this.page.toString());
-      }
-    }
-  };
+    afterChange: (...x: any[]) => {
+    this.three.chengeData('', this.page);
+  }};
 
   constructor(private data: InputLoadService,
-              private unity: UnityConnectorService) {
+              private three: ThreeService) {
     this.dataset = new Array();
   }
 
@@ -47,6 +44,6 @@ export class InputLoadComponent implements OnInit {
     const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
-    this.unity.ChengeMode('loads:' + currentPage.toString());
+    this.three.ChengeMode('loads', currentPage);
   }
 }

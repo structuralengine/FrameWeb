@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-load-name',
@@ -16,13 +16,13 @@ export class InputLoadNameComponent implements OnInit {
 
   hotTableSettings = {
     afterSelection: (hotInstance, row, column, row2, column2, preventScrolling, selectionLayerLevel) => {
-      this.unity.ChengeMode('loads:' + (row + 1).toString());
+    this.three.ChengeMode('loads', row + 1);
     }
   };
 
 
   constructor(private data: InputLoadService,
-              private unity: UnityConnectorService) {
+              private three: ThreeService) {
     this.page = 1;
   }
 

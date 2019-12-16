@@ -16,17 +16,17 @@ import { InputPickupService } from '../components/input/input-pickup/input-picku
 })
 export class InputDataService {
 
-  constructor(private combine: InputCombineService,
-    private define: InputDefineService,
-    private element: InputElementsService,
-    private fixmenber: InputFixMemberService,
-    private fixnode: InputFixNodeService,
-    private joint: InputJointService,
-    private load: InputLoadService,
-    private member: InputMembersService,
-    private node: InputNodesService,
-    private notice: InputNoticePointsService,
-    private pickup: InputPickupService) {
+  constructor(public combine: InputCombineService,
+              public define: InputDefineService,
+              public element: InputElementsService,
+              public fixmenber: InputFixMemberService,
+              public fixnode: InputFixNodeService,
+              public joint: InputJointService,
+              public load: InputLoadService,
+              public member: InputMembersService,
+              public node: InputNodesService,
+              public notice: InputNoticePointsService,
+              public pickup: InputPickupService) {
     this.clear();
   }
 
@@ -79,7 +79,7 @@ export class InputDataService {
     return result;
   }
 
-  private getInputJson(mode: string) {
+  public getInputJson(mode: string) {
     const jsonData = {};
 
     const node: {} = this.node.getNodeJson(mode);

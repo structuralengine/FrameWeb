@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { InputElementsService } from './input-elements.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 
 @Component({
   selector: 'app-input-elements',
@@ -14,16 +13,9 @@ export class InputElementsComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeModeData('unity-elements:' + this.page.toString());
-      }
-    }
-  };
+  hotTableSettings = { };
 
-  constructor(private data: InputElementsService,
-              private unity: UnityConnectorService) {
+  constructor(private data: InputElementsService) {
     
     this.dataset = new Array();
     this.page = 1;
@@ -43,6 +35,5 @@ export class InputElementsComponent implements OnInit {
       const element = this.data.getElementColumns(this.page, i);
       this.dataset.push(element);
     }
-    this.unity.ChengeMode('elements:' + currentPage.toString());
   }
 }

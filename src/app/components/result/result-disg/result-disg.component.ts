@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultDisgService } from './result-disg.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-result-disg',
@@ -17,7 +17,7 @@ export class ResultDisgComponent implements OnInit {
 
   constructor(private data: ResultDisgService,
               private load: InputLoadService,
-              private unity: UnityConnectorService) {
+              private three: ThreeService) {
     this.dataset = new Array();
   }
 
@@ -38,6 +38,6 @@ export class ResultDisgComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.unity.ChengeMode('disg:' + currentPage.toString());
+    this.three.ChengeMode('disg', currentPage);
   }
 }

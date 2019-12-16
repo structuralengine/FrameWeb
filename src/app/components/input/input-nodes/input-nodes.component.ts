@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputNodesService } from './input-nodes.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-nodes',
@@ -16,8 +16,16 @@ export class InputNodesComponent implements OnInit {
   public page: number;
 
   hotTableSettings = {
-    beforeChange: (source, changes) => {
+    beforeChange: (...x: any[]) => {
       try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
         for (let i = 0; i < changes.length; i++) {
           const value: number = this.helper.toNumber(changes[i][3]);
           changes[i][3] = value.toFixed(3);
@@ -26,22 +34,20 @@ export class InputNodesComponent implements OnInit {
         console.log(e);
       }
     },
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeModeData('unity-nodes');
-      }
+    afterChange: (...x: any[]) => {
+      this.three.chengeData();
     }
   };
 
   constructor(private data: InputNodesService,
-              private unity: UnityConnectorService,
-              private helper: DataHelperModule) {
+    private helper: DataHelperModule,
+    private three: ThreeService) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
-    this.unity.ChengeMode('nodes');
+    this.three.ChengeMode('nodes');
   }
 
   loadPage(currentPage: number) {

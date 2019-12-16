@@ -20,8 +20,7 @@ export class InputMembersService {
   public getMemberColumns(index: number): any {
 
     let result: any = null;
-    for (let i = 0; i < this.member.length; i++) {
-      const tmp = this.member[i];
+    for ( const tmp of this.member) {
       if (tmp['id'].toString() === index.toString()) {
         result = tmp;
         break;
@@ -88,7 +87,7 @@ export class InputMembersService {
   public getNodeNo(memberNo: string) {
     const jsonData = { ni: '', nj: '' };
 
-    const memberList: {} = this.getMemberJson('unity-members');
+    const memberList: {} = this.getMemberJson('calc');
     if (Object.keys(memberList).length <= 0) {
       return jsonData;
     }
@@ -124,4 +123,6 @@ export class InputMembersService {
     return result;
 
   }
+
+
 }

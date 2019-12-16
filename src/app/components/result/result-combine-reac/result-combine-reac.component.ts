@@ -3,7 +3,7 @@ import { ResultCombineReacService } from './result-combine-reac.service';
 import { ResultReacService } from '../result-reac/result-reac.service';
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-result-combine-reac',
@@ -25,7 +25,7 @@ export class ResultCombineReacComponent implements OnInit {
               private fsec: ResultReacService,
               private comb: InputCombineService,
               private result: ResultDataService,
-              private unity: UnityConnectorService) {
+              private three: ThreeService) {
     this.dataset = new Array();
   }
 
@@ -49,6 +49,6 @@ export class ResultCombineReacComponent implements OnInit {
     }
     this.load_name = this.comb.getCombineName(currentPage);
 
-    this.unity.ChengeMode('comb_reac:' + currentPage.toString());
+    this.three.ChengeMode('comb_reac', currentPage);
   }
 }

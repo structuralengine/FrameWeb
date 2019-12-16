@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultReacService } from './result-reac.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-result-reac',
@@ -17,7 +17,7 @@ export class ResultReacComponent implements OnInit {
 
   constructor(private data: ResultReacService,
               private load: InputLoadService,
-              private unity: UnityConnectorService) {
+              private three: ThreeService) {
     this.dataset = new Array();
   }
 
@@ -38,6 +38,6 @@ export class ResultReacComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.unity.ChengeMode('reac:' + currentPage.toString());
+    this.three.ChengeMode('reac', currentPage);
   }
 }

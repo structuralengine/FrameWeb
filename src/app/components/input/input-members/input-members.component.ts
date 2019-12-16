@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from './input-members.service';
-import { UnityConnectorService } from '../../../unity/unity-connector.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-members',
@@ -15,48 +15,58 @@ export class InputMembersComponent implements OnInit {
   page: number;
 
   hotTableSettings = {
-    afterChange: (hotInstance, changes, source) => {
-      if (changes != null) {
-        this.unity.chengeModeData('unity-members');
-        try {
-          for (let i = 0; i < changes.length; i++) {
-            const target = changes[i];
-            const row: number = target[0];
-            const column: string = target[1];
-            const old_value: any = target[2];
-            const new_value: any = target[3];
-            if (column !== 'ni' && column !== 'nj') {
-              continue;
-            }
-            if (old_value === new_value) {
-              continue;
-            }
-            const member: {} = this.dataset[row];
-            const m: string = member['id'];
-            if (m === '') {
-              continue;
-            }
-            const l: number = this.data.getMemberLength(m);
-            if (l != null) {
-              this.dataset[row]['L'] = l.toFixed(3);
-              hotInstance.render();
-            }
-          }
-        } catch (e) {
-          console.log(e);
+    afterChange: (...x: any[]) => {
+      let hotInstance: any;
+      let changes: any = undefined;
+      for (let i = 0; i < x.length; i++) {
+        if (Array.isArray(x[i])) {
+          hotInstance = x[i - 1];
+          changes = x[i];
+          break;
         }
       }
+      if (changes === undefined) {
+        return ;
+      }
+      try {
+        for (const target of changes) {
+          const row: number = target[0];
+          const column: string = target[1];
+          const old_value: any = target[2];
+          const new_value: any = target[3];
+          if (column !== 'ni' && column !== 'nj') {
+            continue;
+          }
+          if (old_value === new_value) {
+            continue;
+          }
+          const member: {} = this.dataset[row];
+          const m: string = member['id'];
+          if (m === '') {
+            continue;
+          }
+          const l: number = this.data.getMemberLength(m);
+          if (l != null) {
+            this.dataset[row]['L'] = l.toFixed(3);
+            hotInstance.render();
+          }
+        }
+        this.three.chengeData();
+      } catch (e) {
+        console.log(e);
+      }
+
     }
   };
 
   constructor(private data: InputMembersService,
-              private unity: UnityConnectorService) {
+              private three: ThreeService) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
-    this.unity.ChengeMode('members');
+    this.three.ChengeMode('members');
   }
 
   loadPage(currentPage: number) {
