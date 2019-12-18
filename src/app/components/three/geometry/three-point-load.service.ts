@@ -5,6 +5,7 @@ import { InputMembersService } from '../../../components/input/input-members/inp
 import { InputLoadService } from '../../../components/input/input-load/input-load.service';
 import { ThreeNodesService } from './three-nodes.service';
 import * as THREE from 'three';
+import { ThreeService } from '../three.service';
 
 @Injectable({
   providedIn: 'root'
@@ -117,13 +118,15 @@ export class ThreePointLoadService {
   // 節点荷重の矢印を作成する
   private setMomentLoad(value: number, mMax: number, node: any, color: number, name: string): THREE.Line {
 
-    if (Math.sign(value) === 0) {
+    if (value === 0) {
       return null;
     }
 
+    const length: number = value / mMax;
+
     const curve = new THREE.EllipseCurve(
       0,  0,            // ax, aY
-      10, 10,           // xRadius, yRadius
+      length, length,           // xRadius, yRadius
       0,  1.5 * Math.PI,  // aStartAngle, aEndAngle
       false,            // aClockwise
       0                 // aRotation
@@ -131,43 +134,49 @@ export class ThreePointLoadService {
 
     const points = curve.getPoints( 50 );
     const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
     const material = new THREE.LineBasicMaterial( { color } );
 
-    // Create the final object to add to the scene
-    const ellipse = new THREE.Line( geometry, material );
-    ellipse.position.x = node.x;
-    ellipse.position.y = node.y;
-    ellipse.position.z = node.z;
-
-    return ellipse;
-
-    const length: number = value / mMax;
     let vector: THREE.Vector3;
     let origin: THREE.Vector3;
+    let ellipse: THREE.Line;
     switch (name) {
       case 'mx':
-        vector = new THREE.Vector3(Math.sign(value) * 1, 0, 0);
-        origin = new THREE.Vector3(node.x - length, node.y, node.z);
-        break;
-      case 'my':
-        vector = new THREE.Vector3(0, Math.sign(value) * 1, 0);
-        origin = new THREE.Vector3(node.x, node.y - length, node.z);
-        break;
-      case 'mz':
+        geometry.rotateX(Math.PI / 2);
+        geometry.rotateZ(Math.PI / 2);
+        ellipse = new THREE.Line( geometry, material );
+        ellipse.position.set(node.x,  node.y,  node.z);
         vector = new THREE.Vector3(0, 0, Math.sign(value) * 1);
         origin = new THREE.Vector3(node.x, node.y, node.z - length);
         break;
+      case 'my':
+        geometry.rotateX(Math.PI / 2);
+        ellipse = new THREE.Line( geometry, material );
+        ellipse.position.set(node.x,  node.y,  node.z);
+        vector = new THREE.Vector3(Math.sign(value) * 1, 0, 0);
+        origin = new THREE.Vector3(node.x - length, node.y, node.z);
+        break;
+      case 'mz':
+        ellipse = new THREE.Line( geometry, material );
+        ellipse.position.set(node.x,  node.y,  node.z);
+        vector = new THREE.Vector3(0, Math.sign(value) * 1, 0);
+        origin = new THREE.Vector3(node.x, node.y - length, node.z);
+        break;
     }
+
+
     const Arrow = new THREE.ArrowHelper(vector, origin, Math.abs(length), color);
-    Arrow.name = name;
-    // return Arrow;
+    Arrow.name = 'Arrow';
+
+    ellipse.add(Arrow);
+
+    return ellipse;
+
   }
 
   // 節点荷重の矢印を作成する
   private setPointLoad(value: number, pMax: number, node: any, color: number, name: string): THREE.ArrowHelper {
 
-    if (Math.sign(value) === 0) {
+    if (value === 0) {
       return null;
     }
 
