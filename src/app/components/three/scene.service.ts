@@ -72,7 +72,6 @@ export class SceneService {
       this.render();
     });
     gui.open();
-    
   }
 
   // 床面を生成する
@@ -146,11 +145,6 @@ export class SceneService {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(Width, Height);
     this.labelRenderer.setSize(Width, Height);
-    this.render();
-  }
-
-  public animate() {
-    requestAnimationFrame( this.animate );
     this.render();
   }
 

@@ -106,10 +106,24 @@ export class ThreePointLoadService {
       }
 
       // x軸周りのモーメント
-      const xMoment = this.setMomentLoad(load.rx, mMax / scale, i, 0xFF0000, 'mx');
+      const xMoment = this.setMomentLoad(load.rx, mMax, i, 0xFF0000, 'mx');
       if (xMoment !== null) {
         this.pointLoadList.push(xMoment);
         scene.add(xMoment);
+      }
+
+      // y軸周りのモーメント
+      const yMoment = this.setMomentLoad(load.ry, mMax, i, 0x00FF00, 'my');
+      if (yMoment !== null) {
+        this.pointLoadList.push(yMoment);
+        scene.add(yMoment);
+      }
+
+      // z軸周りのモーメント
+      const zMoment = this.setMomentLoad(load.rz, mMax, i, 0x0000FF, 'mz');
+      if (zMoment !== null) {
+        this.pointLoadList.push(zMoment);
+        scene.add(zMoment);
       }
 
     }
@@ -122,52 +136,44 @@ export class ThreePointLoadService {
       return null;
     }
 
-    const length: number = value / mMax;
-
     const curve = new THREE.EllipseCurve(
-      0,  0,            // ax, aY
-      length, length,           // xRadius, yRadius
+      0,  0,              // ax, aY
+      8, 8,     // xRadius, yRadius
       0,  1.5 * Math.PI,  // aStartAngle, aEndAngle
-      false,            // aClockwise
-      0                 // aRotation
+      false,              // aClockwise
+      0                   // aRotation
     );
 
     const points = curve.getPoints( 50 );
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    const material = new THREE.LineBasicMaterial( { color } );
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+    const lineMaterial = new THREE.LineBasicMaterial( { color } );
+    const ellipse = new THREE.Line( lineGeometry, lineMaterial );
 
-    let vector: THREE.Vector3;
-    let origin: THREE.Vector3;
-    let ellipse: THREE.Line;
+    const arrowGeometry = new THREE.ConeGeometry( 0.1, 1, 3, 1, true );
+    const arrowMaterial = new THREE.MeshBasicMaterial( {color} );
+    const cone = new THREE.Mesh( arrowGeometry, arrowMaterial );
+    cone.rotateX(Math.PI);
+    cone.position.set(8, 0.5, 0);
+
+    ellipse.add(cone);
+    ellipse.position.set(node.x,  node.y,  node.z);
+
     switch (name) {
       case 'mx':
-        geometry.rotateX(Math.PI / 2);
-        geometry.rotateZ(Math.PI / 2);
-        ellipse = new THREE.Line( geometry, material );
-        ellipse.position.set(node.x,  node.y,  node.z);
-        vector = new THREE.Vector3(0, 0, Math.sign(value) * 1);
-        origin = new THREE.Vector3(node.x, node.y, node.z - length);
+        ellipse.rotateX(Math.PI / 2);
+        ellipse.rotateY(Math.PI / 2);
         break;
       case 'my':
-        geometry.rotateX(Math.PI / 2);
-        ellipse = new THREE.Line( geometry, material );
-        ellipse.position.set(node.x,  node.y,  node.z);
-        vector = new THREE.Vector3(Math.sign(value) * 1, 0, 0);
-        origin = new THREE.Vector3(node.x - length, node.y, node.z);
+        ellipse.rotateX(Math.PI / 2);
         break;
       case 'mz':
-        ellipse = new THREE.Line( geometry, material );
-        ellipse.position.set(node.x,  node.y,  node.z);
-        vector = new THREE.Vector3(0, Math.sign(value) * 1, 0);
-        origin = new THREE.Vector3(node.x, node.y - length, node.z);
+        // 何もしない
         break;
     }
 
-
-    const Arrow = new THREE.ArrowHelper(vector, origin, Math.abs(length), color);
-    Arrow.name = 'Arrow';
-
-    ellipse.add(Arrow);
+    let scale: number = value / mMax;
+    scale /= 8;
+    ellipse.scale.set(scale, scale, scale);
 
     return ellipse;
 
