@@ -77,7 +77,7 @@ export class SceneService {
 
   // 床面を生成する
   private createHelper() {
-    this.axisHelper = new THREE.AxesHelper(200);
+    this.axisHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axisHelper);
 
     this.GridHelper = new THREE.GridHelper(200, 400);
