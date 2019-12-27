@@ -195,7 +195,7 @@ export class ThreePointLoadService {
     const maxLength: number = this.maxLength() * 0.7;
     const length: number = maxLength * value / pMax;
 
-    const linewidth: number = this.nodeThree.baseScale() / 1000;
+    const linewidth: number = this.nodeThree.baseScale() / 10;
 
     let color: number;
     const positions = [];
