@@ -4,6 +4,13 @@ import { InputNodesService } from '../../../components/input/input-nodes/input-n
 import { InputMembersService } from '../../../components/input/input-members/input-members.service';
 import { InputLoadService } from '../../../components/input/input-load/input-load.service';
 import { ThreeNodesService } from './three-nodes.service';
+
+import { OrbitControls } from '../libs/OrbitControls.js';
+import { Line2 } from '../libs/Line2.js';
+import { LineMaterial } from '../libs/LineMaterial.js';
+import { LineGeometry } from '../libs/LineGeometry.js';
+import { GeometryUtils } from '../libs/GeometryUtils.js';
+
 import * as THREE from 'three';
 import { ThreeService } from '../three.service';
 
@@ -23,9 +30,9 @@ export class ThreePointLoadService {
     this.selectionItem = null;
   }
 
-  public baseScale(): number {
-    const scale = this.nodeThree.baseScale() * 80; // 最も距離の近い2つの節点距離
-    return scale * 0.75; // 最も値の大きい荷重の大きさ
+  public maxLength(): number {
+    // 最も距離の近い2つの節点距離
+    return this.nodeThree.baseScale() * 80;
   }
 
   public chengeData(scene: SceneService, index: number): void {
@@ -77,50 +84,60 @@ export class ThreePointLoadService {
       mMax = Math.max(mMax, Math.abs(load.rz));
     }
 
-    const scale: number = this.baseScale();
-
     // 集中荷重の矢印をシーンに追加する
     for (const load of targetNodeLoad) {
       // 節点座標 を 取得する
-      const i = nodeData[load.n];
-      if (i === undefined) {
+      const node = nodeData[load.n];
+      if (node === undefined) {
         continue;
       }
       // x方向の集中荷重
-      const xArrow = this.setPointLoad(load.tx, pMax / scale, i, 0xFF0000, 'px');
+      const xArrow: Line2 = this.setPointLoad(load.tx, pMax, node, 'px');
       if (xArrow !== null) {
         this.pointLoadList.push(xArrow);
         scene.add(xArrow);
       }
       // y方向の集中荷重
-      const yArrow = this.setPointLoad(load.ty, pMax / scale, i, 0x00FF00, 'py');
+      const yArrow: Line2 = this.setPointLoad(load.ty, pMax, node, 'py');
       if (yArrow !== null) {
         this.pointLoadList.push(yArrow);
         scene.add(yArrow);
       }
       // z方向の集中荷重
-      const zArrow = this.setPointLoad(load.tz, pMax / scale, i, 0x0000FF, 'pz');
+      const zArrow: Line2 = this.setPointLoad(load.tz, pMax, node, 'pz');
       if (zArrow !== null) {
         this.pointLoadList.push(zArrow);
         scene.add(zArrow);
       }
 
       // x軸周りのモーメント
+<<<<<<< HEAD
       const xMoment = this.setMomentLoad(load.rx, mMax, i, 0xFF0000, 'mx');
+=======
+      const xMoment = this.setMomentLoad(load.rx, mMax, node, 0xFF0000, 'mx');
+>>>>>>> develop
       if (xMoment !== null) {
         this.pointLoadList.push(xMoment);
         scene.add(xMoment);
       }
 
       // y軸周りのモーメント
+<<<<<<< HEAD
       const yMoment = this.setMomentLoad(load.ry, mMax, i, 0x00FF00, 'my');
+=======
+      const yMoment = this.setMomentLoad(load.ry, mMax, node, 0x00FF00, 'my');
+>>>>>>> develop
       if (yMoment !== null) {
         this.pointLoadList.push(yMoment);
         scene.add(yMoment);
       }
 
       // z軸周りのモーメント
+<<<<<<< HEAD
       const zMoment = this.setMomentLoad(load.rz, mMax, i, 0x0000FF, 'mz');
+=======
+      const zMoment = this.setMomentLoad(load.rz, mMax, node, 0x0000FF, 'mz');
+>>>>>>> develop
       if (zMoment !== null) {
         this.pointLoadList.push(zMoment);
         scene.add(zMoment);
@@ -146,7 +163,11 @@ export class ThreePointLoadService {
 
     const points = curve.getPoints( 50 );
     const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+<<<<<<< HEAD
     const lineMaterial = new THREE.LineBasicMaterial( { color } );
+=======
+    const lineMaterial = new THREE.LineBasicMaterial( { color, linewidth: 5 } );
+>>>>>>> develop
     const ellipse = new THREE.Line( lineGeometry, lineMaterial );
 
     const arrowGeometry = new THREE.ConeGeometry( 0.1, 1, 3, 1, true );
@@ -180,13 +201,69 @@ export class ThreePointLoadService {
   }
 
   // 節点荷重の矢印を作成する
-  private setPointLoad(value: number, pMax: number, node: any, color: number, name: string): THREE.ArrowHelper {
+  private setPointLoad(value: number, pMax: number,
+                       node: any, name: string): Line2 {
 
     if (value === 0) {
       return null;
     }
 
-    const length: number = value / pMax;
+    const maxLength: number = this.maxLength() * 0.7;
+    const length: number = maxLength * value / pMax;
+
+    const linewidth: number = this.nodeThree.baseScale() / 1000;
+
+    let color: number;
+    const positions = [];
+
+
+    positions.push( node.x, node.y, node.z );
+    switch (name) {
+      case 'px':
+        positions.push(node.x - length, node.y, node.z);
+        color = 0xFF0000;
+        break;
+      case 'py':
+        positions.push(node.x, node.y - length, node.z);
+        color = 0x00FF00;
+        break;
+      case 'pz':
+        positions.push(node.x, node.y, node.z - length);
+        color = 0x0000FF;
+        break;
+    }
+    const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry( 0.1, 1, 3, 1, true );
+    const arrowMaterial = new THREE.MeshBasicMaterial( {color} );
+    const cone: THREE.Mesh = new THREE.Mesh( arrowGeometry, arrowMaterial );
+    cone.position.set(node.x, node.y, node.z);
+
+    const threeColor = new THREE.Color(0xFF0000);
+    const colors = [];
+    colors.push( threeColor.r, threeColor.g, threeColor.b );
+    colors.push( threeColor.r, threeColor.g, threeColor.b );
+
+    const geometry: LineGeometry = new LineGeometry();
+    geometry.setPositions( positions );
+    geometry.setColors( colors );
+
+    const matLine: LineMaterial = new LineMaterial( {
+      color,
+      linewidth,
+      vertexColors: THREE.VertexColors,
+      dashed: false
+    } );
+    const line: Line2 = new Line2( geometry, matLine );
+    line.computeLineDistances();
+    line.add(cone);
+
+    line.scale.set( 1, 1, 1 );
+    line.name = name;
+
+
+    return line;
+
+    /*
+    // const length: number = value / pMax;
     let vector: THREE.Vector3;
     let origin: THREE.Vector3;
     switch (name) {
@@ -206,6 +283,7 @@ export class ThreePointLoadService {
     const Arrow = new THREE.ArrowHelper(vector, origin, Math.abs(length), color);
     Arrow.name = name;
     return Arrow;
+    */
   }
 
   // データをクリアする
