@@ -72,12 +72,11 @@ export class SceneService {
       this.render();
     });
     gui.open();
-    
   }
 
   // 床面を生成する
   private createHelper() {
-    this.axisHelper = new THREE.AxesHelper(100);
+    this.axisHelper = new THREE.AxesHelper(200);
     this.scene.add(this.axisHelper);
 
     this.GridHelper = new THREE.GridHelper(200, 400);
@@ -146,11 +145,6 @@ export class SceneService {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(Width, Height);
     this.labelRenderer.setSize(Width, Height);
-    this.render();
-  }
-
-  public animate() {
-    requestAnimationFrame( this.animate );
     this.render();
   }
 

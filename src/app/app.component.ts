@@ -11,9 +11,7 @@ export class AppComponent implements OnInit {
   isContentsDailogShow: boolean;
   isCalculated: boolean;
 
-  constructor(private _router: Router) { 
-    
-  }
+  constructor(private _router: Router) { }
 
   ngOnInit() {
     this.isContentsDailogShow = false;

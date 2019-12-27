@@ -12,7 +12,7 @@ import { ThreeService } from '../../three/three.service';
 export class InputNodesComponent implements OnInit {
 
   public ROWS_COUNT: number = 20;
-  public dataset = [[], [], []];
+  public dataset = [[], []];
   public page: number;
 
   hotTableSettings = {

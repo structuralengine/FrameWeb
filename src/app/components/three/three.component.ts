@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener, Renderer2, NgZone } from '@angular/core';
 import * as THREE from 'three';
 
 import Stats from './libs/stats.module.js';
@@ -23,7 +23,8 @@ export class ThreeComponent implements AfterViewInit {
     return this.canvasRef.nativeElement;
   }
 
-  constructor(private scene: SceneService,
+  constructor(private ngZone: NgZone,
+              private scene: SceneService,
               private three: ThreeService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
   }
@@ -41,9 +42,18 @@ export class ThreeComponent implements AfterViewInit {
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
 
     // レンダリングする
-    this.scene.animate();
+    this.animate();
   }
 
+  animate(): void {
+    // We have to run this outside angular zones,
+    // because it could trigger heavy changeDetection cycles.
+    this.ngZone.runOutsideAngular(() => {
+      window.addEventListener('DOMContentLoaded', () => {
+      this.scene.render();
+      });
+    });
+  }
 
   // マウスクリック時のイベント
   @HostListener('mousedown', ['$event'])
