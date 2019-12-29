@@ -56,12 +56,12 @@ export class ResultDisgService {
         let rx: number = this.helper.toNumber(item['rx']);
         let ry: number = this.helper.toNumber(item['ry']);
         let rz: number = this.helper.toNumber(item['rz']);
-        dx = (dx == null) ? 0 : dx;
-        dy = (dy == null) ? 0 : dy;
-        dz = (dz == null) ? 0 : dz;
-        rx = (rx == null) ? 0 : rx;
-        ry = (ry == null) ? 0 : ry;
-        rz = (rz == null) ? 0 : rz;
+        dx = (dx == null) ? 0 : dx * 1000;
+        dy = (dy == null) ? 0 : dy * 1000;
+        dz = (dz == null) ? 0 : dz * 1000;
+        rx = (rx == null) ? 0 : rx * 1000;
+        ry = (ry == null) ? 0 : ry * 1000;
+        rz = (rz == null) ? 0 : rz * 1000;
         const result = {
           id: n,
           dx: dx.toFixed(3),

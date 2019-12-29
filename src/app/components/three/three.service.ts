@@ -13,6 +13,10 @@ import { ThreeJointService } from './geometry/three-joint.service';
 import { ThreePointLoadService } from './geometry/three-point-load.service';
 import { ThreeMemberLoadService } from './geometry/three-member-load.service';
 
+import { ThreeDisplacementService } from './geometry/three-displacement.service';
+import { ThreeSectionForceService } from './geometry/three-section-force.service';
+import { ThreeReactService } from './geometry/three-react.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,7 +32,10 @@ export class ThreeService {
               private fixMember: ThreeFixMemberService,
               private joint: ThreeJointService,
               private pointLoad: ThreePointLoadService,
-              private memberLoad: ThreeMemberLoadService
+              private memberLoad: ThreeMemberLoadService,
+              private disg: ThreeDisplacementService,
+              private reac: ThreeReactService,
+              private fsec: ThreeSectionForceService
               ) {
     }
 
@@ -36,13 +43,19 @@ export class ThreeService {
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
   public chengeData(mode: string = '', index: number = 0): void {
-    if ( mode === 'fileLoad') {
+    switch ( mode ) {
+      case 'fileLoad':
       // ファイルを読み込んだ
       this.node.chengeData(this.scene);
       this.member.chengeData(this.scene);
       this.pointLoad.chengeData(this.scene, index);
       // this.memberLoad.chengeData(this.scene);
-    } else {
+      break;
+      case 'result':
+
+      break;
+
+    default:
       // 現在ん編集モードにおいてデータを変更した
       switch (this.mode) {
         case 'nodes': // 節点データの更新
@@ -78,6 +91,7 @@ export class ThreeService {
           break;
 
         case 'disg':
+          this.disg.chengeData(this.scene, index);
           break;
 
         case 'fsec':
@@ -110,6 +124,7 @@ export class ThreeService {
     this.member.ClearData(this.scene);
     this.pointLoad.ClearData(this.scene);
     // this.memberLoad.ClearData(this.scene);
+    this.disg.ClearData(this.scene);
 
     // 再描画
     this.scene.render();
@@ -157,6 +172,15 @@ export class ThreeService {
 
     } else {
 
+    }
+
+    if ( this.mode === 'disg'
+    || this.mode === 'comb_disg'
+    || this.mode === 'pik_disg'
+    ) {
+      this.disg.Enable();
+    } else {
+      this.disg.Disable();
     }
 
     // 再描画
