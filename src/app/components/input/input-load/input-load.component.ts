@@ -38,12 +38,14 @@ export class InputLoadComponent implements OnInit {
     }
     this.dataset = new Array();
     for (let i = 1; i <= this.ROWS_COUNT; i++) {
-      const load_name = this.data.getLoadColumns(this.page, i);
-      this.dataset.push(load_name)
+      const loadColumn = this.data.getLoadColumns(this.page, i);
+      this.dataset.push(loadColumn)
     }
     const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
     this.three.ChengeMode('loads', currentPage);
   }
+
+
 }

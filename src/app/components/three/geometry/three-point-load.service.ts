@@ -221,7 +221,7 @@ export class ThreePointLoadService {
     const cone: THREE.Mesh = new THREE.Mesh( arrowGeometry, arrowMaterial );
     cone.position.set(node.x, node.y, node.z);
 
-    const threeColor = new THREE.Color(0xFF0000);
+    const threeColor = new THREE.Color(color);
     const colors = [];
     colors.push( threeColor.r, threeColor.g, threeColor.b );
     colors.push( threeColor.r, threeColor.g, threeColor.b );

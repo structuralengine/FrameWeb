@@ -178,9 +178,9 @@ export class ThreeService {
     || this.mode === 'comb_disg'
     || this.mode === 'pik_disg'
     ) {
-      this.disg.Enable();
+      this.disg.chengeData(this.scene, 1);
     } else {
-      this.disg.Disable();
+      this.disg.ClearData(this.scene);
     }
 
     // 再描画
