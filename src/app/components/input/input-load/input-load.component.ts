@@ -39,7 +39,7 @@ export class InputLoadComponent implements OnInit {
     this.dataset = new Array();
     for (let i = 1; i <= this.ROWS_COUNT; i++) {
       const loadColumn = this.data.getLoadColumns(this.page, i);
-      this.dataset.push(loadColumn)
+      this.dataset.push(loadColumn);
     }
     const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];

@@ -34,6 +34,29 @@
 
 <div class="tabset">
 <ngb-tabset>
+  <ngb-tab title="節点荷重">
+    <ng-template ngbTabContent>
+      <div class="datasheet">
+        <hot-table
+          class="hot"
+          [data]="dataset"
+          [colHeaders]="true"
+          [rowHeaders]="true"
+          [width]="900"
+          [height]="500"
+          [settings]="hotTableSettings"
+        >
+          <hot-column data="n" title="節点"></hot-column>
+          <hot-column data="tx" title="X"></hot-column>
+          <hot-column data="ty" title="Y"></hot-column>
+          <hot-column data="tz" title="Z"></hot-column>
+          <hot-column data="rx" title="RX"></hot-column>
+          <hot-column data="ry" title="RY"></hot-column>
+          <hot-column data="rz" title="RZ"></hot-column>
+        </hot-table>
+      </div>
+    </ng-template>
+  </ngb-tab>
   <ngb-tab title="要素荷重">
     <ng-template ngbTabContent>
       <div class="datasheet">
@@ -55,45 +78,6 @@
           <hot-column data="P1" title="P1"></hot-column>
           <hot-column data="P2" title="P2"></hot-column>
 
-          <hot-column data="n" title="節点"></hot-column>
-          <hot-column data="tx" title="X"></hot-column>
-          <hot-column data="ty" title="Y"></hot-column>
-          <hot-column data="tz" title="Z"></hot-column>
-          <hot-column data="rx" title="RX"></hot-column>
-          <hot-column data="ry" title="RY"></hot-column>
-          <hot-column data="rz" title="RZ"></hot-column>
-        </hot-table>
-      </div>
-    </ng-template>
-  </ngb-tab>
-  <ngb-tab title="節点荷重">
-    <ng-template ngbTabContent>
-      <div class="datasheet">
-        <hot-table
-          class="hot"
-          [data]="dataset"
-          [colHeaders]="true"
-          [rowHeaders]="true"
-          [width]="900"
-          [height]="500"
-          [settings]="hotTableSettings"
-        >
-          <hot-column data="m1" title="部材1"></hot-column>
-          <hot-column data="m2" title="部材2"></hot-column>
-          <hot-column data="direction" title="方向"></hot-column>
-          <hot-column data="mark" title="マーク"></hot-column>
-          <hot-column data="L1" title="L1"></hot-column>
-          <hot-column data="L2" title="L2"></hot-column>
-          <hot-column data="P1" title="P1"></hot-column>
-          <hot-column data="P2" title="P2"></hot-column>
-
-          <hot-column data="n" title="節点"></hot-column>
-          <hot-column data="tx" title="X"></hot-column>
-          <hot-column data="ty" title="Y"></hot-column>
-          <hot-column data="tz" title="Z"></hot-column>
-          <hot-column data="rx" title="RX"></hot-column>
-          <hot-column data="ry" title="RY"></hot-column>
-          <hot-column data="rz" title="RZ"></hot-column>
         </hot-table>
       </div>
     </ng-template>

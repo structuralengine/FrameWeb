@@ -26,11 +26,16 @@
 .tabset {
     margin-left: 15px;
     z-index: 110;
-
+    cursor: auto;
 }
 
 .datasheet{
     padding-left: 15px;
     padding-right: 5px;
     padding-bottom: 10px;
+}
+
+.nav-item{
+  z-index: 110;
+  cursor: auto;
 }
