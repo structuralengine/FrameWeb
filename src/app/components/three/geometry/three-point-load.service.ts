@@ -143,7 +143,7 @@ export class ThreePointLoadService {
 
     const curve = new THREE.EllipseCurve(
       0,  0,              // ax, aY
-      8, 8,     // xRadius, yRadius
+      4, 4,               // xRadius, yRadius
       0,  1.5 * Math.PI,  // aStartAngle, aEndAngle
       false,              // aClockwise
       0                   // aRotation
@@ -158,7 +158,7 @@ export class ThreePointLoadService {
     const arrowMaterial = new THREE.MeshBasicMaterial( {color} );
     const cone = new THREE.Mesh( arrowGeometry, arrowMaterial );
     cone.rotateX(Math.PI);
-    cone.position.set(8, 0.5, 0);
+    cone.position.set(4, 0.5, 0);
 
     ellipse.add(cone);
     ellipse.position.set(node.x,  node.y,  node.z);
@@ -216,19 +216,23 @@ export class ThreePointLoadService {
         color = 0x0000FF;
         break;
     }
-    const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry( 0.1, 1, 3, 1, true );
+    const cone_scale: number = length * 0.1;
+    const cone_radius: number = 0.1 * cone_scale;
+    const cone_height: number = 1 * cone_scale;
+    const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry( cone_radius, cone_height, 3, 1, true );
     const arrowMaterial = new THREE.MeshBasicMaterial( {color} );
     const cone: THREE.Mesh = new THREE.Mesh( arrowGeometry, arrowMaterial );
-    cone.position.set(node.x, node.y, node.z);
     switch (name) {
       case 'px':
-        cone.rotation.z = Math.PI/2*3;
+        cone.position.set(node.x - cone_height / 2, node.y, node.z);
+        cone.rotation.z = Math.PI / 2 * 3;
         break;
       case 'py':
-        null;
+        cone.position.set(node.x, node.y - cone_height / 2, node.z);
         break;
       case 'pz':
-        cone.rotation.x = Math.PI/2;
+        cone.position.set(node.x, node.y, node.z - cone_height / 2);
+        cone.rotation.x = Math.PI / 2;
         break;
     }
 
@@ -254,31 +258,8 @@ export class ThreePointLoadService {
     line.scale.set( 1, 1, 1 );
     line.name = name;
 
-
     return line;
 
-    /*
-    // const length: number = value / pMax;
-    let vector: THREE.Vector3;
-    let origin: THREE.Vector3;
-    switch (name) {
-      case 'px':
-        vector = new THREE.Vector3(Math.sign(value) * 1, 0, 0);
-        origin = new THREE.Vector3(node.x - length, node.y, node.z);
-        break;
-      case 'py':
-        vector = new THREE.Vector3(0, Math.sign(value) * 1, 0);
-        origin = new THREE.Vector3(node.x, node.y - length, node.z);
-        break;
-      case 'pz':
-        vector = new THREE.Vector3(0, 0, Math.sign(value) * 1);
-        origin = new THREE.Vector3(node.x, node.y, node.z - length);
-        break;
-    }
-    const Arrow = new THREE.ArrowHelper(vector, origin, Math.abs(length), color);
-    Arrow.name = name;
-    return Arrow;
-    */
   }
 
   // データをクリアする
