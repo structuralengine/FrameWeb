@@ -220,6 +220,17 @@ export class ThreePointLoadService {
     const arrowMaterial = new THREE.MeshBasicMaterial( {color} );
     const cone: THREE.Mesh = new THREE.Mesh( arrowGeometry, arrowMaterial );
     cone.position.set(node.x, node.y, node.z);
+    switch (name) {
+      case 'px':
+        cone.rotation.z = Math.PI/2*3;
+        break;
+      case 'py':
+        null;
+        break;
+      case 'pz':
+        cone.rotation.x = Math.PI/2;
+        break;
+    }
 
     const threeColor = new THREE.Color(0xFF0000);
     const colors = [];
