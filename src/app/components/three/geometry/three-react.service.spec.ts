@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ThreeResultService } from './three-result.service';
+import { ThreeReactService } from './three-react.service';
 
-describe('ThreeResultService', () => {
+describe('ThreeReactService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ThreeResultService = TestBed.get(ThreeResultService);
+    const service: ThreeReactService = TestBed.get(ThreeReactService);
     expect(service).toBeTruthy();
   });
 });

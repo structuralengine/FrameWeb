@@ -232,7 +232,7 @@ export class ThreePointLoadService {
         break;
     }
 
-    const threeColor = new THREE.Color(0xFF0000);
+    const threeColor = new THREE.Color(color);
     const colors = [];
     colors.push( threeColor.r, threeColor.g, threeColor.b );
     colors.push( threeColor.r, threeColor.g, threeColor.b );

@@ -42,7 +42,6 @@ h1 {
 .contents-dailog {
   border: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
-  cursor: move;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,7 +95,8 @@ h1 {
 }
 
 .dialog-drag-handle {
+  cursor: move;
   position: absolute;
   width:100%;
-  height:100%;
+  height:70px;
 }
