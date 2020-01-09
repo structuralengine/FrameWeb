@@ -91,10 +91,11 @@ export class ThreeService {
           break;
 
         case 'disg':
-          this.disg.chengeData(this.scene, index);
+          this.disg.chengeData(index);
           break;
 
         case 'fsec':
+          this.fsec.chengeData(index);
           break;
 
         case 'pik_disg':
@@ -124,7 +125,7 @@ export class ThreeService {
     this.member.ClearData(this.scene);
     this.pointLoad.ClearData(this.scene);
     // this.memberLoad.ClearData(this.scene);
-    this.disg.ClearData(this.scene);
+    this.disg.ClearData();
 
     // 再描画
     this.scene.render();
@@ -178,10 +179,24 @@ export class ThreeService {
     || this.mode === 'comb_disg'
     || this.mode === 'pik_disg'
     ) {
-      this.disg.chengeData(this.scene, 1);
+      this.disg.chengeData(1);
+      this.disg.guiEnable();
     } else {
-      this.disg.ClearData(this.scene);
+      this.disg.ClearData();
+      this.disg.guiDisable();
     }
+
+    if ( this.mode === 'fsec'
+    || this.mode === 'comb_fsec'
+    || this.mode === 'pik_fsec'
+    ) {
+      this.fsec.chengeData(1);
+      this.fsec.guiEnable();
+    } else {
+      this.fsec.ClearData();
+      this.fsec.guiDisable();
+    }
+
 
     // 再描画
     this.scene.render();
@@ -210,31 +225,19 @@ export class ThreeService {
       case 'loads':
         break;
 
-      case 'comb_disg':
-        break;
-
-      case 'comb_fsec':
-        break;
-
-      case 'comb_reac':
-        break;
-
       case 'disg':
-        break;
-
-      case 'fsec':
-        break;
-
+      case 'comb_disg':
       case 'pik_disg':
         break;
 
+      case 'fsec':
+      case 'comb_fsec':
       case 'pik_fsec':
         break;
 
-      case 'pik_reac':
-        break;
-
       case 'reac':
+      case 'comb_reac':
+      case 'pik_reac':
         break;
     }
     // 再描画
