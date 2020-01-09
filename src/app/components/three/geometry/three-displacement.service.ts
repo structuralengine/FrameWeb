@@ -23,20 +23,32 @@ import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-
 export class ThreeDisplacementService {
 
   private lineList: THREE.Line[];
-  private scale: number;
+  private targetData: any;
 
-  constructor(private helper: DataHelperModule,
+  private scale: number;
+  private params: any;          // GUIの表示制御
+  private gui: any;
+
+  constructor(private scene: SceneService,
+              private helper: DataHelperModule,
               private disg: ResultDisgService,
               private comb_disg: ResultCombineDisgService,
               private pik_disg: ResultPickupDisgService,
               private node: InputNodesService,
-              private member: InputMembersService) { 
-                this.lineList = new Array();
-                this.scale = 0.001;
-              }
+              private member: InputMembersService) {
+    this.lineList = new Array();
+    this.targetData = new Array();
+
+    this.scale = 0.001;
+    // gui
+    this.params = {
+      dispScale: this.scale
+    };
+    this.gui = null;
+  }
 
   // データをクリアする
-  public ClearData(scene: SceneService): void {
+  public ClearData(): void {
     if ( this.lineList.length > 0 ){
       // 線を削除する
       for (const mesh of this.lineList) {
@@ -45,17 +57,32 @@ export class ThreeDisplacementService {
           const object = mesh.children[0];
           object.parent.remove(object);
         }
-        scene.remove(mesh);
+        this.scene.remove(mesh);
       }
       this.lineList = new Array();
     }
   }
 
+  public guiEnable(): void {
+    if ( this.gui !== null ) {
+      return;
+    }
+    this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.01).onChange( ( value ) => {
+      // guiによる設定
+      this.scale = value;
+      this.onResize();
+    });
+  }
 
-  public chengeData(scene: SceneService, index: number): void {
+  public guiDisable(): void {
+    if ( this.gui === null ) {
+      return;
+    }
+    this.scene.gui.remove(this.gui);
+    this.gui = null;
+}
 
-    // 要素を排除する
-    this.ClearData(scene);
+  public chengeData(index: number): void {
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson('calc');
@@ -78,6 +105,8 @@ export class ThreeDisplacementService {
       return;
     }
     const disgData = allDisgData[targetKey];
+
+    this.targetData = new Array();
 
     // 新しい入力を適用する
     for (const key of jsonKeys) {
@@ -106,21 +135,49 @@ export class ThreeDisplacementService {
         continue;
       }
 
-      let xi: number = i.x;
-      let yi: number = i.y;
-      let zi: number = i.z;
+      this.targetData.push(
+        {
+          name: key,
+          xi: i.x,
+          yi: i.y,
+          zi: i.z,
+          xj: j.x,
+          yj: j.y,
+          zj: j.z,
+          dxi: this.helper.toNumber(di.dx),
+          dyi: this.helper.toNumber(di.dy),
+          dzi: this.helper.toNumber(di.dz),
+          dxj: this.helper.toNumber(dj.dx),
+          dyj: this.helper.toNumber(dj.dy),
+          dzj: this.helper.toNumber(dj.dz)
+        }
+      );
+    }
+    this.onResize();
+  }
 
-      xi += this.helper.toNumber(di.dx) * this.scale;
-      yi += this.helper.toNumber(di.dy) * this.scale;
-      zi += this.helper.toNumber(di.dz) * this.scale;
+  private onResize(): void {
 
-      let xj: number = j.x;
-      let yj: number = j.y;
-      let zj: number = j.z;
+    // 要素を排除する
+    this.ClearData();
 
-      xj += this.helper.toNumber(dj.dx) * this.scale;
-      yj += this.helper.toNumber(dj.dy) * this.scale;
-      zj += this.helper.toNumber(dj.dz) * this.scale;
+    for ( const target of this.targetData ) {
+
+      let xi: number = target.xi;
+      let yi: number = target.yi;
+      let zi: number = target.zi;
+
+      xi += target.dxi * this.scale;
+      yi += target.dyi * this.scale;
+      zi += target.dzi * this.scale;
+
+      let xj: number = target.xj;
+      let yj: number = target.yj;
+      let zj: number = target.zj;
+
+      xj += target.dxj * this.scale;
+      yj += target.dyj * this.scale;
+      zj += target.dzj * this.scale;
 
       const positions = [];
       positions.push( xi, yi, zi );
@@ -140,18 +197,16 @@ export class ThreeDisplacementService {
         linewidth: 0.001,
         vertexColors: THREE.VertexColors,
         dashed: false
-      } );
+      });
       const line: Line2 = new Line2( geometry, matLine );
       line.computeLineDistances();
 
       line.scale.set( 1, 1, 1 );
-      line.name = key;
+      line.name = target.name;
 
       this.lineList.push(line);
 
-      scene.add( line );
+      this.scene.add( line );
     }
   }
-
-
 }
