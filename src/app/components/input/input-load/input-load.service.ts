@@ -30,22 +30,8 @@ export class InputLoadService {
       this.load_name.push(result);
     }
     return result;
-    /*
-    let result: any = null;
-    for ( const tmp of this.load_name) {
-      if (tmp.id === index.toString()) {
-        result = tmp;
-        break;
-      }
-    }
-    // 対象データが無かった時に処理
-    if (result == null) {
-      result = { id: index, rate: '', symbol: '', name: '', fix_node: '', fix_member: '', element: '', joint: '' };
-      this.load_name.push(result);
-    }
-    return result;
-    */
   }
+
 
   public getLoadColumns(typNo: number, row: number): any {
 
@@ -86,6 +72,9 @@ export class InputLoadService {
     if (!('load' in jsonData)) {
       return;
     }
+
+    this.clear();
+
     const json: {} = jsonData['load'];
 
     for (const index of Object.keys(json)) {

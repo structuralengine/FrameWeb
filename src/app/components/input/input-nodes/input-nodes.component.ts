@@ -58,7 +58,7 @@ export class InputNodesComponent implements OnInit {
       this.dataset[i] = new Array();
     }
 
-    const a1: number = (currentPage - 1) * (this.ROWS_COUNT * 3) + 1;
+    const a1: number = (currentPage - 1) * (this.ROWS_COUNT * this.dataset.length) + 1;
     const a2: number = a1 + this.ROWS_COUNT - 1;
     const b1: number = a2 + 1;
     const b2: number = b1 + this.ROWS_COUNT - 1;

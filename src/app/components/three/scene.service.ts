@@ -27,7 +27,8 @@ export class SceneService {
   private GridHelper: THREE.GridHelper;
 
   // gui
-  private params: any;
+  public gui: GUI;
+  private params: any;          // GridHelperの表示制御
 
   // 初期化
   public constructor() {
@@ -37,7 +38,8 @@ export class SceneService {
     this.scene.background = new THREE.Color(0xf0f0f0);
     // レンダラーをバインド
     this.render = this.render.bind(this);
-    //
+
+    // gui
     this.params = {
       GridHelper: true
     };
@@ -64,14 +66,14 @@ export class SceneService {
     this.createHelper();
 
     //
-    const gui = new GUI();
-    gui.add( this.params, 'GridHelper' ).onChange( ( value ) => {
+    this.gui = new GUI();
+    this.gui.add( this.params, 'GridHelper' ).onChange( ( value ) => {
       // guiによる設定
       this.axisHelper.visible = value;
       this.GridHelper.visible = value;
       this.render();
     });
-    gui.open();
+    this.gui.open();
   }
 
   // 床面を生成する
