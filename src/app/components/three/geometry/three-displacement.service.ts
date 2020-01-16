@@ -15,6 +15,7 @@ import { InputMembersService } from '../../../components/input/input-members/inp
 import { ResultDisgService } from '../../result/result-disg/result-disg.service';
 import { ResultCombineDisgService } from '../../result/result-combine-disg/result-combine-disg.service';
 import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-pickup-disg.service';
+import { ElementSchemaRegistry } from '@angular/compiler';
 
 
 @Injectable({
@@ -149,9 +150,15 @@ export class ThreeDisplacementService {
           dzi: this.helper.toNumber(di.dz),
           dxj: this.helper.toNumber(dj.dx),
           dyj: this.helper.toNumber(dj.dy),
-          dzj: this.helper.toNumber(dj.dz)
+          dzj: this.helper.toNumber(dj.dz),
+          rxi: this.helper.toNumber(di.rx),
+          ryi: this.helper.toNumber(di.ry),
+          rzi: this.helper.toNumber(di.rz),
+          rxj: this.helper.toNumber(dj.rx),
+          ryj: this.helper.toNumber(dj.ry),
+          rzj: this.helper.toNumber(dj.rz),
         }
-      );
+      ); 
     }
     this.onResize();
   }
@@ -179,15 +186,48 @@ export class ThreeDisplacementService {
       yj += target.dyj * this.scale;
       zj += target.dzj * this.scale;
 
+      let dxi: number = target.dxi;
+      let dyi: number = target.dyi;
+      let dzi: number = target.dzi;
+      let rxi: number = target.rxi;
+      let ryi: number = target.ryi;
+      let rzi: number = target.rzi;
+
+      let dxj: number = target.dxj;
+      let dyj: number = target.dyj;
+      let dzj: number = target.dzj;
+      let rxj: number = target.rxj;
+      let ryj: number = target.ryj;
+      let rzj: number = target.rzj;
+
+      const L = Math.sqrt((xi - xj)**2 + (yi - yj)**2 + (zi - zj)**2);
+
       const positions = [];
-      positions.push( xi, yi, zi );
-      positions.push( xj, yj, zj );
-
-      const threeColor = new THREE.Color(0xFF0000);
+      const threeColor1 = new THREE.Color(0xFF0000);
+      const threeColor2 = new THREE.Color(0x00FF00);
       const colors = [];
-      colors.push( threeColor.r, threeColor.g, threeColor.b );
-      colors.push( threeColor.r, threeColor.g, threeColor.b );
-
+      
+      //補間点の節点変位の計算
+      for (let i = 0; i <= 20 ; i ++){
+        let n = i / 20;
+        let xhe = (1 - n) * dxi + n * dxj;
+        let yhe = (1 - 3 * n**2 + 2 * n**3) * dyi + L * (n - 2 * n**2 + n**3) *  rzi
+                 +(3 * n**2 - 2 * n**3) * dyj + L * (n**2 +n**3) * rzj;
+        let zhe = (1 - 3 * n**2 + 2 * n**3) * dzi + L * (n - 2 * n**2 + n**3) * ryi
+                 +(3 * n**2 - 2 * n**3) * dzj + L * (-1 * n**2 + n**3) * ryj;
+        //補間点の変位を座標値に付加
+        let xk = (1 - n) * xi + n * xj + xhe * this.scale;
+        let yk = (1 - n) * yi + n * yj + yhe * this.scale;
+        let zk = (1 - n) * zi + n * zj + zhe * this.scale;
+        
+        positions.push( xk, yk, zk );
+        if( ( i % 2 ) != 0 ) {
+          colors.push( threeColor1.r, threeColor1.g, threeColor1.b ); //偶数は赤
+        } else {
+          colors.push( threeColor2.r, threeColor2.g, threeColor2.b ); //奇数は青
+        }
+      }      
+     
       const geometry: LineGeometry = new LineGeometry();
       geometry.setPositions( positions );
       geometry.setColors( colors );
