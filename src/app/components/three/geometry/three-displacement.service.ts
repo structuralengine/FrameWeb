@@ -208,24 +208,29 @@ export class ThreeDisplacementService {
       const colors = [];
       
       //補間点の節点変位の計算
-      for (let i = 0; i < 20 ; i ++){
+      for (let i = 0; i < 20; i ++){
         let n = i / 20;
         let xhe = (1 - n) * dxi + n * dxj;
         let yhe = (1 - 3 * n**2 + 2 * n**3) * dyi + L * (n - 2 * n**2 + n**3) *  rzi
                  +(3 * n**2 - 2 * n**3) * dyj + L * (n**2 +n**3) * rzj;
         let zhe = (1 - 3 * n**2 + 2 * n**3) * dzi + L * (n - 2 * n**2 + n**3) * ryi
                  +(3 * n**2 - 2 * n**3) * dzj + L * (-1 * n**2 + n**3) * ryj;
+        
         //補間点の変位を座標値に付加
         let xk = (1 - n) * xi + n * xj + xhe * this.scale;
         let yk = (1 - n) * yi + n * yj + yhe * this.scale;
         let zk = (1 - n) * zi + n * zj + zhe * this.scale;
+
+        xi = xk;
+        yi = yk;
+        zi = zk;
         
-        positions.push( xk, yk, zk );
+        positions.push( xi, yi, zi );
         if( ( i % 2 ) != 0 ) {
           colors.push( threeColor1.r, threeColor1.g, threeColor1.b ); //偶数は赤
         } else {
           colors.push( threeColor2.r, threeColor2.g, threeColor2.b ); //奇数は青
-        }
+        } 
       }      
      
       const geometry: LineGeometry = new LineGeometry();
