@@ -208,7 +208,7 @@ export class ThreeDisplacementService {
       const colors = [];
       
       //補間点の節点変位の計算
-      for (let i = 0; i <= 20 ; i ++){
+      for (let i = 0; i < 20 ; i ++){
         let n = i / 20;
         let xhe = (1 - n) * dxi + n * dxj;
         let yhe = (1 - 3 * n**2 + 2 * n**3) * dyi + L * (n - 2 * n**2 + n**3) *  rzi
