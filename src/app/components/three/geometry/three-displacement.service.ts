@@ -210,13 +210,13 @@ export class ThreeDisplacementService {
       const colors = [];
       
       //補間点の節点変位の計算
-      for (let i = 0; i < Division; i ++){
+      for (let i = 0; i < Division + 1; i ++){
         let n = i / Division;
         let xhe = (1 - n) * dxi + n * dxj;
         let yhe = (1 - 3 * n**2 + 2 * n**3) * dyi + L * (n - 2 * n**2 + n**3) * rzi
-                 +(3 * n**2 - 2 * n**3) * dyj + L * ((-1 * n)**2 + n**3) * rzj;
+                 +(3 * n**2 - 2 * n**3) * dyj + L * (0 - n**2 + n**3) * rzj;
         let zhe = (1 - 3 * n**2 + 2 * n**3) * dzi - L * (n - 2 * n**2 + n**3) * ryi
-                 +(3 * n**2 - 2 * n**3) * dzj - L * ((-1 * n)**2 + n**3) * ryj;
+                 +(3 * n**2 - 2 * n**3) * dzj - L * (0 - n**2 + n**3) * ryj;
         
         //補間点の変位を座標値に付加
         let xk = (1 - n) * xi + n * xj + xhe * this.scale;
