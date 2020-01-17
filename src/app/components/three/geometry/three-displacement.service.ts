@@ -207,7 +207,6 @@ export class ThreeDisplacementService {
 
       const positions = [];
       const threeColor = new THREE.Color(0xFF0000);
-      //const threeColor2 = new THREE.Color(0x00FF00);
       const colors = [];
       
       //補間点の節点変位の計算
