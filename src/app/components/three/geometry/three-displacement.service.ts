@@ -157,6 +157,7 @@ export class ThreeDisplacementService {
           rxj: this.helper.toNumber(dj.rx),
           ryj: this.helper.toNumber(dj.ry),
           rzj: this.helper.toNumber(dj.rz),
+          Division: 20,
         }
       ); 
     }
@@ -200,21 +201,23 @@ export class ThreeDisplacementService {
       let ryj: number = target.ryj;
       let rzj: number = target.rzj;
 
+      let Division: number = target.Division;
+
       const L = Math.sqrt((xi - xj)**2 + (yi - yj)**2 + (zi - zj)**2);
 
       const positions = [];
-      const threeColor1 = new THREE.Color(0xFF0000);
-      const threeColor2 = new THREE.Color(0x00FF00);
+      const threeColor = new THREE.Color(0xFF0000);
+      //const threeColor2 = new THREE.Color(0x00FF00);
       const colors = [];
       
       //補間点の節点変位の計算
-      for (let i = 0; i < 20; i ++){
-        let n = i / 20;
+      for (let i = 0; i < Division; i ++){
+        let n = i / Division;
         let xhe = (1 - n) * dxi + n * dxj;
-        let yhe = (1 - 3 * n**2 + 2 * n**3) * dyi + L * (n - 2 * n**2 + n**3) *  rzi
-                 +(3 * n**2 - 2 * n**3) * dyj + L * (n**2 +n**3) * rzj;
-        let zhe = (1 - 3 * n**2 + 2 * n**3) * dzi + L * (n - 2 * n**2 + n**3) * ryi
-                 +(3 * n**2 - 2 * n**3) * dzj + L * (-1 * n**2 + n**3) * ryj;
+        let yhe = (1 - 3 * n**2 + 2 * n**3) * dyi + L * (n - 2 * n**2 + n**3) * rzi
+                 +(3 * n**2 - 2 * n**3) * dyj + L * ((-1 * n)**2 + n**3) * rzj;
+        let zhe = (1 - 3 * n**2 + 2 * n**3) * dzi - L * (n - 2 * n**2 + n**3) * ryi
+                 +(3 * n**2 - 2 * n**3) * dzj - L * ((-1 * n)**2 + n**3) * ryj;
         
         //補間点の変位を座標値に付加
         let xk = (1 - n) * xi + n * xj + xhe * this.scale;
@@ -226,11 +229,7 @@ export class ThreeDisplacementService {
         zi = zk;
         
         positions.push( xi, yi, zi );
-        if( ( i % 2 ) != 0 ) {
-          colors.push( threeColor1.r, threeColor1.g, threeColor1.b ); //偶数は赤
-        } else {
-          colors.push( threeColor2.r, threeColor2.g, threeColor2.b ); //奇数は青
-        } 
+        colors.push( threeColor.r, threeColor.g, threeColor.b ); 
       }      
      
       const geometry: LineGeometry = new LineGeometry();
