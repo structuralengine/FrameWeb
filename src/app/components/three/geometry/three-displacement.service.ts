@@ -50,7 +50,7 @@ export class ThreeDisplacementService {
 
   // データをクリアする
   public ClearData(): void {
-    if ( this.lineList.length > 0 ){
+    if ( this.lineList.length > 0 ) {
       // 線を削除する
       for (const mesh of this.lineList) {
         // 文字を削除する
@@ -113,9 +113,9 @@ export class ThreeDisplacementService {
     for (const key of jsonKeys) {
 
       // 節点データを集計する
-      const member = jsonData[key];
-      const i = nodeData[member.ni];
-      const j = nodeData[member.nj];
+      const m = jsonData[key];
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
       if (i === undefined || j === undefined) {
         continue;
       }
@@ -126,10 +126,10 @@ export class ThreeDisplacementService {
       }
 
       const di: any = disgData.find((tmp) => {
-        return tmp.id === member.ni.toString();
+        return tmp.id === m.ni.toString();
       });
       const dj: any =  disgData.find((tmp) => {
-        return tmp.id === member.nj.toString();
+        return tmp.id === m.nj.toString();
       });
 
       if (di === undefined || dj === undefined) {
@@ -210,7 +210,7 @@ export class ThreeDisplacementService {
       const colors = [];
 
       // 補間点の節点変位の計算
-      for (let i = 0; i < Division + 1; i ++) {
+      for (let i = 0; i <= Division; i ++) {
         const n = i / Division;
         const xhe = (1 - n) * dxi + n * dxj;
         const yhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dyi + L * (n - 2 * n ** 2 + n ** 3) * rzi

@@ -174,7 +174,7 @@ export class ThreeMembersService {
   }
 
   // 部材座標軸を
-  private localAxis(xi: number, yi: number, zi: number,
+  public localAxis(xi: number, yi: number, zi: number,
                     xj: number, yj: number, zj: number,
                     theta: number): any {
 
