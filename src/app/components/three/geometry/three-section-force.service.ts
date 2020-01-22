@@ -17,6 +17,7 @@ import { ResultCombineFsecService } from '../../result/result-combine-fsec/resul
 import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-pickup-fsec.service';
 
 import { ThreeMembersService } from './three-members.service';
+import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 
 @Injectable({
   providedIn: 'root'
@@ -224,59 +225,53 @@ export class ThreeSectionForceService {
     // 要素を排除する
     this.ClearData();
 
+    // Y軸周りの曲げモーメント
+    if (this.params.momentY === true ) {
+      const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('momentY', 'localAxisZ', threeColor);
+    }
+
+  }
+
+  // 断面力の図を描く
+  private addGeometory(key: string, axis: string, color: THREE.Color) {
+
     for (const target of this.targetData) {
       // 1つめのデータは部材情報
-      const memberInfo: object = target[0];
+      const memberInfo: any = target[0];
       // ２つめのデータ以降が断面力情報
+      const positions = [];
+      const colors = [];
       for (let i = 1; i < target.length; i++) {
-        const force: object = target[i];
-
-        let x: number = target.worldPosition.x;
-        let y: number = target.worldPosition.y;
-        let z: number = target.worldPosition.z;
-/*
-        x += target. * this.scale;
-        y += target.dyi * this.scale;
-        z += target.dzi * this.scale;
-
-        let xj: number = target.xj;
-        let yj: number = target.yj;
-        let zj: number = target.zj;
-
-        xj += target.dxj * this.scale;
-        yj += target.dyj * this.scale;
-        zj += target.dzj * this.scale;
-
-        const positions = [];
-        positions.push(xi, yi, zi);
-        positions.push(xj, yj, zj);
-
-        const threeColor = new THREE.Color(0xFF0000);
-        const colors = [];
-        colors.push(threeColor.r, threeColor.g, threeColor.b);
-        colors.push(threeColor.r, threeColor.g, threeColor.b);
-
-        const geometry: LineGeometry = new LineGeometry();
-        geometry.setPositions(positions);
-        geometry.setColors(colors);
-
-        const matLine: LineMaterial = new LineMaterial({
-          color: 0xFF0000,
-          linewidth: 0.001,
-          vertexColors: THREE.VertexColors,
-          dashed: false
-        });
-        const line: Line2 = new Line2(geometry, matLine);
-        line.computeLineDistances();
-
-        line.scale.set(1, 1, 1);
-        line.name = target.name;
-
-        this.lineList.push(line);
-
-        this.scene.add(line);
-      */
+        const force: any = target[i];
+        let x: number = force.worldPosition.x;
+        let y: number = force.worldPosition.y;
+        let z: number = force.worldPosition.z;
+        x -= force[key] * memberInfo[axis].x * this.scale;
+        y -= force[key] * memberInfo[axis].y * this.scale;
+        z -= force[key] * memberInfo[axis].z * this.scale;
+        positions.push(x, y, z);
+        colors.push(color.r, color.g, color.b);
       }
+
+      const geometry: LineGeometry = new LineGeometry();
+      geometry.setPositions(positions);
+      geometry.setColors(colors);
+
+      const matLine: LineMaterial = new LineMaterial({
+        color: 0xFF0000,
+        linewidth: 0.001,
+        vertexColors: THREE.VertexColors,
+        dashed: false
+      });
+      const line: Line2 = new Line2(geometry, matLine);
+      line.computeLineDistances();
+
+      line.scale.set(1, 1, 1);
+      // line.name = '';
+      this.lineList.push(line);
+      this.scene.add(line);
     }
   }
+
 }
