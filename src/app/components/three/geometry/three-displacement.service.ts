@@ -68,7 +68,7 @@ export class ThreeDisplacementService {
     if ( this.gui !== null ) {
       return;
     }
-    this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.01).onChange( ( value ) => {
+    this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.001).onChange( ( value ) => {
       // guiによる設定
       this.scale = value;
       this.onResize();

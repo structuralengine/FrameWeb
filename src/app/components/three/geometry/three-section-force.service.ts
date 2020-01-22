@@ -77,7 +77,7 @@ export class ThreeSectionForceService {
       return;
     }
     this.gui = {
-      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, 1).step(0.01).onChange((value) => {
+      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, 0.1).step(0.001).onChange((value) => {
         // guiによる設定
         this.scale = value;
         this.onResize();
@@ -225,10 +225,40 @@ export class ThreeSectionForceService {
     // 要素を排除する
     this.ClearData();
 
+    // 軸方向の圧縮力
+    if (this.params.axialForce === true ) {
+      const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('axialForce', 'localAxisY', threeColor);
+    }
+
+    // ねじり曲げモーメント
+    if (this.params.torsionalMoment === true ) {
+      const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('torsionalMoment', 'localAxisZ', threeColor);
+    }
+
+    // Y方向のせん断力
+    if (this.params.shearForceY === true ) {
+      const threeColor = new THREE.Color(0x00FF00);
+      this.addGeometory('shearForceY', 'localAxisY', threeColor);
+    }
+
     // Y軸周りの曲げモーメント
     if (this.params.momentY === true ) {
-      const threeColor = new THREE.Color(0xFF0000);
+      const threeColor = new THREE.Color(0x00FF00);
       this.addGeometory('momentY', 'localAxisZ', threeColor);
+    }
+
+    // Z方向のせん断力
+    if (this.params.shearForceZ === true ) {
+      const threeColor = new THREE.Color(0x0000FF);
+      this.addGeometory('shearForceZ', 'localAxisZ', threeColor);
+    }
+
+    // Z軸周りの曲げモーメント
+    if (this.params.momentZ === true ) {
+      const threeColor = new THREE.Color(0x0000FF);
+      this.addGeometory('momentZ', 'localAxisY', threeColor);
     }
 
   }
