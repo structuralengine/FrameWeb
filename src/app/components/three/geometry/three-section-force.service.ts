@@ -84,7 +84,7 @@ export class ThreeSectionForceService {
       })
     };
     for (const key of this.radioButtons) {
-      this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
+      this.gui[key] = this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
         if ( value === true ) {
           this.setGUIcheck(key);
         } else {
