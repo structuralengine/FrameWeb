@@ -112,33 +112,21 @@ export class ThreePointLoadService {
       }
 
       // x軸周りのモーメント
-<<<<<<< HEAD
-      const xMoment = this.setMomentLoad(load.rx, mMax, i, 0xFF0000, 'mx');
-=======
       const xMoment = this.setMomentLoad(load.rx, mMax, node, 0xFF0000, 'mx');
->>>>>>> develop
       if (xMoment !== null) {
         this.pointLoadList.push(xMoment);
         this.scene.add(xMoment);
       }
 
       // y軸周りのモーメント
-<<<<<<< HEAD
-      const yMoment = this.setMomentLoad(load.ry, mMax, i, 0x00FF00, 'my');
-=======
       const yMoment = this.setMomentLoad(load.ry, mMax, node, 0x00FF00, 'my');
->>>>>>> develop
       if (yMoment !== null) {
         this.pointLoadList.push(yMoment);
         this.scene.add(yMoment);
       }
 
       // z軸周りのモーメント
-<<<<<<< HEAD
-      const zMoment = this.setMomentLoad(load.rz, mMax, i, 0x0000FF, 'mz');
-=======
       const zMoment = this.setMomentLoad(load.rz, mMax, node, 0x0000FF, 'mz');
->>>>>>> develop
       if (zMoment !== null) {
         this.pointLoadList.push(zMoment);
         this.scene.add(zMoment);
@@ -164,11 +152,7 @@ export class ThreePointLoadService {
 
     const points = curve.getPoints( 50 );
     const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-<<<<<<< HEAD
-    const lineMaterial = new THREE.LineBasicMaterial( { color } );
-=======
     const lineMaterial = new THREE.LineBasicMaterial( { color, linewidth: 5 } );
->>>>>>> develop
     const ellipse = new THREE.Line( lineGeometry, lineMaterial );
 
     const arrowGeometry = new THREE.ConeGeometry( 0.1, 1, 3, 1, true );
