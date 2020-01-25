@@ -17,7 +17,8 @@ export class ThreeNodesService {
   private nodeList: THREE.Mesh[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
-  constructor(private node: InputNodesService) {
+  constructor(private scene: SceneService,
+              private node: InputNodesService) {
     this.scale = 1;
     this._baseScale = null;
     this.geometry = new THREE.SphereBufferGeometry(1);
@@ -35,13 +36,13 @@ export class ThreeNodesService {
     return this.nodeList;
   }
 
-  public chengeData(scene: SceneService): void {
+  public chengeData(): void {
 
     // 入力データを入手
     const jsonData = this.node.getNodeJson('calc');
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
-      this.ClearData(scene);
+      this.ClearData();
       return;
     }
 
@@ -55,7 +56,7 @@ export class ThreeNodesService {
           const object = this.nodeList[i].children[ 0 ];
           object.parent.remove( object );
         }
-        scene.remove(this.nodeList[i]);
+        this.scene.remove(this.nodeList[i]);
         this.nodeList.splice(i, 1);
       }
     }
@@ -81,7 +82,7 @@ export class ThreeNodesService {
         mesh.position.z = jsonData[key].z;
 
         this.nodeList.push(mesh);
-        scene.add(mesh);
+        this.scene.add(mesh);
 
         // 文字をシーンに追加
         const div = document.createElement( 'div' );
@@ -101,7 +102,7 @@ export class ThreeNodesService {
   }
 
   // データをクリアする
-  public ClearData(scene: SceneService): void {
+  public ClearData(): void {
     for (const mesh of this.nodeList) {
       // 文字を削除する
       while ( mesh.children.length > 0 ) {
@@ -109,7 +110,7 @@ export class ThreeNodesService {
         object.parent.remove( object );
       }
       // オブジェクトを削除する
-      scene.remove(mesh);
+      this.scene.remove(mesh);
     }
     this.nodeList = new Array();
   }
@@ -164,6 +165,11 @@ export class ThreeNodesService {
     }
   }
 
+  public visible(flag: boolean): void {
+    for (const mesh of this.nodeList) {
+      mesh.visible = flag;
+    }
+  }
 
   // マウス位置とぶつかったオブジェクトを検出する
   public detectObject(raycaster: THREE.Raycaster , action: string): void {

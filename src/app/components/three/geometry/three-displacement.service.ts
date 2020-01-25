@@ -49,7 +49,7 @@ export class ThreeDisplacementService {
 
   // データをクリアする
   public ClearData(): void {
-    if ( this.lineList.length > 0 ){
+    if ( this.lineList.length > 0 ) {
       // 線を削除する
       for (const mesh of this.lineList) {
         // 文字を削除する
@@ -67,7 +67,7 @@ export class ThreeDisplacementService {
     if ( this.gui !== null ) {
       return;
     }
-    this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.01).onChange( ( value ) => {
+    this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.001).onChange( ( value ) => {
       // guiによる設定
       this.scale = value;
       this.onResize();
@@ -112,9 +112,9 @@ export class ThreeDisplacementService {
     for (const key of jsonKeys) {
 
       // 節点データを集計する
-      const member = jsonData[key];
-      const i = nodeData[member.ni];
-      const j = nodeData[member.nj];
+      const m = jsonData[key];
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
       if (i === undefined || j === undefined) {
         continue;
       }
@@ -125,10 +125,10 @@ export class ThreeDisplacementService {
       }
 
       const di: any = disgData.find((tmp) => {
-        return tmp.id === member.ni.toString();
+        return tmp.id === m.ni.toString();
       });
       const dj: any =  disgData.find((tmp) => {
-        return tmp.id === member.nj.toString();
+        return tmp.id === m.nj.toString();
       });
 
       if (di === undefined || dj === undefined) {
@@ -149,9 +149,16 @@ export class ThreeDisplacementService {
           dzi: this.helper.toNumber(di.dz),
           dxj: this.helper.toNumber(dj.dx),
           dyj: this.helper.toNumber(dj.dy),
-          dzj: this.helper.toNumber(dj.dz)
+          dzj: this.helper.toNumber(dj.dz),
+          rxi: this.helper.toNumber(di.rx),
+          ryi: this.helper.toNumber(di.ry),
+          rzi: this.helper.toNumber(di.rz),
+          rxj: this.helper.toNumber(dj.rx),
+          ryj: this.helper.toNumber(dj.ry),
+          rzj: this.helper.toNumber(dj.rz),
+          Division: 20,
         }
-      );
+      ); 
     }
     this.onResize();
   }
@@ -179,14 +186,45 @@ export class ThreeDisplacementService {
       yj += target.dyj * this.scale;
       zj += target.dzj * this.scale;
 
-      const positions = [];
-      positions.push( xi, yi, zi );
-      positions.push( xj, yj, zj );
+      const dxi: number = target.dxi;
+      const dyi: number = target.dyi;
+      const dzi: number = target.dzi;
+      const rxi: number = target.rxi;
+      const ryi: number = target.ryi;
+      const rzi: number = target.rzi;
 
+      const dxj: number = target.dxj;
+      const dyj: number = target.dyj;
+      const dzj: number = target.dzj;
+      const rxj: number = target.rxj;
+      const ryj: number = target.ryj;
+      const rzj: number = target.rzj;
+
+      const Division: number = target.Division;
+
+      const L = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2);
+
+      const positions = [];
       const threeColor = new THREE.Color(0xFF0000);
       const colors = [];
-      colors.push( threeColor.r, threeColor.g, threeColor.b );
-      colors.push( threeColor.r, threeColor.g, threeColor.b );
+
+      // 補間点の節点変位の計算
+      for (let i = 0; i <= Division; i ++) {
+        const n = i / Division;
+        const xhe = (1 - n) * dxi + n * dxj;
+        const yhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dyi + L * (n - 2 * n ** 2 + n ** 3) * rzi
+                 + (3 * n ** 2 - 2 * n ** 3) * dyj + L * (0 - n ** 2 + n ** 3) * rzj;
+        const zhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dzi - L * (n - 2 * n ** 2 + n ** 3) * ryi
+                 + (3 * n ** 2 - 2 * n ** 3) * dzj - L * (0 - n ** 2 + n ** 3) * ryj;
+
+        // 補間点の変位を座標値に付加
+        const xk = (1 - n) * xi + n * xj + xhe * this.scale;
+        const yk = (1 - n) * yi + n * yj + yhe * this.scale;
+        const zk = (1 - n) * zi + n * zj + zhe * this.scale;
+
+        positions.push( xk, yk, zk );
+        colors.push( threeColor.r, threeColor.g, threeColor.b );
+      }
 
       const geometry: LineGeometry = new LineGeometry();
       geometry.setPositions( positions );

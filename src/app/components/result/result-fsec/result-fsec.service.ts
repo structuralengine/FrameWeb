@@ -77,7 +77,7 @@ export class ResultFsecService {
 
         let result = {};
         const old = {};
-        const node = this.member.getNodeNo(memberNo)
+        const node = this.member.getNodeNo(memberNo);
         let ni: string = node['ni'];
         let nj = '';
         let counter = 0;
@@ -120,7 +120,7 @@ export class ResultFsecService {
           if (counter === data_length) {
             nj = node['nj'];
           }
-          noticePoint += this.helper.toNumber(item['L']);
+          noticePoint = this.helper.toNumber(item['L']);
           let fxj: number = this.helper.toNumber(item['fxj']);
           let fyj: number = this.helper.toNumber(item['fyj']);
           let fzj: number = this.helper.toNumber(item['fzj']);

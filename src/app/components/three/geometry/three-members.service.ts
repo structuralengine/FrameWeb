@@ -17,7 +17,8 @@ export class ThreeMembersService {
   private isEnable: boolean;
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
-  constructor(private nodeThree: ThreeNodesService,
+  constructor(private scene: SceneService,
+              private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService) {
     this.memberList = new Array();
@@ -30,13 +31,13 @@ export class ThreeMembersService {
     return scale * 0.2;
   }
 
-  public chengeData(scene: SceneService): void {
+  public chengeData(): void {
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson('calc');
     const nodeKeys = Object.keys(nodeData);
     if (nodeKeys.length <= 0) {
-      this.ClearData(scene);
+      this.ClearData();
       return;
     }
 
@@ -44,12 +45,12 @@ export class ThreeMembersService {
     const jsonData = this.member.getMemberJson('calc');
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
-      this.ClearData(scene);
+      this.ClearData();
       return;
     }
 
     // 要素を排除する
-    this.ClearData(scene);
+    this.ClearData();
 
     // 新しい入力を適用する
     for (const key of jsonKeys) {
@@ -82,7 +83,7 @@ export class ThreeMembersService {
       mesh.position.set(x, y, z);
 
       this.memberList.push(mesh);
-      scene.add(mesh);
+      this.scene.add(mesh);
 
       // 文字をシーンに追加
       const div = document.createElement('div');
@@ -121,13 +122,13 @@ export class ThreeMembersService {
       group.name = mesh.name + 'axis';
       group.visible = false;
       this.axisList.push(group);
-      scene.add( group );
+      this.scene.add( group );
     }
     this.onResize();
   }
 
   // データをクリアする
-  public ClearData(scene: SceneService): void {
+  public ClearData(): void {
     // 線を削除する
     for (const mesh of this.memberList) {
       // 文字を削除する
@@ -135,13 +136,13 @@ export class ThreeMembersService {
         const object = mesh.children[0];
         object.parent.remove(object);
       }
-      scene.remove(mesh);
+      this.scene.remove(mesh);
     }
     this.memberList = new Array();
 
     // ローカル座標を示す線を削除する
     for (const group of this.axisList) {
-      scene.remove(group);
+      this.scene.remove(group);
     }
     this.axisList = new Array();
   }
@@ -174,7 +175,7 @@ export class ThreeMembersService {
   }
 
   // 部材座標軸を
-  private localAxis(xi: number, yi: number, zi: number,
+  public localAxis(xi: number, yi: number, zi: number,
                     xj: number, yj: number, zj: number,
                     theta: number): any {
 
@@ -281,10 +282,10 @@ export class ThreeMembersService {
       if (this.memberList.length === 0) {
         return; // 対象がなければ何もしない
       }
-  
+
       // 交差しているオブジェクトを取得
       const intersects = raycaster.intersectObjects(this.memberList);
-  
+
       switch (action) {
         case 'click':
           this.memberList.map(item => {
@@ -295,7 +296,7 @@ export class ThreeMembersService {
             }
           });
           break;
-  
+
         case 'select':
           this.selectionItem = null;
           this.memberList.map(item => {
@@ -346,7 +347,7 @@ export class ThreeMembersService {
             }
           });
           break;
-  
+
         default:
           return;
       }

@@ -16,6 +16,9 @@ import { ResultFsecService } from '../../result/result-fsec/result-fsec.service'
 import { ResultCombineFsecService } from '../../result/result-combine-fsec/result-combine-fsec.service';
 import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-pickup-fsec.service';
 
+import { ThreeMembersService } from './three-members.service';
+import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,6 +29,7 @@ export class ThreeSectionForceService {
 
   private scale: number;
   private params: any;          // GUIの表示制御
+  private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
 
   constructor(private scene: SceneService,
@@ -34,15 +38,21 @@ export class ThreeSectionForceService {
               private comb_fsec: ResultCombineFsecService,
               private pik_fsec: ResultPickupFsecService,
               private node: InputNodesService,
-              private member: InputMembersService) {
+              private member: InputMembersService,
+              private three_member: ThreeMembersService) {
+
     this.lineList = new Array();
     this.targetData = new Array();
 
     this.scale = 0.001;
     // gui
     this.params = {
-      dispScale: this.scale
+      forceScale: this.scale
     };
+    for (const key of this.radioButtons) {
+      this.params[key] = false;
+    }
+    this.params.momentY = true; // 初期値
     this.gui = null;
   }
 
@@ -66,21 +76,44 @@ export class ThreeSectionForceService {
     if (this.gui !== null) {
       return;
     }
-    this.gui = this.scene.gui.add(this.params, 'dispScale', 0, 1).step(0.01).onChange((value) => {
-      // guiによる設定
-      this.scale = value;
-      this.onResize();
-    });
+    this.gui = {
+      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, 0.1).step(0.001).onChange((value) => {
+        // guiによる設定
+        this.scale = value;
+        this.onResize();
+      })
+    };
+    for (const key of this.radioButtons) {
+      this.gui[key] = this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
+        if ( value === true ) {
+          this.setGUIcheck(key);
+        } else {
+          this.setGUIcheck('');
+        }
+        this.onResize();
+      });
+    }
   }
 
   public guiDisable(): void {
     if (this.gui === null) {
       return;
     }
-    this.scene.gui.remove(this.gui);
+    for ( const key of Object.keys(this.gui)) {
+      this.scene.gui.remove(this.gui[key]);
+    }
     this.gui = null;
   }
 
+  // gui 選択されたチェックボックス以外をOFFにする
+  private setGUIcheck(target: string): void {
+    for (const key of this.radioButtons) {
+      this.params[key] = false;
+    }
+    this.params[target] = true;
+  }
+
+  // データが変更された時に呼び出される
   public chengeData(index: number): void {
 
     // 格点データを入手
@@ -91,9 +124,9 @@ export class ThreeSectionForceService {
     }
 
     // メンバーデータを入手
-    const jsonData = this.member.getMemberJson('calc');
-    const jsonKeys = Object.keys(jsonData);
-    if (jsonKeys.length <= 0) {
+    const memberData = this.member.getMemberJson('calc');
+    const memberKeys = Object.keys(memberData);
+    if (memberKeys.length <= 0) {
       return;
     }
 
@@ -105,92 +138,151 @@ export class ThreeSectionForceService {
     }
     const fsecData = allFsecgData[targetKey];
 
+    // 新しい入力を適用する
     this.targetData = new Array();
 
-    // 新しい入力を適用する
-    for (const fsec of fsecData) {
+    for (const id of memberKeys) {
 
-    //   // 節点データを集計する
-    //   const member = jsonData[key];
-    //   const i = nodeData[member.ni];
-    //   const j = nodeData[member.nj];
-    //   if (i === undefined || j === undefined) {
-    //     continue;
-    //   }
-    //   const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
-    //   const len: number = v.length();
-    //   if (len < 0.001) {
-    //     continue;
-    //   }
+      // 節点データを集計する
+      const m = memberData[id];
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
+      if (i === undefined || j === undefined) {
+        continue;
+      }
 
-    //   const disgKeys = Object.keys(fsecData);
-    //   if (disgKeys.length <= 0) {
-    //     return;
-    //   }
+      // 部材の座標軸を取得
+      const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+      const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
 
-    //   const di: any = fsecData.find((tmp) => {
-    //     return tmp.id === member.ni.toString();
-    //   });
-    //   const dj: any = fsecData.find((tmp) => {
-    //     return tmp.id === member.nj.toString();
-    //   });
-
-    //   if (di === undefined || dj === undefined) {
-    //     continue;
-    //   }
-
-    //   this.targetData.push(
-    //     {
-    //       name: key,
-    //       xi: i.x,
-    //       yi: i.y,
-    //       zi: i.z,
-    //       xj: j.x,
-    //       yj: j.y,
-    //       zj: j.z,
-    //       dxi: this.helper.toNumber(di.dx),
-    //       dyi: this.helper.toNumber(di.dy),
-    //       dzi: this.helper.toNumber(di.dz),
-    //       dxj: this.helper.toNumber(dj.dx),
-    //       dyj: this.helper.toNumber(dj.dy),
-    //       dzj: this.helper.toNumber(dj.dz)
-    //     }
-    //   );
+      // 着目点
+      const fsecPoints: any = new Array();
+      let flg = false;
+      for (const fsec of fsecData ) {
+        if ( fsec.m === id ) {
+          flg = true;
+          // 1つめのデータは部材情報
+          fsecPoints.push({
+            id: fsec.m ,
+            iPosition: i,
+            jPosition: j,
+            length: MemberLength,
+            localAxisX: localAxis.x,
+            localAxisY: localAxis.y,
+            localAxisZ: localAxis.z
+          });
+          // ２つめのデータ以降が断面力情報
+          fsecPoints.push(this.getFsecPoints(MemberLength, fsec, i, j));
+        } else if (flg === true) {
+          if ( fsec.m.trim().length > 0 ) {
+            break;
+          }
+          fsecPoints.push(this.getFsecPoints(MemberLength, fsec, i, j));
+        }
+      }
+      this.targetData.push(fsecPoints);
     }
-    // this.onResize();
+
+    // 断面力図を描く
+    this.onResize();
   }
 
+  // 断面力, 部材の情報をまとめる
+  private getFsecPoints(MemberLength, fsec, i, j) {
+
+    // 断面力の集計
+    const axialForce: number = this.helper.toNumber(fsec.fx);
+    const shearForceY: number = this.helper.toNumber(fsec.fy);
+    const shearForceZ: number = this.helper.toNumber(fsec.fz);
+    const torsionalMoment: number = this.helper.toNumber(fsec.mx);
+    const momentY: number = this.helper.toNumber(fsec.my);
+    const momentZ: number = this.helper.toNumber(fsec.mz);
+
+    // 位置
+    const localPosition: number = this.helper.toNumber(fsec.l);
+    const worldPosition = {
+      x: (localPosition / MemberLength) * ( j.x - i.x ) + i.x,
+      y: (localPosition / MemberLength) * ( j.y - i.y ) + i.y,
+      z: (localPosition / MemberLength) * ( j.z - i.z ) + i.z
+    };
+
+    return {
+      worldPosition,
+      localPosition,
+      axialForce,
+      shearForceY,
+      shearForceZ,
+      torsionalMoment,
+      momentY,
+      momentZ
+    };
+
+  }
+
+  // 断面力図を描く
   private onResize(): void {
 
     // 要素を排除する
     this.ClearData();
 
-    for (const target of this.targetData) {
-
-      let xi: number = target.xi;
-      let yi: number = target.yi;
-      let zi: number = target.zi;
-
-      xi += target.dxi * this.scale;
-      yi += target.dyi * this.scale;
-      zi += target.dzi * this.scale;
-
-      let xj: number = target.xj;
-      let yj: number = target.yj;
-      let zj: number = target.zj;
-
-      xj += target.dxj * this.scale;
-      yj += target.dyj * this.scale;
-      zj += target.dzj * this.scale;
-
-      const positions = [];
-      positions.push(xi, yi, zi);
-      positions.push(xj, yj, zj);
-
+    // 軸方向の圧縮力
+    if (this.params.axialForce === true ) {
       const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('axialForce', 'localAxisY', threeColor);
+    }
+
+    // ねじり曲げモーメント
+    if (this.params.torsionalMoment === true ) {
+      const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('torsionalMoment', 'localAxisZ', threeColor);
+    }
+
+    // Y方向のせん断力
+    if (this.params.shearForceY === true ) {
+      const threeColor = new THREE.Color(0x00FF00);
+      this.addGeometory('shearForceY', 'localAxisY', threeColor);
+    }
+
+    // Y軸周りの曲げモーメント
+    if (this.params.momentY === true ) {
+      const threeColor = new THREE.Color(0x00FF00);
+      this.addGeometory('momentY', 'localAxisZ', threeColor);
+    }
+
+    // Z方向のせん断力
+    if (this.params.shearForceZ === true ) {
+      const threeColor = new THREE.Color(0x0000FF);
+      this.addGeometory('shearForceZ', 'localAxisZ', threeColor);
+    }
+
+    // Z軸周りの曲げモーメント
+    if (this.params.momentZ === true ) {
+      const threeColor = new THREE.Color(0x0000FF);
+      this.addGeometory('momentZ', 'localAxisY', threeColor);
+    }
+
+  }
+
+  // 断面力の図を描く
+  private addGeometory(key: string, axis: string, color: THREE.Color) {
+
+    for (const target of this.targetData) {
+      // 1つめのデータは部材情報
+      const memberInfo: any = target[0];
+      // ２つめのデータ以降が断面力情報
+      const positions = [];
       const colors = [];
-      colors.push(threeColor.r, threeColor.g, threeColor.b);
-      colors.push(threeColor.r, threeColor.g, threeColor.b);
+      for (let i = 1; i < target.length; i++) {
+        const force: any = target[i];
+        let x: number = force.worldPosition.x;
+        let y: number = force.worldPosition.y;
+        let z: number = force.worldPosition.z;
+        x -= force[key] * memberInfo[axis].x * this.scale;
+        y -= force[key] * memberInfo[axis].y * this.scale;
+        z -= force[key] * memberInfo[axis].z * this.scale;
+        positions.push(x, y, z);
+        colors.push(color.r, color.g, color.b);
+      }
 
       const geometry: LineGeometry = new LineGeometry();
       geometry.setPositions(positions);
@@ -206,11 +298,10 @@ export class ThreeSectionForceService {
       line.computeLineDistances();
 
       line.scale.set(1, 1, 1);
-      line.name = target.name;
-
+      // line.name = '';
       this.lineList.push(line);
-
       this.scene.add(line);
     }
   }
+
 }
