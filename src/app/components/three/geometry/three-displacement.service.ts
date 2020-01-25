@@ -15,7 +15,6 @@ import { InputMembersService } from '../../../components/input/input-members/inp
 import { ResultDisgService } from '../../result/result-disg/result-disg.service';
 import { ResultCombineDisgService } from '../../result/result-combine-disg/result-combine-disg.service';
 import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-pickup-disg.service';
-import { ElementSchemaRegistry } from '@angular/compiler';
 
 
 @Injectable({

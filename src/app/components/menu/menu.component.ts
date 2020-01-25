@@ -116,7 +116,7 @@ export class MenuComponent implements OnInit {
         console.log('通信成功!!');
         console.log(response.text());
 
-        if (!this.ResultData.loadResultData(response.text())){
+        if (!this.ResultData.loadResultData(response.text())) {
           alert(response.text());
         } else {
           this.loadResultData(response.text());

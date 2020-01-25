@@ -22,7 +22,8 @@ export class ThreePointLoadService {
   private pointLoadList: any[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
-  constructor(private nodeThree: ThreeNodesService,
+  constructor(private scene: SceneService,
+              private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService,
               private load: InputLoadService) {
@@ -35,10 +36,10 @@ export class ThreePointLoadService {
     return this.nodeThree.baseScale() * 80;
   }
 
-  public chengeData(scene: SceneService, index: number): void {
+  public chengeData(index: number): void {
 
     // 一旦全排除
-    this.ClearData(scene);
+    this.ClearData();
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson('calc');
@@ -51,24 +52,24 @@ export class ThreePointLoadService {
     const targetCase: string = index.toString();
     const nodeLoadData = this.load.getNodeLoadJson('unity-loads:' + targetCase);
     if (Object.keys(nodeLoadData).length <= 0) {
-      this.ClearNodeLoad(scene);
+      this.ClearNodeLoad();
       return;
     }
 
     // サイズを調整しオブジェクトを登録する
-    this.createNodeLoad(scene, nodeLoadData[targetCase], nodeData);
+    this.createNodeLoad(nodeLoadData[targetCase], nodeData);
 
     // メンバーデータを入手
     const memberData = this.member.getMemberJson('calc');
     const memberKeys = Object.keys(memberData);
     if (memberKeys.length <= 0) {
-      this.ClearMemberLoad(scene);
+      this.ClearMemberLoad();
       return;
     }
   }
 
   // 節点荷重の矢印を描く
-  private createNodeLoad(scene: SceneService, nodeLoadData: any, nodeData: object): void {
+  private createNodeLoad(nodeLoadData: any, nodeData: object): void {
 
     // 新しい入力を適用する
     const targetNodeLoad = nodeLoadData;
@@ -95,40 +96,40 @@ export class ThreePointLoadService {
       const xArrow: Line2 = this.setPointLoad(load.tx, pMax, node, 'px');
       if (xArrow !== null) {
         this.pointLoadList.push(xArrow);
-        scene.add(xArrow);
+        this.scene.add(xArrow);
       }
       // y方向の集中荷重
       const yArrow: Line2 = this.setPointLoad(load.ty, pMax, node, 'py');
       if (yArrow !== null) {
         this.pointLoadList.push(yArrow);
-        scene.add(yArrow);
+        this.scene.add(yArrow);
       }
       // z方向の集中荷重
       const zArrow: Line2 = this.setPointLoad(load.tz, pMax, node, 'pz');
       if (zArrow !== null) {
         this.pointLoadList.push(zArrow);
-        scene.add(zArrow);
+        this.scene.add(zArrow);
       }
 
       // x軸周りのモーメント
       const xMoment = this.setMomentLoad(load.rx, mMax, node, 0xFF0000, 'mx');
       if (xMoment !== null) {
         this.pointLoadList.push(xMoment);
-        scene.add(xMoment);
+        this.scene.add(xMoment);
       }
 
       // y軸周りのモーメント
       const yMoment = this.setMomentLoad(load.ry, mMax, node, 0x00FF00, 'my');
       if (yMoment !== null) {
         this.pointLoadList.push(yMoment);
-        scene.add(yMoment);
+        this.scene.add(yMoment);
       }
 
       // z軸周りのモーメント
       const zMoment = this.setMomentLoad(load.rz, mMax, node, 0x0000FF, 'mz');
       if (zMoment !== null) {
         this.pointLoadList.push(zMoment);
-        scene.add(zMoment);
+        this.scene.add(zMoment);
       }
 
     }
@@ -263,13 +264,13 @@ export class ThreePointLoadService {
   }
 
   // データをクリアする
-  public ClearData(scene: SceneService): void {
-    this.ClearMemberLoad(scene);
-    this.ClearNodeLoad(scene);
+  public ClearData(): void {
+    this.ClearMemberLoad();
+    this.ClearNodeLoad();
   }
 
   // データをクリアする
-  private ClearNodeLoad(scene: SceneService): void {
+  private ClearNodeLoad(): void {
     for (const mesh of this.pointLoadList) {
       // 文字を削除する
       while (mesh.children.length > 0) {
@@ -277,14 +278,15 @@ export class ThreePointLoadService {
         object.parent.remove(object);
       }
       // オブジェクトを削除する
-      scene.remove(mesh);
+      this.scene.remove(mesh);
     }
     this.pointLoadList = new Array();
   }
 
   // データをクリアする
-  private ClearMemberLoad(scene: SceneService): void {
+  private ClearMemberLoad(): void {
+    
   }
-  
+
 }
 
