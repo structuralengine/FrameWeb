@@ -43,8 +43,7 @@ export class ThreePointLoadService {
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson('calc');
-    const nodeKeys = Object.keys(nodeData);
-    if (nodeKeys.length <= 0) {
+    if (Object.keys(nodeData).length <= 0) {
       return;
     }
 
@@ -53,19 +52,29 @@ export class ThreePointLoadService {
     const nodeLoadData = this.load.getNodeLoadJson('unity-loads:' + targetCase);
     if (Object.keys(nodeLoadData).length <= 0) {
       this.ClearNodeLoad();
-      return;
     }
 
     // サイズを調整しオブジェクトを登録する
     this.createNodeLoad(nodeLoadData[targetCase], nodeData);
 
-    // メンバーデータを入手
+
+    // 要素データを入手
     const memberData = this.member.getMemberJson('calc');
-    const memberKeys = Object.keys(memberData);
-    if (memberKeys.length <= 0) {
+    if (Object.keys(memberData).length <= 0) {
       this.ClearMemberLoad();
       return;
     }
+
+    // 要素荷重データを入手
+    const memberLoadData = this.load.getMemberLoadJson('unity-loads:' + targetCase);
+    if (Object.keys(memberLoadData).length <= 0) {
+      this.ClearMemberLoad();
+      return;
+    }
+
+    // サイズを調整しオブジェクトを登録する
+    this.createMemberLoad(memberLoadData[targetCase], memberData);
+
   }
 
   // 節点荷重の矢印を描く
@@ -262,6 +271,11 @@ export class ThreePointLoadService {
     return line;
 
   }
+
+  // 要素荷重の矢印を描く
+  private createMemberLoad(memberLoadData: any, memberData: object): void {
+
+   }
 
   // データをクリアする
   public ClearData(): void {
