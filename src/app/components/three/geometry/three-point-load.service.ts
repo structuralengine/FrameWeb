@@ -52,11 +52,10 @@ export class ThreePointLoadService {
     const nodeLoadData = this.load.getNodeLoadJson('unity-loads:' + targetCase);
     if (Object.keys(nodeLoadData).length <= 0) {
       this.ClearNodeLoad();
+    } else {
+      // サイズを調整しオブジェクトを登録する
+      this.createNodeLoad(nodeLoadData[targetCase], nodeData);
     }
-
-    // サイズを調整しオブジェクトを登録する
-    this.createNodeLoad(nodeLoadData[targetCase], nodeData);
-
 
     // 要素データを入手
     const memberData = this.member.getMemberJson('calc');
@@ -69,16 +68,19 @@ export class ThreePointLoadService {
     const memberLoadData = this.load.getMemberLoadJson('unity-loads:' + targetCase);
     if (Object.keys(memberLoadData).length <= 0) {
       this.ClearMemberLoad();
-      return;
+    } else {
+      // サイズを調整しオブジェクトを登録する
+      this.createMemberLoad(memberLoadData[targetCase], memberData);
     }
-
-    // サイズを調整しオブジェクトを登録する
-    this.createMemberLoad(memberLoadData[targetCase], memberData);
 
   }
 
   // 節点荷重の矢印を描く
   private createNodeLoad(nodeLoadData: any, nodeData: object): void {
+
+    if ( nodeLoadData === undefined ) {
+      return;
+    }
 
     // 新しい入力を適用する
     const targetNodeLoad = nodeLoadData;
@@ -275,7 +277,38 @@ export class ThreePointLoadService {
   // 要素荷重の矢印を描く
   private createMemberLoad(memberLoadData: any, memberData: object): void {
 
-   }
+    if ( memberLoadData === undefined ) {
+      return;
+    }
+
+    // 新しい入力を適用する
+    const targetMemberLoad = memberLoadData;
+    // スケールを決定する 最大の荷重を 1とする
+    let pMax = 0;
+    for (const load of targetMemberLoad) {
+      pMax = Math.max(pMax, Math.abs(load.tx));
+      pMax = Math.max(pMax, Math.abs(load.ty));
+      pMax = Math.max(pMax, Math.abs(load.tz));
+    }
+
+    // 集中荷重の矢印をシーンに追加する
+    for (const load of targetMemberLoad) {
+      // 節点座標 を 取得する
+      const member = memberData[load.m];
+      if (member === undefined) {
+        continue;
+      }
+      // x方向の集中荷重
+      const point: object = { x: 0, y: 0, z: 0 };
+      const xArrow: Line2 = this.setPointLoad(load.tx, pMax, point, 'px');
+      if (xArrow !== null) {
+        this.pointLoadList.push(xArrow);
+        this.scene.add(xArrow);
+      }
+
+    }
+
+  }
 
   // データをクリアする
   public ClearData(): void {
