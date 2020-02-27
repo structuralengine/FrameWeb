@@ -19,6 +19,8 @@ import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-
 import { ThreeMembersService } from './three-members.service';
 import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 
+const helvetiker_regular_typeface: any = require('../fonts/helvetiker_regular.typeface.json');
+
 @Injectable({
   providedIn: 'root'
 })
@@ -272,6 +274,7 @@ export class ThreeSectionForceService {
       // ２つめのデータ以降が断面力情報
       const positions = [];
       const colors = [];
+      const danmenryoku = [];
       for (let i = 1; i < target.length; i++) {
         const force: any = target[i];
         let x: number = force.worldPosition.x;
@@ -282,7 +285,8 @@ export class ThreeSectionForceService {
         z -= force[key] * memberInfo[axis].z * this.scale;
         positions.push(x, y, z);
         colors.push(color.r, color.g, color.b);
-      }
+        danmenryoku.push(target[i]);
+      };
 
       const geometry: LineGeometry = new LineGeometry();
       geometry.setPositions(positions);
@@ -301,6 +305,36 @@ export class ThreeSectionForceService {
       // line.name = '';
       this.lineList.push(line);
       this.scene.add(line);
+
+      //断面力の値を表示
+      const loader = new THREE.FontLoader().parse(helvetiker_regular_typeface);
+            
+      for (let i = 0; i < danmenryoku.length; i++) {
+        const danmenryoku_list: any = danmenryoku[i];
+        //断面力値のmeshを作成
+        var DanmentyokuText = String(danmenryoku_list[key]);
+        const DanmenryokuText = new THREE.TextGeometry(
+          DanmentyokuText, {
+            font: loader,
+            size: 0.2,
+            height: 0.002,
+            curveSegments: 4,
+            bevelEnabled: false,
+          }
+        );
+        const DanmenryokuMaterial = [
+          new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5} ),
+          new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5} )
+        ];
+        const Section_force_value = new THREE.Mesh(DanmenryokuText, DanmenryokuMaterial);
+
+        //数値をx-y平面の状態から，x-z平面の状態に回転
+        Section_force_value.rotation.x = Math.PI / 2;
+        //数値を任意の位置に配置
+        Section_force_value.position.set(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]);
+        //数値を表示
+        this.scene.add(Section_force_value);
+      }      
     }
   }
 
