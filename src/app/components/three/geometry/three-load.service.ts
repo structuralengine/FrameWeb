@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SceneService } from '../scene.service';
-import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
-import { InputMembersService } from '../../../components/input/input-members/input-members.service';
-import { InputLoadService } from '../../../components/input/input-load/input-load.service';
+import { InputNodesService } from '../../input/input-nodes/input-nodes.service';
+import { InputMembersService } from '../../input/input-members/input-members.service';
+import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeNodesService } from './three-nodes.service';
 
 import { OrbitControls } from '../libs/OrbitControls.js';
@@ -13,21 +13,25 @@ import { GeometryUtils } from '../libs/GeometryUtils.js';
 
 import * as THREE from 'three';
 import { ThreeService } from '../three.service';
+import { ThreeMembersService } from './three-members.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ThreePointLoadService {
+export class ThreeLoadService {
 
   private pointLoadList: any[];
+  private memberLoadList: any[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   constructor(private scene: SceneService,
               private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService,
-              private load: InputLoadService) {
+              private load: InputLoadService,
+              private three_member: ThreeMembersService) {
     this.pointLoadList = new Array();
+    this.memberLoadList = new Array();
     this.selectionItem = null;
   }
 
@@ -52,11 +56,10 @@ export class ThreePointLoadService {
     const nodeLoadData = this.load.getNodeLoadJson('unity-loads:' + targetCase);
     if (Object.keys(nodeLoadData).length <= 0) {
       this.ClearNodeLoad();
+    } else {
+      // サイズを調整しオブジェクトを登録する
+      this.createNodeLoad(nodeLoadData[targetCase], nodeData);
     }
-
-    // サイズを調整しオブジェクトを登録する
-    this.createNodeLoad(nodeLoadData[targetCase], nodeData);
-
 
     // 要素データを入手
     const memberData = this.member.getMemberJson('calc');
@@ -69,16 +72,19 @@ export class ThreePointLoadService {
     const memberLoadData = this.load.getMemberLoadJson('unity-loads:' + targetCase);
     if (Object.keys(memberLoadData).length <= 0) {
       this.ClearMemberLoad();
-      return;
+    } else {
+      // サイズを調整しオブジェクトを登録する
+      this.createMemberLoad(memberLoadData[targetCase], nodeData, memberData);
     }
-
-    // サイズを調整しオブジェクトを登録する
-    this.createMemberLoad(memberLoadData[targetCase], memberData);
 
   }
 
   // 節点荷重の矢印を描く
   private createNodeLoad(nodeLoadData: any, nodeData: object): void {
+
+    if ( nodeLoadData === undefined ) {
+      return;
+    }
 
     // 新しい入力を適用する
     const targetNodeLoad = nodeLoadData;
@@ -144,7 +150,7 @@ export class ThreePointLoadService {
     }
   }
 
-  // 節点荷重の矢印を作成する
+  // 節点モーメント荷重の矢印を作成する
   private setMomentLoad(value: number, mMax: number, node: any, color: number, name: string): THREE.Line {
 
     if (value === 0) {
@@ -273,9 +279,60 @@ export class ThreePointLoadService {
   }
 
   // 要素荷重の矢印を描く
-  private createMemberLoad(memberLoadData: any, memberData: object): void {
+  private createMemberLoad(memberLoadData: any, nodeData: object, memberData: object): void {
 
-   }
+    if ( memberLoadData === undefined ) {
+      return;
+    }
+
+    // 新しい入力を適用する
+    const targetMemberLoad = memberLoadData;
+    // スケールを決定する 最大の荷重を 1とする
+    let pMax = 0;
+    for (const load of targetMemberLoad) {
+      pMax = Math.max(pMax, Math.abs(load.P1));
+      pMax = Math.max(pMax, Math.abs(load.P2));
+    }
+
+    // 荷重のshapeをシーンに追加する
+    for (const load of targetMemberLoad) {
+
+
+      // 節点データを集計する
+      const m = memberData[load.m];
+      if (m === undefined) {
+        continue;
+      }
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
+      if (i === undefined || j === undefined) {
+        continue;
+      }
+
+      // 部材の座標軸を取得
+      const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+      const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
+
+      //
+      const heartShape = new THREE.Shape();
+
+      heartShape.moveTo( 0, 0 );
+      heartShape.lineTo(  1, -0.5 );
+      heartShape.lineTo( -1, -0.5  );
+      heartShape.lineTo(  0, 1 );
+
+      const extrudeSettings = { amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
+      const geometry = new THREE.ExtrudeGeometry( heartShape, extrudeSettings );
+      const mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial() );
+
+      if (mesh !== null) {
+        this.memberLoadList.push(mesh);
+        this.scene.add(mesh);
+      }
+
+    }
+
+  }
 
   // データをクリアする
   public ClearData(): void {
@@ -299,7 +356,16 @@ export class ThreePointLoadService {
 
   // データをクリアする
   private ClearMemberLoad(): void {
-    
+    for (const mesh of this.memberLoadList) {
+      // 文字を削除する
+      while (mesh.children.length > 0) {
+        const object = mesh.children[0];
+        object.parent.remove(object);
+      }
+      // オブジェクトを削除する
+      this.scene.remove(mesh);
+    }
+    this.memberLoadList = new Array();
   }
 
 }
