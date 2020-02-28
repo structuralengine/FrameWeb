@@ -19,7 +19,7 @@ import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-
 import { ThreeMembersService } from './three-members.service';
 import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 
-const helvetiker_regular_typeface: any = require('../fonts/helvetiker_regular.typeface.json');
+// const helvetiker_regular_typeface: any = require('../fonts/helvetiker_regular.typeface.json');
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +33,8 @@ export class ThreeSectionForceService {
   private params: any;          // GUIの表示制御
   private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
+
+  private font: any;
 
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
@@ -307,15 +309,19 @@ export class ThreeSectionForceService {
       this.scene.add(line);
 
       //断面力の値を表示
-      const loader = new THREE.FontLoader().parse(helvetiker_regular_typeface);
-            
+      //const loader = new THREE.FontLoader().parse(helvetiker_regular_typeface);
+      const loader = new THREE.FontLoader();
+      loader.load('../fonts/helvetiker_regular.typeface.json', (response) => {
+        this.font = response;
+      });      
+
       for (let i = 0; i < danmenryoku.length; i++) {
         const danmenryoku_list: any = danmenryoku[i];
         //断面力値のmeshを作成
         var DanmentyokuText = String(danmenryoku_list[key]);
         const DanmenryokuText = new THREE.TextGeometry(
           DanmentyokuText, {
-            font: loader,
+            font: this.font,
             size: 0.2,
             height: 0.002,
             curveSegments: 4,
