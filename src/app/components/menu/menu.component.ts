@@ -103,7 +103,7 @@ export class MenuComponent implements OnInit {
 
     console.log(inputJson);
 
-    const url = 'http://structuralengine.com/FrameWeb/api/Web_Api.py';
+    const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
 
     this.http.post(url, inputJson, {
       headers: new Headers({
