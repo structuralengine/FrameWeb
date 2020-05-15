@@ -98,10 +98,10 @@ export class MenuComponent implements OnInit {
 
     const modalRef = this.modalService.open(WaitDialogComponent);
 
-    const inputJson = 'inp_grid='
-      + this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword });
+    const inputJson = 
+      this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword });
 
-    console.log(inputJson);
+    console.log(inputJson);;
 
     const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
 

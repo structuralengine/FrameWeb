@@ -75,7 +75,6 @@ export class InputNoticePointsService {
     for (let i = 0; i < this.notice_points.length; i++) {
       const row: {} = this.notice_points[i];
       const r = row['row'];
-      let m = this.helper.toNumber(row['m']);
       const points = new Array();
       for (let j = 1; j < InputNoticePointsService.NOTICE_POINTS_COUNT + 1; j++) {
         const key = 'L' + j;
@@ -86,11 +85,12 @@ export class InputNoticePointsService {
           }
         }
       }
-      if (m == null && Object.keys(points).length === 0) {
+      let m = this.helper.toNumber(row['m']);
+      if (m == null || Object.keys(points).length === 0) {
         continue;
       }
       m = (m == null) ? 0 : m;
-      const item = { m: m, Points: points };
+      const item = { m: m.toString(), Points: points };
       if (mode !== 'calc') {
         item['row'] = r;
       }
