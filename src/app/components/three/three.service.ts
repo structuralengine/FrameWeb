@@ -10,8 +10,7 @@ import { ThreeMembersService } from './geometry/three-members.service';
 import { ThreeFixNodeService } from './geometry/three-fix-node.service';
 import { ThreeFixMemberService } from './geometry/three-fix-member.service';
 import { ThreeJointService } from './geometry/three-joint.service';
-import { ThreePointLoadService } from './geometry/three-point-load.service';
-import { ThreeMemberLoadService } from './geometry/three-member-load.service';
+import { ThreeLoadService } from './geometry/three-load.service';
 
 import { ThreeDisplacementService } from './geometry/three-displacement.service';
 import { ThreeSectionForceService } from './geometry/three-section-force.service';
@@ -31,8 +30,7 @@ export class ThreeService {
               private fixNode: ThreeFixNodeService,
               private fixMember: ThreeFixMemberService,
               private joint: ThreeJointService,
-              private pointLoad: ThreePointLoadService,
-              private memberLoad: ThreeMemberLoadService,
+              private pointLoad: ThreeLoadService,
               private disg: ThreeDisplacementService,
               private reac: ThreeReactService,
               private fsec: ThreeSectionForceService
@@ -71,6 +69,7 @@ export class ThreeService {
         // 要素
         case 'members':
           this.member.chengeData();
+          this.pointLoad.chengeData(index);
           break;
 
         // 結合
@@ -171,9 +170,9 @@ export class ThreeService {
 
     // 荷重
     if (['loads'].indexOf(this.mode) >= 0) {
-
+      this.pointLoad.chengeData(1);
     } else {
-
+      this.pointLoad.ClearData();
     }
 
     // 変位図

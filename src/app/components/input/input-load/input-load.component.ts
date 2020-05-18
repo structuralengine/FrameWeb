@@ -17,7 +17,7 @@ export class InputLoadComponent implements OnInit {
 
   hotTableSettings = {
     afterChange: (...x: any[]) => {
-    this.three.chengeData('', this.page);
+    this.three.chengeData('loads', this.page);
   }};
 
   constructor(private data: InputLoadService,

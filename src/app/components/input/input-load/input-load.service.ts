@@ -343,7 +343,7 @@ export class InputLoadService {
   }
 
   // 要素荷重データ
-  private getMemberLoadJson(mode: string = 'file'): any {
+  public getMemberLoadJson(mode: string = 'file'): any {
 
     const targetCase = mode.replace('unity-loads:', '');
     const load_member = {};

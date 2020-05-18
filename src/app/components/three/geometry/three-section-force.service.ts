@@ -19,18 +19,23 @@ import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-
 import { ThreeMembersService } from './three-members.service';
 import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class ThreeSectionForceService {
 
   private lineList: THREE.Line[];
+  private textList: THREE.Mesh[];
   private targetData: any;
 
   private scale: number;
   private params: any;          // GUIの表示制御
   private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
+
+  private font: THREE.Font;
+
 
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
@@ -42,6 +47,7 @@ export class ThreeSectionForceService {
               private three_member: ThreeMembersService) {
 
     this.lineList = new Array();
+    this.textList = new Array();
     this.targetData = new Array();
 
     this.scale = 0.001;
@@ -54,6 +60,12 @@ export class ThreeSectionForceService {
     }
     this.params.momentY = true; // 初期値
     this.gui = null;
+
+    // フォントをロード
+    const loader = new THREE.FontLoader();
+    loader.load( './assets/fonts/helvetiker_regular.typeface.json', ( font ) => {
+      this.font = font;
+    });
   }
 
   // データをクリアする
@@ -70,6 +82,16 @@ export class ThreeSectionForceService {
       }
       this.lineList = new Array();
     }
+    // テキストを削除する
+    for (const mesh of this.textList) {
+      // 文字を削除する
+      while (mesh.children.length > 0) {
+        const object = mesh.children[0];
+        object.parent.remove(object);
+      }
+      this.scene.remove(mesh);
+    }
+    this.textList = new Array();
   }
 
   public guiEnable(): void {
@@ -267,11 +289,12 @@ export class ThreeSectionForceService {
   private addGeometory(key: string, axis: string, color: THREE.Color) {
 
     for (const target of this.targetData) {
-      // 1つめのデータは部材情報
-      const memberInfo: any = target[0];
-      // ２つめのデータ以降が断面力情報
+
+      // 断面力のpathを表示
+      const memberInfo: any = target[0]; // 1つめのデータは部材情報 (２つめのデータ以降が断面力情報)
       const positions = [];
       const colors = [];
+      const danmenryoku = [];
       for (let i = 1; i < target.length; i++) {
         const force: any = target[i];
         let x: number = force.worldPosition.x;
@@ -282,26 +305,92 @@ export class ThreeSectionForceService {
         z -= force[key] * memberInfo[axis].z * this.scale;
         positions.push(x, y, z);
         colors.push(color.r, color.g, color.b);
+        danmenryoku.push(target[i]);
       }
+      this.addPathGeometory(positions, colors);
 
-      const geometry: LineGeometry = new LineGeometry();
-      geometry.setPositions(positions);
-      geometry.setColors(colors);
 
-      const matLine: LineMaterial = new LineMaterial({
-        color: 0xFF0000,
-        linewidth: 0.001,
-        vertexColors: THREE.VertexColors,
-        dashed: false
-      });
-      const line: Line2 = new Line2(geometry, matLine);
-      line.computeLineDistances();
-
-      line.scale.set(1, 1, 1);
-      // line.name = '';
-      this.lineList.push(line);
-      this.scene.add(line);
+      // 断面力の値を表示
+      for (let i = 0; i < danmenryoku.length; i++) {
+        const position = {
+          x: positions[3 * i],
+          y: positions[3 * i + 1],
+          z: positions[3 * i + 2]
+        };
+        const danmenryokuList: any = danmenryoku[i];
+        const DanmentyokuText = String(danmenryokuList[key]);
+        this.addTextGeometory(DanmentyokuText, position);
+      }
     }
   }
 
+  // 断面力の線を描く
+  private addPathGeometory(positions: any[], colors: any[]): void {
+
+    const geometry: LineGeometry = new LineGeometry();
+    geometry.setPositions(positions);
+    geometry.setColors(colors);
+
+    const matLine: LineMaterial = new LineMaterial({
+      color: 0xFF0000,
+      linewidth: 0.001,
+      vertexColors: THREE.VertexColors,
+      dashed: false
+    });
+    const line: Line2 = new Line2(geometry, matLine);
+    line.computeLineDistances();
+    line.scale.set(1, 1, 1);
+    // line.name = '';
+    this.lineList.push(line);
+    this.scene.add(line);
+
+    /*
+    const heartShape = new THREE.Shape();
+
+    heartShape.moveTo( 0, 0 );
+    heartShape.lineTo(  1, -0.5 );
+    heartShape.lineTo( -1, -0.5  );
+    heartShape.lineTo(  0, 1 );
+
+    const extrudeSettings = { amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
+    const geometry = new THREE.ExtrudeGeometry( heartShape, extrudeSettings );
+    const mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial() );
+
+    if (mesh !== null) {
+      this.memberLoadList.push(mesh);
+      this.scene.add(mesh);
+    }
+    */
+
+  }
+
+  // 断面力値のmeshを作成
+  private addTextGeometory(text: string, position: any): void {
+    const DanmenryokuText = new THREE.TextGeometry(
+      text, {
+        font: this.font ,
+        size: 0.2,
+        height: 0.002,
+        curveSegments: 4,
+        bevelEnabled: false,
+      }
+    );
+
+    const DanmenryokuMaterial = [
+      new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5} ),
+      new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5} )
+    ];
+    const sectionForceValue = new THREE.Mesh(DanmenryokuText, DanmenryokuMaterial);
+
+    // 数値をx-y平面の状態から，x-z平面の状態に回転
+    sectionForceValue.rotation.x = Math.PI / 2;
+    // 数値を任意の位置に配置
+    sectionForceValue.position.set(position.x, position.y, position.z);
+    // 数値を表示
+    this.textList.push(sectionForceValue);
+    this.scene.add(sectionForceValue);
+
+  }
+
 }
+
