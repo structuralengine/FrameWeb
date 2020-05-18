@@ -69,6 +69,7 @@ export class ThreeService {
         // 要素
         case 'members':
           this.member.chengeData();
+          this.pointLoad.chengeData(index);
           break;
 
         // 結合
@@ -169,9 +170,9 @@ export class ThreeService {
 
     // 荷重
     if (['loads'].indexOf(this.mode) >= 0) {
-
+      this.pointLoad.chengeData(1);
     } else {
-
+      this.pointLoad.ClearData();
     }
 
     // 変位図
