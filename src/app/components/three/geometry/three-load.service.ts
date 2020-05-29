@@ -322,15 +322,12 @@ export class ThreeLoadService {
       // 部材の座標軸を取得
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
       const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
-      const MemberLengthBector = {x: (j.x - i.x) / MemberLength, y: (j.y - i.y) / MemberLength, z: (j.z - i.z) / MemberLength};
-      //console.log(MemberLengthBector);
 
       //var material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: 0x00cc00, transparent: true,}); //alphaMap: 
       var mesh_material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: 0x00cc00, depthTest : false}); //alphaMap: 
       //var mesh_material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, color: 0x00cc00, opacity: 0.3}); //alphaMap: transparent: true,
       
 
-      //create a triangular geometry
       var geometry = new THREE.Geometry();
 
       let _localAxis;
@@ -345,7 +342,8 @@ export class ThreeLoadService {
         _localAxis = localAxis.z;
           break;
       }
-
+      
+      //荷重の面Meshを作る
       const i_x = i.x + localAxis.x.x * L_one;
       const i_y = i.y + localAxis.x.y * L_one;
       const i_z = i.z + localAxis.x.z * L_one;
@@ -365,27 +363,23 @@ export class ThreeLoadService {
       geometry.vertices.push(new THREE.Vector3(x2, y2, z2));
       geometry.vertices.push(new THREE.Vector3(j_x, j_y, j_z));
 
-      //create a new face using vertices 0, 1, 2
-      var normal = new THREE.Vector3(0, 0, 1); //optional
-      var color = new THREE.Color(0xffaa00); //optional
-      //var materialIndex = 0; //optional
+      var normal = new THREE.Vector3(0, 0, 1);
+      var color = new THREE.Color(0xffaa00);
       var face1 = new THREE.Face3(0, 1, 2, normal, color);
       var face2 = new THREE.Face3(0, 2, 3, normal, color);
 
-      //add the face to the geometry's faces array
       geometry.faces.push(face1);
       geometry.faces.push(face2);
 
-      //the face normals and vertex normals can be calculated automatically if not supplied above
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
 
       var mesh = new THREE.Mesh(geometry, mesh_material);
-       /*
+       
       if (mesh !== null) {
         this.memberLoadList.push(mesh);
         this.scene.add(mesh);
-      }*/
+      }
 
       //lineを描く
       let linewidth: number = this.nodeThree.baseScale() / 50;
@@ -398,175 +392,64 @@ export class ThreeLoadService {
 
       //coneを描く
       const cone_scale: number = maxLength * 0.3;
-      const cone_radius: number = 0.1 * cone_scale;
-      const cone_height: number = 1 * cone_scale;
-      const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
-      const arrowMaterial = new THREE.MeshBasicMaterial({ color });
-      const cone1: THREE.Mesh = new THREE.Mesh(arrowGeometry, arrowMaterial);
-      const cone2: THREE.Mesh = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      const cone_radius: number = 0.03 * cone_scale;
+      const cone_height: number = 0.3 * cone_scale;
 
-      //console.log("localAxis", localAxis);
-
-      
-
-      switch (load.direction) {
-        case 'x':
-          cone1.position.set(i_x - cone_height / 2, i_y, i_z);
-          cone1.rotation.z = Math.PI / 2 * 3;
-          cone2.position.set(j_x - cone_height / 2, j_y, j_z);
-          cone2.rotation.z = Math.PI / 2 * 3;
-          break;
-        case 'y':
-          cone1.position.set(i_x, i_y - cone_height / 2, i_z);
-          cone2.position.set(j_x, j_y - cone_height / 2, j_z);
-          break;
-        case 'z':
-          // thee.js lookat という関数があるらしい
-          //cone1.position.set(0,-cone_height / 2,0);
-          //cone1.position.set(i_x, i_y, i_z);
-          //cone1.rotation.x = Math.PI / 2 * 3;
-          //new THREE.Quaternion().setFromAxisAngle(_localAxis, Math.PI);          <try>
-          //cone1.setFromAxisAngle(_localAxis, Math.PI);          <try>
-          //cone1.rotation.y = Math.atan2(_localAxis.z, _localAxis.x) * 180 / Math.PI;          <tryNG>
-          //cone1.rotation.x = Math.atan(_localAxis.z / _localAxis.x)
-          //scene.children[ i ].lookAt( sphere.position );
-          //cone2.position.set(j_x, j_y, j_z);
-        //線状に見る
-          //cone2.position.set(x2, y2, z2);
-          //cone2.lookAt(j_x, j_y, j_z);
-
-        //yの方を見てみる
-          //cone2.position.set(j_x, j_y, j_z);
-          //cone2.lookAt(j_x + localAxis.y.x, j_y + localAxis.y.y, j_z + localAxis.y.z)
-          //cone2.rotation.x = Math.PI / 2 *3;
-          //cone2.rotation.x = Math.PI / 2 * 3;
-          //cone2.rotation.x = Math.atan(localAxis.x.y / localAxis.x.z);
-          //cone2.rotation.y = Math.atan(localAxis.x.z / localAxis.x.x);
-          //cone2.rotation.z = Math.atan(localAxis.x.x / localAxis.x.y);
-
-          
-          break;
-      }
-      //THREE.lookAt(x: 10, y: 10, z: 15);
-      //THREE.lookAt(10, 10, 15);         camera.lookAt()ならある
-
-      //コーンを作る_cone2
       var cone_mesh_material = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, 
-                                                               color: new THREE.Color(0xff0000), depthTest : false});
-      //var cone_mesh_material2 = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, 
-      //                                                         color: new THREE.Color(0xffffff), depthTest : false});
-      const new_corn = this.createCorn(j_x, j_y, j_z, localAxis, 0.3, cone_mesh_material);
-      //const new_corn2 = this.createCorn(j_x, j_y, j_z, localAxis, 0.3, cone_mesh_material);
+                                                               color: new THREE.Color(0xffffff),
+                                                               depthTest : false});
       
-      if (new_corn !== null) {
-        this.memberLoadList.push(new_corn);
-        //this.scene.cone1.lookAt( 10, 10, 10);
-        this.scene.add(new_corn);
-      }
-      /*
-      const cone2_CoG = {x: j_x +_localAxis.x * 1, y: j_y + _localAxis.x * 1, z: j_z + _localAxis.z * 1};
-      cone2_geometry.vertices.push(new THREE.Vector3(j_x, j_y, j_z));
-      cone2_geometry.vertices.push(new THREE.Vector3(cone2_CoG.x + 0.3, cone2_CoG.y + 0.3, cone2_CoG.z + 0.3));
-      cone2_geometry.vertices.push(new THREE.Vector3(cone2_CoG.x - 0.1, cone2_CoG.y + 0.1, cone2_CoG.z + 0.1));
-      cone2_geometry.vertices.push(new THREE.Vector3(cone2_CoG.x + 0.1, cone2_CoG.y - 0.1, cone2_CoG.z + 0.1));
-
-      //create a new face using vertices 0, 1, 2
-      var normal = new THREE.Vector3(0, 0, 1); //optional
-      var color = new THREE.Color(0xffaa00); //optional
-      //var materialIndex = 0; //optional
-      var face3 = new THREE.Face3(0, 1, 2, normal, color);
-      var face4 = new THREE.Face3(0, 2, 3, normal, color);
-      var face5 = new THREE.Face3(0, 1, 3, normal, color);
-      //add the face to the geometry's faces array
-      cone2_geometry.faces.push(face3);
-      cone2_geometry.faces.push(face4);
-      cone2_geometry.faces.push(face5);
-
-      //the face normals and vertex normals can be calculated automatically if not supplied above
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-
-      var cone2_mesh = new THREE.Mesh(cone2_geometry, mesh_material);
+      const cone1 = this.createCorn(i_x, i_y, i_z, localAxis, cone_radius, cone_height, cone_mesh_material);
+      const cone2 = this.createCorn(j_x, j_y, j_z, localAxis, cone_radius, cone_height, cone_mesh_material);
       
-      if (cone2_mesh !== null) {
-        this.memberLoadList.push(cone2_mesh);
-        this.scene.add(cone2_mesh);
-      }
-      */
-
       if (cone1 !== null) {
         this.memberLoadList.push(cone1);
-        //this.scene.cone1.lookAt( 10, 10, 10);
         this.scene.add(cone1);
       }
       if (cone2 !== null) {
-        //cone2.lookAt(j_x + localAxis.x.z, j_y + localAxis.x.y, j_z + localAxis.x.z);
-        //cone2.lookAt(-x2, -y2, -z2);
-        //cone2.lookAt(j_x - localAxis.y.x, j_y - localAxis.y.y, j_z - localAxis.y.z);
-        //cone2.lookAt(j_x - localAxis.z.x, j_y - localAxis.z.y, j_z - localAxis.z.z);
-        //cone2.lookAt(j_x - localAxis.x.x, j_y - localAxis.y.y, j_z - localAxis.z.z);
-        //cone2.lookAt(j_x, j_y, j_z);
-        //console.log("//////////////////////////////");
-        //console.log(j_x, j_x + localAxis.x.x);
-        //console.log(j_y, j_y + localAxis.x.y);
-        //console.log(j_z, j_z + localAxis.x.z);
-        //cone2.rotation.x = Math.PI / 2;
-        //cone2.rotation.y = Math.PI / 2;
-        //cone2.rotation.z = Math.PI / 2;
         this.memberLoadList.push(cone2);
         this.scene.add(cone2);
-        //this.scene.cone2.lookAt( 10, 10, 10);
-        //console.log(_localAxis.x * 20, _localAxis.y * 20, _localAxis.z * 20);
       }
       
-
-
     }
 
   }
 
-
-  private createCorn(xij, yij, zij, localAxis, cone_height,  mesh_material){
+  //コーンを作る
+  private createCorn(xij, yij, zij, localAxis, cone_radius, cone_height,  mesh_material){
 
     var cone_geometry = new THREE.Geometry();
-    //コーンを作る_cone2
-    const cone_CoG = {N: { x_0: xij + localAxis.z.x * cone_height, 
-                           y_0: yij + localAxis.z.y * cone_height, 
-                           z_0: zij + localAxis.z.z * cone_height }};
-    const x_1 = cone_CoG.N.x_0 + 0.6 * (localAxis.x.x  + localAxis.y.x  + localAxis.z.x );
-    const y_1 = cone_CoG.N.y_0 - 0.6 * (localAxis.x.y  + localAxis.y.y  + localAxis.z.y );
-    const z_1 = cone_CoG.N.z_0 + 0.2 * (localAxis.x.z  + localAxis.y.z  + localAxis.z.z );
-    const x_2 = cone_CoG.N.x_0 - 0.6 * (localAxis.x.x  + localAxis.y.x  + localAxis.z.x );
-    const y_2 = cone_CoG.N.y_0 + 0.6 * (localAxis.x.y  + localAxis.y.y  + localAxis.z.y );
-    const z_2 = cone_CoG.N.z_0 + 0.2 * (localAxis.x.z  + localAxis.y.z  + localAxis.z.z );
-    const x_3 = cone_CoG.N.x_0 - 0.2 * (localAxis.x.x  + localAxis.y.x  + localAxis.z.x );
-    const y_3 = cone_CoG.N.y_0 - 0.2 * (localAxis.x.y  + localAxis.y.y  + localAxis.z.y );
-    const z_3 = cone_CoG.N.z_0 + 0.6 * (localAxis.x.z  + localAxis.y.z  + localAxis.z.z );
-    const box = {x: {x_1: x_1, y_1: y_1, z_1: z_1}, y: {x_2: x_2, y_2: y_2, z_2: z_2},
-                 z: {x_3: x_3, y_3: y_3, z_3: z_3}};
-    console.log(localAxis);
-    console.log(cone_CoG);
-    console.log(box);
+
+    //cone_CoGは底面の三角形の重心位置
+    const cone_CoG = {x: xij + localAxis.z.x * cone_height, 
+                      y: yij + localAxis.z.y * cone_height, 
+                      z: zij + localAxis.z.z * cone_height};
+    
+    const x_1 = cone_CoG.x + cone_radius * 2 * localAxis.x.x ;
+    const y_1 = cone_CoG.y + cone_radius * 2 * localAxis.x.y ;
+    const z_1 = cone_CoG.z + cone_radius * 2 * localAxis.x.z ;
+    const x_2 = cone_CoG.x - cone_radius * 1 * localAxis.x.x  + cone_radius * Math.sqrt(3) * localAxis.y.x ;
+    const y_2 = cone_CoG.y - cone_radius * 1 * localAxis.x.y  + cone_radius * Math.sqrt(3) * localAxis.y.y ;
+    const z_2 = cone_CoG.z - cone_radius * 1 * localAxis.x.z  + cone_radius * Math.sqrt(3) * localAxis.y.z ;
+    const x_3 = cone_CoG.x - cone_radius * 1 * localAxis.x.x  - cone_radius * Math.sqrt(3) * localAxis.y.x ;
+    const y_3 = cone_CoG.y - cone_radius * 1 * localAxis.x.y  - cone_radius * Math.sqrt(3) * localAxis.y.y ;
+    const z_3 = cone_CoG.z - cone_radius * 1 * localAxis.x.z  - cone_radius * Math.sqrt(3) * localAxis.y.z ;
+
     cone_geometry.vertices.push(new THREE.Vector3(xij, yij, zij));
     cone_geometry.vertices.push(new THREE.Vector3(x_1, y_1, z_1));
     cone_geometry.vertices.push(new THREE.Vector3(x_2, y_2, z_2));
     cone_geometry.vertices.push(new THREE.Vector3(x_3, y_3, z_3));
 
-    //create a new face using vertices 0, 1, 2
-    var normal = new THREE.Vector3(0, 0, 1); //optional
-    var color = new THREE.Color(0xffaa00); //optional
-    //var materialIndex = 0; //optional
+    var normal = new THREE.Vector3(0, 0, 1);
+
     var face3 = new THREE.Face3(0, 1, 2, normal, mesh_material);
     var face4 = new THREE.Face3(0, 2, 3, normal, mesh_material);
     var face5 = new THREE.Face3(0, 1, 3, normal, mesh_material);
-    //var faceD = new THREE.Face3(1, 2, 3, normal, mesh_material);
 
-    //add the face to the geometry's faces array
     cone_geometry.faces.push(face3);
     cone_geometry.faces.push(face4);
     cone_geometry.faces.push(face5);
 
-    //the face normals and vertex normals can be calculated automatically if not supplied above
     cone_geometry.computeFaceNormals();
     cone_geometry.computeVertexNormals();
 
