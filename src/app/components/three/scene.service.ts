@@ -29,6 +29,8 @@ export class SceneService {
   // gui
   public gui: GUI;
   private params: any;          // GridHelperの表示制御
+  cone1: any;
+  cone2: any;
 
   // 初期化
   public constructor() {
