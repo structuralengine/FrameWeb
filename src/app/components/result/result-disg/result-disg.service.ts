@@ -48,6 +48,7 @@ export class ResultDisgService {
       }
       const json: {} = caseData['disg'];
       for (const n of Object.keys(json)) {
+
         const item: {} = json[n];
 
         let dx: number = this.helper.toNumber(item['dx']);
@@ -63,7 +64,7 @@ export class ResultDisgService {
         ry = (ry == null) ? 0 : ry * 1000;
         rz = (rz == null) ? 0 : rz * 1000;
         const result = {
-          id: n,
+          id: n.replace('node', ''),
           dx: dx.toFixed(3),
           dy: dy.toFixed(3),
           dz: dz.toFixed(3),
@@ -73,7 +74,7 @@ export class ResultDisgService {
         };
         target.push(result);
       }
-      this.disg[caseNo] = target;
+      this.disg[caseNo.replace('Case', '')] = target;
       max_row = Math.max(max_row, target.length);
     }
     this.DISG_ROWS_COUNT = max_row;

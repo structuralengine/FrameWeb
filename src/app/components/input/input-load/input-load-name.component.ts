@@ -46,4 +46,6 @@ export class InputLoadNameComponent implements OnInit {
       this.rowHeaders.push(i);
     }
   }
+
+  
 }

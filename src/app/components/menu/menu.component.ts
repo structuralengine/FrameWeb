@@ -98,7 +98,7 @@ export class MenuComponent implements OnInit {
 
     const modalRef = this.modalService.open(WaitDialogComponent);
 
-    const inputJson = 
+    const inputJson =
       this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword });
 
     console.log(inputJson);;
@@ -108,7 +108,6 @@ export class MenuComponent implements OnInit {
     this.http.post(url, inputJson, {
       headers: new Headers({
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
       })
     }).subscribe(
       response => {

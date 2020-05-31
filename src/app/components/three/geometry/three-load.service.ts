@@ -322,15 +322,12 @@ export class ThreeLoadService {
       // 部材の座標軸を取得
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
       const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
-      const MemberLengthBector = {x: (j.x - i.x) / MemberLength, y: (j.y - i.y) / MemberLength, z: (j.z - i.z) / MemberLength};
-      //console.log(MemberLengthBector);
 
       //var material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: 0x00cc00, transparent: true,}); //alphaMap: 
       var mesh_material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: 0x00cc00, depthTest : false}); //alphaMap: 
       //var mesh_material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, color: 0x00cc00, opacity: 0.3}); //alphaMap: transparent: true,
       
 
-      //create a triangular geometry
       var geometry = new THREE.Geometry();
 
       let _localAxis;
@@ -345,43 +342,40 @@ export class ThreeLoadService {
         _localAxis = localAxis.z;
           break;
       }
-
-      const i_x = i.x + MemberLengthBector.x * L_one;
-      const i_y = i.y + MemberLengthBector.y * L_one;
-      const i_z = i.z + MemberLengthBector.z * L_one;
-      const j_x = j.x - MemberLengthBector.x * L_two;
-      const j_y = j.y - MemberLengthBector.y * L_two;
-      const j_z = j.z - MemberLengthBector.z * L_two;
       
-      const x1 = i.x + MemberLengthBector.x * L_one + _localAxis.x * p_one;
-      const y1 = i.y + MemberLengthBector.y * L_one + _localAxis.y * p_one;
-      const z1 = i.z + MemberLengthBector.z * L_one + _localAxis.z * p_one;
-      const x2 = j.x - MemberLengthBector.x * L_two + _localAxis.x * p_two;
-      const y2 = j.y - MemberLengthBector.y * L_two + _localAxis.y * p_two;
-      const z2 = j.z - MemberLengthBector.z * L_two + _localAxis.z * p_two;
+      //荷重の面Meshを作る
+      const i_x = i.x + localAxis.x.x * L_one;
+      const i_y = i.y + localAxis.x.y * L_one;
+      const i_z = i.z + localAxis.x.z * L_one;
+      const j_x = j.x - localAxis.x.x * L_two;
+      const j_y = j.y - localAxis.x.y * L_two;
+      const j_z = j.z - localAxis.x.z * L_two;
+      
+      const x1 = i.x + localAxis.x.x * L_one + _localAxis.x * p_one;
+      const y1 = i.y + localAxis.x.y * L_one + _localAxis.y * p_one;
+      const z1 = i.z + localAxis.x.z * L_one + _localAxis.z * p_one;
+      const x2 = j.x - localAxis.x.x * L_two + _localAxis.x * p_two;
+      const y2 = j.y - localAxis.x.y * L_two + _localAxis.y * p_two;
+      const z2 = j.z - localAxis.x.z * L_two + _localAxis.z * p_two;
 
       geometry.vertices.push(new THREE.Vector3(i_x, i_y, i_z));
       geometry.vertices.push(new THREE.Vector3(x1, y1, z1));
       geometry.vertices.push(new THREE.Vector3(x2, y2, z2));
       geometry.vertices.push(new THREE.Vector3(j_x, j_y, j_z));
 
-      //create a new face using vertices 0, 1, 2
-      var normal = new THREE.Vector3(0, 0, 1); //optional
-      var color = new THREE.Color(0xffaa00); //optional
-      //var materialIndex = 0; //optional
+      var normal = new THREE.Vector3(0, 0, 1);
+      var color = new THREE.Color(0xffaa00);
       var face1 = new THREE.Face3(0, 1, 2, normal, color);
       var face2 = new THREE.Face3(0, 2, 3, normal, color);
 
-      //add the face to the geometry's faces array
       geometry.faces.push(face1);
       geometry.faces.push(face2);
 
-      //the face normals and vertex normals can be calculated automatically if not supplied above
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
 
       var mesh = new THREE.Mesh(geometry, mesh_material);
-      
+       
       if (mesh !== null) {
         this.memberLoadList.push(mesh);
         this.scene.add(mesh);
@@ -397,33 +391,17 @@ export class ThreeLoadService {
       }
 
       //coneを描く
-      const cone_scale: number = maxLength * 0.1;
-      const cone_radius: number = 0.1 * cone_scale;
-      const cone_height: number = 1 * cone_scale;
-      const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
-      const arrowMaterial = new THREE.MeshBasicMaterial({ color });
-      const cone1: THREE.Mesh = new THREE.Mesh(arrowGeometry, arrowMaterial);
-      const cone2: THREE.Mesh = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      const cone_scale: number = maxLength * 0.3;
+      const cone_radius: number = 0.03 * cone_scale;
+      const cone_height: number = 0.3 * cone_scale;
 
-      switch (load.direction) {
-        case 'x':
-          cone1.position.set(i_x - cone_height / 2, i_y, i_z);
-          cone1.rotation.z = Math.PI / 2 * 3;
-          cone2.position.set(j_x - cone_height / 2, j_y, j_z);
-          cone2.rotation.z = Math.PI / 2 * 3;
-          break;
-        case 'y':
-          cone1.position.set(i_x, i_y - cone_height / 2, i_z);
-          cone2.position.set(j_x, j_y - cone_height / 2, j_z);
-          break;
-        case 'z':
-          cone1.position.set(i_x, i_y, i_z + cone_height / 2);
-          cone1.rotation.x = Math.PI / 2 * 3;
-          cone2.position.set(j_x, j_y, j_z + cone_height / 2);
-          cone2.rotation.x = Math.PI / 2 * 3;
-          break;
-      }
-
+      var cone_mesh_material = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, 
+                                                               color: new THREE.Color(0xffffff),
+                                                               depthTest : false});
+      
+      const cone1 = this.createCorn(i_x, i_y, i_z, localAxis, cone_radius, cone_height, cone_mesh_material);
+      const cone2 = this.createCorn(j_x, j_y, j_z, localAxis, cone_radius, cone_height, cone_mesh_material);
+      
       if (cone1 !== null) {
         this.memberLoadList.push(cone1);
         this.scene.add(cone1);
@@ -433,12 +411,52 @@ export class ThreeLoadService {
         this.scene.add(cone2);
       }
       
-
-
     }
 
   }
 
+  //コーンを作る
+  private createCorn(xij, yij, zij, localAxis, cone_radius, cone_height,  mesh_material){
+
+    var cone_geometry = new THREE.Geometry();
+
+    //cone_CoGは底面の三角形の重心位置
+    const cone_CoG = {x: xij + localAxis.z.x * cone_height, 
+                      y: yij + localAxis.z.y * cone_height, 
+                      z: zij + localAxis.z.z * cone_height};
+    
+    const x_1 = cone_CoG.x + cone_radius * 2 * localAxis.x.x ;
+    const y_1 = cone_CoG.y + cone_radius * 2 * localAxis.x.y ;
+    const z_1 = cone_CoG.z + cone_radius * 2 * localAxis.x.z ;
+    const x_2 = cone_CoG.x - cone_radius * 1 * localAxis.x.x  + cone_radius * Math.sqrt(3) * localAxis.y.x ;
+    const y_2 = cone_CoG.y - cone_radius * 1 * localAxis.x.y  + cone_radius * Math.sqrt(3) * localAxis.y.y ;
+    const z_2 = cone_CoG.z - cone_radius * 1 * localAxis.x.z  + cone_radius * Math.sqrt(3) * localAxis.y.z ;
+    const x_3 = cone_CoG.x - cone_radius * 1 * localAxis.x.x  - cone_radius * Math.sqrt(3) * localAxis.y.x ;
+    const y_3 = cone_CoG.y - cone_radius * 1 * localAxis.x.y  - cone_radius * Math.sqrt(3) * localAxis.y.y ;
+    const z_3 = cone_CoG.z - cone_radius * 1 * localAxis.x.z  - cone_radius * Math.sqrt(3) * localAxis.y.z ;
+
+    cone_geometry.vertices.push(new THREE.Vector3(xij, yij, zij));
+    cone_geometry.vertices.push(new THREE.Vector3(x_1, y_1, z_1));
+    cone_geometry.vertices.push(new THREE.Vector3(x_2, y_2, z_2));
+    cone_geometry.vertices.push(new THREE.Vector3(x_3, y_3, z_3));
+
+    var normal = new THREE.Vector3(0, 0, 1);
+
+    var face3 = new THREE.Face3(0, 1, 2, normal, mesh_material);
+    var face4 = new THREE.Face3(0, 2, 3, normal, mesh_material);
+    var face5 = new THREE.Face3(0, 1, 3, normal, mesh_material);
+
+    cone_geometry.faces.push(face3);
+    cone_geometry.faces.push(face4);
+    cone_geometry.faces.push(face5);
+
+    cone_geometry.computeFaceNormals();
+    cone_geometry.computeVertexNormals();
+
+    var cone_mesh = new THREE.Mesh(cone_geometry, mesh_material);
+
+    return cone_mesh;
+  }
   // データをクリアする
   public ClearData(): void {
     this.ClearMemberLoad();

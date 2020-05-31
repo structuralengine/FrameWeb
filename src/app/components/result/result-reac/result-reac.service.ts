@@ -65,7 +65,7 @@ export class ResultReacService {
         mz = (mz == null) ? 0 : mz;
 
         const result = {
-          id: n,
+          id: n.replace('node', ''),
           tx: tx.toFixed(2),
           ty: ty.toFixed(2),
           tz: tz.toFixed(2),
@@ -75,7 +75,7 @@ export class ResultReacService {
         };
         target.push(result);
       }
-      this.reac[caseNo] = target;
+      this.reac[caseNo.replace('Case', '')] = target;
       max_row = Math.max(max_row, target.length);
     }
     this.REAC_ROWS_COUNT = max_row;
