@@ -22,11 +22,14 @@ export class InputLoadService {
 
   public getLoadNameColumns(index: number): any {
 
+    const caseNo: string = index.toString();
+
     let result = this.load_name.find( (tmp) => {
-      return tmp.id === index.toString();
+      return tmp.id === caseNo;
     });
+    
     if (result === undefined) {
-      result = { id: index, rate: '', symbol: '', name: '', fix_node: '', fix_member: '', element: '', joint: '' };
+      result = { id: caseNo, rate: '', symbol: '', name: '', fix_node: '', fix_member: '', element: '', joint: '' };
       this.load_name.push(result);
     }
     return result;

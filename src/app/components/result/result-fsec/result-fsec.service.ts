@@ -72,7 +72,7 @@ export class ResultFsecService {
       for (const m of Object.keys(json)) {
 
         let noticePoint = 0.0;
-        memberNo = m;
+        memberNo = m.replace('member', '');
         const js: {} = json[m];
 
         let result = {};
@@ -153,7 +153,7 @@ export class ResultFsecService {
 
         }
       }
-      this.fsec[caseNo] = target;
+      this.fsec[caseNo.replace('Case', '')] = target;
       max_row = Math.max(max_row, target.length);
     }
     this.FSEC_ROWS_COUNT = max_row;

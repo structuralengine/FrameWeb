@@ -28,7 +28,11 @@ export class InputNodesComponent implements OnInit {
         if (changes === undefined) { return; }
         for (let i = 0; i < changes.length; i++) {
           const value: number = this.helper.toNumber(changes[i][3]);
-          changes[i][3] = value.toFixed(3);
+          if( value !== null ) {
+            changes[i][3] = value.toFixed(3);
+          } else {
+            changes[i][3] = null;
+          }
         }
       } catch (e) {
         console.log(e);
