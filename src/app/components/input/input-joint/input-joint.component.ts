@@ -18,7 +18,7 @@ export class InputJointComponent implements OnInit {
     beforeChange: (...x: any[]) => {
     },
     afterChange: (...x: any[]) => {
-      this.three.chengeData('joints');
+      this.three.chengeData('joints', this.page );
     }
   };
 

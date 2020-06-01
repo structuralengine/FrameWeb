@@ -127,6 +127,7 @@ export class ThreeService {
     // 節点データの削除
     this.node.ClearData();
     this.member.ClearData();
+    this.joint.ClearData();
     this.pointLoad.ClearData();
     // this.memberLoad.ClearData(this.scene);
     this.disg.ClearData();

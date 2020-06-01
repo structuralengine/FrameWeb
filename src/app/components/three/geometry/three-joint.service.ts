@@ -14,21 +14,15 @@ import { ThreeMembersService } from './three-members.service';
 })
 export class ThreeJointService {
 
-  private pointLoadList: any[];
-  private memberLoadList: any[];
-  private jointLoadList: any[];
-  private BufferGeometry: THREE.Line; // 結合
+  private jointList: any[];
 
   constructor(private scene: SceneService,
     private nodeThree: ThreeNodesService,
     private node: InputNodesService,
     private member: InputMembersService,
     private joint: InputJointService,
-    private load: InputLoadService,
     private three_member: ThreeMembersService){
-      this.pointLoadList = new Array();
-      this.memberLoadList = new Array();
-      this.jointLoadList = new Array();
+      this.jointList = new Array();
     }
 
 
@@ -49,65 +43,65 @@ export class ThreeJointService {
 
     // 要素データを入手
     const memberData = this.member.getMemberJson('calc');
-    //console.log('memberData' + memberData);
     if (Object.keys(memberData).length <= 0) {
-      //this.ClearMemberLoad();
       return;
     }
     // 結合データを入手
     const jointData = this.joint.getJointJson('calc');
-    console.log('jointData59' + jointData);
-      //console.log("targetCase" + targetCase);
     if (Object.keys(jointData).length <= 0) {
-      //this.ClearJointLoad();
       return;
-    } /*else {
-      //サイズを調整しオブジェクトを登録する
-      this.createJointLoad(jointData[targetCase], nodeData);
-    }  */
-    //createJointLoadを実行させる
-    for (const key of Object.keys(jointData[index.toString()])) {
+    } 
+    
+    const key: string = index.toString();
+    if( !(key in jointData) ){
+      return;
+    }
 
-      const j = jointData[index][key];
-      const m = j.m;
-      /*
-      jointDataデータに 要素番号 m
-      ↓
-      mを頼りに→memberDataデータに i端, j端の格点番号
-      ↓
-      nodeDataデータに、格点の座標情報
-      */
-      this.createJointLoad(undefined, j);
+    //createJointLoadを実行させる
+    const targetJoint = jointData[key];
+
+    for (const jo of targetJoint) {
+
+      //jointDataデータのに 要素番号 m を探す
+      if(!(jo.m in memberData)){
+        continue;
+      }
+      const m =  memberData[jo.m];
+      if (m === undefined) {
+        continue;
+      }
+
+      // memberDataデータに i端の格点番号
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
+      if (i === undefined || j === undefined) {
+        continue;
+      }
+
+      const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+
+      let position = {x:i.x, y:i.y, z:i.z};
+      let direction = {x:jo.xi, y:jo.yi, z:jo.zi};
+      this.createJoint(position, direction, localAxis);
+
+      // memberDataデータに j端の格点番号
+      position = {x:j.x, y:j.y, z:j.z};
+      direction = {x:jo.xj, y:jo.yj, z:jo.zj};
+      this.createJoint(position, direction, localAxis);
+
     }
   }
 
   //ピンのドーナッツを描きたい
-  private createJointLoad(jointLoadData: any, jointData: object): void {
-    if (jointLoadData === undefined) {
-      return;
-    }
-
-    // 新しい入力を適用する
-    const targetJointLoad = jointLoadData;
-    // 結合の印をシーンに追加する
-    for (const load of targetJointLoad) {
-      console.log("joint" + load);
-      // 節点座標 を 取得する
-      const node = jointData[load.n];
-      if (node === undefined) {
-        continue;  
-      }
+  private createJoint(position: any, direction: any, localAxis): void {
 
       // x方向の結合
-      
-      const pin = this.setJointLoad(10);
-      console.log("path check !");
-      if (pin !== null) {
-        this.pointLoadList.push(pin);
-        this.scene.add(pin);
+      if(direction.x === 0 ){
+        // x軸方向のドーナッツを描く
+        // 位置は、 position.x, position.y, position.z
+
       }
 
-    }
   }
 
   private setJointLoad(value: number){
@@ -125,14 +119,8 @@ export class ThreeJointService {
 
   // データをクリアする
   public ClearData(): void {
-    this.ClearMemberLoad();
-    this.ClearNodeLoad();
-    this.ClearJointLoad();
-  }
 
-  // データをクリアする
-  private ClearNodeLoad(): void {
-    for (const mesh of this.pointLoadList) {
+    for (const mesh of this.jointList) {
       // 文字を削除する
       while (mesh.children.length > 0) {
         const object = mesh.children[0];
@@ -141,35 +129,7 @@ export class ThreeJointService {
       // オブジェクトを削除する
       this.scene.remove(mesh);
     }
-    this.pointLoadList = new Array();
-  }
-
-  // データをクリアする
-  private ClearMemberLoad(): void {
-    for (const mesh of this.memberLoadList) {
-      // 文字を削除する
-      while (mesh.children.length > 0) {
-        const object = mesh.children[0];
-        object.parent.remove(object);
-      }
-      // オブジェクトを削除する
-      this.scene.remove(mesh);
-    }
-    this.memberLoadList = new Array();
-  }
-
-  // データをクリアする
-  private ClearJointLoad(): void {
-    for (const mesh of this.jointLoadList) {
-      // 文字を削除する
-      while (mesh.children.length > 0) {
-        const object = mesh.children[0];
-        object.parent.remove(object);
-      }
-      // オブジェクトを削除する
-      this.scene.remove(mesh);
-    }
-    this.jointLoadList = new Array();
+    this.jointList = new Array();
   }
 
 }
