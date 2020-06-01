@@ -31,7 +31,7 @@ export class ThreeJointService {
     // ここに座標 0,0,0 にドーナッツを描いていてください
     
     // 参考にするのは、\src\app\components\three\geometry\three-load.service.ts
-    console.log('ドーナッツ形のジオメトリを描いてください');
+    //console.log('ドーナッツ形のジオメトリを描いてください');
 
     this.ClearData();
 
@@ -96,25 +96,57 @@ export class ThreeJointService {
   private createJoint(position: any, direction: any, localAxis): void {
 
       // x方向の結合
-      if(direction.x === 0 ){
+      if(direction.x === 0 ){;
         // x軸方向のドーナッツを描く
+        const pin_x = this.createJoint_base(position, localAxis);
+        //pin_x.rotation.y = Math.atan(localAxis.x.x / localAxis.x.z);
+        //pin_x.rotation.z = Math.acos(localAxis.x.y / 1);
+        pin_x.rotation.z = Math.atan(position.y / position.x);
+        this.jointList.push(pin_x);
+        this.scene.add(pin_x);
+      }
+      if(direction.y === 0 ){
+        const pin_y = this.createJoint_base(position, localAxis);
+        //pin_y.rotation.y = Math.atan(localAxis.x.x / localAxis.x.z);
+        //pin_y.rotation.y = Math.PI / 2;
+        //pin_y.rotation.y = Math.PI * Math.atan2(localAxis.y.z, localAxis.y.x) / 180;
+        this.jointList.push(pin_y);
+        this.scene.add(pin_y);
+      }
+      if(direction.z === 0 ){
+        const pin_z = this.createJoint_base(position, localAxis);
+        //pin_z.rotation.z = Math.PI * Math.atan2(localAxis.z.x, localAxis.z.y) / 180;
+        this.jointList.push(pin_z);
+        this.scene.add(pin_z);
         // 位置は、 position.x, position.y, position.z
 
       }
 
   }
 
-  private setJointLoad(value: number){
+  private createJoint_base(position, localAxis){
 
-    if (value === 0) {
-      return null;
-    }
-    const pin_geometry = new THREE.TorusGeometry(30, 10, 64, 100);
+    const pin_geometry = new THREE.TorusGeometry(0.50, 0.01, 64, 100);
     const pin_material = new THREE.MeshBasicMaterial({color: 0x6699FF});
     const pin = new THREE.Mesh(pin_geometry, pin_material);
-
+    //pin.rotation.x = Math.PI * Math.atan2(localAxis.x, localAxis.x) / 180;
+    pin.position.set(position.x / 2, position.y / 2, position.z / 2);
+    
     return pin;
 
+    /*//別のものを描く　試したら削除
+    console.log("path test");
+    const pin_geometry = new THREE.TorusGeometry(0.1, 0.02, 64, 100);
+    const pin_material = new THREE.MeshBasicMaterial({color: 0x6699FF});
+    const pin = new THREE.Mesh(pin_geometry, pin_material);
+    pin.position.set(0,0,0);
+    if (pin !== null) {
+      this.JointLoadList.push(pin);
+      this.scene.add(pin);
+    }
+    
+    //return pin;
+  */
   }
 
   // データをクリアする
