@@ -13,7 +13,15 @@ export class InputJointComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {};
+
+  hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+    },
+    afterChange: (...x: any[]) => {
+      this.three.chengeData('joints');
+    }
+  };
+
 
   constructor(private input: InputJointService,
               private three: ThreeService) {

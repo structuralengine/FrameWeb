@@ -74,6 +74,7 @@ export class ThreeService {
 
         // 結合
         case 'joints':
+          this.joint.chengeData(index);
           break;
 
         // 荷重図

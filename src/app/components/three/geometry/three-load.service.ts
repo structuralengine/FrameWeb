@@ -146,7 +146,6 @@ export class ThreeLoadService {
         this.pointLoadList.push(zMoment);
         this.scene.add(zMoment);
       }
-
     }
   }
 
@@ -394,9 +393,10 @@ export class ThreeLoadService {
       const cone_scale: number = maxLength * 0.3;
       const cone_radius: number = 0.03 * cone_scale;
       const cone_height: number = 0.3 * cone_scale;
+      const cone_color = new THREE.Color(0xffffff);
 
       var cone_mesh_material = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, 
-                                                               color: new THREE.Color(0xffffff),
+                                                               color: cone_color,
                                                                depthTest : false});
       
       const cone1 = this.createCorn(i_x, i_y, i_z, localAxis, cone_radius, cone_height, cone_mesh_material);
