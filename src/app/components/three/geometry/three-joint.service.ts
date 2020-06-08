@@ -106,8 +106,6 @@ export class ThreeJointService {
 
       if(direction.y === 0 ){
         const pin_y = this.createJoint_base(position, 0x00FF00);
-        //const Angle_Rotation_A = Math.PI / 2;
-        //const Angle_Rotation_B = Math.atan(localAxis.x.y / localAxis.x.x);
         const FocalSpot_X = position.x + localAxis.y.x;
         const FocalSpot_Y = position.y + localAxis.y.y;
         const FocalSpot_Z = position.z + localAxis.y.z;
@@ -121,11 +119,6 @@ export class ThreeJointService {
       
       if(direction.z === 0 ){
         const pin_z = this.createJoint_base(position, 0x0000FF);
-        //このパターンもあり
-          //const Angle_Rotation_A = Math.atan(localAxis.x.z / localAxis.x.y * localAxis.y.x ** 2);
-          //const Angle_Rotation_B = Math.atan(localAxis.x.z / localAxis.x.x * localAxis.y.y ** 2 * (-1));
-          //const Angle_Rotation_C = Math.atan(localAxis.z.y / localAxis.z.z * (-1));
-          //const Angle_Rotation_D = Math.atan(localAxis.z.x / localAxis.z.z );
         const FocalSpot_X = position.x + localAxis.z.x;
         const FocalSpot_Y = position.y + localAxis.z.y;
         const FocalSpot_Z = position.z + localAxis.z.z;
