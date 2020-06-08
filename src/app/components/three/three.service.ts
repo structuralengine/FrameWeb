@@ -60,6 +60,7 @@ export class ThreeService {
         case 'nodes':
           this.node.chengeData();
           this.member.chengeData();
+          this.joint.chengeData(1);
           break;
 
         // 支点
@@ -168,6 +169,13 @@ export class ThreeService {
       this.member.Enable(); // 要素番号を表示する
     } else {
       this.member.Disable(); // 要素番号を表示しない
+    }
+
+    // 結合データを表示する
+    if (['nodes', 'joints'].indexOf(this.mode) >= 0) {
+      this.joint.chengeData(1); // 結合データを表示する
+    } else {
+      this.joint.ClearData(); // 結合データを表示しない
     }
 
     // 荷重

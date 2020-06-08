@@ -490,6 +490,21 @@ export class ThreeLoadService {
     }
     this.memberLoadList = new Array();
   }
+  
+  // データをクリアする
+  public ClearData(): void {
+
+    for (const mesh of this.jointList) {
+      // 文字を削除する
+      while (mesh.children.length > 0) {
+        const object = mesh.children[0];
+        object.parent.remove(object);
+      }
+      // オブジェクトを削除する
+      this.scene.remove(mesh);
+    }
+    this.jointList = new Array();
+  }
 
 }
 
