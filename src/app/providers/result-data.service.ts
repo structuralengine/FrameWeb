@@ -15,6 +15,8 @@ import { ResultPickupDisgService } from '../components/result/result-pickup-disg
 import { ResultPickupReacService } from '../components/result/result-pickup-reac/result-pickup-reac.service';
 import { ResultPickupFsecService } from '../components/result/result-pickup-fsec/result-pickup-fsec.service';
 
+import { DataHelperModule } from './data-helper.module';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,7 +37,9 @@ export class ResultDataService {
     private combfsec: ResultCombineFsecService,
     private pickdisg: ResultPickupDisgService,
     private pickreac: ResultPickupReacService,
-    private pickfsec: ResultPickupFsecService) {
+    private pickfsec: ResultPickupFsecService,
+
+    private helper: DataHelperModule) {
     this.clear();
   }
 
@@ -178,4 +182,104 @@ export class ResultDataService {
     this.isCombinePickupChenge = false;
   }
 
+  // ピックアップファイル出力
+  public GetPicUpText(): string {
+
+    const p = this.pickfsec.fsecPickup;
+
+    let result: string = 'PickUpNo,着目断面力,部材No,最大CaseNo,最小CaseNo,着目点,着目点距離';
+    result += ',最大Fx,最大Fy,最大Fz,最大Mx,最大My,最大Mz';
+    result += ',最小Fx,最小Fy,最小Fz,最小Mx,最小My,最小Mz';
+    result += '\n';
+
+    for (let No = 1; No <= Object.keys(p).length; No++) {
+
+      const c = p[No.toString()];
+      const rows: number = Object.keys(c['fx_max']).length;
+
+      for (const symbol of ['fx', 'fy', 'fz', 'mx', 'my', 'mz']) {
+
+        const maxList = c[symbol + '_max'];
+        const minList = c[symbol + '_min'];
+
+        let mNo: string;
+        let point_counter: number = 0;
+        let point_name: string = '';
+
+        for (let row = 1; row <= rows; row++) {
+
+          const maxFsec = maxList[row.toString()];
+          const minFsec = minList[row.toString()];
+
+          // 部材番号を設定する
+          const mm: number = this.helper.toNumber(maxFsec.m);
+          if (mm != null) {
+            mNo = maxFsec.m;
+          }
+
+          // 着目点名を設定する
+          const nn: number = this.helper.toNumber(maxFsec.n);
+          if (nn != null) {
+            if ( point_counter === 0 ) {
+              point_name = "ITAN";
+              point_counter += 1;
+            }else {
+              point_name = "JTAN";
+              point_counter = 0;
+            }
+          } else {
+            point_name = point_counter.toString();
+            point_counter += 1;
+          }
+            
+
+          result += No.toString();
+          result += ',';
+          result += symbol;
+          result += ',';
+          result += mNo;
+          result += ',';
+          result += maxFsec.case;
+          result += ',';
+          result += minFsec.case;
+          result += ',';
+          result += point_name;
+          result += ',';
+          result += maxFsec.l;
+          result += ',';
+
+          result += maxFsec.fx;
+          result += ',';
+          result += maxFsec.fy;
+          result += ',';
+          result += maxFsec.fz;
+          result += ',';
+
+          result += maxFsec.mx;
+          result += ',';
+          result += maxFsec.my;
+          result += ',';
+          result += maxFsec.mz;
+          result += ',';
+
+          result += minFsec.fx;
+          result += ',';
+          result += minFsec.fy;
+          result += ',';
+          result += minFsec.fz;
+          result += ',';
+
+          result += minFsec.mx;
+          result += ',';
+          result += minFsec.my;
+          result += ',';
+          result += minFsec.mz;
+
+          result += '\n';
+        }
+      }
+    }
+
+    return result;
+  }
 }

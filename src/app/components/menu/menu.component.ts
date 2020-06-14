@@ -115,9 +115,11 @@ export class MenuComponent implements OnInit {
         console.log('通信成功!!');
         console.log(response.text());
 
+        // サーバーのレスポンスを集計する
         if (!this.ResultData.loadResultData(response.text())) {
           alert(response.text());
         } else {
+          // ユーザーポイントの更新
           this.loadResultData(response.text());
           this.app.isCalculated = true;
           this.three.chengeData();
@@ -138,6 +140,18 @@ export class MenuComponent implements OnInit {
     this.userPoint = this.user.purchase_value.toString();
   }
 
+  // ピックアップファイル出力
+  public pickup(): void{
+    const pickupJson: string = this.ResultData.GetPicUpText();
+    const blob = new window.Blob([pickupJson], { type: 'text/plain' });
+    let filename: string = 'frameWebForJS.csv';
+    if (this.fileName.length > 0) {
+      filename = this.fileName.split('.').slice(0, -1).join('.')
+      filename += '.csv';
+    }
+
+    FileSaver.saveAs(blob, filename);
+  }
   // 印刷
   print(): void {
 
