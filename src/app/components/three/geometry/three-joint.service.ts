@@ -35,7 +35,6 @@ export class ThreeJointService {
     if (Object.keys(nodeData).length <= 0) {
       return;
     }
-
     // 要素データを入手
     const memberData = this.member.getMemberJson('calc');
     if (Object.keys(memberData).length <= 0) {

@@ -34,6 +34,7 @@ export class InputNodesService {
     return result;
   }
 
+  // ファイルを読み込むとき
   public setNodeJson(jsonData: {}): void {
     if (!('node' in jsonData)) {
       return;

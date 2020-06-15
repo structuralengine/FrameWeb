@@ -171,6 +171,13 @@ export class ThreeService {
       this.member.Disable(); // 要素番号を表示しない
     }
 
+    // 支点データを表示する
+    if (['fix_nodes'].indexOf(this.mode) >= 0) {
+      this.fixNode.chengeData(1); // 支点データを表示する
+    } else {
+      this.fixNode.ClearData(); // 支点データを表示しない
+    }
+
     // 結合データを表示する
     if (['nodes', 'joints'].indexOf(this.mode) >= 0) {
       this.joint.chengeData(1); // 結合データを表示する

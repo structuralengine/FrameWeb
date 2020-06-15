@@ -16,6 +16,7 @@ export class ThreeNodesService {
   private scale: number;      // 外部から調整するためのスケール
   private nodeList: THREE.Mesh[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
+  public center: any; // すべての点の重心位置
 
   constructor(private scene: SceneService,
               private node: InputNodesService) {
@@ -23,6 +24,7 @@ export class ThreeNodesService {
     this._baseScale = null;
     this.geometry = new THREE.SphereBufferGeometry(1);
     this.nodeList = new Array();
+    this.center = {x:0, y:0, z:0};
   }
 
   public baseScale(): number {
@@ -99,6 +101,24 @@ export class ThreeNodesService {
     // サイズを調整する
     this.setBaseScale();
     this.onResize();
+
+    // 重心位置を計算する
+    let counter: number = 0;
+    this.center = {x:0, y:0, z:0};
+    for(const key of jsonKeys){
+        const p = jsonData[key];
+        this.center.x += p.x;
+        this.center.y += p.y;
+        this.center.z += p.z;
+        counter++;
+    }
+    if( counter > 0){
+      this.center.x = this.center.x / counter;
+      this.center.y = this.center.y / counter;
+      this.center.z = this.center.z / counter;
+    }
+    console.log("/////center/////")
+    console.log(this.center);
   }
 
   // データをクリアする
@@ -113,6 +133,7 @@ export class ThreeNodesService {
       this.scene.remove(mesh);
     }
     this.nodeList = new Array();
+    this.center = {x:0, y:0, z:0};
   }
 
   // 外部からスケールの調整を受ける
