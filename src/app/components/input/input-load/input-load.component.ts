@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
 import { ThreeService } from '../../three/three.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Component({
   selector: 'app-input-load',
@@ -16,12 +17,60 @@ export class InputLoadComponent implements OnInit {
   load_name: string;
 
   hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+          if( value !== null ) {
+            switch(changes[i][1]){
+              case "n":
+                changes[i][3] = value.toFixed(0);
+                break;
+              case "m1":
+                changes[i][3] = value.toFixed(0);
+                break;
+              case "m2":
+                changes[i][3] = value.toFixed(0);
+                break;
+              case "direction":
+                changes[i][3] = value.toFixed(0);
+                break;
+              case "mark":
+                changes[i][3] = value.toFixed(0);
+                break;
+              case "L1":
+                changes[i][3] = value.toFixed(3);
+                break;
+              case "L2":
+                changes[i][3] = value.toFixed(3);
+                break;
+              default:
+                changes[i][3] = value.toFixed(2);
+                break;
+            }
+          } else {
+            changes[i][3] = null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
     afterChange: (...x: any[]) => {
     this.three.chengeData('loads', this.page);
   }};
 
   constructor(private data: InputLoadService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private helper: DataHelperModule) {
     this.dataset = new Array();
   }
 

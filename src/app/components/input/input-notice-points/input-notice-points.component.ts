@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from '../input-members/input-members.service';
 import { InputNoticePointsService } from './input-notice-points.service';
 import { ThreeService } from '../../three/three.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Component({
   selector: 'app-input-notice-points',
@@ -18,6 +19,35 @@ export class InputNoticePointsComponent implements OnInit {
   rowHeaders: any[];
 
   hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+          if( value !== null ) {
+            switch(changes[i][1]){
+              case "m":
+                changes[i][3] = value.toFixed(0);
+                break;
+              default:
+                changes[i][3] = value.toFixed(3);
+                break;
+            }
+          } else {
+            changes[i][3] = null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
 
     afterChange: (...x: any[]) => {
       let hotInstance: any;
@@ -58,7 +88,8 @@ export class InputNoticePointsComponent implements OnInit {
 
   constructor(private data: InputNoticePointsService,
               private member: InputMembersService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private helper: DataHelperModule) {
 
     this.dataset = new Array();
     this.page = 1;

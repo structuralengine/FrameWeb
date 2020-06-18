@@ -3,6 +3,7 @@ import { InputCombineService } from './input-combine.service';
 import { InputDefineService } from '../input-define/input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { ResultDataService } from '../../../providers/result-data.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Component({
   selector: 'app-input-combine',
@@ -21,6 +22,34 @@ export class InputCombineComponent implements OnInit {
   rowHeaders: any[];
 
   hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+            switch(changes[i][1]){
+              case "name":
+                break;
+              default:
+                if ( value !== null ) {
+                  changes[i][3] = value.toFixed(0);
+                  } else {
+                  changes[i][3] = null;
+                  }
+                break;
+            }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
     afterChange: (...x: any[]) => {
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
@@ -38,7 +67,8 @@ export class InputCombineComponent implements OnInit {
   constructor(private data: InputCombineService,
     private define: InputDefineService,
     private load: InputLoadService,
-    private result: ResultDataService) {
+    private result: ResultDataService,
+    private helper: DataHelperModule) {
 
     this.page = 1;
     this.combineData = new Array();
