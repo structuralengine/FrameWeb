@@ -68,11 +68,11 @@ export class ThreeFixNodeService {
         if (position.x <= this.center().x){ 
           geometry.vertices.push(new THREE.Vector3(position.x, position.y + 0.1 * this.maxLength(), position.z - 0.2 * this.maxLength()));
           geometry.vertices.push(new THREE.Vector3(position.x, position.y - 0.1 * this.maxLength(), position.z - 0.2 * this.maxLength()));
-          this.fixnode_pin_create(color, geometry);
+          this.CreatePinfix(color, geometry);
         }else if(position.x > this.center().x){
           geometry.vertices.push(new THREE.Vector3(position.x, position.y + 0.1 * this.maxLength(), position.z + 0.2 * this.maxLength()));
           geometry.vertices.push(new THREE.Vector3(position.x, position.y - 0.1 * this.maxLength(), position.z + 0.2 * this.maxLength()));
-          this.fixnode_pin_create(color, geometry);
+          this.CreatePinfix(color, geometry);
         }
       }
       if (target.ry === 0 && (target.tx === 1 || target.ty === 1 || target.tz === 1)){
@@ -81,11 +81,11 @@ export class ThreeFixNodeService {
         if (position.y <= this.center().y){
           geometry.vertices.push(new THREE.Vector3(position.x + 0.1 * this.maxLength(), position.y, position.z - 0.2 * this.maxLength()));
           geometry.vertices.push(new THREE.Vector3(position.x - 0.1 * this.maxLength(), position.y, position.z - 0.2 * this.maxLength()));
-          this.fixnode_pin_create(color, geometry);
+          this.CreatePinfix(color, geometry);
         }else if(position.y > this.center().y){
           geometry.vertices.push(new THREE.Vector3(position.x + 0.1 * this.maxLength(), position.y, position.z + 0.2 * this.maxLength()));
           geometry.vertices.push(new THREE.Vector3(position.x - 0.1 * this.maxLength(), position.y, position.z + 0.2 * this.maxLength()));
-          this.fixnode_pin_create(color, geometry);
+          this.CreatePinfix(color, geometry);
         }
       }
       if (target.rz === 0 && (target.tx === 1 || target.ty === 1 || target.tz === 1)){
@@ -94,11 +94,11 @@ export class ThreeFixNodeService {
         if (position.z <= this.center().z){
           geometry.vertices.push(new THREE.Vector3(position.x + 0.1 * this.maxLength(), position.y - 0.2 * this.maxLength(), position.z));
           geometry.vertices.push(new THREE.Vector3(position.x - 0.1 * this.maxLength(), position.y - 0.2 * this.maxLength(), position.z));
-          this.fixnode_pin_create(color, geometry);
+          this.CreatePinfix(color, geometry);
         }else if(position.z > this.center().z){
           geometry.vertices.push(new THREE.Vector3(position.x + 0.1 * this.maxLength(), position.y + 0.2 * this.maxLength(), position.z));
           geometry.vertices.push(new THREE.Vector3(position.x - 0.1 * this.maxLength(), position.y + 0.2 * this.maxLength(), position.z));
-          this.fixnode_pin_create(color, geometry);
+          this.CreatePinfix(color, geometry);
         }
       }
 
@@ -136,8 +136,24 @@ export class ThreeFixNodeService {
       }
 
       //完全な固定支点の分岐
+      let fixed_Parfect = {relationshipX: "small",relationshipY: "small", relationshipZ: "small", color: 0x808080};
       if (target.rx === 1 && target.ry === 1 && target.rz === 1 && (target.tx === 1 || target.ty === 1 || target.tz === 1)){
-        this.CreateFixed_P(position, fixed);
+        if(position.x <= this.center().x){
+          fixed_Parfect.relationshipX = "small";
+        }else if(position.x > this.center().x){
+          fixed_Parfect.relationshipX = "large";
+        }
+        if(position.y <= this.center().y){
+          fixed_Parfect.relationshipY = "small";
+        }else if(position.y > this.center().y){
+          fixed_Parfect.relationshipY = "large";
+        }
+        if(position.z <= this.center().z){
+          fixed_Parfect.relationshipZ = "small";
+        }else if(position.z > this.center().z){
+          fixed_Parfect.relationshipZ = "large";
+        }
+        this.CreateFixed_P(position, fixed_Parfect);
       }
 
       //バネ支点の分岐
@@ -195,7 +211,7 @@ export class ThreeFixNodeService {
 
   }
   //ピン支点を描く
-  public fixnode_pin_create(pin_color, geometry){
+  public CreatePinfix(pin_color, geometry){
     const material_pin = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, color: pin_color});
     const normal = new THREE.Vector3(0, 0, 1);
     const face = new THREE.Face3(0, 1, 2, normal, pin_color);
@@ -208,34 +224,33 @@ export class ThreeFixNodeService {
 
   //固定支点を描く
   public CreateFixed(position, fixed){
-    //fixed.color = 0x808080;
-    let fixed_geometry = new THREE.PlaneGeometry( 0.1*this.maxLength(), 0.3*this.maxLength() );
+    let fixed_geometry = new THREE.PlaneGeometry( 0.06*this.maxLength(), 0.15*this.maxLength() );
     const fixed_material = new THREE.MeshBasicMaterial( {color: fixed.color, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh(fixed_geometry, fixed_material);
     switch (fixed.direction){
       case "x":
         switch (fixed.relationship){
-          case "small": plane.position.set(position.x - 0.1*this.maxLength()/2, position.y, position.z);
+          case "small": plane.position.set(position.x - 0.06*this.maxLength()/2, position.y, position.z);
                         break;
-          case "large": plane.position.set(position.x + 0.1*this.maxLength()/2, position.y, position.z);
+          case "large": plane.position.set(position.x + 0.06*this.maxLength()/2, position.y, position.z);
                         break;
         }
       break;
       case "y":
         plane.rotation.z = Math.PI / 2;
         switch (fixed.relationship){
-          case "small": plane.position.set(position.x, position.y - 0.1*this.maxLength()/2, position.z);
+          case "small": plane.position.set(position.x, position.y - 0.06*this.maxLength()/2, position.z);
                         break;
-          case "large": plane.position.set(position.x, position.y + 0.1*this.maxLength()/2, position.z);
+          case "large": plane.position.set(position.x, position.y + 0.06*this.maxLength()/2, position.z);
                         break;
         }
         break;
       case "z":
         plane.rotation.y = Math.PI / 2;
         switch (fixed.relationship){
-          case "small": plane.position.set(position.x, position.y, position.z - 0.1*this.maxLength()/2);
+          case "small": plane.position.set(position.x, position.y, position.z - 0.06*this.maxLength()/2);
                         break;
-          case "large": plane.position.set(position.x, position.y, position.z + 0.1*this.maxLength()/2);
+          case "large": plane.position.set(position.x, position.y, position.z + 0.06*this.maxLength()/2);
                         break;
         }
         break;
@@ -246,13 +261,30 @@ export class ThreeFixNodeService {
   }
 
   //完全な固定支点を描く
-  public CreateFixed_P(position, fixed){
-    fixed.color = 0x808080;
-    const size = 0.3 * this.maxLength();
+  public CreateFixed_P(position, fixed_Parfect){
+    fixed_Parfect.color = 0x808080;
+    const size = 0.2 * this.maxLength();
     const fixed_P_geometry = new THREE.BoxGeometry(size, size, size);
-    const fixed_P_material = new THREE.MeshBasicMaterial( {color: fixed.color} );
+    const fixed_P_material = new THREE.MeshBasicMaterial( {color: fixed_Parfect.color} );
     const cube = new THREE.Mesh( fixed_P_geometry, fixed_P_material );
-    cube.lookAt(position.x + position.x, position.y + position.y, position.z + position.z);
+    switch (fixed_Parfect.directionX){
+      case "small": position.x = position.x - size / 2;
+                    break;
+      case "large": position.x = position.x + size / 2;
+                    break;
+    };
+    switch (fixed_Parfect.directionY){
+      case "small": position.y = position.y - size / 2;
+                    break;
+      case "large": position.y = position.y + size / 2;
+                    break;
+    };
+    switch (fixed_Parfect.directionZ){
+      case "small": position.z = position.z - size / 2;
+                    break;
+      case "large": position.z = position.z + size / 2;
+                    break;
+    };
     cube.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(cube);
     this.scene.add(cube);
@@ -262,18 +294,18 @@ export class ThreeFixNodeService {
   //バネ支点を描く
   public CreateSpring(position, spring, maxLength){
     let GeometrySpring = new THREE.Geometry();
-    let Increase = 0.0002;
+    let Increase = 0.00015;
     switch (spring.relationship){
       case("small"):
-        Increase = 0.0002;
+        Increase = 0.0001;
         break;
       case("large"):
-        Increase = -0.0002;
+        Increase = -0.0001;
         break;
     }
     const laps = 5;
     const split = 10;
-    const radius = 0.05;
+    const radius = 0.02;
     let x = position.x;
     let y = position.y;
     let z = position.z;
@@ -310,7 +342,7 @@ export class ThreeFixNodeService {
     let GeometryRotatingSpring = new THREE.Geometry();
     const laps = 3 + 0.25;
     const split = 10;
-    const radius = 0.1 * 0.001;
+    const radius = 0.1 * 0.002;
     let x = position.x;
     let y = position.y;
     let z = position.z;
