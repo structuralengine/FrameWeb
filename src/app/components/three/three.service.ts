@@ -179,21 +179,21 @@ export class ThreeService {
 
       // 支点データを表示する
       if (['fix_nodes'].indexOf(ModeName) >= 0) {
-        this.fixNode.chengeData(1); // 支点データを表示する
+        this.fixNode.chengeData(currentPage); // 支点データを表示する
       } else {
         this.fixNode.ClearData(); // 支点データを表示しない
       }
 
       // 結合データを表示する
       if (['nodes', 'joints'].indexOf(ModeName) >= 0) {
-        this.joint.chengeData(1); // 結合データを表示する
+        this.joint.chengeData(currentPage); // 結合データを表示する
       } else {
         this.joint.ClearData(); // 結合データを表示しない
       }
 
       // 荷重
       if (['loads'].indexOf(ModeName) >= 0) {
-        this.pointLoad.chengeData(1);
+        this.pointLoad.chengeData(currentPage);
       } else {
         this.pointLoad.ClearData();
       }
