@@ -46,7 +46,7 @@ export class ThreeDisplacementService {
     this.targetData = new Array();
     this.defaultScale = 0.2
     this.defaultRatio = 0.2/0.5  // 最大梁長に対するたわみの表示比率初期値/dispScale初期値
-
+    this.maxDiplacement = 1;
     // gui
     this.params = {
       dispScale: 0.5,
@@ -69,14 +69,14 @@ export class ThreeDisplacementService {
       this.lineList = new Array();
     }
   }
-　
+
   public guiEnable(): void {
     if ( this.gui !== null ) {
       return;
     }
 
     this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.001).onChange( ( value ) => {
-      this.scale = this.defaultRatio * value * this.maxLength / this.maxDiplacement
+      this.scale = this.defaultRatio * value * this.maxLength / this.maxDiplacement;
       this.onResize();
     });
   }
@@ -115,7 +115,6 @@ export class ThreeDisplacementService {
 
     this.maxLength = this.three_node.maxdistance; // 最大梁長
 
-    let maxDiplacement:number = 0; //最大たわみ
     for (const key of jsonKeys) {
       // 節点データを集計する
       const m = jsonData[key];
@@ -141,17 +140,21 @@ export class ThreeDisplacementService {
         continue;
       }
 
-      this.maxDiplacement = Math.max(maxDiplacement, Math.abs(di.dx));
-      this.maxDiplacement = Math.max(maxDiplacement, Math.abs(di.dy));
-      this.maxDiplacement = Math.max(maxDiplacement, Math.abs(di.dz));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dx)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dy)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dz)));
 
-      this.maxDiplacement = Math.max(maxDiplacement, Math.abs(dj.dx));
-      this.maxDiplacement = Math.max(maxDiplacement, Math.abs(dj.dy));
-      this.maxDiplacement = Math.max(maxDiplacement, Math.abs(dj.dz));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dx)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dy)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dz)));
     }
 
     // 初期表示ではdispScaleが0.5の時に最大梁長の1/5となる
-    this.scale = this.defaultScale * this.maxLength / this.maxDiplacement;
+    if (this.maxDiplacement === 0) {
+      this.scale = 0;
+    } else {
+      this.scale = this.defaultScale * this.maxLength / this.maxDiplacement;
+    }
 
     this.targetData = new Array();
 
@@ -205,7 +208,7 @@ export class ThreeDisplacementService {
           rzj: this.helper.toNumber(dj.rz),
           Division: 20,
         }
-      ); 
+      );
     }
     this.onResize();
   }

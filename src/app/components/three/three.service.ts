@@ -22,99 +22,101 @@ import { ThreeReactService } from './geometry/three-react.service';
 export class ThreeService {
 
   private mode: string;
-  private scale: number; // オブジェクトの大きさ
+  private currentIndex: number;
 
   constructor(public scene: SceneService,
-              private node: ThreeNodesService,
-              private member: ThreeMembersService,
-              private fixNode: ThreeFixNodeService,
-              private fixMember: ThreeFixMemberService,
-              private joint: ThreeJointService,
-              private pointLoad: ThreeLoadService,
-              private disg: ThreeDisplacementService,
-              private reac: ThreeReactService,
-              private fsec: ThreeSectionForceService
-              ) {
-    }
+    private node: ThreeNodesService,
+    private member: ThreeMembersService,
+    private fixNode: ThreeFixNodeService,
+    private fixMember: ThreeFixMemberService,
+    private joint: ThreeJointService,
+    private pointLoad: ThreeLoadService,
+    private disg: ThreeDisplacementService,
+    private reac: ThreeReactService,
+    private fsec: ThreeSectionForceService
+  ) {
+  }
 
   //////////////////////////////////////////////////////
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
   public chengeData(mode: string = '', index: number = 0): void {
-    switch ( mode ) {
+
+    switch (mode) {
+
       case 'fileLoad':
-      // ファイルを読み込んだ
-      this.node.chengeData();
-      this.member.chengeData();
-      this.pointLoad.chengeData(index);
-      // this.memberLoad.chengeData(this.scene);
-      break;
+        // ファイルを読み込んだ
+        this.node.chengeData();
+        this.member.chengeData();
+        this.pointLoad.chengeData(index);
+        // this.memberLoad.chengeData(this.scene);
+        break;
       case 'result':
 
-      break;
+        break;
 
-    default:
-      // 現在の編集モードにおいてデータを変更した
-      switch (this.mode) {
-        // 節点
-        case 'nodes':
-          this.node.chengeData();
-          this.member.chengeData();
-          this.joint.chengeData(1);
-          break;
+      default:
+        // 現在の編集モードにおいてデータを変更した
+        switch (this.mode) {
+          // 節点
+          case 'nodes':
+            this.node.chengeData();
+            this.member.chengeData();
+            this.joint.chengeData(1);
+            break;
 
-        // 支点
-        case 'fix_nodes':
-          break;
+          // 支点
+          case 'fix_nodes':
+            break;
 
-        // 要素
-        case 'members':
-          this.member.chengeData();
-          this.pointLoad.chengeData(index);
-          break;
+          // 要素
+          case 'members':
+            this.member.chengeData();
+            this.pointLoad.chengeData(index);
+            break;
 
-        // 結合
-        case 'joints':
-          this.joint.chengeData(index);
-          break;
+          // 結合
+          case 'joints':
+            this.joint.chengeData(index);
+            break;
 
-        // 荷重図
-        case 'loads':
-          this.pointLoad.chengeData(index);
-          // this.memberLoad.chengeData();
-          break;
+          // 荷重図
+          case 'loads':
+            this.pointLoad.chengeData(index);
+            // this.memberLoad.chengeData();
+            break;
 
-        // 着目点
-        case 'notice_points':
-          break;
+          // 着目点
+          case 'notice_points':
+            break;
 
-        // 変位図
-        case 'disg':
-          this.disg.chengeData(index);
-          break;
-        case 'comb_disg':
-          break;
-        case 'pik_disg':
-          break;
+          // 変位図
+          case 'disg':
+            this.disg.chengeData(index);
+            break;
+          case 'comb_disg':
+            break;
+          case 'pik_disg':
+            break;
 
-        // 断面力図
-        case 'fsec':
-          this.fsec.chengeData(index);
-          break;
-        case 'comb_fsec':
-          break;
-        case 'pik_fsec':
-          break;
+          // 断面力図
+          case 'fsec':
+            this.fsec.chengeData(index);
+            break;
+          case 'comb_fsec':
+            break;
+          case 'pik_fsec':
+            break;
 
-        // 反力図
-        case 'reac':
-          this.reac.chengeData(index);
-          break;
-        case 'comb_reac':
-          break;
-        case 'pik_reac':
-          break;
-      }
+          // 反力図
+          case 'reac':
+            this.reac.chengeData(index);
+            break;
+          case 'comb_reac':
+            break;
+          case 'pik_reac':
+            break;
+        }
     }
     // 再描画
     this.scene.render();
@@ -145,79 +147,88 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   public ChengeMode(ModeName: string, currentPage: number = 1): void {
 
-    if (this.mode === ModeName) {
-      return;
+    // モードの変更
+    if (this.mode !== ModeName) {
+
+      // 節点の表示制御
+      if (['fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
+        this.node.visible(false); // 節点を表示しない
+      } else {
+        this.node.visible(true); // 節点を表示する
+        // 節点番号の表示制御
+        if (['nodes', 'fix_nodes', 'disg', 'comb_disg', 'pik_disg', 'reac', 'comb_reac', 'pik_reac'].indexOf(ModeName) >= 0) {
+          this.node.Enable(); // 節点番号を表示する
+        } else {
+          this.node.Disable(); // 節点番号を表示しない
+        }
+      }
+
+      // 要素番号の表示制御
+      if (['members', 'joints', 'notice_points', 'fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
+        this.member.Enable(); // 要素番号を表示する
+      } else {
+        this.member.Disable(); // 要素番号を表示しない
+      }
+
+    }
+
+
+    // モード か カレントページの変更
+    if (this.mode !== ModeName || this.currentIndex !== currentPage) {
+
+
+      // 支点データを表示する
+      if (['fix_nodes'].indexOf(ModeName) >= 0) {
+        this.fixNode.chengeData(1); // 支点データを表示する
+      } else {
+        this.fixNode.ClearData(); // 支点データを表示しない
+      }
+
+      // 結合データを表示する
+      if (['nodes', 'joints'].indexOf(ModeName) >= 0) {
+        this.joint.chengeData(1); // 結合データを表示する
+      } else {
+        this.joint.ClearData(); // 結合データを表示しない
+      }
+
+      // 荷重
+      if (['loads'].indexOf(ModeName) >= 0) {
+        this.pointLoad.chengeData(1);
+      } else {
+        this.pointLoad.ClearData();
+      }
+
+      // 変位図
+      if (['disg', 'comb_disg', 'pik_disg'].indexOf(ModeName) >= 0) {
+        this.disg.chengeData(currentPage);
+        this.disg.guiEnable();
+      } else {
+        this.disg.ClearData();
+        this.disg.guiDisable();
+      }
+
+      // 断面力
+      if (['fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
+        this.fsec.chengeData(currentPage);
+        this.fsec.guiEnable();
+        this.node.visible(false);
+      } else {
+        this.fsec.ClearData();
+        this.fsec.guiDisable();
+        this.node.visible(true);
+      }
+
+      // 反力
+      if (['reac', 'comb_reac', 'pik_reac'].indexOf(ModeName) >= 0) {
+        this.reac.chengeData(currentPage);
+      } else {
+        this.reac.ClearData();
+      }
+
     }
 
     this.mode = ModeName;
-
-    // 節点の表示制御
-    if (['fsec', 'comb_fsec', 'pik_fsec'].indexOf(this.mode) >= 0) {
-      this.node.visible(false); // 節点を表示しない
-    } else {
-      this.node.visible(true); // 節点を表示する
-      // 節点番号の表示制御
-      if (['nodes', 'fix_nodes', 'disg', 'comb_disg', 'pik_disg', 'reac', 'comb_reac', 'pik_reac'].indexOf(this.mode) >= 0) {
-        this.node.Enable(); // 節点番号を表示する
-      } else {
-        this.node.Disable(); // 節点番号を表示しない
-      }
-    }
-
-    // 要素番号の表示制御
-    if (['members', 'joints', 'notice_points', 'fsec', 'comb_fsec', 'pik_fsec'].indexOf(this.mode) >= 0) {
-      this.member.Enable(); // 要素番号を表示する
-    } else {
-      this.member.Disable(); // 要素番号を表示しない
-    }
-
-    // 支点データを表示する
-    if (['fix_nodes'].indexOf(this.mode) >= 0) {
-      this.fixNode.chengeData(1); // 支点データを表示する
-    } else {
-      this.fixNode.ClearData(); // 支点データを表示しない
-    }
-
-    // 結合データを表示する
-    if (['nodes', 'joints'].indexOf(this.mode) >= 0) {
-      this.joint.chengeData(1); // 結合データを表示する
-    } else {
-      this.joint.ClearData(); // 結合データを表示しない
-    }
-
-    // 荷重
-    if (['loads'].indexOf(this.mode) >= 0) {
-      this.pointLoad.chengeData(1);
-    } else {
-      this.pointLoad.ClearData();
-    }
-
-    // 変位図
-    if (['disg', 'comb_disg', 'pik_disg'].indexOf(this.mode) >= 0) {
-      this.disg.chengeData(currentPage);
-      this.disg.guiEnable();
-    } else {
-      this.disg.ClearData();
-      this.disg.guiDisable();
-    }
-
-    // 断面力
-    if (['fsec', 'comb_fsec', 'pik_fsec'].indexOf(this.mode) >= 0) {
-      this.fsec.chengeData(currentPage);
-      this.fsec.guiEnable();
-      this.node.visible(false);
-    } else {
-      this.fsec.ClearData();
-      this.fsec.guiDisable();
-      this.node.visible(true);
-    }
-
-    // 反力
-    if (['reac', 'comb_reac', 'pik_reac'].indexOf(this.mode) >= 0) {
-      this.reac.chengeData(currentPage);
-    } else {
-      this.reac.ClearData();
-    }
+    this.currentIndex = currentPage;
 
     // 再描画
     this.scene.render();
@@ -227,7 +238,7 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // マウス位置とぶつかったオブジェクトを検出する
   //////////////////////////////////////////////////////
-  public detectObject(mouse: THREE.Vector2 , action: string): void {
+  public detectObject(mouse: THREE.Vector2, action: string): void {
 
     const raycaster = this.scene.getRaycaster(mouse);
 
