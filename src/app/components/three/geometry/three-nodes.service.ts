@@ -117,7 +117,7 @@ export class ThreeNodesService {
       this.center.y = this.center.y / counter;
       this.center.z = this.center.z / counter;
     }
-    console.log("/////center/////")
+    console.log("////////////////////center////////////////////")
     console.log(this.center);
   }
 
