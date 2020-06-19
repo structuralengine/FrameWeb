@@ -207,7 +207,7 @@ export class ThreeLoadService {
       return null;
     }
 
-    const maxLength: number = this.maxLength() * 0.7;
+    const maxLength: number = this.maxLength() * 0.5;
     const length: number = maxLength * value / pMax;
 
     let linewidth: number = this.nodeThree.baseScale() / 50;
@@ -288,7 +288,7 @@ export class ThreeLoadService {
     const targetMemberLoad = memberLoadData;
     // スケールを決定する 最大の荷重を 1とする
     let pMax = 0;
-    const maxLength: number = this.maxLength() * 0.7;
+    const maxLength: number = this.maxLength() * 0.5;
     for (const load of targetMemberLoad) {
       pMax = Math.max(pMax, Math.abs(load.P1));
       pMax = Math.max(pMax, Math.abs(load.P2));
@@ -322,9 +322,12 @@ export class ThreeLoadService {
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
       const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
 
-      //var material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: 0x00cc00, transparent: true,}); //alphaMap: 
-      var mesh_material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: 0x00cc00, depthTest : false}); //alphaMap: 
-      //var mesh_material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, color: 0x00cc00, opacity: 0.3}); //alphaMap: transparent: true,
+      const mesh_material = new THREE.MeshBasicMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        color: 0x00cc00,
+        opacity: 0.3
+      }); 
       
 
       var geometry = new THREE.Geometry();
@@ -363,9 +366,9 @@ export class ThreeLoadService {
       geometry.vertices.push(new THREE.Vector3(j_x, j_y, j_z));
 
       var normal = new THREE.Vector3(0, 0, 1);
-      var color = new THREE.Color(0xffaa00);
-      var face1 = new THREE.Face3(0, 1, 2, normal, color);
-      var face2 = new THREE.Face3(0, 2, 3, normal, color);
+      var color = new THREE.Color(0xff0000);
+      var face1 = new THREE.Face3(0, 1, 2);//, normal, color);
+      var face2 = new THREE.Face3(0, 2, 3);//, normal, color);
 
       geometry.faces.push(face1);
       geometry.faces.push(face2);
@@ -379,7 +382,7 @@ export class ThreeLoadService {
         this.memberLoadList.push(mesh);
         this.scene.add(mesh);
       }
-
+      /*
       //lineを描く
       let linewidth: number = this.nodeThree.baseScale() / 50;
       var line_material = new THREE.LineBasicMaterial({color: 0x66cc99, linewidth});
@@ -410,7 +413,7 @@ export class ThreeLoadService {
         this.memberLoadList.push(cone2);
         this.scene.add(cone2);
       }
-      
+      */
     }
 
   }

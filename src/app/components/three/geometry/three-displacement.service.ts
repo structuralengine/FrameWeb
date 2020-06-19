@@ -16,6 +16,7 @@ import { ResultDisgService } from '../../result/result-disg/result-disg.service'
 import { ResultCombineDisgService } from '../../result/result-combine-disg/result-combine-disg.service';
 import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-pickup-disg.service';
 
+import { ThreeNodesService } from './three-nodes.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,12 @@ export class ThreeDisplacementService {
   private targetData: any;
 
   private scale: number;
+  private defaultScale: number;
   private params: any;          // GUIの表示制御
   private gui: any;
+  private maxLength: number;
+  private maxDiplacement: number;
+  private defaultRatio: number;
 
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
@@ -35,14 +40,16 @@ export class ThreeDisplacementService {
               private comb_disg: ResultCombineDisgService,
               private pik_disg: ResultPickupDisgService,
               private node: InputNodesService,
-              private member: InputMembersService) {
+              private member: InputMembersService,
+              private three_node: ThreeNodesService) {
     this.lineList = new Array();
     this.targetData = new Array();
-
-    this.scale = 0.001;
+    this.defaultScale = 0.2
+    this.defaultRatio = 0.2/0.5  // 最大梁長に対するたわみの表示比率初期値/dispScale初期値
+    this.maxDiplacement = 1;
     // gui
     this.params = {
-      dispScale: this.scale
+      dispScale: 0.5,
     };
     this.gui = null;
   }
@@ -67,9 +74,9 @@ export class ThreeDisplacementService {
     if ( this.gui !== null ) {
       return;
     }
+
     this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.001).onChange( ( value ) => {
-      // guiによる設定
-      this.scale = value;
+      this.scale = this.defaultRatio * value * this.maxLength / this.maxDiplacement;
       this.onResize();
     });
   }
@@ -80,7 +87,7 @@ export class ThreeDisplacementService {
     }
     this.scene.gui.remove(this.gui);
     this.gui = null;
-}
+  }
 
   public chengeData(index: number): void {
 
@@ -105,6 +112,49 @@ export class ThreeDisplacementService {
       return;
     }
     const disgData = allDisgData[targetKey];
+
+    this.maxLength = this.three_node.maxdistance; // 最大梁長
+
+    for (const key of jsonKeys) {
+      // 節点データを集計する
+      const m = jsonData[key];
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
+      if (i === undefined || j === undefined) {
+        continue;
+      }
+
+      const disgKeys = Object.keys(disgData);
+      if (disgKeys.length <= 0) {
+        return;
+      }
+
+      const di: any = disgData.find((tmp) => {
+        return tmp.id === m.ni.toString();
+      });
+      const dj: any =  disgData.find((tmp) => {
+        return tmp.id === m.nj.toString();
+      });
+
+      if (di === undefined || dj === undefined) {
+        continue;
+      }
+
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dx)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dy)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dz)));
+
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dx)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dy)));
+      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dz)));
+    }
+
+    // 初期表示ではdispScaleが0.5の時に最大梁長の1/5となる
+    if (this.maxDiplacement === 0) {
+      this.scale = 0;
+    } else {
+      this.scale = this.defaultScale * this.maxLength / this.maxDiplacement;
+    }
 
     this.targetData = new Array();
 
@@ -158,7 +208,7 @@ export class ThreeDisplacementService {
           rzj: this.helper.toNumber(dj.rz),
           Division: 20,
         }
-      ); 
+      );
     }
     this.onResize();
   }

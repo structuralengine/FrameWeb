@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { InputDefineService } from './input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { ResultDataService } from '../../../providers/result-data.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Component({
   selector: 'app-input-define',
@@ -18,6 +19,28 @@ export class InputDefineComponent implements OnInit {
   rowHeaders: any[];
 
   hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+          if( value !== null ) {
+                changes[i][3] = value.toFixed(0);
+          } else {
+            changes[i][3] = null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
     afterChange: (...x: any[]) => {
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
@@ -34,7 +57,8 @@ export class InputDefineComponent implements OnInit {
 
   constructor(private input: InputDefineService,
               private load: InputLoadService,
-              private result: ResultDataService) {
+              private result: ResultDataService,
+              private helper: DataHelperModule) {
 
     this.page = 1;
     this.defineData = new Array();

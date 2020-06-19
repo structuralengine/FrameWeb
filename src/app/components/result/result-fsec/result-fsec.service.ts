@@ -80,10 +80,13 @@ export class ResultFsecService {
         const node = this.member.getNodeNo(memberNo);
         let ni: string = node['ni'];
         let nj = '';
-        let counter = 0;
+        let counter = 1;
         const data_length: number = Object.keys(js).length;
-        for (const p of Object.keys(js)) {
-          counter++;
+        while (counter <= data_length) {
+          const p = 'P' + counter.toString();
+          if (!(p in js)) {
+            break;
+           }
           const item: {} = js[p];
           let fxi: number = this.helper.toNumber(item['fxi']);
           let fyi: number = this.helper.toNumber(item['fyi']);
@@ -101,15 +104,17 @@ export class ResultFsecService {
             m: memberNo,
             n: ni,
             l: noticePoint.toFixed(3),
-            fx: fxi.toFixed(2),
-            fy: fyi.toFixed(2),
-            fz: fzi.toFixed(2),
-            mx: mxi.toFixed(2),
-            my: myi.toFixed(2),
-            mz: mzi.toFixed(2)
+            fx: (Math.round(fxi/100) * 100).toFixed(2),
+            fy: (Math.round(fyi / 100) * 100).toFixed(2),
+            fz: (Math.round(fzi / 100) * 100).toFixed(2),
+            mx: (Math.round(mxi / 100) * 100).toFixed(2),
+            my: (Math.round(myi / 100) * 100).toFixed(2),
+            mz: (Math.round(mzi / 100) * 100).toFixed(2)
           };
-          if (!this.helper.objectEquals(old, result)) {
-            Object.assign(old, result);
+
+          // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
+          if (old['n'] !== result['n'] || old['fx'] !== result['fx'] || old['fy'] !== result['fy'] || old['fz'] !== result['fz']
+            || old['mx'] !== result['mx'] || old['my'] !== result['my'] || old['mz'] !== result['mz'] ) {
             row++;
             result['row'] = row;
             target.push(result);
@@ -137,20 +142,18 @@ export class ResultFsecService {
             m: '',
             n: nj,
             l: noticePoint.toFixed(3),
-            fx: fxj.toFixed(2),
-            fy: fyj.toFixed(2),
-            fz: fzj.toFixed(2),
-            mx: mxj.toFixed(2),
-            my: myj.toFixed(2),
-            mz: mzj.toFixed(2)
+            fx: (Math.round(fxj / 100) * 100).toFixed(2),
+            fy: (Math.round(fyj / 100) * 100).toFixed(2),
+            fz: (Math.round(fzj / 100) * 100).toFixed(2),
+            mx: (Math.round(mxj / 100) * 100).toFixed(2),
+            my: (Math.round(myj / 100) * 100).toFixed(2),
+            mz: (Math.round(mzj / 100) * 100).toFixed(2)
           };
-          if (!this.helper.objectEquals(old, result)) {
-            Object.assign(old, result);
-            row++;
-            result['row'] = row;
-            target.push(result);
-          }
-
+          Object.assign(old, result);
+          row++;
+          result['row'] = row;
+          target.push(result);
+          counter++;
         }
       }
       this.fsec[caseNo.replace('Case', '')] = target;

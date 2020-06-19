@@ -13,6 +13,7 @@ export class ThreeNodesService {
   private geometry: THREE.SphereBufferGeometry;
 
   private _baseScale: number;   // 最近点から求めるスケール
+  public maxdistance: number;
   private scale: number;      // 外部から調整するためのスケール
   private nodeList: THREE.Mesh[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
@@ -22,6 +23,7 @@ export class ThreeNodesService {
               private node: InputNodesService) {
     this.scale = 1;
     this._baseScale = null;
+    this.maxdistance = 0;
     this.geometry = new THREE.SphereBufferGeometry(1);
     this.nodeList = new Array();
     this.center = {x:0, y:0, z:0};
@@ -161,6 +163,23 @@ export class ThreeNodesService {
       // baseScale は最近点の 1/20 とする
       this._baseScale = minDistance / 80;
     }
+    this.setMaxDistance();
+  }
+  // 最遠点からスケールを求める
+  private setMaxDistance(): void {
+    this.maxdistance = 0;
+    // 最遠点を探す
+    let maxDistance: number = -1;
+    for (const item1 of this.nodeList) {
+      for (const item2 of this.nodeList) {
+        const l = item1.position.distanceTo(item2.position);
+        if (l === 0) {
+          continue;
+        }
+        maxDistance = Math.max(l, maxDistance);
+      }
+    }
+    this.maxdistance = maxDistance;
   }
 
   // スケールを反映する
