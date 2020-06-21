@@ -34,6 +34,10 @@ export class ThreeFixMemberService {
     // 最も距離の近い2つの節点距離
     return this.nodeThree.baseScale() * 60;
   }
+  public center(): any {
+    // すべての節点の中心
+    return this.nodeThree.center; 
+  }
 
   public chengeData(index: number): void {
 
@@ -42,29 +46,54 @@ export class ThreeFixMemberService {
     // 格点データを入手
     const nodeData = this.node.getNodeJson('calc');
     if (Object.keys(nodeData).length <= 0) {
+      this.ClearNodeLoad();
       return;
     }
     // 要素データを入手
     const memberData = this.member.getMemberJson('calc');
     if (Object.keys(memberData).length <= 0) {
-      //this.ClearMemberLoad();
+      this.ClearMemberLoad();
       return;
     }
+    // バネデータを入手
+    const fixmemberData = this.fixmember.getFixMemberJson('calc');
+    if (Object.keys(fixmemberData).length <= 0) {
+      return;
+    }
+
+    const key_fixmember: string = index.toString();
+    if( !(key_fixmember in fixmemberData) ){
+      return;
+    }
+    const targetFixMember = fixmemberData[key_fixmember];
+    for (const target of targetFixMember) {
+      let count = 1;
+      console.log("////////////////////", count, "////////////////////");
+      console.log(target);
+      count += 1;
+
+      const position = {x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z};
+      let spring = {direction: "x", relationship: "small", color: 0x000000};
+      const maxLength = this.maxLength();
+
+
+    }
+
   }
 
   //バネを描く
-  public CreateSpring(position, spring, maxLength){
+  public CreateSpring(spring, position, maxLength){
     let GeometrySpring = new THREE.Geometry();
-    let Increase = 0.00015;
+    let increase = 0.00015;
     switch (spring.relationship){
       case("small"):
-        Increase = 0.0001;
+        increase = 0.0001;
         break;
       case("large"):
-        Increase = -0.0001;
+        increase = -0.0001;
         break;
     }
-    const laps = 5;
+    const laps = 3;
     const split = 10;
     const radius = 0.02;
     let x = position.x;
@@ -73,24 +102,24 @@ export class ThreeFixMemberService {
     for(let i = 0; i <= laps * 360; i += split){
       switch (spring.direction){
         case ("x"):
-        x = position.x - i * Increase * maxLength;
+        x = position.x - i * increase * maxLength;
         y = position.y + radius * Math.cos(Math.PI / 180 * i) * maxLength;
         z = position.z + radius * Math.sin(Math.PI / 180 * i) * maxLength;
         break;
         case ("y"):
         x = position.x + radius * Math.cos(Math.PI / 180 * i) * maxLength;
-        y = position.y - i * Increase  * maxLength;
+        y = position.y - i * increase * maxLength;
         z = position.z + radius * Math.sin(Math.PI / 180 * i) * maxLength;
         break;
         case ("z"):
         x = position.x + radius * Math.cos(Math.PI / 180 * i) * maxLength;
         y = position.y + radius * Math.sin(Math.PI / 180 * i) * maxLength;
-        z = position.z - i * Increase  * maxLength;
+        z = position.z - i * increase * maxLength;
         break;
       }
      GeometrySpring.vertices.push(new THREE.Vector3(x, y, z));
     }
-    console.log(laps * 360 * Increase * maxLength);
+    console.log(laps * 360 * increase * maxLength);
     const LineSpring = new THREE.LineBasicMaterial({color: spring.color});
     const MeshSpring = new THREE.Line(GeometrySpring, LineSpring);
     this.fixmemberList.push(MeshSpring);

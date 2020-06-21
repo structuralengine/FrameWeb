@@ -67,6 +67,7 @@ export class ThreeService {
 
           // 支点
           case 'fix_nodes':
+            this.fixNode.chengeData(index);
             break;
 
           // 要素
@@ -78,6 +79,11 @@ export class ThreeService {
           // 結合
           case 'joints':
             this.joint.chengeData(index);
+            break;
+          
+          // バネ
+          case 'fix_nodes':
+            this.fixMember.chengeData(index);
             break;
 
           // 荷重図
@@ -132,7 +138,7 @@ export class ThreeService {
     this.member.ClearData();
     this.joint.ClearData();
     this.pointLoad.ClearData();
-    // this.memberLoad.ClearData(this.scene);
+    //this.memberLoad.ClearData(this.scene);
     this.disg.ClearData();
     this.fsec.ClearData();
     this.reac.ClearData();
@@ -189,6 +195,13 @@ export class ThreeService {
         this.joint.chengeData(currentPage); // 結合データを表示する
       } else {
         this.joint.ClearData(); // 結合データを表示しない
+      }
+
+      // バネデータを表示する
+      if (['fix_member'].indexOf(ModeName) >= 0) {
+        this.fixMember.chengeData(currentPage); // 支点データを表示する
+      } else {
+        this.fixMember.ClearData(); // 支点データを表示しない
       }
 
       // 荷重
