@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { InputFixMemberService } from './input-fix-member.service';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-fix-member',
   templateUrl: './input-fix-member.component.html',
   styleUrls: ['./input-fix-member.component.scss']
 })
+
 export class InputFixMemberComponent implements OnInit {
 
   static ROWS_COUNT = 20;
@@ -14,7 +16,8 @@ export class InputFixMemberComponent implements OnInit {
 
   hotTableSettings = {};
 
-  constructor(private data: InputFixMemberService) {
+  constructor(private data: InputFixMemberService,
+              private three: ThreeService) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -34,5 +37,6 @@ export class InputFixMemberComponent implements OnInit {
       const fix_member = this.data.getFixMemberColumns(this.page, i);
       this.dataset.push(fix_member);
     }
+    this.three.ChengeMode('fix_member', currentPage);
   }
 }
