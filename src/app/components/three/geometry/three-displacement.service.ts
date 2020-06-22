@@ -35,17 +35,17 @@ export class ThreeDisplacementService {
   private defaultRatio: number;
 
   constructor(private scene: SceneService,
-              private helper: DataHelperModule,
-              private disg: ResultDisgService,
-              private comb_disg: ResultCombineDisgService,
-              private pik_disg: ResultPickupDisgService,
-              private node: InputNodesService,
-              private member: InputMembersService,
-              private three_node: ThreeNodesService) {
+    private helper: DataHelperModule,
+    private disg: ResultDisgService,
+    private comb_disg: ResultCombineDisgService,
+    private pik_disg: ResultPickupDisgService,
+    private node: InputNodesService,
+    private member: InputMembersService,
+    private three_node: ThreeNodesService) {
     this.lineList = new Array();
     this.targetData = new Array();
     this.defaultScale = 0.2
-    this.defaultRatio = 0.2/0.5  // 最大梁長に対するたわみの表示比率初期値/dispScale初期値
+    this.defaultRatio = 0.2 / 0.5  // 最大梁長に対するたわみの表示比率初期値/dispScale初期値
     this.maxDiplacement = 1;
     // gui
     this.params = {
@@ -56,7 +56,7 @@ export class ThreeDisplacementService {
 
   // データをクリアする
   public ClearData(): void {
-    if ( this.lineList.length > 0 ) {
+    if (this.lineList.length > 0) {
       // 線を削除する
       for (const mesh of this.lineList) {
         // 文字を削除する
@@ -71,18 +71,18 @@ export class ThreeDisplacementService {
   }
 
   public guiEnable(): void {
-    if ( this.gui !== null ) {
+    if (this.gui !== null) {
       return;
     }
 
-    this.gui = this.scene.gui.add( this.params, 'dispScale', 0, 1 ).step(0.001).onChange( ( value ) => {
+    this.gui = this.scene.gui.add(this.params, 'dispScale', 0, 1).step(0.001).onChange((value) => {
       this.scale = this.defaultRatio * value * this.maxLength / this.maxDiplacement;
       this.onResize();
     });
   }
 
   public guiDisable(): void {
-    if ( this.gui === null ) {
+    if (this.gui === null) {
       return;
     }
     this.scene.gui.remove(this.gui);
@@ -108,46 +108,14 @@ export class ThreeDisplacementService {
     // 変位データを入手
     const allDisgData = this.disg.getDisgJson();
     const targetKey: string = index.toString();
-    if ( !(targetKey in allDisgData) ) {
+    if (!(targetKey in allDisgData)) {
       return;
     }
     const disgData = allDisgData[targetKey];
 
     this.maxLength = this.three_node.maxdistance; // 最大梁長
 
-    for (const key of jsonKeys) {
-      // 節点データを集計する
-      const m = jsonData[key];
-      const i = nodeData[m.ni];
-      const j = nodeData[m.nj];
-      if (i === undefined || j === undefined) {
-        continue;
-      }
-
-      const disgKeys = Object.keys(disgData);
-      if (disgKeys.length <= 0) {
-        return;
-      }
-
-      const di: any = disgData.find((tmp) => {
-        return tmp.id === m.ni.toString();
-      });
-      const dj: any =  disgData.find((tmp) => {
-        return tmp.id === m.nj.toString();
-      });
-
-      if (di === undefined || dj === undefined) {
-        continue;
-      }
-
-      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dx)));
-      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dy)));
-      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(di.dz)));
-
-      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dx)));
-      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dy)));
-      this.maxDiplacement = Math.max(this.maxDiplacement, Math.abs(this.helper.toNumber(dj.dz)));
-    }
+    this.maxDiplacement = this.disg.getMaxDisg(); // 最大変位
 
     // 初期表示ではdispScaleが0.5の時に最大梁長の1/5となる
     if (this.maxDiplacement === 0) {
@@ -177,7 +145,7 @@ export class ThreeDisplacementService {
       const di: any = disgData.find((tmp) => {
         return tmp.id === m.ni.toString();
       });
-      const dj: any =  disgData.find((tmp) => {
+      const dj: any = disgData.find((tmp) => {
         return tmp.id === m.nj.toString();
       });
 
@@ -215,10 +183,10 @@ export class ThreeDisplacementService {
 
   private onResize(): void {
 
-    // 要素を排除する
-    this.ClearData();
+    const tmplineList: THREE.Line[] = this.lineList;
 
-    for ( const target of this.targetData ) {
+    for (let i = 0; i < this.targetData.length; i++) {
+      const target = this.targetData[i];
 
       let xi: number = target.xi;
       let yi: number = target.yi;
@@ -259,42 +227,48 @@ export class ThreeDisplacementService {
       const colors = [];
 
       // 補間点の節点変位の計算
-      for (let i = 0; i <= Division; i ++) {
+      for (let i = 0; i <= Division; i++) {
         const n = i / Division;
         const xhe = (1 - n) * dxi + n * dxj;
         const yhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dyi + L * (n - 2 * n ** 2 + n ** 3) * rzi
-                 + (3 * n ** 2 - 2 * n ** 3) * dyj + L * (0 - n ** 2 + n ** 3) * rzj;
+          + (3 * n ** 2 - 2 * n ** 3) * dyj + L * (0 - n ** 2 + n ** 3) * rzj;
         const zhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dzi - L * (n - 2 * n ** 2 + n ** 3) * ryi
-                 + (3 * n ** 2 - 2 * n ** 3) * dzj - L * (0 - n ** 2 + n ** 3) * ryj;
+          + (3 * n ** 2 - 2 * n ** 3) * dzj - L * (0 - n ** 2 + n ** 3) * ryj;
 
         // 補間点の変位を座標値に付加
         const xk = (1 - n) * xi + n * xj + xhe * this.scale;
         const yk = (1 - n) * yi + n * yj + yhe * this.scale;
         const zk = (1 - n) * zi + n * zj + zhe * this.scale;
 
-        positions.push( xk, yk, zk );
-        colors.push( threeColor.r, threeColor.g, threeColor.b );
+        positions.push(xk, yk, zk);
+        colors.push(threeColor.r, threeColor.g, threeColor.b);
       }
 
-      const geometry: LineGeometry = new LineGeometry();
-      geometry.setPositions( positions );
-      geometry.setColors( colors );
+      if (this.lineList.length > 0) {
+        const line = this.lineList[i];
+        const geometry: LineGeometry = line.geometry;
+        geometry.setPositions(positions);
+      } else {
+        const geometry: LineGeometry = new LineGeometry();
+        geometry.setPositions(positions);
+        geometry.setColors(colors);
 
-      const matLine: LineMaterial = new LineMaterial( {
-        color: 0xFF0000,
-        linewidth: 0.001,
-        vertexColors: THREE.VertexColors,
-        dashed: false
-      });
-      const line: Line2 = new Line2( geometry, matLine );
-      line.computeLineDistances();
+        const matLine: LineMaterial = new LineMaterial({
+          color: 0xFF0000,
+          linewidth: 0.001,
+          vertexColors: THREE.VertexColors,
+          dashed: false
+        });
+        const line: Line2 = new Line2(geometry, matLine);
+        line.computeLineDistances();
 
-      line.scale.set( 1, 1, 1 );
-      line.name = target.name;
+        line.scale.set(1, 1, 1);
+        line.name = target.name;
 
-      this.lineList.push(line);
+        this.lineList.push(line);
 
-      this.scene.add( line );
+        this.scene.add(line);
+      }
     }
   }
 }
