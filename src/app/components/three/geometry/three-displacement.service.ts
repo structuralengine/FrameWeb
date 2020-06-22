@@ -227,8 +227,8 @@ export class ThreeDisplacementService {
       const colors = [];
 
       // 補間点の節点変位の計算
-      for (let i = 0; i <= Division; i++) {
-        const n = i / Division;
+      for (let j = 0; j <= Division; j++) {
+        const n = j / Division;
         const xhe = (1 - n) * dxi + n * dxj;
         const yhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dyi + L * (n - 2 * n ** 2 + n ** 3) * rzi
           + (3 * n ** 2 - 2 * n ** 3) * dyj + L * (0 - n ** 2 + n ** 3) * rzj;
@@ -265,10 +265,11 @@ export class ThreeDisplacementService {
         line.scale.set(1, 1, 1);
         line.name = target.name;
 
-        this.lineList.push(line);
+        tmplineList.push(line);
 
         this.scene.add(line);
       }
     }
+    this.lineList = tmplineList;
   }
 }

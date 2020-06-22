@@ -270,14 +270,12 @@ export class ThreeSectionForceService {
   // 断面力図を描く
   private onResize(): void {
 
+    const targetKey: string = this.targetIndex.toString();
+    if (!(targetKey in this.targetData)) return;
+
     let key: string;
     let axis: string;
     let color: THREE.Color;
-
-    const targetKey: string = this.targetIndex.toString();
-    if (!(targetKey in this.targetData)) {
-      return;
-    }
 
     if (this.params.axialForce === true) {
       // 軸方向の圧縮力
@@ -313,16 +311,17 @@ export class ThreeSectionForceService {
       return;
     }
 
+    const tmplineList: Line2[] = this.lineList;
 
-    for (const target of this.targetData[targetKey]) {
+    for ( let i = 0; i < this.targetData[targetKey].length; i++){
+      const target = this.targetData[targetKey][i];
 
       // 断面力のpathを表示
       const memberInfo: any = target[0]; // 1つめのデータは部材情報 (２つめのデータ以降が断面力情報)
       const positions = [];
       const colors = [];
       const danmenryoku = [];
-      for (let i = 1; i < target.length; i++) {
-        const force: any = target[i];
+      for (const force of target) {
         let x: number = force.worldPosition.x;
         let y: number = force.worldPosition.y;
         let z: number = force.worldPosition.z;
@@ -333,85 +332,21 @@ export class ThreeSectionForceService {
         colors.push(color.r, color.g, color.b);
         danmenryoku.push(force[key]);
       }
-      this.addPathGeometory(positions, colors, danmenryoku);
-    }
+      if(this.lineList.length> 0){
+        const line = this.lineList[i];
+        // ここに line を修正するコードを描く
 
-
-
-
-    // 軸方向の圧縮力
-    if (this.params.axialForce === true) {
-      const threeColor = new THREE.Color(0xFF0000);
-      this.addGeometory('axialForce', 'localAxisY', threeColor);
-    }
-
-    // ねじり曲げモーメント
-    if (this.params.torsionalMoment === true) {
-      const threeColor = new THREE.Color(0xFF0000);
-      this.addGeometory('torsionalMoment', 'localAxisZ', threeColor);
-    }
-
-    // Y方向のせん断力
-    if (this.params.shearForceY === true) {
-      const threeColor = new THREE.Color(0x00FF00);
-      this.addGeometory('shearForceY', 'localAxisY', threeColor);
-    }
-
-    // Y軸周りの曲げモーメント
-    if (this.params.momentY === true) {
-      const threeColor = new THREE.Color(0x00FF00);
-      this.addGeometory('momentY', 'localAxisZ', threeColor);
-    }
-
-    // Z方向のせん断力
-    if (this.params.shearForceZ === true) {
-      const threeColor = new THREE.Color(0x0000FF);
-      this.addGeometory('shearForceZ', 'localAxisZ', threeColor);
-    }
-
-    // Z軸周りの曲げモーメント
-    if (this.params.momentZ === true) {
-      const threeColor = new THREE.Color(0x0000FF);
-      this.addGeometory('momentZ', 'localAxisY', threeColor);
-    }
-
-  }
-
-
-  // 断面力の図を描く
-  private addGeometory(key: string, axis: string, color: THREE.Color) {
-
-    const targetKey: string = this.targetIndex.toString();
-    if (!(targetKey in this.targetData)) {
-      return;
-    }
-
-    for (const target of this.targetData[targetKey]) {
-
-      // 断面力のpathを表示
-      const memberInfo: any = target[0]; // 1つめのデータは部材情報 (２つめのデータ以降が断面力情報)
-      const positions = [];
-      const colors = [];
-      const danmenryoku = [];
-      for (let i = 1; i < target.length; i++) {
-        const force: any = target[i];
-        let x: number = force.worldPosition.x;
-        let y: number = force.worldPosition.y;
-        let z: number = force.worldPosition.z;
-        x -= force[key] * memberInfo[axis].x * this.scale;
-        y -= force[key] * memberInfo[axis].y * this.scale;
-        z -= force[key] * memberInfo[axis].z * this.scale;
-        positions.push(x, y, z);
-        colors.push(color.r, color.g, color.b);
-        danmenryoku.push(force[key]);
+      } else{
+        const line = this.addPathGeometory(positions, colors, danmenryoku);
+        tmplineList.push(line);
+        this.scene.add(line);
       }
-      this.addPathGeometory(positions, colors, danmenryoku);
     }
-
+    this.lineList = tmplineList;
   }
 
   // 断面力の線を(要素ごとに)描く
-  private addPathGeometory(positions: any[], colors: any[], danmenryokuList: number[]): void {
+  private addPathGeometory(positions: any[], colors: any[], danmenryokuList: number[]): Line2 {
 
     // 線を追加
     const geometry: LineGeometry = new LineGeometry();
@@ -460,9 +395,7 @@ export class ThreeSectionForceService {
       line.add(text);
       j++;
     }
-
-    this.lineList.push(line);
-    this.scene.add(line);
+    return line;
   }
 
 
