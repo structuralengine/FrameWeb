@@ -88,14 +88,14 @@ export class MenuComponent implements OnInit {
 
   // 計算
   calcrate(): void {
-
+/*
     if (this.user.loggedIn === false) {
       this.logIn();
     }
     if (this.user.loggedIn === false) {
       return;
     }
-
+*/
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const inputJson =

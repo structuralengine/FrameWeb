@@ -104,12 +104,12 @@ export class ResultFsecService {
             m: memberNo,
             n: ni,
             l: noticePoint.toFixed(3),
-            fx: (Math.round(fxi/100) * 100).toFixed(2),
-            fy: (Math.round(fyi / 100) * 100).toFixed(2),
-            fz: (Math.round(fzi / 100) * 100).toFixed(2),
-            mx: (Math.round(mxi / 100) * 100).toFixed(2),
-            my: (Math.round(myi / 100) * 100).toFixed(2),
-            mz: (Math.round(mzi / 100) * 100).toFixed(2)
+            fx: (Math.round(fxi * 100) / 100).toFixed(2),
+            fy: (Math.round(fyi * 100) / 100).toFixed(2),
+            fz: (Math.round(fzi * 100) / 100).toFixed(2),
+            mx: (Math.round(mxi * 100) / 100).toFixed(2),
+            my: (Math.round(myi * 100) / 100).toFixed(2),
+            mz: (Math.round(mzi * 100) / 100).toFixed(2)
           };
 
           // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
@@ -142,12 +142,12 @@ export class ResultFsecService {
             m: '',
             n: nj,
             l: noticePoint.toFixed(3),
-            fx: (Math.round(fxj / 100) * 100).toFixed(2),
-            fy: (Math.round(fyj / 100) * 100).toFixed(2),
-            fz: (Math.round(fzj / 100) * 100).toFixed(2),
-            mx: (Math.round(mxj / 100) * 100).toFixed(2),
-            my: (Math.round(myj / 100) * 100).toFixed(2),
-            mz: (Math.round(mzj / 100) * 100).toFixed(2)
+            fx: (Math.round(fxj * 100) / 100).toFixed(2),
+            fy: (Math.round(fyj * 100) / 100).toFixed(2),
+            fz: (Math.round(fzj * 100) / 100).toFixed(2),
+            mx: (Math.round(mxj * 100) / 100).toFixed(2),
+            my: (Math.round(myj * 100) / 100).toFixed(2),
+            mz: (Math.round(mzj * 100) / 100).toFixed(2)
           };
           Object.assign(old, result);
           row++;

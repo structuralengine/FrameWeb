@@ -26,8 +26,8 @@ import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahe
 export class ThreeSectionForceService {
 
   private lineList: THREE.Line[];
-  private textList: THREE.Mesh[];
   private targetData: any;
+  private targetIndex: string;
 
   private scale: number;
   private params: any;          // GUIの表示制御
@@ -38,19 +38,17 @@ export class ThreeSectionForceService {
 
 
   constructor(private scene: SceneService,
-              private helper: DataHelperModule,
-              private fsec: ResultFsecService,
-              private comb_fsec: ResultCombineFsecService,
-              private pik_fsec: ResultPickupFsecService,
-              private node: InputNodesService,
-              private member: InputMembersService,
-              private three_member: ThreeMembersService) {
+    private helper: DataHelperModule,
+    private fsec: ResultFsecService,
+    private comb_fsec: ResultCombineFsecService,
+    private pik_fsec: ResultPickupFsecService,
+    private node: InputNodesService,
+    private member: InputMembersService,
+    private three_member: ThreeMembersService) {
 
     this.lineList = new Array();
-    this.textList = new Array();
-    this.targetData = new Array();
+    this.ClearData();
 
-    this.scale = 0.001;
     // gui
     this.params = {
       forceScale: this.scale
@@ -63,7 +61,7 @@ export class ThreeSectionForceService {
 
     // フォントをロード
     const loader = new THREE.FontLoader();
-    loader.load( './assets/fonts/helvetiker_regular.typeface.json', ( font ) => {
+    loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
       this.font = font;
     });
   }
@@ -82,16 +80,9 @@ export class ThreeSectionForceService {
       }
       this.lineList = new Array();
     }
-    // テキストを削除する
-    for (const mesh of this.textList) {
-      // 文字を削除する
-      while (mesh.children.length > 0) {
-        const object = mesh.children[0];
-        object.parent.remove(object);
-      }
-      this.scene.remove(mesh);
-    }
-    this.textList = new Array();
+    this.targetData = {}; //new Array();
+    this.targetIndex = "1";
+    this.scale = 0.5;
   }
 
   public guiEnable(): void {
@@ -99,7 +90,7 @@ export class ThreeSectionForceService {
       return;
     }
     this.gui = {
-      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, 0.1).step(0.001).onChange((value) => {
+      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, 1).step(0.001).onChange((value) => {
         // guiによる設定
         this.scale = value;
         this.onResize();
@@ -107,7 +98,7 @@ export class ThreeSectionForceService {
     };
     for (const key of this.radioButtons) {
       this.gui[key] = this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
-        if ( value === true ) {
+        if (value === true) {
           this.setGUIcheck(key);
         } else {
           this.setGUIcheck('');
@@ -121,7 +112,7 @@ export class ThreeSectionForceService {
     if (this.gui === null) {
       return;
     }
-    for ( const key of Object.keys(this.gui)) {
+    for (const key of Object.keys(this.gui)) {
       this.scene.gui.remove(this.gui[key]);
     }
     this.gui = null;
@@ -136,7 +127,18 @@ export class ThreeSectionForceService {
   }
 
   // データが変更された時に呼び出される
+  // 変数 this.targetData に値をセットする
   public chengeData(index: number): void {
+
+    if (this.lineList.length > 0) {
+      // 既に Geometryを作成していたら リサイズするだけ
+      this.targetIndex = index.toString();
+      this.onResize();
+      return;
+    }
+
+    // 要素を排除する
+    this.ClearData();
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson('calc');
@@ -154,63 +156,88 @@ export class ThreeSectionForceService {
 
     // 断面力データを入手
     const allFsecgData = this.fsec.getFsecJson();
-    const targetKey: string = index.toString();
-    if (!(targetKey in allFsecgData)) {
-      return;
-    }
-    const fsecData = allFsecgData[targetKey];
+    this.targetIndex = index.toString();
 
-    // 新しい入力を適用する
-    this.targetData = new Array();
+    for (const targetKey of Object.keys(allFsecgData)) {
 
-    for (const id of memberKeys) {
+      let fsecData = allFsecgData[targetKey].slice();
 
-      // 節点データを集計する
-      const m = memberData[id];
-      const i = nodeData[m.ni];
-      const j = nodeData[m.nj];
-      if (i === undefined || j === undefined) {
-        continue;
-      }
+      // 新しい入力を適用する
+      const targetList = new Array();
 
-      // 部材の座標軸を取得
-      const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
-      const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
+      for (const id of memberKeys) {
 
-      // 着目点
-      const fsecPoints: any = new Array();
-      let flg = false;
-      for (const fsec of fsecData ) {
-        if ( fsec.m === id ) {
-          flg = true;
-          // 1つめのデータは部材情報
-          fsecPoints.push({
-            id: fsec.m ,
-            iPosition: i,
-            jPosition: j,
-            length: MemberLength,
-            localAxisX: localAxis.x,
-            localAxisY: localAxis.y,
-            localAxisZ: localAxis.z
-          });
-          // ２つめのデータ以降が断面力情報
-          fsecPoints.push(this.getFsecPoints(MemberLength, fsec, i, j));
-        } else if (flg === true) {
-          if ( fsec.m.trim().length > 0 ) {
-            break;
-          }
-          fsecPoints.push(this.getFsecPoints(MemberLength, fsec, i, j));
+        // 節点データを集計する
+        const m = memberData[id];
+        const i = nodeData[m.ni];
+        const j = nodeData[m.nj];
+        if (i === undefined || j === undefined) {
+          continue;
         }
+
+        // 部材の座標軸を取得
+        const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+        const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
+
+        // 着目点
+        const fsecPoints: any = new Array();
+        let flg = false;
+        const deleteindex: number[] = new Array();
+        let currentPosition: number = 0;
+        for (let c = 0; c < fsecData.length; c++) {
+          const fsec = fsecData[c];
+          if (fsec.m === id) {
+            flg = true;
+            // 1つめのデータは部材情報
+            fsecPoints.push({
+              id: fsec.m,
+              iPosition: i,
+              jPosition: j,
+              length: MemberLength,
+              localAxisX: localAxis.x,
+              localAxisY: localAxis.y,
+              localAxisZ: localAxis.z
+            });
+            // ２つめのデータ以降が断面力情報
+            currentPosition = this.helper.toNumber(fsec.l);
+            fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
+            deleteindex.push(c);
+          } else if (flg === true) {
+            if (fsec.m.trim().length > 0) {
+              break;
+            }
+            currentPosition += this.helper.toNumber(fsec.l);
+            fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
+            deleteindex.push(c);
+          }
+        }
+        targetList.push(fsecPoints);
+
+        // 登録済のデータは削除する
+        for (let d = deleteindex.length - 1; d >= 0; d--) {
+          const c = deleteindex[d];
+          fsecData.splice(c, 1);
+        }
+        
       }
-      this.targetData.push(fsecPoints);
+      this.targetData[targetKey] = targetList;
+    }
+
+    if (!(this.targetIndex in this.targetData)) {
+      return;      // 荷重Case番号 this.targetIndex が 計算結果 this.targetData に含まれていなかったら何もしない
     }
 
     // 断面力図を描く
     this.onResize();
+    
   }
 
   // 断面力, 部材の情報をまとめる
-  private getFsecPoints(MemberLength, fsec, i, j) {
+  private getFsecPoints(MemberLength: number,
+    localPosition: number,
+    fsec,
+    i,
+    j) {
 
     // 断面力の集計
     const axialForce: number = this.helper.toNumber(fsec.fx);
@@ -221,11 +248,10 @@ export class ThreeSectionForceService {
     const momentZ: number = this.helper.toNumber(fsec.mz);
 
     // 位置
-    const localPosition: number = this.helper.toNumber(fsec.l);
     const worldPosition = {
-      x: (localPosition / MemberLength) * ( j.x - i.x ) + i.x,
-      y: (localPosition / MemberLength) * ( j.y - i.y ) + i.y,
-      z: (localPosition / MemberLength) * ( j.z - i.z ) + i.z
+      x: (localPosition / MemberLength) * (j.x - i.x) + i.x,
+      y: (localPosition / MemberLength) * (j.y - i.y) + i.y,
+      z: (localPosition / MemberLength) * (j.z - i.z) + i.z
     };
 
     return {
@@ -244,51 +270,51 @@ export class ThreeSectionForceService {
   // 断面力図を描く
   private onResize(): void {
 
-    // 要素を排除する
-    this.ClearData();
+    let key: string;
+    let axis: string;
+    let color: THREE.Color;
 
-    // 軸方向の圧縮力
-    if (this.params.axialForce === true ) {
-      const threeColor = new THREE.Color(0xFF0000);
-      this.addGeometory('axialForce', 'localAxisY', threeColor);
+    const targetKey: string = this.targetIndex.toString();
+    if (!(targetKey in this.targetData)) {
+      return;
     }
 
-    // ねじり曲げモーメント
-    if (this.params.torsionalMoment === true ) {
-      const threeColor = new THREE.Color(0xFF0000);
-      this.addGeometory('torsionalMoment', 'localAxisZ', threeColor);
+    if (this.params.axialForce === true) {
+      // 軸方向の圧縮力
+      color = new THREE.Color(0xFF0000);
+      key = 'axialForce';
+      axis = 'localAxisY';
+    } else if(this.params.torsionalMoment === true) {
+      // ねじり曲げモーメント
+      color = new THREE.Color(0xFF0000);
+      key = 'torsionalMoment';
+      axis = 'localAxisZ';
+    } else if (this.params.shearForceY === true) {
+      // Y方向のせん断力
+      color = new THREE.Color(0x00FF00);
+      key = 'shearForceY';
+      axis = 'localAxisY';
+    } else if (this.params.momentY === true) {
+      // Y軸周りの曲げモーメント
+      color = new THREE.Color(0x00FF00);
+      key = 'momentY';
+      axis = 'localAxisZ';
+    } else if (this.params.shearForceZ === true) {
+      // Z方向のせん断力
+      color = new THREE.Color(0x0000FF);
+      key = 'shearForceZ';
+      axis = 'localAxisZ';
+    } else if (this.params.momentZ === true) {
+      // Z軸周りの曲げモーメント
+      color = new THREE.Color(0x0000FF);
+      key = 'momentZ';
+      axis = 'localAxisY';
+    } else {
+      return;
     }
 
-    // Y方向のせん断力
-    if (this.params.shearForceY === true ) {
-      const threeColor = new THREE.Color(0x00FF00);
-      this.addGeometory('shearForceY', 'localAxisY', threeColor);
-    }
 
-    // Y軸周りの曲げモーメント
-    if (this.params.momentY === true ) {
-      const threeColor = new THREE.Color(0x00FF00);
-      this.addGeometory('momentY', 'localAxisZ', threeColor);
-    }
-
-    // Z方向のせん断力
-    if (this.params.shearForceZ === true ) {
-      const threeColor = new THREE.Color(0x0000FF);
-      this.addGeometory('shearForceZ', 'localAxisZ', threeColor);
-    }
-
-    // Z軸周りの曲げモーメント
-    if (this.params.momentZ === true ) {
-      const threeColor = new THREE.Color(0x0000FF);
-      this.addGeometory('momentZ', 'localAxisY', threeColor);
-    }
-
-  }
-
-  // 断面力の図を描く
-  private addGeometory(key: string, axis: string, color: THREE.Color) {
-
-    for (const target of this.targetData) {
+    for (const target of this.targetData[targetKey]) {
 
       // 断面力のpathを表示
       const memberInfo: any = target[0]; // 1つめのデータは部材情報 (２つめのデータ以降が断面力情報)
@@ -305,28 +331,89 @@ export class ThreeSectionForceService {
         z -= force[key] * memberInfo[axis].z * this.scale;
         positions.push(x, y, z);
         colors.push(color.r, color.g, color.b);
-        danmenryoku.push(target[i]);
+        danmenryoku.push(force[key]);
       }
-      this.addPathGeometory(positions, colors);
-
-
-      // 断面力の値を表示
-      for (let i = 0; i < danmenryoku.length; i++) {
-        const position = {
-          x: positions[3 * i],
-          y: positions[3 * i + 1],
-          z: positions[3 * i + 2]
-        };
-        const danmenryokuList: any = danmenryoku[i];
-        const DanmentyokuText = String(danmenryokuList[key]);
-        this.addTextGeometory(DanmentyokuText, position);
-      }
+      this.addPathGeometory(positions, colors, danmenryoku);
     }
+
+
+
+
+    // 軸方向の圧縮力
+    if (this.params.axialForce === true) {
+      const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('axialForce', 'localAxisY', threeColor);
+    }
+
+    // ねじり曲げモーメント
+    if (this.params.torsionalMoment === true) {
+      const threeColor = new THREE.Color(0xFF0000);
+      this.addGeometory('torsionalMoment', 'localAxisZ', threeColor);
+    }
+
+    // Y方向のせん断力
+    if (this.params.shearForceY === true) {
+      const threeColor = new THREE.Color(0x00FF00);
+      this.addGeometory('shearForceY', 'localAxisY', threeColor);
+    }
+
+    // Y軸周りの曲げモーメント
+    if (this.params.momentY === true) {
+      const threeColor = new THREE.Color(0x00FF00);
+      this.addGeometory('momentY', 'localAxisZ', threeColor);
+    }
+
+    // Z方向のせん断力
+    if (this.params.shearForceZ === true) {
+      const threeColor = new THREE.Color(0x0000FF);
+      this.addGeometory('shearForceZ', 'localAxisZ', threeColor);
+    }
+
+    // Z軸周りの曲げモーメント
+    if (this.params.momentZ === true) {
+      const threeColor = new THREE.Color(0x0000FF);
+      this.addGeometory('momentZ', 'localAxisY', threeColor);
+    }
+
   }
 
-  // 断面力の線を描く
-  private addPathGeometory(positions: any[], colors: any[]): void {
 
+  // 断面力の図を描く
+  private addGeometory(key: string, axis: string, color: THREE.Color) {
+
+    const targetKey: string = this.targetIndex.toString();
+    if (!(targetKey in this.targetData)) {
+      return;
+    }
+
+    for (const target of this.targetData[targetKey]) {
+
+      // 断面力のpathを表示
+      const memberInfo: any = target[0]; // 1つめのデータは部材情報 (２つめのデータ以降が断面力情報)
+      const positions = [];
+      const colors = [];
+      const danmenryoku = [];
+      for (let i = 1; i < target.length; i++) {
+        const force: any = target[i];
+        let x: number = force.worldPosition.x;
+        let y: number = force.worldPosition.y;
+        let z: number = force.worldPosition.z;
+        x -= force[key] * memberInfo[axis].x * this.scale;
+        y -= force[key] * memberInfo[axis].y * this.scale;
+        z -= force[key] * memberInfo[axis].z * this.scale;
+        positions.push(x, y, z);
+        colors.push(color.r, color.g, color.b);
+        danmenryoku.push(force[key]);
+      }
+      this.addPathGeometory(positions, colors, danmenryoku);
+    }
+
+  }
+
+  // 断面力の線を(要素ごとに)描く
+  private addPathGeometory(positions: any[], colors: any[], danmenryokuList: number[]): void {
+
+    // 線を追加
     const geometry: LineGeometry = new LineGeometry();
     geometry.setPositions(positions);
     geometry.setColors(colors);
@@ -337,60 +424,48 @@ export class ThreeSectionForceService {
       vertexColors: THREE.VertexColors,
       dashed: false
     });
+
     const line: Line2 = new Line2(geometry, matLine);
     line.computeLineDistances();
     line.scale.set(1, 1, 1);
-    // line.name = '';
-    this.lineList.push(line);
-    this.scene.add(line);
 
-    /*
-    const heartShape = new THREE.Shape();
+    // テキストを追加
+    const matText = [
+      new THREE.MeshBasicMaterial({ color: 0x000000 }),
+      new THREE.MeshBasicMaterial({ color: 0x000000 })
+    ];
 
-    heartShape.moveTo( 0, 0 );
-    heartShape.lineTo(  1, -0.5 );
-    heartShape.lineTo( -1, -0.5  );
-    heartShape.lineTo(  0, 1 );
-
-    const extrudeSettings = { amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
-    const geometry = new THREE.ExtrudeGeometry( heartShape, extrudeSettings );
-    const mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial() );
-
-    if (mesh !== null) {
-      this.memberLoadList.push(mesh);
-      this.scene.add(mesh);
-    }
-    */
-
-  }
-
-  // 断面力値のmeshを作成
-  private addTextGeometory(text: string, position: any): void {
-    const DanmenryokuText = new THREE.TextGeometry(
-      text, {
-        font: this.font ,
+    let j = 0;
+    for (let i = 0; i < positions.length; i += 3) {
+      const pos = {
+        x: positions[i],
+        y: positions[i + 1],
+        z: positions[i + 2],
+      };
+      const DanmentyokuText = String(danmenryokuList[j]);
+      const TextGeometry = new THREE.TextGeometry(
+        DanmentyokuText, {
+        font: this.font,
         size: 0.2,
         height: 0.002,
         curveSegments: 4,
         bevelEnabled: false,
       }
-    );
+      );
+      const text = new THREE.Mesh(TextGeometry, matText);
+      // 数値をx-y平面の状態から，x-z平面の状態に回転
+      text.rotation.x = Math.PI / 2;
+      // 数値を任意の位置に配置
+      text.position.set(pos.x, pos.y, pos.z);
+      line.add(text);
+      j++;
+    }
 
-    const DanmenryokuMaterial = [
-      new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5} ),
-      new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5} )
-    ];
-    const sectionForceValue = new THREE.Mesh(DanmenryokuText, DanmenryokuMaterial);
-
-    // 数値をx-y平面の状態から，x-z平面の状態に回転
-    sectionForceValue.rotation.x = Math.PI / 2;
-    // 数値を任意の位置に配置
-    sectionForceValue.position.set(position.x, position.y, position.z);
-    // 数値を表示
-    this.textList.push(sectionForceValue);
-    this.scene.add(sectionForceValue);
-
+    this.lineList.push(line);
+    this.scene.add(line);
   }
+
+
 
 }
 
