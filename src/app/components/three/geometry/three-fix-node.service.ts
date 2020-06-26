@@ -56,8 +56,7 @@ export class ThreeFixNodeService {
     const targetFixNode = fixnodeData[key_fixnode];
     for (const target of targetFixNode) {
       
-      const position = {x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z};
-      //let geometry = new THREE.Geometry;
+    const position = {x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z};
 
       //ピン支点の分岐
       let pin = {direction: "x", relationship: "small", color: 0x000000};
@@ -290,11 +289,9 @@ export class ThreeFixNodeService {
         switch (fixed.relationship){
           case "small":
             x = position.x - side / 2;
-            //plane.position.set(x, y, z);
             break;
           case "large":
             x = position.x + side / 2;
-            //plane.position.set(x, y, z);
             break;
         }
         plane.position.set(x, y, z);
@@ -304,11 +301,9 @@ export class ThreeFixNodeService {
         switch (fixed.relationship){
           case "small":
             y = position.y - side / 2;
-            //plane.position.set(x, y, z);
             break;
           case "large":
             y = position.y + side / 2;
-            //plane.position.set(x, y, z);
             break;
         }
         plane.position.set(x, y, z);
@@ -318,11 +313,9 @@ export class ThreeFixNodeService {
         switch (fixed.relationship){
           case "small":
             z = position.z - side / 2;
-            //plane.position.set(x, y, z);
             break;
           case "large":
             z = position.z + side / 2;
-            //plane.position.set(x, y, z);
             break;
         }
         plane.position.set(x, y, z);
@@ -402,7 +395,6 @@ export class ThreeFixNodeService {
       }
      geometry.vertices.push(new THREE.Vector3(x, y, z));
     }
-    console.log(laps * 360 * increase * maxLength);
     const line = new THREE.LineBasicMaterial({color: spring.color});
     const mesh = new THREE.Line(geometry, line);
     this.fixnodeList.push(mesh);

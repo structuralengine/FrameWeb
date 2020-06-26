@@ -170,7 +170,7 @@ export class ThreeService {
       }
 
       // 要素番号の表示制御
-      if (['members', 'joints', 'notice_points', 'fix_nodes', 'fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
+      if (['members', 'joints', 'notice_points', 'fix_member', 'fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
         this.member.Enable(); // 要素番号を表示する
       } else {
         this.member.Disable(); // 要素番号を表示しない
