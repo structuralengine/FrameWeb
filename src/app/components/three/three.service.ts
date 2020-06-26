@@ -49,6 +49,9 @@ export class ThreeService {
         this.node.chengeData();
         this.member.chengeData();
         this.pointLoad.chengeData(index);
+        this.disg.ClearData();
+        this.fsec.ClearData();
+        this.reac.ClearData();
         // this.memberLoad.chengeData(this.scene);
         break;
       case 'result':
@@ -80,7 +83,7 @@ export class ThreeService {
           case 'joints':
             this.joint.chengeData(index);
             break;
-          
+
           // バネ
           case 'fix_member':
             this.fixMember.chengeData(index);

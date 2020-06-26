@@ -35,6 +35,20 @@ export class ResultDisgService {
     return this.disg;
   }
 
+  public getMaxDisg(): number {
+    // dic型の中にarr型が入っている状態をarr型の中にarr型が入る状態へ変形
+    let arryDisg2D = Object.keys(this.disg).map((key) => { return this.disg[key] });
+
+    // 2次元のarr型を1次元へ変形
+    let arryDisg1D = arryDisg2D.reduce((pre, current) => { pre.push(...current); return pre }, []);
+
+    // 最大値を含む配列要素を取得
+    let m = arryDisg1D.reduce((pre, current) => Math.max(pre.dx, pre.dy, pre.dz) > Math.max(current.dx, current.dy, current.dz) ? pre : current);
+
+    // 最大値を返却
+    return Math.max(m.dx, m.dy, m.dz);
+  }
+
   public setDisgJson(jsonData: {}): void {
     let max_row = 0;
     for (const caseNo of Object.keys(jsonData)) {
