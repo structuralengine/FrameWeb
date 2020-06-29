@@ -414,6 +414,16 @@ export class ThreeLoadService {
         this.scene.add(cone2);
       }
       */
+      //荷重の矢印を作る
+      const Arrow = {size: 1, color: 0x6699ff};
+      const position_L1 = {x: i_x, y: i_y, z: i_z};
+      const position_L2 = {x: j_x, y: j_y, z: j_z};
+      //this.CreateArrow(Arrow, position_L1, position_L2, localAxis.x);
+      
+      console.log("///////////////localAxis.x///////////////");
+      console.log(localAxis.x);
+      
+
     }
 
   }
@@ -459,6 +469,22 @@ export class ThreeLoadService {
     var cone_mesh = new THREE.Mesh(cone_geometry, mesh_material);
 
     return cone_mesh;
+  }
+
+  //矢印（2次元）を描く
+  public CreateArrow (arrow, position_L1, position_L2, localAxis){
+    let GeometryArrow = new THREE.Geometry();
+    const angle = Math.PI / 3;  //angle = 60
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    x = localAxis.x * Math.cos(angle);
+    
+    const LineArrow = new THREE.LineBasicMaterial({color: arrow.color});
+    const MeshArrow = new THREE.Line(GeometryArrow, LineArrow);
+    MeshArrow.position.set(position_L1.x, position_L1.y, position_L1.z);
+    this.scene.add(MeshArrow);  
+    GeometryArrow = new THREE.Geometry();
   }
   // データをクリアする
   public ClearData(): void {

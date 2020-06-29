@@ -30,7 +30,7 @@ export class ThreeFixNodeService {
     return this.nodeThree.baseScale() * 60;
   }
   public center(): any {
-    // 最も距離の近い2つの節点距離
+    // すべての節点の中心
     return this.nodeThree.center; 
   }
   

@@ -428,6 +428,9 @@ export class InputLoadService {
       let m1 = this.helper.toNumber(row['m1']);
       let m2 = this.helper.toNumber(row['m2']);
       let direction: string = row['direction'];
+      if(direction === null){
+        direction = '';
+      }
       const mark = this.helper.toNumber(row['mark']);
       const L1 = this.helper.toNumber(row['L1']);
       let L2 = this.helper.toNumber(row['L2']);

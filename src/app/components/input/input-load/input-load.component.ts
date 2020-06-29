@@ -28,36 +28,37 @@ export class InputLoadComponent implements OnInit {
         }
         if (changes === undefined) { return; }
         for (let i = 0; i < changes.length; i++) {
-          const value: number = this.helper.toNumber(changes[i][3]);
-          if( value !== null ) {
-            switch(changes[i][1]){
-              case "n":
-                changes[i][3] = value.toFixed(0);
-                break;
-              case "m1":
-                changes[i][3] = value.toFixed(0);
-                break;
-              case "m2":
-                changes[i][3] = value.toFixed(0);
-                break;
-              case "direction":
-                changes[i][3] = value.toFixed(0);
-                break;
-              case "mark":
-                changes[i][3] = value.toFixed(0);
-                break;
-              case "L1":
-                changes[i][3] = value.toFixed(3);
-                break;
-              case "L2":
-                changes[i][3] = value.toFixed(3);
-                break;
-              default:
-                changes[i][3] = value.toFixed(2);
-                break;
-            }
+          if (changes[i][1] === "direction") {
+
           } else {
-            changes[i][3] = null;
+            const value: number = this.helper.toNumber(changes[i][3]);
+            if (value !== null) {
+              switch (changes[i][1]) {
+                case "n":
+                  changes[i][3] = value.toFixed(0);
+                  break;
+                case "m1":
+                  changes[i][3] = value.toFixed(0);
+                  break;
+                case "m2":
+                  changes[i][3] = value.toFixed(0);
+                  break;
+                case "mark":
+                  changes[i][3] = value.toFixed(0);
+                  break;
+                case "L1":
+                  changes[i][3] = value.toFixed(3);
+                  break;
+                case "L2":
+                  changes[i][3] = value.toFixed(3);
+                  break;
+                default:
+                  changes[i][3] = value.toFixed(2);
+                  break;
+              }
+            } else {
+              changes[i][3] = null;
+            }
           }
         }
       } catch (e) {
@@ -65,12 +66,13 @@ export class InputLoadComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
-    this.three.chengeData('loads', this.page);
-  }};
+      this.three.chengeData('loads', this.page);
+    }
+  };
 
   constructor(private data: InputLoadService,
-              private three: ThreeService,
-              private helper: DataHelperModule) {
+    private three: ThreeService,
+    private helper: DataHelperModule) {
     this.dataset = new Array();
   }
 
