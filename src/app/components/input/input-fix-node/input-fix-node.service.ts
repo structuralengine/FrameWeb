@@ -56,17 +56,27 @@ export class InputFixNodeService  {
       const target = new Array();
       for (let i = 0; i < js.length; i++) {
         const item = js[i];
-        const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+
+        const row: number = ('row' in item) ? item['row'] : (i + 1).toString();
+        const n = this.helper.toNumber(item['n']);
+        const tx = this.helper.toNumber(item['tx']);
+        const ty = this.helper.toNumber(item['ty']);
+        const tz = this.helper.toNumber(item['tz']);
+        const rx = this.helper.toNumber(item['rx']);
+        const ry = this.helper.toNumber(item['ry']);
+        const rz = this.helper.toNumber(item['rz']);
+
         const result = {
           row: row,
-          n: (item.n === null) ? '' : item.n.toFixed(0),
-          tx: (item.tx === null) ? '' :item.tx.toString(),
-          ty: (item.ty === null) ? '' : item.ty.toString(),
-          tz: (item.tz === null) ? '' : item.tz.toString(),
-          rx: (item.rx === null) ? '' : item.rx.toString(),
-          ry: (item.ry === null) ? '' : item.ry.toString(),
-          rz: (item.rz === null) ? '' : item.rz.toString()
+          n: (n === null) ? '' : n.toFixed(0),
+          tx: (tx === null) ? '' : tx.toString(),
+          ty: (ty === null) ? '' : ty.toString(),
+          tz: (tz === null) ? '' : tz.toString(),
+          rx: (rx === null) ? '' : rx.toString(),
+          ry: (ry === null) ? '' : ry.toString(),
+          rz: (rz === null) ? '' : rz.toString()
         };
+
         target.push(result);
       }
       this.fix_node[typNo] = target;
@@ -104,7 +114,7 @@ export class InputFixNodeService  {
 
         jsonData.push({ 
           row: r, 
-          n: (n == null) ? empty : n,
+          n: row.n,
           tx: (tx == null) ? empty : tx, 
           ty: (ty == null) ? empty : ty, 
           tz: (tz == null) ? empty : tz, 

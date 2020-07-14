@@ -104,7 +104,7 @@ export class InputJointService {
 
         jsonData.push({ 
           row: r,
-          m: (m == null) ? empty : m,
+          m: row.m,
           xi: (xi == null) ? empty : xi, 
           yi: (yi == null) ? empty : yi, 
           zi: (zi == null) ? empty : zi, 

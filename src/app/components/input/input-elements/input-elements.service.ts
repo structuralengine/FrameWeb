@@ -51,23 +51,37 @@ export class InputElementsService {
       return;
     }
     const json: {} = jsonData['element'];
+
     for (const typNo of Object.keys(json)) {
+
       const js = json[typNo];
       const target = new Array();
+
       for (const index of Object.keys(js)) {
+
         const item = js[index];
+        const E = this.helper.toNumber(item['E']);
+        const G = this.helper.toNumber(item['G']);
+        const Xp = this.helper.toNumber(item['Xp']);
+        const A = this.helper.toNumber(item['A']);
+        const J = this.helper.toNumber(item['J']);
+        const Iy = this.helper.toNumber(item['Iy']);
+        const Iz = this.helper.toNumber(item['Iz']);
+
         const result = {
           id: index,
-          E: (item.E === null) ? '' : item.E.toExponential(2),
-          G: (item.G === null) ? '' : item.G.toExponential(2),
-          Xp: (item.Xp === null) ? '' : item.Xp.toExponential(2),
-          A: (item.A === null) ? '' : item.A.toFixed(3),
-          J: (item.J === null) ? '' : item.J.toFixed(4),
-          Iy: (item.Iy === null) ? '' : item.Iy.toFixed(5),
-          Iz: (item.Iz === null) ? '' : item.Iz.toFixed(5)
+          E: (E === null) ? '' : E.toExponential(2),
+          G: (G === null) ? '' : G.toExponential(2),
+          Xp: (Xp === null) ? '' : Xp.toExponential(2),
+          A: (A === null) ? '' : A.toFixed(3),
+          J: (J === null) ? '' : J.toFixed(4),
+          Iy: (Iy === null) ? '' : Iy.toFixed(5),
+          Iz: (Iz === null) ? '' : Iz.toFixed(5)
         };
+
         target.push(result);
       }
+      
       this.element[typNo] = target;
     }
   }
@@ -96,6 +110,7 @@ export class InputElementsService {
         const J = this.helper.toNumber(row['J']);
         const Iy = this.helper.toNumber(row['Iy']);
         const Iz = this.helper.toNumber(row['Iz']);
+        
         if (E == null && G == null && Xp == null && A == null
           && J == null && Iy == null && Iz == null) {
           continue;
@@ -110,7 +125,7 @@ export class InputElementsService {
           J: (J == null) ? empty : J, 
           Iy: (Iy == null) ? empty : Iy, 
           Iz: (Iz == null) ? empty : Iz
-          };
+        };
           
       }
       if (Object.keys(jsonData).length > 0) {

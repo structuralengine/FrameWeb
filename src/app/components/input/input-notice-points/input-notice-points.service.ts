@@ -59,7 +59,8 @@ export class InputNoticePointsService {
       const result = { row: row, m: m };
       for (let j = 0; j < Points.length; j++) {
         const key = 'L' + (j + 1).toString();
-        result[key] = (Points[j] === null) ? '' : Points[j].toFixed(3);
+        const pos: number = this.helper.toNumber(Points[j]);
+        result[key] = (pos === null) ? '' : pos.toFixed(3);
       }
       this.notice_points.push(result);
     }
@@ -76,9 +77,9 @@ export class InputNoticePointsService {
       for (let j = 1; j < InputNoticePointsService.NOTICE_POINTS_COUNT + 1; j++) {
         const key = 'L' + j;
         if (key in row) {
-          const tmp: number = this.helper.toNumber(row[key]);
-          if (tmp != null) {
-            points.push(tmp);
+          const pos: number = this.helper.toNumber(row[key]);
+          if (pos != null) {
+            points.push(pos);
           }
         }
       }
@@ -91,7 +92,7 @@ export class InputNoticePointsService {
 
       result.push({ 
         row: r,
-        m: m.toString(), 
+        m: row.m, 
         Points: points
        });
     }

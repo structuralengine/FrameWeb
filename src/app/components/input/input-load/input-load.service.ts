@@ -29,7 +29,16 @@ export class InputLoadService {
     });
     
     if (result === undefined) {
-      result = { id: caseNo, rate: '', symbol: '', name: '', fix_node: '', fix_member: '', element: '', joint: '' };
+      result = {
+        id: caseNo,
+        rate: '',
+        symbol: '',
+        name: '',
+        fix_node: '',
+        fix_member: '',
+        element: '',
+        joint: ''
+      };
       this.load_name.push(result);
     }
     return result;
@@ -246,7 +255,7 @@ export class InputLoadService {
       if (load_id in load_name) {
         jsonData = load_name[load_id];
       } else {
-        jsonData = { fix_node: 1, fix_member: 1, element: 1, joint: 1 }
+        jsonData = { fix_node: 1, fix_member: 1, element: 1, joint: 1 };
       }
       jsonData['load_node'] = load_node[load_id];
       if (load_id in load_member) {
@@ -310,12 +319,20 @@ export class InputLoadService {
 
       const load_id = (i + 1).toString();
 
-      load_name[load_id] = { 
+      const temp = { 
         fix_node: (fix_node == null) ? empty : fix_node,
         fix_member: (fix_member == null) ? empty : fix_member, 
         element: (element == null) ? empty : element, 
         joint: (joint == null) ? empty : joint
-       };
+      };
+      
+      if (empty === null) {
+        temp['rate'] = (rate == null) ? empty : rate;
+        temp['symbol'] = symbol;
+        temp['name'] = name;
+      }
+
+      load_name[load_id] = temp;
 
     }
     return load_name;
@@ -356,7 +373,6 @@ export class InputLoadService {
 
       for ( const row of this.load[load_id]) {
 
-        const r = row['row'];
         const n = this.helper.toNumber(row['n']);
         let tx = this.helper.toNumber(row['tx']);
         let ty = this.helper.toNumber(row['ty']);
@@ -368,16 +384,21 @@ export class InputLoadService {
         if (n != null && (tx != null || ty != null || tz != null ||
           rx != null || ry != null || rz != null)) {
 
-          tmp_node.push({
-            row: r, 
-            n: n,
+          const tmp = {
+            n: row.n,
             tx: (tx == null) ? empty : tx,
             ty: (ty == null) ? empty : ty,
             tz: (tz == null) ? empty : tz, 
             rx: (rx == null) ? empty : rx, 
             ry: (ry == null) ? empty : ry, 
             rz: (rz == null) ? empty : rz
-          });
+          };
+
+          if (empty === null) {
+            tmp['row'] = row.row;
+          }
+
+          tmp_node.push(tmp);
         }
       }
 
@@ -411,7 +432,7 @@ export class InputLoadService {
 
         for (let j = 0; j < load1.length; j++) {
 
-          const row: {} = load1[j];
+          const row = load1[j];
           const m1 = this.helper.toNumber(row['m1']);
           const m2 = this.helper.toNumber(row['m2']);
           const direction: string = row['direction'];
@@ -425,16 +446,17 @@ export class InputLoadService {
             && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
             tmp_member.push({
-              row: row['row'],
-              m1: row['m1'],
-              m2: row['m2'],
-              direction: row['direction'],
-              mark: row['mark'],
-              L1: row['L1'],
-              L2: row['L2'],
-              P1: row['P1'],
-              P2: row['P2']
+              row: row.row,
+              m1: row.m1,
+              m2: row.m2,
+              direction: row.direction,
+              mark: row.mark,
+              L1: row.L1,
+              L2: row.L2,
+              P1: P1,
+              P2: P2
             });
+            
 
           }
         }

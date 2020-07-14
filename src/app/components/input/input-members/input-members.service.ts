@@ -40,15 +40,23 @@ export class InputMembersService {
     }
     const json: {} = jsonData['member'];
     for (const index of Object.keys(json)) {
+
       const item = json[index];
+
+      const ni = this.helper.toNumber(item['ni']);
+      const nj = this.helper.toNumber(item['nj']);
+      const e = this.helper.toNumber(item['e']);
+      const cg = this.helper.toNumber(item['cg']);
+
       const result = {
         id: index,
         L: '',
-        ni: (item.ni === null) ? '' : item.ni.toFixed(0),
-        nj: (item.nj === null) ? '' : item.nj.toFixed(0),
-        e: (item.e === null) ? '' : item.e.toFixed(0),
-        cg: (item.cg === null) ? '' : item.cg.toFixed(0)
+        ni: (ni === null) ? '' : ni.toFixed(0),
+        nj: (nj === null) ? '' : nj.toFixed(0),
+        e: (e === null) ? '' : e.toFixed(0),
+        cg: (cg === null) ? '' : cg.toFixed(0)
       };
+      
       this.member.push(result);
     }
   }

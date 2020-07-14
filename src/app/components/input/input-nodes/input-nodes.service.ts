@@ -41,7 +41,7 @@ export class InputNodesService {
     }
     const json: {} = jsonData['node'];
     for (const index of Object.keys(json)) {
-      const item = json[index];
+      const item = this.convertNumber(json[index]);
       const result = {
         id: index,
         x: (item.x === null) ? '' : item.x.toFixed(3),
@@ -56,21 +56,18 @@ export class InputNodesService {
 
     const jsonData: object = {};
 
-    for (let i = 0; i < this.node.length; i++) {
-      const row = this.node[i];
-      const x: number  = this.helper.toNumber(row['x']);
-      const y: number  = this.helper.toNumber(row['y']);
-      const z: number  = this.helper.toNumber(row['z']);
-      if (x == null && y == null && z == null) {
+    for (const row of this.node) {
+
+      const item = this.convertNumber(row);
+      if (item.x == null && item.y == null && item.z == null) {
         continue;
       }
 
-      const key: string = row['id'];
-
+      const key: string = row.id;
       jsonData[key] = { 
-        'x': (x == null) ? empty : x, 
-        'y': (y == null) ? empty : y, 
-        'z': (z == null) ? empty : z
+        'x': (item.x == null) ? empty : item.x, 
+        'y': (item.y == null) ? empty : item.y, 
+        'z': (item.z == null) ? empty : item.z
       };
       
     }
@@ -93,6 +90,17 @@ export class InputNodesService {
     }
     const node = nodeList[nodeNo];
     return node;
+  }
+
+  private convertNumber(item: object): any {
+    const x: number = this.helper.toNumber(item['x']);
+    const y: number = this.helper.toNumber(item['y']);
+    const z: number = this.helper.toNumber(item['z']);
+    return {
+      x,
+      y,
+      z
+    }
   }
 
 }

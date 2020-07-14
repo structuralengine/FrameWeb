@@ -58,14 +58,22 @@ export class InputFixMemberService {
       for (let i = 0; i < js.length; i++) {
         const item = js[i];
         const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+
+        let m = this.helper.toNumber(item['m']);
+        let tx = this.helper.toNumber(item['tx']);
+        let ty = this.helper.toNumber(item['ty']);
+        let tz = this.helper.toNumber(item['tz']);
+        let tr = this.helper.toNumber(item['tr']);
+
         const result = {
           row: row,
-          m: (item.m === null) ? '' : item.m.toFixed(0),
-          tx: (item.tx === null) ? '' : item.tx.toString(),
-          ty: (item.ty === null) ? '' : item.ty.toString(),
-          tz: (item.tz === null) ? '' : item.tz.toString(),
-          tr: (item.tr === null) ? '' : item.tr.toString()
+          m: (m === null) ? '' : m.toFixed(0),
+          tx: (tx === null) ? '' : tx.toString(),
+          ty: (ty === null) ? '' : ty.toString(),
+          tz: (tz === null) ? '' : tz.toString(),
+          tr: (tr === null) ? '' : tr.toString()
         };
+        
         target.push(result);
       }
       this.fix_member[typNo] = target;
@@ -100,7 +108,7 @@ export class InputFixMemberService {
 
         jsonData.push({ 
           row: r, 
-          m: (m == null) ? empty : m, 
+          m: row.m, 
           tx: (tx == null) ? empty : tx, 
           ty: (ty == null) ? empty : ty, 
           tz: (tz == null) ? empty : tz, 
