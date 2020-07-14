@@ -34,7 +34,7 @@ export class ThreeMembersService {
   public chengeData(): void {
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     const nodeKeys = Object.keys(nodeData);
     if (nodeKeys.length <= 0) {
       this.ClearData();
@@ -42,7 +42,7 @@ export class ThreeMembersService {
     }
 
     // メンバーデータを入手
-    const jsonData = this.member.getMemberJson('calc');
+    const jsonData = this.member.getMemberJson(0);
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
       this.ClearData();

@@ -48,14 +48,14 @@ export class ThreeLoadService {
     this.ClearData();
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     if (Object.keys(nodeData).length <= 0) {
       return;
     }
 
     // 節点荷重データを入手
     const targetCase: string = index.toString();
-    const nodeLoadData = this.load.getNodeLoadJson('unity-loads:' + targetCase);
+    const nodeLoadData = this.load.getNodeLoadJson(0, targetCase);
     if (Object.keys(nodeLoadData).length <= 0) {
       this.ClearNodeLoad();
     } else {
@@ -64,14 +64,14 @@ export class ThreeLoadService {
     }
 
     // 要素データを入手
-    const memberData = this.member.getMemberJson('calc');
+    const memberData = this.member.getMemberJson(0);
     if (Object.keys(memberData).length <= 0) {
       this.ClearMemberLoad();
       return;
     }
 
     // 要素荷重データを入手
-    const memberLoadData = this.load.getMemberLoadJson('unity-loads:' + targetCase);
+    const memberLoadData = this.load.getMemberLoadJson(0, targetCase);
     if (Object.keys(memberLoadData).length <= 0) {
       this.ClearMemberLoad();
     } else {

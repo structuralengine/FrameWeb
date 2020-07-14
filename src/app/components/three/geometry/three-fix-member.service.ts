@@ -42,23 +42,21 @@ export class ThreeFixMemberService {
     this.ClearData();
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     if (Object.keys(nodeData).length <= 0) {
       return;
     }
     // 要素データを入手
-    const memberData = this.member.getMemberJson('calc');
+    const memberData = this.member.getMemberJson(0);
     if (Object.keys(memberData).length <= 0) {
-      return;
-    }
-    // バネデータを入手
-    const fixmemberData = this.fixmember.getFixMemberJson('calc');
-    if (Object.keys(fixmemberData).length <= 0) {
       return;
     }
 
     const key: string = index.toString();
-    if( !(key in fixmemberData) ){
+
+    // バネデータを入手
+    const fixmemberData = this.fixmember.getFixMemberJson(0, key);
+    if (Object.keys(fixmemberData).length <= 0) {
       return;
     }
 

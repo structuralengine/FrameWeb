@@ -43,7 +43,7 @@ export class ThreeNodesService {
   public chengeData(): void {
 
     // 入力データを入手
-    const jsonData = this.node.getNodeJson('calc');
+    const jsonData = this.node.getNodeJson(0);
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
       this.ClearData();

@@ -56,7 +56,16 @@ export class InputElementsService {
       const target = new Array();
       for (const index of Object.keys(js)) {
         const item = js[index];
-        const result = { id: index, E: item.E, G: item.G, Xp: item.Xp, A: item.A, J: item.J, Iy: item.Iy, Iz: item.Iz };
+        const result = {
+          id: index,
+          E: (item.E === null) ? '' : item.E.toExponential(2),
+          G: (item.G === null) ? '' : item.G.toExponential(2),
+          Xp: (item.Xp === null) ? '' : item.Xp.toExponential(2),
+          A: (item.A === null) ? '' : item.A.toFixed(3),
+          J: (item.J === null) ? '' : item.J.toFixed(4),
+          Iy: (item.Iy === null) ? '' : item.Iy.toFixed(5),
+          Iz: (item.Iz === null) ? '' : item.Iz.toFixed(5)
+        };
         target.push(result);
       }
       this.element[typNo] = target;
@@ -80,13 +89,13 @@ export class InputElementsService {
       for (let i = 0; i < element.length; i++) {
 
         const row: {} = element[i];
-        let E = this.helper.toNumber(row['E']);
-        let G = this.helper.toNumber(row['G']);
-        let Xp = this.helper.toNumber(row['Xp']);
-        let A = this.helper.toNumber(row['A']);
-        let J = this.helper.toNumber(row['J']);
-        let Iy = this.helper.toNumber(row['Iy']);
-        let Iz = this.helper.toNumber(row['Iz']);
+        const E = this.helper.toNumber(row['E']);
+        const G = this.helper.toNumber(row['G']);
+        const Xp = this.helper.toNumber(row['Xp']);
+        const A = this.helper.toNumber(row['A']);
+        const J = this.helper.toNumber(row['J']);
+        const Iy = this.helper.toNumber(row['Iy']);
+        const Iz = this.helper.toNumber(row['Iz']);
         if (E == null && G == null && Xp == null && A == null
           && J == null && Iy == null && Iz == null) {
           continue;

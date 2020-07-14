@@ -141,14 +141,14 @@ export class ThreeSectionForceService {
     this.ClearData();
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     const nodeKeys = Object.keys(nodeData);
     if (nodeKeys.length <= 0) {
       return;
     }
 
     // メンバーデータを入手
-    const memberData = this.member.getMemberJson('calc');
+    const memberData = this.member.getMemberJson(0);
     const memberKeys = Object.keys(memberData);
     if (memberKeys.length <= 0) {
       return;

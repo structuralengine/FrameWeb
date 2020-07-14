@@ -92,16 +92,16 @@ export class ThreeDisplacementService {
   public chengeData(index: number): void {
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     const nodeKeys = Object.keys(nodeData);
     if (nodeKeys.length <= 0) {
       return;
     }
 
     // メンバーデータを入手
-    const jsonData = this.member.getMemberJson('calc');
-    const jsonKeys = Object.keys(jsonData);
-    if (jsonKeys.length <= 0) {
+    const membData = this.member.getMemberJson(0);
+    const membKeys = Object.keys(membData);
+    if (membKeys.length <= 0) {
       return;
     }
 
@@ -127,10 +127,10 @@ export class ThreeDisplacementService {
     this.targetData = new Array();
 
     // 新しい入力を適用する
-    for (const key of jsonKeys) {
+    for (const key of membKeys) {
 
       // 節点データを集計する
-      const m = jsonData[key];
+      const m = membData[key];
       const i = nodeData[m.ni];
       const j = nodeData[m.nj];
       if (i === undefined || j === undefined) {

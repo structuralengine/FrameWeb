@@ -41,7 +41,14 @@ export class InputMembersService {
     const json: {} = jsonData['member'];
     for (const index of Object.keys(json)) {
       const item = json[index];
-      const result = { id: index, L: '', ni: item.ni, nj: item.nj, e: item.e, cg: item.cg };
+      const result = {
+        id: index,
+        L: '',
+        ni: (item.ni === null) ? '' : item.ni.toFixed(0),
+        nj: (item.nj === null) ? '' : item.nj.toFixed(0),
+        e: (item.e === null) ? '' : item.e.toFixed(0),
+        cg: (item.cg === null) ? '' : item.cg.toFixed(0)
+      };
       this.member.push(result);
     }
   }
@@ -52,17 +59,17 @@ export class InputMembersService {
 
     for (let i = 0; i < this.member.length; i++) {
 
-      const row = this.member[i];
-      let ni = this.helper.toNumber(row['ni']);
-      let nj = this.helper.toNumber(row['nj']);
-      let e = this.helper.toNumber(row['e']);
-      let cg = this.helper.toNumber(row['cg']);
+      const columns = this.member[i];
+      const ni = this.helper.toNumber(columns['ni']);
+      const nj = this.helper.toNumber(columns['nj']);
+      const e = this.helper.toNumber(columns['e']);
+      const cg = this.helper.toNumber(columns['cg']);
 
       if (ni == null && nj == null && e == null && cg == null) {
         continue;
       }
 
-      const key: string = row.id;
+      const key: string = columns.id;
 
       jsonData[key] = { 
         'ni': (ni == null) ? empty : ni, 
@@ -78,35 +85,35 @@ export class InputMembersService {
 
   // 補助関数 ///////////////////////////////////////////////////////////////
 
-  public getNodeNo(memberNo: string) {
+  public getMember(memberNo: string) {
 
-    const jsonData = { ni: '', nj: '' };
+    const member = this.member.find((columns) => {
+      return columns.id === memberNo;
+    })
 
-    const memberList: {} = this.getMemberJson('calc');
-    if (Object.keys(memberList).length <= 0) {
-      return jsonData;
+    if (member === undefined) {
+      return { ni: null, nj: null };
     }
-    if (!(memberNo in memberList)) {
-      return jsonData;
-    }
-    const member = memberList[memberNo];
-    jsonData['ni'] = member['ni']
-    jsonData['nj'] = member['nj']
-    return jsonData;
+
+    return member;
+
   }
 
   public getMemberLength(memberNo: string): number {
-    const node: {} = this.getNodeNo(memberNo);
-    const ni: string = node['ni'];
-    const nj: string = node['nj'];
-    if (ni === '' || nj === '') {
+
+    const memb = this.getMember(memberNo);
+    const ni: string = memb.ni;
+    const nj: string = memb.nj;
+    if (ni === null || nj === null) {
       return null;
     }
+
     const iPos = this.node.getNodePos(ni)
     const jPos = this.node.getNodePos(nj)
     if (iPos == null || jPos == null) {
       return null;
     }
+
     const xi: number = iPos['x'];
     const yi: number = iPos['y'];
     const zi: number = iPos['z'];

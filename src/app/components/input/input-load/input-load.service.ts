@@ -57,12 +57,25 @@ export class InputLoadService {
       }
     }
 
-    // 対象データが無かった時に処理
     // 対象行が無かった時に処理
     if (result == null) {
       result = {
-        row: row, m1: '', m2: '', direction: '', mark: '', L1: '', L2: '', P1: '', P2: '',
-        n: '', tx: '', ty: '', tz: '', rx: '', ry: '', rz: ''
+        row: row, 
+        m1: '',
+        m2: '',
+        direction: '',
+        mark: '',
+        L1: '',
+        L2: '',
+        P1: '',
+        P2: '',
+        n: '',
+        tx: '',
+        ty: '',
+        tz: '',
+        rx: '',
+        ry: '',
+        rz: ''
       };
       target.push(result);
       this.load[typNo] = target;
@@ -109,17 +122,17 @@ export class InputLoadService {
         const load_node_list: any[] = item1['load_node']
         for (let i = 0; i < load_node_list.length; i++) {
 
-          const item2: {} = load_node_list[i];
+          const item2 = load_node_list[i];
 
           const _row: string = ('row' in item2) ? item2['row'] : (i + 1).toString();
 
-          const _n: string = ('n' in item2) ? item2['n'] : '';
-          const _tx: string = ('tx' in item2) ? item2['tx'] : '';
-          const _ty: string = ('ty' in item2) ? item2['ty'] : '';
-          const _tz: string = ('tz' in item2) ? item2['tz'] : '';
-          const _rx: string = ('rx' in item2) ? item2['rx'] : '';
-          const _ry: string = ('ry' in item2) ? item2['ry'] : '';
-          const _rz: string = ('rz' in item2) ? item2['rz'] : '';
+          const _n: string = ('n' in item2) ? item2.n : '';
+          const _tx: string = ('tx' in item2) ? item2.tx : '';
+          const _ty: string = ('ty' in item2) ? item2.ty : '';
+          const _tz: string = ('tz' in item2) ? item2.tz : '';
+          const _rx: string = ('rx' in item2) ? item2.rx : '';
+          const _ry: string = ('ry' in item2) ? item2.ry : '';
+          const _rz: string = ('rz' in item2) ? item2.rz : '';
 
           tmp_load1[_row] = { 
             row: _row, 
@@ -140,18 +153,18 @@ export class InputLoadService {
 
         for (let i = 0; i < load_member_list.length; i++) {
 
-          const item3: {} = load_member_list[i];
-          const _row: string = ('row' in item3) ? item3['row'] : (i + 1).toString();
-          const _m1: string = ('m1' in item3) ? item3['m1'] : '';
-          const _m2: string = ('m2' in item3) ? item3['m2'] : '';
-          const _L1: string = ('L1' in item3) ? item3['L1'] : '';
+          const item3 = load_member_list[i];
+          const _row: string = ('row' in item3) ? item3.row : (i + 1).toString();
+          const _m1: string = ('m1' in item3) ? item3.m1 : '';
+          const _m2: string = ('m2' in item3) ? item3.m2 : '';
+          const _L1: string = ('L1' in item3) ? item3.L1 : '';
 
-          const _direction: string = ('direction' in item3) ? item3['direction'] : '';
-          const _mark: string = ('mark' in item3) ? item3['mark'] : '';
+          const _direction: string = ('direction' in item3) ? item3.direction : '';
+          const _mark: string = ('mark' in item3) ? item3.mark : '';
 
-          const _L2: string = ('L2' in item3) ? item3['L2'] : '';
-          const _P1: string = ('P1' in item3) ? item3['P1'] : '';
-          const _P2: string = ('P2' in item3) ? item3['P2'] : '';
+          const _L2: string = ('L2' in item3) ? item3.L2 : '';
+          const _P1: string = ('P1' in item3) ? item3.P1 : '';
+          const _P2: string = ('P2' in item3) ? item3.P2 : '';
 
           tmp_load2[_row] = { 
             row: _row, 

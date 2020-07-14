@@ -31,25 +31,23 @@ export class ThreeJointService {
     this.ClearData();
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     if (Object.keys(nodeData).length <= 0) {
       return;
     }
     // 要素データを入手
-    const memberData = this.member.getMemberJson('calc');
+    const memberData = this.member.getMemberJson(0);
     if (Object.keys(memberData).length <= 0) {
       return;
     }
+    
+    const key: string = index.toString();
+    
     // 結合データを入手
-    const jointData = this.joint.getJointJson('calc');
+    const jointData = this.joint.getJointJson(1, key);
     if (Object.keys(jointData).length <= 0) {
       return;
     } 
-    
-    const key: string = index.toString();
-    if( !(key in jointData) ){
-      return;
-    }
 
     //createJointLoadを実行させる
     const targetJoint = jointData[key];

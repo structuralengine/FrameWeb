@@ -47,7 +47,7 @@ export class ThreeReactService {
       this.ClearData();
 
       // 格点データを入手
-      const nodeData = this.node.getNodeJson('calc');
+      const nodeData = this.node.getNodeJson(0);
       const nodeKeys = Object.keys(nodeData);
       if (nodeKeys.length <= 0) {
         return;

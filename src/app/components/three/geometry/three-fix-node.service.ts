@@ -39,24 +39,23 @@ export class ThreeFixNodeService {
     this.ClearData();
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson('calc');
+    const nodeData = this.node.getNodeJson(0);
     if (Object.keys(nodeData).length <= 0) {
-      return;
-    }
-    // 支点データを入手
-    const fixnodeData = this.fixnode.getFixNodeJson('calc');
-    if (Object.keys(fixnodeData).length <= 0) {
       return;
     }
 
     const key_fixnode: string = index.toString();
-    if( !(key_fixnode in fixnodeData) ){
+    
+    // 支点データを入手
+    const fixnodeData = this.fixnode.getFixNodeJson(0, key_fixnode);
+    if (Object.keys(fixnodeData).length <= 0) {
       return;
     }
+
     const targetFixNode = fixnodeData[key_fixnode];
     for (const target of targetFixNode) {
       
-    const position = {x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z};
+      const position = {x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z};
 
       //ピン支点の分岐
       let pin = {direction: "x", relationship: "small", color: 0x000000};

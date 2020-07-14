@@ -56,9 +56,16 @@ export class InputFixMemberService {
       const js: any[] = json[typNo];
       const target = new Array();
       for (let i = 0; i < js.length; i++) {
-        const item: {} = js[i];
+        const item = js[i];
         const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
-        const result = { row: row, m: item['m'], tx: item['tx'], ty: item['ty'], tz: item['tz'], tr: item['tr'] };
+        const result = {
+          row: row,
+          m: (item.m === null) ? '' : item.m.toFixed(0),
+          tx: (item.tx === null) ? '' : item.tx.toString(),
+          ty: (item.ty === null) ? '' : item.ty.toString(),
+          tz: (item.tz === null) ? '' : item.tz.toString(),
+          tr: (item.tr === null) ? '' : item.tr.toString()
+        };
         target.push(result);
       }
       this.fix_member[typNo] = target;

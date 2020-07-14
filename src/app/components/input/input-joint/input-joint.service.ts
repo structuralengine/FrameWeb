@@ -55,12 +55,17 @@ export class InputJointService {
       const js: any[] = json[typNo];
       const target = new Array();
       for (let i = 0; i < js.length; i++) {
-        const item: {} = js[i];
+        const item = js[i];
         const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
         const result = {
-          row: row, m: item['m'],
-          xi: item['xi'], yi: item['yi'], zi: item['zi'],
-          xj: item['xj'], yj: item['yj'], zj: item['zj']
+          row: row,
+          m: (item.m === null) ? '' : item.m.toFixed(0),
+          xi: (item.xi === null) ? '' : item.xi.toFixed(0),
+          yi: (item.yi === null) ? '' : item.yi.toFixed(0),
+          zi: (item.zi === null) ? '' : item.zi.toFixed(0),
+          xj: (item.xj === null) ? '' : item.xj.toFixed(0),
+          yj: (item.yj === null) ? '' : item.yj.toFixed(0),
+          zj: (item.zj === null) ? '' : item.zj.toFixed(0)
         };
         target.push(result);
       }
@@ -84,13 +89,13 @@ export class InputJointService {
       for ( const row of this.joint[typNo]) {
 
         const r = row['row'];
-        let m = this.helper.toNumber(row['m']);
-        let xi = this.helper.toNumber(row['xi']);
-        let yi = this.helper.toNumber(row['yi']);
-        let zi = this.helper.toNumber(row['zi']);
-        let xj = this.helper.toNumber(row['xj']);
-        let yj = this.helper.toNumber(row['yj']);
-        let zj = this.helper.toNumber(row['zj']);
+        const m = this.helper.toNumber(row['m']);
+        const xi = this.helper.toNumber(row['xi']);
+        const yi = this.helper.toNumber(row['yi']);
+        const zi = this.helper.toNumber(row['zi']);
+        const xj = this.helper.toNumber(row['xj']);
+        const yj = this.helper.toNumber(row['yj']);
+        const zj = this.helper.toNumber(row['zj']);
         
         if (m == null && xi == null && yi == null && zi == null
           && xj == null && yj == null && zj == null) {

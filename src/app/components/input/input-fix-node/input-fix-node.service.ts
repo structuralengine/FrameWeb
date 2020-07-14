@@ -55,12 +55,17 @@ export class InputFixNodeService  {
       const js: any[] = json[typNo];
       const target = new Array();
       for (let i = 0; i < js.length; i++) {
-        const item: {} = js[i];
+        const item = js[i];
         const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
         const result = {
-          row: row, n: item['n'],
-          tx: item['tx'], ty: item['ty'], tz: item['tz'],
-          rx: item['rx'], ry: item['ry'], rz: item['rz']
+          row: row,
+          n: (item.n === null) ? '' : item.n.toFixed(0),
+          tx: (item.tx === null) ? '' :item.tx.toString(),
+          ty: (item.ty === null) ? '' : item.ty.toString(),
+          tz: (item.tz === null) ? '' : item.tz.toString(),
+          rx: (item.rx === null) ? '' : item.rx.toString(),
+          ry: (item.ry === null) ? '' : item.ry.toString(),
+          rz: (item.rz === null) ? '' : item.rz.toString()
         };
         target.push(result);
       }
@@ -68,7 +73,7 @@ export class InputFixNodeService  {
     }
   }
 
-  public getFixNodeJson(empty: number = null, targetCase: string = '') {
+  public getFixNodeJson(empty: number = null, targetCase: string = ''): object {
 
     const result = {};
 
@@ -84,13 +89,13 @@ export class InputFixNodeService  {
       for ( const row of this.fix_node[typNo]) {
 
         const r = row['row'];
-        let n = this.helper.toNumber(row['n']);
-        let tx = this.helper.toNumber(row['tx']);
-        let ty = this.helper.toNumber(row['ty']);
-        let tz = this.helper.toNumber(row['tz']);
-        let rx = this.helper.toNumber(row['rx']);
-        let ry = this.helper.toNumber(row['ry']);
-        let rz = this.helper.toNumber(row['rz']);
+        const n = this.helper.toNumber(row['n']);
+        const tx = this.helper.toNumber(row['tx']);
+        const ty = this.helper.toNumber(row['ty']);
+        const tz = this.helper.toNumber(row['tz']);
+        const rx = this.helper.toNumber(row['rx']);
+        const ry = this.helper.toNumber(row['ry']);
+        const rz = this.helper.toNumber(row['rz']);
 
         if (n == null && tx == null && ty == null && tz == null
           && rx == null && ry == null && rz == null) {

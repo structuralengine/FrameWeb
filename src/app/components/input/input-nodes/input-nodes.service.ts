@@ -42,7 +42,12 @@ export class InputNodesService {
     const json: {} = jsonData['node'];
     for (const index of Object.keys(json)) {
       const item = json[index];
-      const result = { id: index, x: item.x, y: item.y, z: item.z };
+      const result = {
+        id: index,
+        x: (item.x === null) ? '' : item.x.toFixed(3),
+        y: (item.y === null) ? '' : item.y.toFixed(3),
+        z: (item.z === null) ? '' : item.z.toFixed(3)
+      };
       this.node.push(result);
     }
   }
@@ -53,9 +58,9 @@ export class InputNodesService {
 
     for (let i = 0; i < this.node.length; i++) {
       const row = this.node[i];
-      let x: number  = this.helper.toNumber(row['x']);
-      let y: number  = this.helper.toNumber(row['y']);
-      let z: number  = this.helper.toNumber(row['z']);
+      const x: number  = this.helper.toNumber(row['x']);
+      const y: number  = this.helper.toNumber(row['y']);
+      const z: number  = this.helper.toNumber(row['z']);
       if (x == null && y == null && z == null) {
         continue;
       }

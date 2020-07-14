@@ -52,14 +52,14 @@ export class InputNoticePointsService {
     }
     const js: any[] = jsonData['notice_points'];
     for (let i = 0; i < js.length; i++) {
-      const item: {} = js[i];
+      const item = js[i];
       const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
       const m = item['m'];
-      const Points: any[] = item['Points'];
+      const Points: any[] = item.Points;
       const result = { row: row, m: m };
       for (let j = 0; j < Points.length; j++) {
         const key = 'L' + (j + 1).toString();
-        result[key] = Points[j];
+        result[key] = (Points[j] === null) ? '' : Points[j].toFixed(3);
       }
       this.notice_points.push(result);
     }

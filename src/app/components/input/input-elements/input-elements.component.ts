@@ -33,10 +33,10 @@ export class InputElementsComponent implements OnInit {
                 changes[i][3] = value.toExponential(2);
                 break;
               case "A":
-                changes[i][3] = value.toFixed(3);
+                changes[i][3] = value.toFixed(4);
                 break;
               case "Iy":
-                changes[i][3] = value.toFixed(4);
+                changes[i][3] = value.toFixed(5);
                 break;
               case "Iz":
                 changes[i][3] = value.toFixed(5);
@@ -45,10 +45,10 @@ export class InputElementsComponent implements OnInit {
                 changes[i][3] = value.toExponential(2);
                 break;
               case "G":
-                changes[i][3] = value.toFixed(3);
+                changes[i][3] = value.toExponential(2);
                 break;
               case "J":
-                changes[i][3] = value.toFixed(3);
+                changes[i][3] = value.toFixed(4);
                 break;
             }
           } else {

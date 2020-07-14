@@ -94,10 +94,10 @@ export class ResultDataService {
     if (this.isCombinePickupChenge = false) {
       return;
     }
-    const load = this.load.getLoadNameJson('calc');
-    const define = this.define.getDefineJson('calc');
-    const combine = this.combine.getCombineJson('calc');
-    const pickup = this.pickup.getPickUpJson('calc');
+    const load = this.load.getLoadNameJson(1);
+    const define = this.define.getDefineJson();
+    const combine = this.combine.getCombineJson();
+    const pickup = this.pickup.getPickUpJson();
 
     // define を集計
     const defList = {};
