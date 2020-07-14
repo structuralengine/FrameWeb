@@ -77,8 +77,8 @@ export class MenuComponent implements OnInit {
   }
 
   // ファイルを保存
-  save(): void {
-    const inputJson: string = this.InputData.getInputText();
+  save(): void {9
+    const inputJson: string = JSON.stringify(this.InputData.getInputJson());
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
     if (this.fileName.length === 0) {
       this.fileName = 'frameWebForJS.json';
@@ -99,7 +99,7 @@ export class MenuComponent implements OnInit {
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const inputJson =
-      this.InputData.getInputText('calc', { username: this.user.loginUserName, password: this.user.loginPassword });
+      this.InputData.getCalcText( { username: this.user.loginUserName, password: this.user.loginPassword });
 
     console.log(inputJson);;
 

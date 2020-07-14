@@ -27,6 +27,7 @@ export class DataHelperModule {
     return result;
   }
 
+  // ２つのオブジェクトが同じものかどうか判定する
   public objectEquals(a: any, b: any): boolean {
 
     if (a === b) {

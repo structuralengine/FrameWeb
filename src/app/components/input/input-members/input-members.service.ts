@@ -46,45 +46,40 @@ export class InputMembersService {
     }
   }
 
-  public getMemberJson(mode: string = 'file') {
+  public getMemberJson(empty: number = null): object {
 
-    const jsonData = {};
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('-members') < 0) {
-      return jsonData;
-    }
+    const jsonData: object = {};
 
     for (let i = 0; i < this.member.length; i++) {
+
       const row = this.member[i];
       let ni = this.helper.toNumber(row['ni']);
       let nj = this.helper.toNumber(row['nj']);
       let e = this.helper.toNumber(row['e']);
       let cg = this.helper.toNumber(row['cg']);
+
       if (ni == null && nj == null && e == null && cg == null) {
         continue;
       }
-      let item = {};
-      if (mode === 'calc') {
-        ni = (ni == null) ? 0 : ni;
-        nj = (nj == null) ? 0 : nj;
-        e = (e == null) ? 0 : e;
-        cg = (cg == null) ? 0 : cg;
-        item = { 'ni': ni, 'nj': nj, 'e': e, 'cg': cg };
-      } else {
-        for (const _key in row) {
-          if ((_key !== 'id') && (_key !== 'L')) {
-            item[_key] = row[_key];
-          }
-        }
-      }
+
       const key: string = row.id;
-      jsonData[key] = item;
+
+      jsonData[key] = { 
+        'ni': (ni == null) ? empty : ni, 
+        'nj': (nj == null) ? empty : nj, 
+        'e': (e == null) ? empty : e, 
+        'cg': (cg == null) ? empty : cg
+      };
+
     }
+
     return jsonData;
   }
 
   // 補助関数 ///////////////////////////////////////////////////////////////
 
   public getNodeNo(memberNo: string) {
+
     const jsonData = { ni: '', nj: '' };
 
     const memberList: {} = this.getMemberJson('calc');

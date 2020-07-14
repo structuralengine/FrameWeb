@@ -83,7 +83,9 @@ export class InputLoadService {
     for (const index of Object.keys(json)) {
       const tmp_load1 = {};
       const tmp_load2 = {};
+
       const item1: {} = json[index];
+      
       const _rate: string = ('rate' in item1) ? item1['rate'] : '';
       const _symbol: string = ('symbol' in item1) ? item1['symbol'] : '';
       const _name: string = ('name' in item1) ? item1['name'] : '';
@@ -92,17 +94,25 @@ export class InputLoadService {
       const _element: string = ('element' in item1) ? item1['element'] : '';
       const _joint: string = ('joint' in item1) ? item1['joint'] : '';
 
-      const result1 = {
-        id: index, rate: _rate, symbol: _symbol, name: _name,
-        fix_node: _fix_node, fix_member: _fix_member, element: _element, joint: _joint
-      };
-      this.load_name.push(result1);
+      this.load_name.push( {
+        id: index, 
+        rate: _rate, 
+        symbol: _symbol, 
+        name: _name,
+        fix_node: _fix_node, 
+        fix_member: _fix_member, 
+        element: _element, 
+        joint: _joint
+      });
 
       if ('load_node' in item1) {
         const load_node_list: any[] = item1['load_node']
         for (let i = 0; i < load_node_list.length; i++) {
+
           const item2: {} = load_node_list[i];
+
           const _row: string = ('row' in item2) ? item2['row'] : (i + 1).toString();
+
           const _n: string = ('n' in item2) ? item2['n'] : '';
           const _tx: string = ('tx' in item2) ? item2['tx'] : '';
           const _ty: string = ('ty' in item2) ? item2['ty'] : '';
@@ -110,13 +120,26 @@ export class InputLoadService {
           const _rx: string = ('rx' in item2) ? item2['rx'] : '';
           const _ry: string = ('ry' in item2) ? item2['ry'] : '';
           const _rz: string = ('rz' in item2) ? item2['rz'] : '';
-          const result2 = { row: _row, n: _n, tx: _tx, ty: _ty, tz: _tz, rx: _rx, ry: _ry, rz: _rz };
-          tmp_load1[_row] = result2;
+
+          tmp_load1[_row] = { 
+            row: _row, 
+            n: _n, 
+            tx: _tx, 
+            ty: _ty, 
+            tz: _tz, 
+            rx: _rx, 
+            ry: _ry, 
+            rz: _rz 
+          };
+          
         }
       }
       if ('load_member' in item1) {
+
         const load_member_list: any[] = item1['load_member']
+
         for (let i = 0; i < load_member_list.length; i++) {
+
           const item3: {} = load_member_list[i];
           const _row: string = ('row' in item3) ? item3['row'] : (i + 1).toString();
           const _m1: string = ('m1' in item3) ? item3['m1'] : '';
@@ -129,8 +152,19 @@ export class InputLoadService {
           const _L2: string = ('L2' in item3) ? item3['L2'] : '';
           const _P1: string = ('P1' in item3) ? item3['P1'] : '';
           const _P2: string = ('P2' in item3) ? item3['P2'] : '';
-          const result3 = { row: _row, m1: _m1, m2: _m2, direction: _direction, mark: _mark, L1: _L1, L2: _L2, P1: _P1, P2: _P2 };
-          tmp_load2[_row] = result3;
+
+          tmp_load2[_row] = { 
+            row: _row, 
+            m1: _m1, 
+            m2: _m2, 
+            direction: _direction, 
+            mark: _mark, 
+            L1: _L1, 
+            L2: _L2, 
+            P1: _P1, 
+            P2: _P2 
+          };
+
         }
       }
 
@@ -161,24 +195,22 @@ export class InputLoadService {
     }
   }
 
-  public getLoadJson(mode: string = 'file') {
+  public getLoadJson(empty: number = null) {
 
     const result = {};
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('loads') < 0) {
-      return result;
-    }
 
     // 荷重基本設定
-    const load_name = this.getLoadNameJson(mode);
+    const load_name = this.getLoadNameJson(empty);
 
     // 節点荷重データ
-    const load_node = this.getNodeLoadJson(mode);
+    const load_node = this.getNodeLoadJson(empty);
 
     // 要素荷重データ
-    const load_member = this.getMemberLoadJson(mode);
+    const load_member = this.getMemberLoadJson(empty);
 
     // 合成する
-    if (mode === 'file') {
+    if (empty === null) {
+
       for (const load_id of Object.keys(load_name)) {
         const jsonData = load_name[load_id];
         if (load_id in load_node) {
@@ -192,7 +224,10 @@ export class InputLoadService {
         result[load_id] = jsonData;
         delete load_name[load_id];
       }
+
     }
+
+    // 
     for (const load_id of Object.keys(load_node)) {
       let jsonData = {};
       if (load_id in load_name) {
@@ -208,6 +243,8 @@ export class InputLoadService {
       result[load_id] = jsonData;
       delete load_name[load_id];
     }
+
+    // 
     for (const load_id of Object.keys(load_member)) {
       let jsonData = {};
       if (load_id in load_name) {
@@ -219,31 +256,35 @@ export class InputLoadService {
       result[load_id] = jsonData;
       delete load_member[load_id];
     }
+
     return result;
+
   }
 
   // 荷重基本データ
-  public getLoadNameJson(mode: string = 'file'): any {
-
-    const targetCase = mode.replace('unity-loads:', '');
+  public getLoadNameJson(empty: number = null, targetCase: string = ''): any {
 
     const load_name = {};
+
     for (let i = 0; i < this.load_name.length; i++) {
+
       const tmp = this.load_name[i];
       const key: string = tmp['id'];
-      // unity-loads モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (key !== targetCase) {
-          continue;
-        }
+      
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && key !== targetCase) {
+        continue;
       }
+
       const id = this.helper.toNumber(key);
       if (id == null) {
         continue;
       }
+
       const rate = this.helper.toNumber(tmp['rate']);
       const symbol: string = tmp['symbol'];
       const name: string = tmp['name'];
+
       let fix_node = this.helper.toNumber(tmp['fix_node']);
       let fix_member = this.helper.toNumber(tmp['fix_member']);
       let element = this.helper.toNumber(tmp['element']);
@@ -254,22 +295,15 @@ export class InputLoadService {
         continue;
       }
 
-      let jsonData = {};
-      if (mode === 'calc') {
-        fix_node = (fix_node == null) ? 1 : fix_node;
-        fix_member = (fix_member == null) ? 1 : fix_member;
-        element = (element == null) ? 1 : element;
-        joint = (joint == null) ? 1 : joint;
-        jsonData = { fix_node: fix_node, fix_member: fix_member, element: element, joint: joint }
-      } else {
-        for (const _key in tmp) {
-          if (_key !== 'id') {
-            jsonData[_key] = tmp[_key];
-          }
-        }
-      }
       const load_id = (i + 1).toString();
-      load_name[load_id] = jsonData;
+
+      load_name[load_id] = { 
+        fix_node: (fix_node == null) ? empty : fix_node,
+        fix_member: (fix_member == null) ? empty : fix_member, 
+        element: (element == null) ? empty : element, 
+        joint: (joint == null) ? empty : joint
+       };
+
     }
     return load_name;
   }
@@ -294,24 +328,21 @@ export class InputLoadService {
   }
 
   // 節点荷重データ
-  public getNodeLoadJson(mode: string = 'file'): any {
+  public getNodeLoadJson(empty: number = null, targetCase: string = ''): any {
 
-    const targetCase = mode.replace('unity-loads:', '');
     const load_node = {};
 
     for (const load_id of Object.keys(this.load)) {
-      // unity-loads モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (load_id !== targetCase) {
-          continue;
-        }
+      
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && load_id !== targetCase) {
+        continue;
       }
+
       const tmp_node = new Array();
 
-      const load: any[] = this.load[load_id];
-      for ( const row of load ) {
-      // for (let j = 0; j < load.length; j++) {
-        // const row: {} = load[j];
+      for ( const row of this.load[load_id]) {
+
         const r = row['row'];
         const n = this.helper.toNumber(row['n']);
         let tx = this.helper.toNumber(row['tx']);
@@ -320,52 +351,53 @@ export class InputLoadService {
         let rx = this.helper.toNumber(row['rx']);
         let ry = this.helper.toNumber(row['ry']);
         let rz = this.helper.toNumber(row['rz']);
+
         if (n != null && (tx != null || ty != null || tz != null ||
           rx != null || ry != null || rz != null)) {
 
-          let item2 = {};
-          // if (mode === 'calc') {
-          tx = (tx == null) ? 0 : tx;
-          ty = (ty == null) ? 0 : ty;
-          tz = (tz == null) ? 0 : tz;
-          rx = (rx == null) ? 0 : rx;
-          ry = (ry == null) ? 0 : ry;
-          rz = (rz == null) ? 0 : rz;
-          item2 = { row: r, n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
-          // } else {
-          //   item2 = { row: r, n: row['n'], tx: row['tx'], ty: row['ty'], tz: row['tz'], rx: row['rx'], ry: row['ry'], rz: row['rz'] };
-          // }
-          tmp_node.push(item2);
+          tmp_node.push({
+            row: r, 
+            n: n,
+            tx: (tx == null) ? empty : tx,
+            ty: (ty == null) ? empty : ty,
+            tz: (tz == null) ? empty : tz, 
+            rx: (rx == null) ? empty : rx, 
+            ry: (ry == null) ? empty : ry, 
+            rz: (rz == null) ? empty : rz
+          });
         }
       }
+
       if (tmp_node.length > 0) {
         load_node[load_id] = tmp_node;
       }
+
     }
     return load_node;
   }
 
   // 要素荷重データ
-  public getMemberLoadJson(mode: string = 'file'): any {
+  public getMemberLoadJson(empty: number = null, targetCase: string = ''): any {
 
-    const targetCase = mode.replace('unity-loads:', '');
     const load_member = {};
 
     for (const load_id of Object.keys(this.load)) {
-      // unity-loads モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (load_id !== targetCase) {
-          continue;
-        }
+
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && load_id !== targetCase) {
+        continue;
       }
 
       const load1: any[] = this.load[load_id];
       if (load1.length === 0) {
         continue;
       }
+      
       const tmp_member = new Array();
-      if (mode === 'file') {
+      if (empty === null) {
+
         for (let j = 0; j < load1.length; j++) {
+
           const row: {} = load1[j];
           const m1 = this.helper.toNumber(row['m1']);
           const m2 = this.helper.toNumber(row['m2']);
@@ -375,9 +407,11 @@ export class InputLoadService {
           const L2 = this.helper.toNumber(row['L2']);
           const P1 = this.helper.toNumber(row['P1']);
           const P2 = this.helper.toNumber(row['P2']);
+
           if ((m1 != null || m2 != null) && direction != '' && mark != null
             && (L1 != null || L2 != null || P1 != null || P2 != null)) {
-            const item1 = {
+
+            tmp_member.push({
               row: row['row'],
               m1: row['m1'],
               m2: row['m2'],
@@ -387,15 +421,19 @@ export class InputLoadService {
               L2: row['L2'],
               P1: row['P1'],
               P2: row['P2']
-            };
-            tmp_member.push(item1);
+            });
+
           }
         }
+
       } else {
+        // 計算用のデータ作成
+
         const load2: any[] = this.convertMemberLoads(load1);
+
         for (let j = 0; j < load2.length; j++) {
           const row: {} = load2[j];
-          const item2 = {
+          tmp_member.push({
             m: row['m1'],
             direction: row['direction'],
             mark: row['mark'],
@@ -403,12 +441,10 @@ export class InputLoadService {
             L2: this.helper.toNumber(row['L2'], 3),
             P1: this.helper.toNumber(row['P1'], 2),
             P2: this.helper.toNumber(row['P2'], 2)
-          };
-          if (mode !== 'calc') {
-            item2['row'] = row['row'];
-          }
-          tmp_member.push(item2);
+          });
+
         }
+
       }
       if (tmp_member.length > 0) {
         load_member[load_id] = tmp_member;
@@ -428,14 +464,17 @@ export class InputLoadService {
       let m1 = this.helper.toNumber(row['m1']);
       let m2 = this.helper.toNumber(row['m2']);
       let direction: string = row['direction'];
+
       if(direction === null){
         direction = '';
       }
+
       const mark = this.helper.toNumber(row['mark']);
       const L1 = this.helper.toNumber(row['L1']);
       let L2 = this.helper.toNumber(row['L2']);
       let P1 = this.helper.toNumber(row['P1']);
       let P2 = this.helper.toNumber(row['P2']);
+
       if ((m1 != null || m2 != null) && direction !== '' && mark != null
         && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
@@ -447,13 +486,26 @@ export class InputLoadService {
         L2 = (L2 == null) ? 0 : L2;
         P1 = (P1 == null) ? 0 : P1;
         P2 = (P2 == null) ? 0 : P2;
-        const item2 = { row: r, m1: m1, m2: m2, direction: direction, mark: mark, L1: sL1, L2: L2, P1: P1, P2: P2 };
-        load2.push(item2);
+
+        load2.push({ 
+          row: r, 
+          m1: m1, 
+          m2: m2, 
+          direction: direction, 
+          mark: mark, 
+          L1: sL1, 
+          L2: L2, 
+          P1: P1, 
+          P2: P2
+        });
+
       }
+
     }
     if (load2.length === 0) {
       return new Array();
     }
+
     // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
     for (let j = 0; j < load2.length; j++) {
       const row = load2[j];
@@ -826,9 +878,9 @@ export class InputLoadService {
   // 有効な 荷重ケース数を調べる
   public getLoadCaseCount(): number {
     const list = new Array();
-    list.push(this.getLoadJson('file'));
-    list.push(this.getNodeLoadJson('file'));
-    list.push(this.getMemberLoadJson('file'));
+    list.push(this.getLoadJson());
+    list.push(this.getNodeLoadJson());
+    list.push(this.getMemberLoadJson());
     let maxCase = 0;
     for (let i = 0; i < list.length; i++) {
       const dict = list[i];

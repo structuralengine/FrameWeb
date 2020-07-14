@@ -65,50 +65,47 @@ export class InputFixMemberService {
     }
   }
 
-  public getFixMemberJson(mode: string = 'file') {
+  public getFixMemberJson(empty: number = null, targetCase: string = '') {
 
     const result = {};
-    let targetCase = '0';
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('fix_members') < 0) {
-      return result;
-    } else {
-      targetCase = mode.replace('unity-fix_members:', '');
-    }
 
     for (const typNo of Object.keys(this.fix_member)) {
-      // unity-fix_members モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (typNo !== targetCase) {
-          continue;
-        }
+      
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && typNo !== targetCase) {
+        continue;
       }
-      const fix_member = this.fix_member[typNo];
+
       const jsonData = new Array();
-      for (let i = 0; i < fix_member.length; i++) {
-        const row: {} = fix_member[i];
+
+      for ( const row of this.fix_member[typNo]) {
+
+        const r = row['row'];
         let m = this.helper.toNumber(row['m']);
         let tx = this.helper.toNumber(row['tx']);
         let ty = this.helper.toNumber(row['ty']);
         let tz = this.helper.toNumber(row['tz']);
         let tr = this.helper.toNumber(row['tr']);
+
         if (m == null && tx == null && ty == null && tz == null && tr == null) {
           continue;
         }
-        if (mode === 'calc') {
-          m = (m == null) ? 0 : m;
-          tx = (tx == null) ? 0 : tx;
-          ty = (ty == null) ? 0 : ty;
-          tz = (tz == null) ? 0 : tz;
-          tr = (tr == null) ? 0 : tr;
-          const item = { m: m, tx: tx, ty: ty, tz: tz, tr: tr };
-          jsonData.push(item);
-        } else {
-          jsonData.push(row);
-        }
+
+        jsonData.push({ 
+          row: r, 
+          m: (m == null) ? empty : m, 
+          tx: (tx == null) ? empty : tx, 
+          ty: (ty == null) ? empty : ty, 
+          tz: (tz == null) ? empty : tz, 
+          tr: (tr == null) ? empty : tr
+        });
+
       }
+
       if (jsonData.length > 0) {
         result[typNo] = jsonData;
       }
+
     }
     return result;
   }

@@ -47,49 +47,39 @@ export class InputNodesService {
     }
   }
 
-  public getNodeJson(mode: string = 'file'): object {
+  public getNodeJson(empty: number = null ): object {
 
     const jsonData: object = {};
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('-nodes') < 0) {
-      return jsonData;
-    }
 
     for (let i = 0; i < this.node.length; i++) {
       const row = this.node[i];
-      let x = this.helper.toNumber(row['x']);
-      let y = this.helper.toNumber(row['y']);
-      let z = this.helper.toNumber(row['z']);
+      let x: number  = this.helper.toNumber(row['x']);
+      let y: number  = this.helper.toNumber(row['y']);
+      let z: number  = this.helper.toNumber(row['z']);
       if (x == null && y == null && z == null) {
         continue;
       }
-      let item = {};
-      if (mode === 'calc') {
-        x = (x == null) ? 0 : x;
-        y = (y == null) ? 0 : y;
-        z = (z == null) ? 0 : z;
-        item = { 'x': x, 'y': y, 'z': z };
-      } else {
-        const strX: string = (x == null) ? '' : x.toFixed(3);
-        const strY: string = (y == null) ? '' : y.toFixed(3);
-        const strZ: string = (z == null) ? '' : z.toFixed(3);
-        item['x'] = strX;
-        item['y'] = strY;
-        item['z'] = strZ;
-      }
+
       const key: string = row['id'];
-      jsonData[key] = item;
+
+      jsonData[key] = { 
+        'x': (x == null) ? empty : x, 
+        'y': (y == null) ? empty : y, 
+        'z': (z == null) ? empty : z
+      };
+      
     }
     return jsonData;
   }
 
   public getNodeText(): string {
-    const jsonData: object = this.getNodeJson('unity-nodes');
+    const jsonData: object = this.getNodeJson();
     const stringData: string = JSON.stringify(jsonData);
     return stringData;
   }
 
   public getNodePos(nodeNo: string) {
-    const nodeList: {} = this.getNodeJson('unity-nodes');
+    const nodeList: {} = this.getNodeJson();
     if (Object.keys(nodeList).length <= 0) {
       return null;
     }
@@ -99,5 +89,6 @@ export class InputNodesService {
     const node = nodeList[nodeNo];
     return node;
   }
+
 }
 

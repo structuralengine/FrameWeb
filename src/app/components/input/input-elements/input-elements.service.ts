@@ -5,7 +5,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
   providedIn: 'root'
 })
 export class InputElementsService {
-  public element: any;
+  public element: object;
 
   constructor(private helper: DataHelperModule) {
     this.clear();
@@ -63,26 +63,22 @@ export class InputElementsService {
     }
   }
 
-  public getElementJson(mode: string = 'file') {
+  public getElementJson(empty: number = null, targetCase: string = '') {
 
     const result = {};
-    let targetCase = '0';
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('elements') < 0) {
-      return result;
-    } else {
-      targetCase = mode.replace('unity-elements:', '');
-    }
 
     for (const typNo of Object.keys(this.element)) {
-      // unity-elements モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (typNo !== targetCase) {
-          continue;
-        }
+
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && typNo !== targetCase) {
+        continue;
       }
+
       const element = this.element[typNo];
-      const jsonData = {};
+      const jsonData: object = {};
+
       for (let i = 0; i < element.length; i++) {
+
         const row: {} = element[i];
         let E = this.helper.toNumber(row['E']);
         let G = this.helper.toNumber(row['G']);
@@ -95,25 +91,18 @@ export class InputElementsService {
           && J == null && Iy == null && Iz == null) {
           continue;
         }
-        let item = {};
-        if (mode === 'calc') {
-          E = (E == null) ? 0 : E;
-          G = (G == null) ? 0 : G;
-          Xp = (Xp == null) ? 0 : Xp;
-          A = (A == null) ? 0 : A;
-          J = (J == null) ? 0 : J;
-          Iy = (Iy == null) ? 0 : Iy;
-          Iz = (Iz == null) ? 0 : Iz;
-          item = { E: E, G: G, Xp: Xp, A: A, J: J, Iy: Iy, Iz: Iz };
-        } else {
-          for (const _key in row) {
-            if (_key !== 'id') {
-              item[_key] = row[_key];
-            }
-          }
-        }
+
         const key: string = row['id'];
-        jsonData[key] = item;
+        jsonData[key] = { 
+          E: (E == null) ? empty : E, 
+          G: (G == null) ? empty : G, 
+          Xp: (Xp == null) ? empty : Xp, 
+          A: (A == null) ? empty : A, 
+          J: (J == null) ? empty : J, 
+          Iy: (Iy == null) ? empty : Iy, 
+          Iz: (Iz == null) ? empty : Iz
+          };
+          
       }
       if (Object.keys(jsonData).length > 0) {
         result[typNo] = jsonData;

@@ -65,15 +65,12 @@ export class InputNoticePointsService {
     }
   }
 
-  public getNoticePointsJson(mode: string = 'file') {
+  public getNoticePointsJson() {
 
     const result = new Array();
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('notice_points') < 0) {
-      return result;
-    }
 
-    for (let i = 0; i < this.notice_points.length; i++) {
-      const row: {} = this.notice_points[i];
+    for( const row of this.notice_points) {
+
       const r = row['row'];
       const points = new Array();
       for (let j = 1; j < InputNoticePointsService.NOTICE_POINTS_COUNT + 1; j++) {
@@ -85,17 +82,20 @@ export class InputNoticePointsService {
           }
         }
       }
+
       let m = this.helper.toNumber(row['m']);
+
       if (m == null || Object.keys(points).length === 0) {
         continue;
       }
-      m = (m == null) ? 0 : m;
-      const item = { m: m.toString(), Points: points };
-      if (mode !== 'calc') {
-        item['row'] = r;
-      }
-      result.push(item);
+
+      result.push({ 
+        row: r,
+        m: m.toString(), 
+        Points: points
+       });
     }
+
     return result;
   }
 

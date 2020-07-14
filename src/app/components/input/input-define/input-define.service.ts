@@ -53,7 +53,7 @@ export class InputDefineService {
     }
   }
 
-  public getDefineJson(mode: string = 'file') {
+  public getDefineJson() {
 
     const jsonData = {};
     for (let i = 0; i < this.define.length; i++) {
@@ -63,16 +63,11 @@ export class InputDefineService {
       let flg = false;
       for (let key in row) {
         if (key === 'row' || key === 'name') {
-          if (mode === 'file') {
-            data[key] = row[key];
-          }
+          data[key] = row[key];
         } else {
           const value = row[key];
           if (this.helper.toNumber(value) != null) {
             flg = true;
-            if (mode !== 'file') {
-              key = key.replace('C', '').replace('D', '');
-            }
             data[key] = value;
           }
         }

@@ -48,11 +48,14 @@ export class ThreeService {
         // ファイルを読み込んだ
         this.node.chengeData();
         this.member.chengeData();
+        this.joint.chengeData(index);
+        this.fixNode.chengeData(index);
         this.pointLoad.chengeData(index);
+        this.fixMember.chengeData(index);
+
         this.disg.ClearData();
         this.fsec.ClearData();
         this.reac.ClearData();
-        // this.memberLoad.chengeData(this.scene);
         break;
       case 'result':
 

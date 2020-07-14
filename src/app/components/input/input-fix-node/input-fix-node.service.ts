@@ -68,27 +68,22 @@ export class InputFixNodeService  {
     }
   }
 
-  public getFixNodeJson(mode: string = 'file') {
+  public getFixNodeJson(empty: number = null, targetCase: string = '') {
 
     const result = {};
-    let targetCase = '0';
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('fix_nodes') < 0) {
-      return result;
-    } else {
-      targetCase = mode.replace('unity-fix_nodes:', '');
-    }
 
     for (const typNo of Object.keys(this.fix_node)) {
-      // unity-fix_nodes モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (typNo !== targetCase) {
-          continue;
-        }
+      
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && typNo !== targetCase) {
+        continue;
       }
-      const fix_node = this.fix_node[typNo];
+
       const jsonData = new Array();
-      for (let i = 0; i < fix_node.length; i++) {
-        const row: {} = fix_node[i];
+
+      for ( const row of this.fix_node[typNo]) {
+
+        const r = row['row'];
         let n = this.helper.toNumber(row['n']);
         let tx = this.helper.toNumber(row['tx']);
         let ty = this.helper.toNumber(row['ty']);
@@ -96,29 +91,33 @@ export class InputFixNodeService  {
         let rx = this.helper.toNumber(row['rx']);
         let ry = this.helper.toNumber(row['ry']);
         let rz = this.helper.toNumber(row['rz']);
+
         if (n == null && tx == null && ty == null && tz == null
           && rx == null && ry == null && rz == null) {
           continue;
         }
-        if (mode === 'calc') {
-          n = (n == null) ? 0 : n;
-          tx = (tx == null) ? 0 : tx;
-          ty = (ty == null) ? 0 : ty;
-          tz = (tz == null) ? 0 : tz;
-          rx = (rx == null) ? 0 : rx;
-          ry = (ry == null) ? 0 : ry;
-          rz = (rz == null) ? 0 : rz;
-          const item = { n: n, tx: tx, ty: ty, tz: tz, rx: rx, ry: ry, rz: rz };
-          jsonData.push(item);
-        } else {
-          jsonData.push(row);
-        }
+
+        jsonData.push({ 
+          row: r, 
+          n: (n == null) ? empty : n,
+          tx: (tx == null) ? empty : tx, 
+          ty: (ty == null) ? empty : ty, 
+          tz: (tz == null) ? empty : tz, 
+          rx: (rx == null) ? empty : rx, 
+          ry: (ry == null) ? empty : ry, 
+          rz: (rz == null) ? empty : rz 
+        });
+
       }
+
       if (jsonData.length > 0) {
         result[typNo] = jsonData;
       }
+
     }
+
     return result;
+
   }
 
 }

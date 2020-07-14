@@ -63,12 +63,10 @@ export class InputDataService {
   }
 
   // データを生成 /////////////////////////////////////////////////////////////////////
-  // mode file:ファイルに保存用データを生成
-  //      unity: unity に送信用データを生成
-  //      calc: 計算サーバーに送信用データを生成
-  public getInputText(mode: string = 'file', Properties = {}): string {
+  // 計算サーバーに送信用データを生成
+  public getCalcText( Properties = {} ): string {
 
-    const jsonData: {} = this.getInputJson(mode);
+    const jsonData: {} = this.getInputJson(0);
 
     // パラメータを追加したい場合
     for (const key of Object.keys(Properties)) {
@@ -79,50 +77,52 @@ export class InputDataService {
     return result;
   }
 
-  public getInputJson(mode: string) {
+  // ファイルに保存用データを生成
+  public getInputJson(empty: number = null): object {
+
     const jsonData = {};
 
-    const node: {} = this.node.getNodeJson(mode);
+    const node: {} = this.node.getNodeJson(empty);
     if (Object.keys(node).length > 0) {
       jsonData['node'] = node;
     }
 
-    const fix_node: {} = this.fixnode.getFixNodeJson(mode);
+    const fix_node: {} = this.fixnode.getFixNodeJson(empty);
     if (Object.keys(fix_node).length > 0) {
       jsonData['fix_node'] = fix_node;
     }
 
-    const member: {} = this.member.getMemberJson(mode);
+    const member: {} = this.member.getMemberJson(empty);
     if (Object.keys(member).length > 0) {
       jsonData['member'] = member;
     }
 
-    const element: {} = this.element.getElementJson(mode);
+    const element: {} = this.element.getElementJson(empty);
     if (Object.keys(element).length > 0) {
       jsonData['element'] = element;
     }
 
-    const joint: {} = this.joint.getJointJson(mode);
+    const joint: {} = this.joint.getJointJson(empty);
     if (Object.keys(joint).length > 0) {
       jsonData['joint'] = joint;
     }
 
-    const notice_points: {} = this.notice.getNoticePointsJson(mode);
+    const notice_points: {} = this.notice.getNoticePointsJson();
     if (Object.keys(notice_points).length > 0) {
       jsonData['notice_points'] = notice_points;
     }
 
-    const fix_member: {} = this.fixmenber.getFixMemberJson(mode);
+    const fix_member: {} = this.fixmenber.getFixMemberJson(empty);
     if (Object.keys(fix_member).length > 0) {
       jsonData['fix_member'] = fix_member;
     }
 
-    const load: {} = this.load.getLoadJson(mode);
+    const load: {} = this.load.getLoadJson();
     if (Object.keys(load).length > 0) {
       jsonData['load'] = load;
     }
 
-    if (mode === 'file') {
+    if (empty === null) {
       const define: {} = this.define.getDefineJson();
       if (Object.keys(define).length > 0) {
         jsonData['define'] = define;

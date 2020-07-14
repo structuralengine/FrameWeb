@@ -51,7 +51,7 @@ export class InputMembersComponent implements OnInit {
             hotInstance.render();
           }
         }
-        this.three.chengeData();
+        this.three.chengeData('members');
       } catch (e) {
         console.log(e);
       }

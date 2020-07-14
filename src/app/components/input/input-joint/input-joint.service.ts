@@ -68,27 +68,21 @@ export class InputJointService {
     }
   }
 
-  public getJointJson(mode: string = 'file') {
+  public getJointJson(empty: number = null, targetCase: string = '') {
 
     const result = {};
-    let targetCase = '0';
-    if (mode.indexOf('unity-') >= 0 && mode.indexOf('joints') < 0) {
-      return result;
-    } else {
-      targetCase = mode.replace('unity-joints:', '');
-    }
 
     for (const typNo of Object.keys(this.joint)) {
-      // unity-joints モードは カレントのケースのみデータを生成する
-      if (targetCase !== mode) {
-        if (typNo !== targetCase) {
-          continue;
-        }
+
+      // ケースの指定がある場合、カレントケース以外は無視する
+      if (targetCase.length > 0 && typNo !== targetCase) {
+        continue;
       }
-      const joint = this.joint[typNo];
+
       const jsonData = new Array();
-      for (let i = 0; i < joint.length; i++) {
-        const row: {} = joint[i];
+
+      for ( const row of this.joint[typNo]) {
+
         const r = row['row'];
         let m = this.helper.toNumber(row['m']);
         let xi = this.helper.toNumber(row['xi']);
@@ -97,24 +91,23 @@ export class InputJointService {
         let xj = this.helper.toNumber(row['xj']);
         let yj = this.helper.toNumber(row['yj']);
         let zj = this.helper.toNumber(row['zj']);
+        
         if (m == null && xi == null && yi == null && zi == null
           && xj == null && yj == null && zj == null) {
           continue;
         }
-        let item = {};
-        if (mode === 'calc') {
-          m = (m == null) ? 0 : m;
-          xi = (xi == null) ? 0 : xi;
-          yi = (yi == null) ? 0 : yi;
-          zi = (zi == null) ? 0 : zi;
-          xj = (xj == null) ? 0 : xj;
-          yj = (yj == null) ? 0 : yj;
-          zj = (zj == null) ? 0 : zj;
-          item = { m: m, xi: xi, yi: yi, zi: zi, xj: xj, yj: yj, zj: zj };
-          jsonData.push(item);
-        } else {
-          jsonData.push(row);
-        }
+
+        jsonData.push({ 
+          row: r,
+          m: (m == null) ? empty : m,
+          xi: (xi == null) ? empty : xi, 
+          yi: (yi == null) ? empty : yi, 
+          zi: (zi == null) ? empty : zi, 
+          xj: (xj == null) ? empty : xj, 
+          yj: (yj == null) ? empty : yj, 
+          zj: (zj == null) ? empty : zj 
+        });
+
       }
       if (jsonData.length > 0) {
         result[typNo] = jsonData;

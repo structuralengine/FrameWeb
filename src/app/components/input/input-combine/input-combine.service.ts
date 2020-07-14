@@ -53,7 +53,7 @@ export class InputCombineService {
     }
   }
 
-  public getCombineJson(mode: string = 'file') {
+  public getCombineJson() {
 
     const jsonData = {};
     for (let i = 0; i < this.combine.length; i++) {
@@ -63,20 +63,13 @@ export class InputCombineService {
       let flg = false;
       for (let key in row) {
         if (key === 'row' || key === 'name') {
-          if (mode === 'file') {
-            data[key] = row[key];
-          }
+          data[key] = row[key];
         } else {
           const value = row[key];
           const num = this.helper.toNumber(value);
           if (num != null) {
             flg = true;
-            if (mode !== 'file') {
-              key = key.replace('C', '').replace('D', '');
-              data[key] = num;
-            } else {
-              data[key] = value;
-            }
+            data[key] = value;
           }
         }
       }
