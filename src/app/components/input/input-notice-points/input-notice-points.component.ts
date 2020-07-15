@@ -83,6 +83,7 @@ export class InputNoticePointsComponent implements OnInit {
           console.log(hotInstance.render());
         }
       }
+      this.three.chengeData('notice-points');
     }
   };
 

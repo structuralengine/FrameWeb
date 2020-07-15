@@ -100,7 +100,7 @@ export class InputNodesService {
       x,
       y,
       z
-    }
+    };
   }
 
 }

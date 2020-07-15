@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputElementsService } from './input-elements.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-elements',
@@ -60,13 +61,14 @@ export class InputElementsComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
-     
+      this.three.chengeData('elements', this.page );
     }
   };
 
   constructor(
     private data: InputElementsService,
-    private helper: DataHelperModule) {
+    private helper: DataHelperModule,
+    private three: ThreeService) {
     this.dataset = new Array();
     this.page = 1;
   }
@@ -85,5 +87,7 @@ export class InputElementsComponent implements OnInit {
       const element = this.data.getElementColumns(this.page, i);
       this.dataset.push(element);
     }
+
+    this.three.ChengeMode('elements', currentPage);
   }
 }

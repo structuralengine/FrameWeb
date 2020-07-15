@@ -57,7 +57,9 @@ export class InputLoadNameComponent implements OnInit {
       }
     },
     afterSelection: (hotInstance, row, column, row2, column2, preventScrolling, selectionLayerLevel) => {
-    this.three.ChengeMode('loads', row + 1);
+      const a1: number = (this.page  - 1) * InputLoadNameComponent.ROWS_COUNT + 1;
+      const a2: number = a1 + row;
+      this.three.ChengeMode('loads', a2);
     }
   };
 
@@ -87,7 +89,7 @@ export class InputLoadNameComponent implements OnInit {
       this.dataset.push(load_name);
       this.rowHeaders.push(i);
     }
+    this.three.ChengeMode('loads');
   }
-
   
 }

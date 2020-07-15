@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputFixMemberService } from './input-fix-member.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 import { ThreeService } from '../../three/three.service';
 
 @Component({
@@ -14,9 +15,36 @@ export class InputFixMemberComponent implements OnInit {
   dataset: any[];
   page: number;
 
-  hotTableSettings = {};
+  hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+          if( value !== null ) {
+            changes[i][3] = value.toString();
+          } else {
+            changes[i][3] = null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    afterChange: (...x: any[]) => {
+      this.three.chengeData('fix_member', this.page );
+    }
+  };
 
   constructor(private data: InputFixMemberService,
+              private helper: DataHelperModule,
               private three: ThreeService) {
 
     this.dataset = new Array();

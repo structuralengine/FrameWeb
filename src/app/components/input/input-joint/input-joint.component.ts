@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 import { ThreeService } from '../../three/three.service';
 
 @Component({
@@ -16,6 +17,26 @@ export class InputJointComponent implements OnInit {
 
   hotTableSettings = {
     beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+          if( value !== null ) {
+            changes[i][3] = value.toFixed(0);
+          } else {
+            changes[i][3] = null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }      
     },
     afterChange: (...x: any[]) => {
       this.three.chengeData('joints', this.page );
@@ -24,6 +45,7 @@ export class InputJointComponent implements OnInit {
 
 
   constructor(private input: InputJointService,
+              private helper: DataHelperModule,
               private three: ThreeService) {
     this.dataset = new Array();
     this.page = 1;

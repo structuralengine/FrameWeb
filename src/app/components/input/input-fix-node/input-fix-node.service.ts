@@ -46,35 +46,34 @@ export class InputFixNodeService  {
     return result;
   }
 
-  public setFixNodeJson(jsonData: {}): void {
+  public setFixNodeJson(jsonData: object): void {
+
     if (!('fix_node' in jsonData)) {
       return;
     }
-    const json: {} = jsonData['fix_node'];
-    for (const typNo of Object.keys(json)) {
-      const js: any[] = json[typNo];
-      const target = new Array();
-      for (let i = 0; i < js.length; i++) {
-        const item = js[i];
 
-        const row: number = ('row' in item) ? item['row'] : (i + 1).toString();
-        const n = this.helper.toNumber(item['n']);
-        const tx = this.helper.toNumber(item['tx']);
-        const ty = this.helper.toNumber(item['ty']);
-        const tz = this.helper.toNumber(item['tz']);
-        const rx = this.helper.toNumber(item['rx']);
-        const ry = this.helper.toNumber(item['ry']);
-        const rz = this.helper.toNumber(item['rz']);
+    const json: object = jsonData['fix_node'];
+
+    for (const typNo of Object.keys(json)) {
+
+      const js: any[] = json[typNo];
+
+      const target = new Array();
+
+      for (let i = 0; i < js.length; i++) {
+
+        const row: number = ('row' in js[i]) ? js[i].row : (i + 1).toString();
+        const item = this.convertNumber(js[i]);
 
         const result = {
           row: row,
-          n: (n === null) ? '' : n.toFixed(0),
-          tx: (tx === null) ? '' : tx.toString(),
-          ty: (ty === null) ? '' : ty.toString(),
-          tz: (tz === null) ? '' : tz.toString(),
-          rx: (rx === null) ? '' : rx.toString(),
-          ry: (ry === null) ? '' : ry.toString(),
-          rz: (rz === null) ? '' : rz.toString()
+          n: (item.n === null) ? '' : item.n.toFixed(0),
+          tx: (item.tx === null) ? '' : item.tx.toString(),
+          ty: (item.ty === null) ? '' : item.ty.toString(),
+          tz: (item.tz === null) ? '' : item.tz.toString(),
+          rx: (item.rx === null) ? '' : item.rx.toString(),
+          ry: (item.ry === null) ? '' : item.ry.toString(),
+          rz: (item.rz === null) ? '' : item.rz.toString()
         };
 
         target.push(result);
@@ -99,28 +98,22 @@ export class InputFixNodeService  {
       for ( const row of this.fix_node[typNo]) {
 
         const r = row['row'];
-        const n = this.helper.toNumber(row['n']);
-        const tx = this.helper.toNumber(row['tx']);
-        const ty = this.helper.toNumber(row['ty']);
-        const tz = this.helper.toNumber(row['tz']);
-        const rx = this.helper.toNumber(row['rx']);
-        const ry = this.helper.toNumber(row['ry']);
-        const rz = this.helper.toNumber(row['rz']);
+        const item = this.convertNumber(row);
 
-        if (n == null && tx == null && ty == null && tz == null
-          && rx == null && ry == null && rz == null) {
+        if (item.n == null && item.tx == null && item.ty == null && item.tz == null
+          && item.rx == null && item.ry == null && item.rz == null) {
           continue;
         }
 
         jsonData.push({ 
           row: r, 
           n: row.n,
-          tx: (tx == null) ? empty : tx, 
-          ty: (ty == null) ? empty : ty, 
-          tz: (tz == null) ? empty : tz, 
-          rx: (rx == null) ? empty : rx, 
-          ry: (ry == null) ? empty : ry, 
-          rz: (rz == null) ? empty : rz 
+          tx: (item.tx == null) ? empty : item.tx, 
+          ty: (item.ty == null) ? empty : item.ty, 
+          tz: (item.tz == null) ? empty : item.tz, 
+          rx: (item.rx == null) ? empty : item.rx, 
+          ry: (item.ry == null) ? empty : item.ry, 
+          rz: (item.rz == null) ? empty : item.rz 
         });
 
       }
@@ -135,4 +128,24 @@ export class InputFixNodeService  {
 
   }
 
+  private convertNumber(item: object): any {
+
+    const n = this.helper.toNumber(item['n']);
+    const tx = this.helper.toNumber(item['tx']);
+    const ty = this.helper.toNumber(item['ty']);
+    const tz = this.helper.toNumber(item['tz']);
+    const rx = this.helper.toNumber(item['rx']);
+    const ry = this.helper.toNumber(item['ry']);
+    const rz = this.helper.toNumber(item['rz']);
+
+    return {
+          n,
+          tx,
+          ty,
+          tz,
+          rx,
+          ry,
+          rz
+        };
+  }
 }

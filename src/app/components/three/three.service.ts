@@ -162,7 +162,7 @@ export class ThreeService {
     // モードの変更
     if (this.mode !== ModeName) {
 
-      // 節点の表示制御
+      // #region 節点の表示制御
       if (['fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
         this.node.visible(false); // 節点を表示しない
       } else {
@@ -174,20 +174,21 @@ export class ThreeService {
           this.node.Disable(); // 節点番号を表示しない
         }
       }
+      // #endregion
 
-      // 要素番号の表示制御
+      // #region 要素番号の表示制御
       if (['members', 'joints', 'notice_points', 'fix_member', 'fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {
         this.member.Enable(); // 要素番号を表示する
       } else {
         this.member.Disable(); // 要素番号を表示しない
       }
+      // #endregion
 
     }
 
 
     // モード か カレントページの変更
     if (this.mode !== ModeName || this.currentIndex !== currentPage) {
-
 
       // 支点データを表示する
       if (['fix_nodes'].indexOf(ModeName) >= 0) {
