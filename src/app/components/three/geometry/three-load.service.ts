@@ -300,14 +300,10 @@ export class ThreeLoadService {
     // 荷重のshapeをシーンに追加する
     let p_one = 0;
     let p_two = 0;
-    //let L_one = 0; 使わない
-    //let L_two = 0; 使わない
     for (const load of targetMemberLoad) {
 
       p_one = Math.max(p_one, Math.abs(load.P1)) * maxLength / pMax;
       p_two = Math.max(p_two, Math.abs(load.P2)) * maxLength / pMax;
-      //L_one = Math.max(L_one, Math.abs(load.L1)); 使わない
-      //L_two = Math.max(L_two, Math.abs(load.L2)); 使わない
       
       // 節点データを集計する
       const m = memberData[load.m];
@@ -342,93 +338,8 @@ export class ThreeLoadService {
 
       const L_position = {x1: i_x, y1: i_y, z1: i_z, x2: j_x, y2: j_y, z2: j_z};
       const Data = {L1: load.L1, L2: load.L2, p_one: p_one, p_two: p_two, 
-                    //P1: Math.sign(load.P1), P2: Math.sign(load.P2), judge: " "};
                     P1: load.P1, P2: load.P2, judge: " "};
       var groupe = new THREE.Group();  // 親の実態のない架空のジオメトリ
-
-//#region コメントアウト
-      /*const mesh_material = new THREE.MeshBasicMaterial({
-        transparent: true,
-        side: THREE.DoubleSide,
-        color: 0x00cc00,
-        opacity: 0.3
-      });
-      
-
-      var geometry = new THREE.Geometry();
-
-      let _localAxis;
-      switch (load.direction){
-        case "x":
-        _localAxis = localAxis.x;
-          break;
-        case "y":
-        _localAxis = localAxis.y;
-          break;
-        case "z":
-        _localAxis = localAxis.z;
-          break;
-        case "r":
-        _localAxis = localAxis.x;
-          break;
-      }
-      
-      
-      //const x1 = i.x + localAxis.x.x * L_one + _localAxis.x * p_one;
-      //const y1 = i.y + localAxis.x.y * L_one + _localAxis.y * p_one;
-      //const z1 = i.z + localAxis.x.z * L_one + _localAxis.z * p_one;
-      //const x2 = j.x - localAxis.x.x * L_two + _localAxis.x * p_two;
-      //const y2 = j.y - localAxis.x.y * L_two + _localAxis.y * p_two;
-      //const z2 = j.z - localAxis.x.z * L_two + _localAxis.z * p_two;
-
-      //const P_position = {x1: x1 , y1: y1 , z1: z1 , x2: x2 , y2: y2 , z2: z2 };
-
-
-      geometry.vertices.push(new THREE.Vector3(i_x, i_y, i_z));
-      geometry.vertices.push(new THREE.Vector3(x1, y1, z1));
-      geometry.vertices.push(new THREE.Vector3(x2, y2, z2));
-      geometry.vertices.push(new THREE.Vector3(j_x, j_y, j_z));
-
-      var normal = new THREE.Vector3(0, 0, 1);
-      var color = new THREE.Color(0xff0000);
-      var face1 = new THREE.Face3(0, 1, 2);//, normal, color);
-      var face2 = new THREE.Face3(0, 2, 3);//, normal, color);
-
-      geometry.faces.push(face1);
-      geometry.faces.push(face2);
-
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-
-      var groupe = new THREE.Group();  // 親の実態のない架空のジオメトリ
-      var mesh = new THREE.Mesh(geometry, mesh_material);
-
-      //meshを出力
-      if (mesh !== null) {
-        this.memberLoadList.push(groupe);
-        this.scene.add(groupe);
-      }else{
-        continue;
-      }       
-
-      groupe.add(mesh);*/
-
-      //荷重の矢印を作る
-      /*if (load.mark === 2 && (load.direction === "y" || load.direction === "z")){
-        const arrow = {size: 0.3 * maxLength, direction: "z", color: 0x000000};
-        if (load.direction === "y"){
-          arrow.direction = "y";
-        }else if(load.direction === "z"){
-          arrow.direction = "z";
-        }
-        const arrowlist = this.CreateArrow(arrow, L_position, P_position, localAxis);
-        if (arrowlist !== null ){  //ここの分岐は必要？
-          for(const a of arrowlist){
-            groupe.add(a);
-          }
-        }
-      }*/
-      //#endregion
       
       const arrow = {size: 0.3 * maxLength, direction: "z", color: 0x000000};
       let arrowlist: any = [];
@@ -569,45 +480,6 @@ export class ThreeLoadService {
       }
 //#endregion
       
-//#region 
-      /*下に移動のためコメントアウト
-      if (mesh !== null) {
-        this.memberLoadList.push(mesh);
-        this.scene.add(mesh);
-      }*/
-      /*
-      //lineを描く
-      let linewidth: number = this.nodeThree.baseScale() / 50;
-      var line_material = new THREE.LineBasicMaterial({color: 0x66cc99, linewidth});
-      var line = new THREE.Line(geometry, line_material);
-      if (line !== null) {
-        this.memberLoadList.push(line);
-        this.scene.add(line);
-      }
-
-      //coneを描く
-      const cone_scale: number = maxLength * 0.3;
-      const cone_radius: number = 0.03 * cone_scale;
-      const cone_height: number = 0.3 * cone_scale;
-      const cone_color = new THREE.Color(0xffffff);
-
-      var cone_mesh_material = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, 
-                                                               color: cone_color,
-                                                               depthTest : false});
-      
-      const cone1 = this.createCorn(i_x, i_y, i_z, localAxis, cone_radius, cone_height, cone_mesh_material);
-      const cone2 = this.createCorn(j_x, j_y, j_z, localAxis, cone_radius, cone_height, cone_mesh_material);
-      
-      if (cone1 !== null) {
-        this.memberLoadList.push(cone1);
-        this.scene.add(cone1);
-      }
-      if (cone2 !== null) {
-        this.memberLoadList.push(cone2);
-        this.scene.add(cone2);
-      }
-      */
-//#endregion
       //meshを出力
       if (groupe !== null) {
         this.memberLoadList.push(groupe);
@@ -620,53 +492,9 @@ export class ThreeLoadService {
 
   }
 
-  //コーンを作る
-  private createCorn(xij, yij, zij, localAxis, cone_radius, cone_height,  mesh_material){
-
-    var cone_geometry = new THREE.Geometry();
-
-    //cone_CoGは底面の三角形の重心位置
-    const cone_CoG = {x: xij + localAxis.z.x * cone_height, 
-                      y: yij + localAxis.z.y * cone_height, 
-                      z: zij + localAxis.z.z * cone_height};
-    
-    const x_1 = cone_CoG.x + cone_radius * 2 * localAxis.x.x ;
-    const y_1 = cone_CoG.y + cone_radius * 2 * localAxis.x.y ;
-    const z_1 = cone_CoG.z + cone_radius * 2 * localAxis.x.z ;
-    const x_2 = cone_CoG.x - cone_radius * 1 * localAxis.x.x  + cone_radius * Math.sqrt(3) * localAxis.y.x ;
-    const y_2 = cone_CoG.y - cone_radius * 1 * localAxis.x.y  + cone_radius * Math.sqrt(3) * localAxis.y.y ;
-    const z_2 = cone_CoG.z - cone_radius * 1 * localAxis.x.z  + cone_radius * Math.sqrt(3) * localAxis.y.z ;
-    const x_3 = cone_CoG.x - cone_radius * 1 * localAxis.x.x  - cone_radius * Math.sqrt(3) * localAxis.y.x ;
-    const y_3 = cone_CoG.y - cone_radius * 1 * localAxis.x.y  - cone_radius * Math.sqrt(3) * localAxis.y.y ;
-    const z_3 = cone_CoG.z - cone_radius * 1 * localAxis.x.z  - cone_radius * Math.sqrt(3) * localAxis.y.z ;
-
-    cone_geometry.vertices.push(new THREE.Vector3(xij, yij, zij));
-    cone_geometry.vertices.push(new THREE.Vector3(x_1, y_1, z_1));
-    cone_geometry.vertices.push(new THREE.Vector3(x_2, y_2, z_2));
-    cone_geometry.vertices.push(new THREE.Vector3(x_3, y_3, z_3));
-
-    var normal = new THREE.Vector3(0, 0, 1);
-
-    var face3 = new THREE.Face3(0, 1, 2, normal, mesh_material);
-    var face4 = new THREE.Face3(0, 2, 3, normal, mesh_material);
-    var face5 = new THREE.Face3(0, 1, 3, normal, mesh_material);
-
-    cone_geometry.faces.push(face3);
-    cone_geometry.faces.push(face4);
-    cone_geometry.faces.push(face5);
-
-    cone_geometry.computeFaceNormals();
-    cone_geometry.computeVertexNormals();
-
-    var cone_mesh = new THREE.Mesh(cone_geometry, mesh_material);
-
-    return cone_mesh;
-  }
 
   //矢印（集中荷重）を描く
   public CreateArrow (arrow, L_position, localAxis, Data){
-    Data.p_one = Data.p_one
-    Data.p_two = Data.p_two
     const arrowlist = [];
     const group = new THREE.Group();
 
@@ -675,14 +503,23 @@ export class ThreeLoadService {
     //矢の棒を描く
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
     if (Data.judge === "1"){
-      geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_one));
+      if (Data.P1 > 0){
+        geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_one));
+      }else if (Data.P1 < 0){
+        geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_one));
+      }
     }else if(Data.judge === "2"){
-      geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_two));
+      if (Data.P2 > 0){
+        geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_two));
+      }else if (Data.P2 < 0){
+        geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_two));
+      }
     }
     let line = new THREE.LineBasicMaterial({color: arrow.color});
     let mesh = new THREE.Line(geometry, line);
     group.add(mesh);
 
+    //geometryの初期化
     geometry = new THREE.Geometry();
 
     //矢の先を描く
@@ -692,22 +529,23 @@ export class ThreeLoadService {
     geometry = new THREE.ConeGeometry( cone_radius, cone_height, 3, 1, true );
     const material = new THREE.MeshBasicMaterial( {color: arrow.color} );
     const cone = new THREE.Mesh( geometry, material );
-    cone.position.set(-cone_scale / 2, 0, 0);
-    cone.position.set(0, 0, -cone_scale / 2);
     if (Data.judge === "1"){
       if (Data.P1 > 0){
-        cone.lookAt(10, 0, 0);
+        cone.position.set(0, 0, -cone_scale / 2);
+        cone.rotation.x = Math.PI / 2;
       }else if (Data.P1 < 0){
-        cone.lookAt(-10, 0, 0);
+        cone.position.set(0, 0, cone_scale / 2);
+        cone.rotation.x = -Math.PI / 2;
       }
-    }else if (Data.judge === "2"){
+    }else if(Data.judge === "2"){
       if (Data.P2 > 0){
-        cone.lookAt(10, 0, 0);
+        cone.position.set(0, 0, -cone_scale / 2);
+        cone.rotation.x = Math.PI / 2;
       }else if (Data.P2 < 0){
-        cone.lookAt(-10, 0, 0);
+        cone.position.set(0, 0, cone_scale / 2);
+        cone.rotation.x = -Math.PI / 2;
       }
     }
-    cone.lookAt(10, 0, 0);
     group.add(cone);
 
     //groupの操作
@@ -733,7 +571,7 @@ export class ThreeLoadService {
         }
         break;
       case ("z"):
-        group.lookAt(-localAxis.z.x, -localAxis.z.y, -localAxis.z.z);
+        group.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
         if (Data.judge === "1"){
           group.position.set(L_position.x1, L_position.y1, L_position.z1);
         }else if(Data.judge === "2"){
@@ -789,6 +627,7 @@ export class ThreeLoadService {
         cone.position.set(-1 / 2 * arrow.size, -(3**(1/2) / 2) * arrow.size, 0);
       }
     }
+    
     groupM.add(cone);
 
     //groupの操作
@@ -812,7 +651,7 @@ export class ThreeLoadService {
     return arrowlist
   }
 
-  //矢印（分布荷重X）を描く　未グループ化状態
+  //矢印（分布荷重X）を描く
   public CreateArrow_X (arrow, L_position, localAxis){
     const groupX = new THREE.Group();
 
@@ -823,33 +662,32 @@ export class ThreeLoadService {
     L_position.y1 -= offset * localAxis.y.y;
     L_position.x2 -= offset * localAxis.y.x;
     L_position.y2 -= offset * localAxis.y.y;
-
+    const len_L: number = new THREE.Vector3(L_position.x2 - L_position.x1, 
+                                            L_position.y2 - L_position.y1, 
+                                            L_position.z2 - L_position.z1).length();
     //矢の先を描く
-    geometry.vertices.push(new THREE.Vector3(arrow.size *  0.3, 0, arrow.size * 0.6));
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(arrow.size * -0.3, 0, arrow.size * 0.6));
+    geometry.vertices.push(new THREE.Vector3(arrow.size *  0.3, 0, len_L - arrow.size * 0.6));
+    geometry.vertices.push(new THREE.Vector3(0, 0, len_L));
+    geometry.vertices.push(new THREE.Vector3(arrow.size * -0.3, 0, len_L - arrow.size * 0.6));
     let line = new THREE.LineBasicMaterial({color: arrow.color});
     let mesh = new THREE.Line(geometry, line);
-    mesh.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
-    mesh.position.set(L_position.x1, L_position.y1, L_position.z1);
     groupX.add(mesh);
 
     //geometryの初期化
     geometry = new THREE.Geometry();
 
     //矢印の棒
-    geometry.vertices.push(new THREE.Vector3(L_position.x1, L_position.y1, L_position.z1));
-    geometry.vertices.push(new THREE.Vector3(L_position.x2, L_position.y2, L_position.z2));
+    geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 0, len_L));
     line = new THREE.LineDashedMaterial({color: arrow.color, dashSize: 0.1, gapSize: 0.1});
     mesh = new THREE.Line(geometry, line);
     mesh.computeLineDistances();
     groupX.add(mesh);
-    geometry = new THREE.Geometry();
 
+    groupX.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
+    groupX.position.set(L_position.x1, L_position.y1, L_position.z1);
     arrowlist.push(groupX);
     return arrowlist
-    //return groupX
-    
   }
 
   //矢印（分布荷重Y）を描く
