@@ -30,7 +30,7 @@ export class ThreeService {
     private fixNode: ThreeFixNodeService,
     private fixMember: ThreeFixMemberService,
     private joint: ThreeJointService,
-    private pointLoad: ThreeLoadService,
+    private load: ThreeLoadService,
     private disg: ThreeDisplacementService,
     private reac: ThreeReactService,
     private fsec: ThreeSectionForceService
@@ -50,7 +50,7 @@ export class ThreeService {
         this.member.chengeData();
         this.joint.chengeData(index);
         this.fixNode.chengeData(index);
-        this.pointLoad.chengeData(index);
+        this.load.chengeData(index);
         this.fixMember.chengeData(index);
 
         this.disg.ClearData();
@@ -79,7 +79,7 @@ export class ThreeService {
           // 要素
           case 'members':
             this.member.chengeData();
-            this.pointLoad.chengeData(index);
+            this.load.chengeData(index);
             break;
 
           // 結合
@@ -94,7 +94,7 @@ export class ThreeService {
 
           // 荷重図
           case 'loads':
-            this.pointLoad.chengeData(index);
+            this.load.chengeData(index);
             // this.memberLoad.chengeData();
             break;
 
@@ -142,9 +142,13 @@ export class ThreeService {
     // 節点データの削除
     this.node.ClearData();
     this.member.ClearData();
+    this.fixNode.ClearData();
+    this.fixMember.ClearData();
     this.joint.ClearData();
-    this.pointLoad.ClearData();
-    //this.memberLoad.ClearData(this.scene);
+    this.load.ClearData();
+    this.disg.ClearData();
+    this.reac.ClearData();
+    this.fsec.ClearData();
     this.disg.ClearData();
     this.fsec.ClearData();
     this.reac.ClearData();
@@ -213,9 +217,9 @@ export class ThreeService {
 
       // 荷重
       if (['loads'].indexOf(ModeName) >= 0) {
-        this.pointLoad.chengeData(currentPage);
+        this.load.chengeData(currentPage);
       } else {
-        this.pointLoad.ClearData();
+        this.load.ClearData();
       }
 
       // 変位図
