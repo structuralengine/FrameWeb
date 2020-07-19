@@ -25,16 +25,15 @@ export class ThreeService {
   private currentIndex: number;
 
   constructor(public scene: SceneService,
-    private node: ThreeNodesService,
-    private member: ThreeMembersService,
-    private fixNode: ThreeFixNodeService,
-    private fixMember: ThreeFixMemberService,
-    private joint: ThreeJointService,
-    private load: ThreeLoadService,
-    private disg: ThreeDisplacementService,
-    private reac: ThreeReactService,
-    private fsec: ThreeSectionForceService
-  ) {
+              private node: ThreeNodesService,
+              private member: ThreeMembersService,
+              private fixNode: ThreeFixNodeService,
+              private fixMember: ThreeFixMemberService,
+              private joint: ThreeJointService,
+              private load: ThreeLoadService,
+              private disg: ThreeDisplacementService,
+              private reac: ThreeReactService,
+              private fsec: ThreeSectionForceService) {
   }
 
   //////////////////////////////////////////////////////
@@ -163,8 +162,97 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   public ChengeMode(ModeName: string, currentPage: number = 1): void {
 
+    switch (ModeName){
+      case 'nodes':
+        this.node.visible(true, true); 
+        this.member.visible(true, false);  
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;
+
+      case 'members':
+      case 'elements':
+      case 'notice_points':
+        this.node.visible(true, false); 
+        this.member.visible(true, true);   
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;
+
+      case 'joints':
+        this.node.visible(true, false); 
+        this.member.visible(true, true);   
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(true);
+        this.load.visible(false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;
+
+      case 'fix_nodes':
+        this.node.visible(true, true); 
+        this.member.visible(true, false);  
+        this.fixNode.visible(true);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;
+
+      case 'fix_member':
+        this.node.visible(true, false); 
+        this.member.visible(true, true);   
+        this.fixNode.visible(false);
+        this.fixMember.visible(true);
+        this.joint.visible(false);
+        this.load.visible(false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;     
+      case 'load_names':
+        this.node.visible(true, false); 
+        this.member.visible(true, false);   
+        this.fixNode.visible(true);
+        this.fixMember.visible(true);
+        this.joint.visible(true);
+        this.load.visible(true);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;     
+      case 'load_points':
+        this.node.visible(true, true); 
+        this.member.visible(true, false);   
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(true);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break; 
+    }
+
+
     // モードの変更
     if (this.mode !== ModeName) {
+
+
 
       // #region 節点の表示制御
       if (['fsec', 'comb_fsec', 'pik_fsec'].indexOf(ModeName) >= 0) {

@@ -15,6 +15,7 @@ import { ThreeMembersService } from './three-members.service';
 export class ThreeJointService {
 
   private jointList: any[];
+  private isVisible: boolean;
 
   constructor(private scene: SceneService,
     private nodeThree: ThreeNodesService,
@@ -23,8 +24,18 @@ export class ThreeJointService {
     private joint: InputJointService,
     private three_member: ThreeMembersService){
       this.jointList = new Array();
+      this.isVisible = null;
     }
 
+  public visible(flag: boolean): void {
+    if( this.isVisible === flag){
+      return;
+    }
+    for (const mesh of this.jointList) {
+      mesh.visible = flag;
+    }
+    this.isVisible = flag
+  }
 
   public chengeData(index: number): void {
 

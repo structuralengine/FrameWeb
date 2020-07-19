@@ -26,6 +26,7 @@ export class ThreeDisplacementService {
   private lineList: THREE.Line[];
   private targetData: any;
 
+  private isVisible: boolean;
   private scale: number;
   private defaultScale: number;
   private params: any;          // GUIの表示制御
@@ -35,15 +36,18 @@ export class ThreeDisplacementService {
   private defaultRatio: number;
 
   constructor(private scene: SceneService,
-    private helper: DataHelperModule,
-    private disg: ResultDisgService,
-    private comb_disg: ResultCombineDisgService,
-    private pik_disg: ResultPickupDisgService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private three_node: ThreeNodesService) {
+              private helper: DataHelperModule,
+              private disg: ResultDisgService,
+              private comb_disg: ResultCombineDisgService,
+              private pik_disg: ResultPickupDisgService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private three_node: ThreeNodesService) {
     this.lineList = new Array();
     this.targetData = new Array();
+
+    this.isVisible = null;
+
     this.defaultScale = 0.2
     this.defaultRatio = 0.2 / 0.5  // 最大梁長に対するたわみの表示比率初期値/dispScale初期値
     this.maxDiplacement = 1;
@@ -52,6 +56,16 @@ export class ThreeDisplacementService {
       dispScale: 0.5,
     };
     this.gui = null;
+  }
+
+  public visible(flag: boolean): void {
+    if( this.isVisible === flag){
+      return;
+    }
+    for (const mesh of this.lineList) {
+      mesh.visible = flag;
+    }
+    this.isVisible = flag
   }
 
   // データをクリアする

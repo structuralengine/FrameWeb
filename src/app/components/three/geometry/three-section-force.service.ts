@@ -25,6 +25,7 @@ import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahe
 })
 export class ThreeSectionForceService {
 
+  private isVisible: boolean;
   private lineList: THREE.Line[];
   private targetData: any;
   private targetIndex: string;
@@ -38,13 +39,15 @@ export class ThreeSectionForceService {
 
 
   constructor(private scene: SceneService,
-    private helper: DataHelperModule,
-    private fsec: ResultFsecService,
-    private comb_fsec: ResultCombineFsecService,
-    private pik_fsec: ResultPickupFsecService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private three_member: ThreeMembersService) {
+              private helper: DataHelperModule,
+              private fsec: ResultFsecService,
+              private comb_fsec: ResultCombineFsecService,
+              private pik_fsec: ResultPickupFsecService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private three_member: ThreeMembersService) {
+
+    this.isVisible = null;
 
     this.lineList = new Array();
     this.ClearData();
@@ -64,6 +67,16 @@ export class ThreeSectionForceService {
     loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
       this.font = font;
     });
+  }
+
+  public visible(flag: boolean): void {
+    if( this.isVisible === flag){
+      return;
+    }
+    for (const mesh of this.lineList) {
+      mesh.visible = flag;
+    }
+    this.isVisible = flag
   }
 
   // データをクリアする

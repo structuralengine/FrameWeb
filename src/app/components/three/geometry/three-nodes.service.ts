@@ -11,6 +11,7 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 export class ThreeNodesService {
 
   private geometry: THREE.SphereBufferGeometry;
+  private isVisible: boolean[];
 
   private _baseScale: number;   // 最近点から求めるスケール
   public maxdistance: number;
@@ -21,6 +22,8 @@ export class ThreeNodesService {
 
   constructor(private scene: SceneService,
               private node: InputNodesService) {
+
+    this.isVisible = [null, null];
     this.scale = 1;
     this._baseScale = null;
     this.maxdistance = 0;
@@ -192,22 +195,33 @@ export class ThreeNodesService {
   }
 
   // 文字を消す
-  public Disable(): void {
+  private Disable(): void {
     for (const mesh of this.nodeList) {
       mesh.getObjectByName('font').visible = false;
     }
   }
 
   // 文字を表示する
-  public Enable(): void {
+  private Enable(): void {
     for (const mesh of this.nodeList) {
       mesh.getObjectByName('font').visible = true;
     }
   }
 
-  public visible(flag: boolean): void {
-    for (const mesh of this.nodeList) {
-      mesh.visible = flag;
+  public visible(flag: boolean, text: boolean): void {
+    if( this.isVisible[0] !== flag){
+      for (const mesh of this.nodeList) {
+        mesh.visible = flag;
+      }
+      this.isVisible[0] = flag;
+    }
+    if( this.isVisible[1] !== text){
+      if(text === true){
+        this.Enable();
+      }else{
+        this.Disable();
+      }
+      this.isVisible[1] = text;
     }
   }
 

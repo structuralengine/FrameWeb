@@ -21,6 +21,7 @@ import { ThreeNodesService } from './three-nodes.service';
 })
 export class ThreeReactService {
 
+  private isVisible: boolean;
   private pointLoadList: any[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
@@ -32,8 +33,19 @@ export class ThreeReactService {
               private comb_disg: ResultCombineReacService,
               private pik_disg: ResultPickupReacService) {
 
+      this.isVisible = null;
       this.pointLoadList = new Array();
       this.selectionItem = null;
+    }
+    
+    public visible(flag: boolean): void {
+      if( this.isVisible === flag){
+        return;
+      }
+      for (const mesh of this.pointLoadList) {
+        mesh.visible = flag;
+      }
+      this.isVisible = flag
     }
 
     public maxLength(): number {
