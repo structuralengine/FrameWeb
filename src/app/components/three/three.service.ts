@@ -246,6 +246,21 @@ export class ThreeService {
         this.reac.visible(false);
         this.fsec.visible(false);
         break; 
+      case 'load_members':
+        this.node.visible(true, false); 
+        this.member.visible(true, true);   
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(true);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;        
+        
+        
+
+        
     }
 
 
