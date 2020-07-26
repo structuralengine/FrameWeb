@@ -266,7 +266,7 @@ export class ThreeSectionForceService {
 
     const maxValue: number = allFsecgData['max_value'];
     this.targetData['scale'] = minDistance / maxValue;
-    this.gui_max_scale = 2 * maxDistance / minDistance;
+    this.gui_max_scale = maxDistance / minDistance;
 
     // 断面力図を描く
     this.onResize();
@@ -364,74 +364,60 @@ export class ThreeSectionForceService {
       const colors = [];
       const danmenryoku = [];
 
+      // i端の座標を登録
+      positions.push(memberInfo.iPosition.x);
+      positions.push(memberInfo.iPosition.y);
+      positions.push(memberInfo.iPosition.z);   
+      colors.push(color.r, color.g, color.b);   
+      // 断面力の座標を登録
       for (let j = 1; j < target.length; j++) {
         const force = target[j];
         let x: number = force.worldPosition.x;
         let y: number = force.worldPosition.y;
         let z: number = force.worldPosition.z;
-        x -= force[key] * memberInfo[axis].x * scale;
-        y -= force[key] * memberInfo[axis].y * scale;
-        z -= force[key] * memberInfo[axis].z * scale;
+        const f: number = force[key];
+        if ( f===0 ) {
+          continue;
+        }
+        x -= f * memberInfo[axis].x * scale;
+        y -= f * memberInfo[axis].y * scale;
+        z -= f * memberInfo[axis].z * scale;
         positions.push(x, y, z);
         colors.push(color.r, color.g, color.b);
-        danmenryoku.push(force[key]);
+        danmenryoku.push(f);
       }
+      // j端の座標を登録
+      positions.push(memberInfo.jPosition.x);
+      positions.push(memberInfo.jPosition.y);
+      positions.push(memberInfo.jPosition.z);
+      colors.push(color.r, color.g, color.b);
 
-      if (this.lineList.length > 0) {
-        const line = this.lineList[i];
+      if (tmplineList.length > 0) {
+        // 既にオブジェクトが生成されていた場合
         // line を修正するコード
+        const line = tmplineList[i];
         const LineGeometry: LineGeometry = line.geometry;
         LineGeometry.setPositions(positions);
 
-        // 文字を削除する
+        // 文字と面を削除する
         while (line.children.length > 0) {
           const object = line.children[0];
           object.parent.remove(object);
         }
-        // テキストを修正するコード
-        let j = 0;
-        for (let i = 0; i < positions.length; i += 3) {
-          const pos = {
-            x: positions[i],
-            y: positions[i + 1],
-            z: positions[i + 2],
-          };
-
-          // 数値を更新
-          const DanmentyokuText = String(danmenryoku[j]);
-          const TextGeometry = new THREE.TextGeometry(
-            DanmentyokuText, {
-            font: this.font,
-            size: 0.2,
-            height: 0.002,
-            curveSegments: 4,
-            bevelEnabled: false,
-          });
-          const matText = [
-            new THREE.MeshBasicMaterial({ color: 0x000000 }),
-            new THREE.MeshBasicMaterial({ color: 0x000000 })
-          ];
-          const text = new THREE.Mesh(TextGeometry, matText);
-          // 数値をx-y平面の状態から，x-z平面の状態に回転
-          text.rotation.x = Math.PI / 2;
-          // 数値を任意の位置に配置
-          text.position.set(pos.x, pos.y, pos.z);
-          line.add(text);
-          /*
-          const text = line.children[j];
-          // 数値をx-y平面の状態から，x-z平面の状態に回転
-          text.rotation.x = Math.PI / 2;
-          // 数値を任意の位置に配置
-          text.position.set(pos.x, pos.y, pos.z);
-          const TextGeometry: THREE.TextGeometry = text['geometry'];
-          const param: object = TextGeometry.parameters;
-          param['text'] = danmenryoku[j];
-          */
-          j++;
-        }
+        
+        // テキストを追加
+        this.addTextGeometry(positions, line, danmenryoku);
+        // 面を追加する
+        this.addPathGeometory(positions, line, colors);
 
       } else {
-        const line = this.addPathGeometory(positions, colors, danmenryoku);
+        // 線を生成する
+        const line = this.createLineGeometory(positions, colors);
+        // テキストを追加
+        this.addTextGeometry(positions, line, danmenryoku);
+        // 面を追加する
+        this.addPathGeometory(positions, line, colors);
+        // シーンに追加する
         tmplineList.push(line);
         this.scene.add(line);
       }
@@ -440,7 +426,7 @@ export class ThreeSectionForceService {
   }
 
   // 断面力の線を(要素ごとに)描く
-  private addPathGeometory(positions: any[], colors: any[], danmenryokuList: number[]): Line2 {
+  private createLineGeometory(positions: any[], colors: any[]): Line2 {
 
     // 線を追加
     const geometry: LineGeometry = new LineGeometry();
@@ -458,20 +444,21 @@ export class ThreeSectionForceService {
     line.computeLineDistances();
     line.scale.set(1, 1, 1);
 
-    // テキストを追加
-    const matText = [
-      new THREE.MeshBasicMaterial({ color: 0x000000 }),
-      new THREE.MeshBasicMaterial({ color: 0x000000 })
-    ];
+    return line;
+  }
 
+  // テキストを追加
+  private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[]): void {
     let j = 0;
-    for (let i = 0; i < positions.length; i += 3) {
+    for (let i = 3; i < positions.length - 3; i += 3) {
       const pos = {
         x: positions[i],
         y: positions[i + 1],
         z: positions[i + 2],
       };
-      const DanmentyokuText = String(danmenryokuList[j]);
+
+      // 数値を更新
+      const DanmentyokuText = String(danmenryoku[j]);
       const TextGeometry = new THREE.TextGeometry(
         DanmentyokuText, {
         font: this.font,
@@ -479,8 +466,11 @@ export class ThreeSectionForceService {
         height: 0.002,
         curveSegments: 4,
         bevelEnabled: false,
-      }
-      );
+      });
+      const matText = [
+        new THREE.MeshBasicMaterial({ color: 0x000000 }),
+        new THREE.MeshBasicMaterial({ color: 0x000000 })
+      ];
       const text = new THREE.Mesh(TextGeometry, matText);
       // 数値をx-y平面の状態から，x-z平面の状態に回転
       text.rotation.x = Math.PI / 2;
@@ -489,7 +479,37 @@ export class ThreeSectionForceService {
       line.add(text);
       j++;
     }
-    return line;
+  }
+
+  // 面を追加する
+  private addPathGeometory(positions: any[], line: THREE.Line, colors: any[]): void {
+
+    const material = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0x00cc00,
+      opacity: 0.3
+    });
+
+    const posList: THREE.Vector3[] = new Array();
+    for (let i = 0; i < positions.length; i += 3) {
+        posList.push(new THREE.Vector3(
+          positions[i],
+          positions[i + 1],
+          positions[i + 2]));
+    }
+
+    for ( let i = 1; i < posList.length - 1; i++ ){
+      let geometry = new THREE.Geometry(); 
+      geometry.vertices.push(posList[0]);
+      geometry.vertices.push(posList[i]);
+      geometry.vertices.push(posList[i + 1]);
+      geometry.faces.push(new THREE.Face3(0, 1, 2));
+      geometry.computeFaceNormals();
+      geometry.computeVertexNormals();
+      const mesh = new THREE.Mesh(geometry, material);
+      line.add(mesh);
+    }
   }
 
   private getDistance(): number[] {
