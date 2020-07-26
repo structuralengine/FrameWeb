@@ -17,7 +17,7 @@ import { ResultCombineFsecService } from '../../result/result-combine-fsec/resul
 import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-pickup-fsec.service';
 
 import { ThreeMembersService } from './three-members.service';
-import { NgbTypeaheadWindow } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
+import { ThreeNodesService } from './three-nodes.service.js';
 
 
 @Injectable({
@@ -34,6 +34,7 @@ export class ThreeSectionForceService {
   private params: any;          // GUIの表示制御
   private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
+  private gui_max_scale: number;
 
   private font: THREE.Font;
 
@@ -45,6 +46,7 @@ export class ThreeSectionForceService {
               private pik_fsec: ResultPickupFsecService,
               private node: InputNodesService,
               private member: InputMembersService,
+              private three_node: ThreeNodesService,
               private three_member: ThreeMembersService) {
 
     this.isVisible = null;
@@ -61,6 +63,7 @@ export class ThreeSectionForceService {
     }
     this.params.momentY = true; // 初期値
     this.gui = null;
+    this.gui_max_scale = 1;
 
     // フォントをロード
     const loader = new THREE.FontLoader();
@@ -70,13 +73,18 @@ export class ThreeSectionForceService {
   }
 
   public visible(flag: boolean): void {
-    if( this.isVisible === flag){
+    if (this.isVisible === flag) {
       return;
     }
     for (const mesh of this.lineList) {
       mesh.visible = flag;
     }
     this.isVisible = flag
+    if (flag === true) {
+      this.guiEnable();
+    } else {
+      this.guiDisable();
+    }
   }
 
   // データをクリアする
@@ -94,19 +102,21 @@ export class ThreeSectionForceService {
       this.lineList = new Array();
     }
     this.targetData = {}; //new Array();
-    this.targetIndex = "1";
+    this.targetIndex = '';
     this.scale = 0.5;
   }
 
-  public guiEnable(): void {
+  private guiEnable(): void {
     if (this.gui !== null) {
       return;
     }
+    const gui_step: number = this.gui_max_scale * 0.001;
     this.gui = {
-      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, 1).step(0.001).onChange((value) => {
+      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, this.gui_max_scale).step(gui_step).onChange((value) => {
         // guiによる設定
         this.scale = value;
         this.onResize();
+        this.scene.render();
       })
     };
     for (const key of this.radioButtons) {
@@ -117,11 +127,12 @@ export class ThreeSectionForceService {
           this.setGUIcheck('');
         }
         this.onResize();
+        this.scene.render();
       });
     }
   }
 
-  public guiDisable(): void {
+  private guiDisable(): void {
     if (this.gui === null) {
       return;
     }
@@ -142,6 +153,11 @@ export class ThreeSectionForceService {
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
   public chengeData(index: number): void {
+
+    if(this.targetIndex === index.toString()){
+      // ケースが同じなら何もしない
+      return;
+    }
 
     if (this.lineList.length > 0) {
       // 既に Geometryを作成していたら リサイズするだけ
@@ -173,6 +189,9 @@ export class ThreeSectionForceService {
 
     for (const targetKey of Object.keys(allFsecgData)) {
 
+      if (!Array.isArray(allFsecgData[targetKey])){
+        continue;
+      }
       let fsecData = allFsecgData[targetKey].slice();
 
       // 新しい入力を適用する
@@ -231,7 +250,7 @@ export class ThreeSectionForceService {
           const c = deleteindex[d];
           fsecData.splice(c, 1);
         }
-        
+
       }
       this.targetData[targetKey] = targetList;
     }
@@ -240,17 +259,26 @@ export class ThreeSectionForceService {
       return;      // 荷重Case番号 this.targetIndex が 計算結果 this.targetData に含まれていなかったら何もしない
     }
 
+    // スケールの決定に用いる変数を写す
+    let minDistance: number;
+    let maxDistance: number;
+    [minDistance, maxDistance] = this.getDistance();
+
+    const maxValue: number = allFsecgData['max_value'];
+    this.targetData['scale'] = minDistance / maxValue;
+    this.gui_max_scale = 2 * maxDistance / minDistance;
+
     // 断面力図を描く
     this.onResize();
-    
+
   }
 
   // 断面力, 部材の情報をまとめる
   private getFsecPoints(MemberLength: number,
-    localPosition: number,
-    fsec,
-    i,
-    j) {
+                        localPosition: number,
+                        fsec,
+                        i,
+                        j) {
 
     // 断面力の集計
     const axialForce: number = this.helper.toNumber(fsec.fx);
@@ -289,13 +317,14 @@ export class ThreeSectionForceService {
     let key: string;
     let axis: string;
     let color: THREE.Color;
+    let scale: number = this.targetData['scale'] * this.scale;
 
     if (this.params.axialForce === true) {
       // 軸方向の圧縮力
       color = new THREE.Color(0xFF0000);
       key = 'axialForce';
       axis = 'localAxisY';
-    } else if(this.params.torsionalMoment === true) {
+    } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
       color = new THREE.Color(0xFF0000);
       key = 'torsionalMoment';
@@ -326,7 +355,7 @@ export class ThreeSectionForceService {
 
     const tmplineList: Line2[] = this.lineList;
 
-    for ( let i = 0; i < this.targetData[targetKey].length; i++){
+    for (let i = 0; i < this.targetData[targetKey].length; i++) {
       const target = this.targetData[targetKey][i];
 
       // 断面力のpathを表示
@@ -334,22 +363,74 @@ export class ThreeSectionForceService {
       const positions = [];
       const colors = [];
       const danmenryoku = [];
-      for (const force of target) {
+
+      for (let j = 1; j < target.length; j++) {
+        const force = target[j];
         let x: number = force.worldPosition.x;
         let y: number = force.worldPosition.y;
         let z: number = force.worldPosition.z;
-        x -= force[key] * memberInfo[axis].x * this.scale;
-        y -= force[key] * memberInfo[axis].y * this.scale;
-        z -= force[key] * memberInfo[axis].z * this.scale;
+        x -= force[key] * memberInfo[axis].x * scale;
+        y -= force[key] * memberInfo[axis].y * scale;
+        z -= force[key] * memberInfo[axis].z * scale;
         positions.push(x, y, z);
         colors.push(color.r, color.g, color.b);
         danmenryoku.push(force[key]);
       }
-      if(this.lineList.length> 0){
-        const line = this.lineList[i];
-        // ここに line を修正するコードを描く
 
-      } else{
+      if (this.lineList.length > 0) {
+        const line = this.lineList[i];
+        // line を修正するコード
+        const LineGeometry: LineGeometry = line.geometry;
+        LineGeometry.setPositions(positions);
+
+        // 文字を削除する
+        while (line.children.length > 0) {
+          const object = line.children[0];
+          object.parent.remove(object);
+        }
+        // テキストを修正するコード
+        let j = 0;
+        for (let i = 0; i < positions.length; i += 3) {
+          const pos = {
+            x: positions[i],
+            y: positions[i + 1],
+            z: positions[i + 2],
+          };
+
+          // 数値を更新
+          const DanmentyokuText = String(danmenryoku[j]);
+          const TextGeometry = new THREE.TextGeometry(
+            DanmentyokuText, {
+            font: this.font,
+            size: 0.2,
+            height: 0.002,
+            curveSegments: 4,
+            bevelEnabled: false,
+          });
+          const matText = [
+            new THREE.MeshBasicMaterial({ color: 0x000000 }),
+            new THREE.MeshBasicMaterial({ color: 0x000000 })
+          ];
+          const text = new THREE.Mesh(TextGeometry, matText);
+          // 数値をx-y平面の状態から，x-z平面の状態に回転
+          text.rotation.x = Math.PI / 2;
+          // 数値を任意の位置に配置
+          text.position.set(pos.x, pos.y, pos.z);
+          line.add(text);
+          /*
+          const text = line.children[j];
+          // 数値をx-y平面の状態から，x-z平面の状態に回転
+          text.rotation.x = Math.PI / 2;
+          // 数値を任意の位置に配置
+          text.position.set(pos.x, pos.y, pos.z);
+          const TextGeometry: THREE.TextGeometry = text['geometry'];
+          const param: object = TextGeometry.parameters;
+          param['text'] = danmenryoku[j];
+          */
+          j++;
+        }
+
+      } else {
         const line = this.addPathGeometory(positions, colors, danmenryoku);
         tmplineList.push(line);
         this.scene.add(line);
@@ -411,7 +492,18 @@ export class ThreeSectionForceService {
     return line;
   }
 
+  private getDistance(): number[] {
+    let minDistance: number = Number.MAX_VALUE;
+    let maxDistance: number = 0;
+    
+    const member: object = this.member.getMemberJson(0);
+    for ( const memberNo of Object.keys(member)){
+      const l: number = this.member.getMemberLength(memberNo);
+      minDistance = Math.min(l, minDistance);
+      maxDistance = Math.max(l, maxDistance);
+    }
 
-
+    return [minDistance, maxDistance];
+  }
 }
 

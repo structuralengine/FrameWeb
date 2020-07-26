@@ -19,13 +19,12 @@ export class ThreeFixMemberService {
   private fixmemberList: any[];
   private isVisible: boolean;
 
-  constructor(
-    private scene: SceneService,
-    private nodeThree: ThreeNodesService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private fixmember: InputFixMemberService,
-    private three_member: ThreeMembersService) { 
+  constructor(private scene: SceneService,
+              private nodeThree: ThreeNodesService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private fixmember: InputFixMemberService,
+              private three_member: ThreeMembersService) { 
       this.fixmemberList = new Array();
       this.isVisible = null;
     }

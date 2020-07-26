@@ -168,6 +168,7 @@ export class ThreeNodesService {
     }
     this.setMaxDistance();
   }
+  
   // 最遠点からスケールを求める
   private setMaxDistance(): void {
     this.maxdistance = 0;

@@ -66,6 +66,11 @@ export class ThreeDisplacementService {
       mesh.visible = flag;
     }
     this.isVisible = flag
+    if (flag === true) {
+      this.guiEnable();
+    } else {
+      this.guiDisable();
+    }
   }
 
   // データをクリアする
@@ -84,7 +89,7 @@ export class ThreeDisplacementService {
     }
   }
 
-  public guiEnable(): void {
+  private guiEnable(): void {
     if (this.gui !== null) {
       return;
     }
@@ -95,7 +100,7 @@ export class ThreeDisplacementService {
     });
   }
 
-  public guiDisable(): void {
+  private guiDisable(): void {
     if (this.gui === null) {
       return;
     }
@@ -260,8 +265,10 @@ export class ThreeDisplacementService {
 
       if (this.lineList.length > 0) {
         const line = this.lineList[i];
+        // line を修正するコード
         const geometry: LineGeometry = line.geometry;
         geometry.setPositions(positions);
+
       } else {
         const geometry: LineGeometry = new LineGeometry();
         geometry.setPositions(positions);
