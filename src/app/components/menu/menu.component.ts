@@ -13,6 +13,8 @@ import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
 
+import * as jsPDF from 'jspdf'
+
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
@@ -152,9 +154,14 @@ export class MenuComponent implements OnInit {
 
     FileSaver.saveAs(blob, filename);
   }
+  
   // 印刷
   print(): void {
-
+    let doc = new jsPDF('p', 'pt', 'a4', false);
+    doc.setFontSize(20);
+    doc.text(60, 150, 'Musashino-Advent-Calendar_2017');
+    doc.text(100, 200, 'Try Japanese output with jsPDF.');
+    doc.output('dataurlnewwindow');
   }
 
   // ログイン関係 

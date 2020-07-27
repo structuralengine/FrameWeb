@@ -17,13 +17,25 @@ export class ThreeFixNodeService {
 
   private BufferGeometry: THREE.SphereBufferGeometry; // 支点
   private fixnodeList: any[];
+  private isVisible: boolean;
 
   constructor(private scene: SceneService,
     private nodeThree: ThreeNodesService,
     private node: InputNodesService,
     private fixnode: InputFixNodeService) { 
       this.fixnodeList = new Array();
+      this.isVisible = null;
     }
+
+  public visible(flag: boolean): void {
+    if( this.isVisible === flag){
+      return;
+    }
+    for (const mesh of this.fixnodeList) {
+      mesh.visible = flag;
+    }
+    this.isVisible = flag
+  }
 
   public maxLength(): number {
     // 最も距離の近い2つの節点距離

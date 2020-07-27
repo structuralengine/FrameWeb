@@ -17,15 +17,16 @@ export class ThreeFixMemberService {
 
   private BufferGeometry: THREE.SphereBufferGeometry; //  分布バネ
   private fixmemberList: any[];
+  private isVisible: boolean;
 
-  constructor(
-    private scene: SceneService,
-    private nodeThree: ThreeNodesService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private fixmember: InputFixMemberService,
-    private three_member: ThreeMembersService) { 
+  constructor(private scene: SceneService,
+              private nodeThree: ThreeNodesService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private fixmember: InputFixMemberService,
+              private three_member: ThreeMembersService) { 
       this.fixmemberList = new Array();
+      this.isVisible = null;
     }
   
   public maxLength(): number {
@@ -35,6 +36,16 @@ export class ThreeFixMemberService {
   public center(): any {
     // すべての節点の中心
     return this.nodeThree.center; 
+  }
+
+  public visible(flag: boolean): void {
+    if( this.isVisible === flag){
+      return;
+    }
+    for (const mesh of this.fixmemberList) {
+      mesh.visible = flag;
+    }
+    this.isVisible = flag
   }
 
   public chengeData(index: number): void {

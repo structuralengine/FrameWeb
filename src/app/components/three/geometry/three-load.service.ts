@@ -22,19 +22,35 @@ import { zip } from 'rxjs';
 })
 export class ThreeLoadService {
 
+  private isVisible:boolean;
   private pointLoadList: any[];
   private memberLoadList: any[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   constructor(private scene: SceneService,
-    private nodeThree: ThreeNodesService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private load: InputLoadService,
-    private three_member: ThreeMembersService) {
+              private nodeThree: ThreeNodesService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private load: InputLoadService,
+              private three_member: ThreeMembersService) {
+
+    this.isVisible = null;
     this.pointLoadList = new Array();
     this.memberLoadList = new Array();
     this.selectionItem = null;
+  }
+
+  public visible(flag: boolean): void {
+    if( this.isVisible === flag){
+      return;
+    }
+    for (const mesh of this.pointLoadList) {
+      mesh.visible = flag;
+    }
+    for (const mesh of this.memberLoadList) {
+      mesh.visible = flag;
+    }
+    this.isVisible = flag
   }
 
   public maxLength(): number {

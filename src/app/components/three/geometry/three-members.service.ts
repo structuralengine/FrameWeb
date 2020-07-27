@@ -16,16 +16,20 @@ export class ThreeMembersService {
   private axisList: THREE.Group[];
   private isEnable: boolean;
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
+  private isVisible: boolean[];
 
   constructor(private scene: SceneService,
               private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService) {
+    
+    this.isVisible = [null, null];
     this.memberList = new Array();
     this.axisList = new Array();
     this.isEnable = true;
   }
   
+
   public baseScale(): number {
     const scale = this.nodeThree.baseScale();
     return scale * 0.2;
@@ -155,8 +159,25 @@ export class ThreeMembersService {
     }
   }
 
+  public visible(flag: boolean, text:boolean): void {
+    if( this.isVisible[0] !== flag){
+      for (const mesh of this.memberList) {
+        mesh.visible = flag;
+      }
+      this.isVisible[0] = flag
+    }
+    if( this.isVisible[1] !== text){
+      if (text === true){
+        this.Enable();
+      }else{
+        this.Disable();
+      }
+      this.isVisible[1] = text
+    }
+  }
+
   // 文字を消す
-  public Disable(): void {
+  private Disable(): void {
     for (const mesh of this.memberList) {
       mesh.getObjectByName('font').visible = false;
     }
@@ -167,7 +188,7 @@ export class ThreeMembersService {
   }
 
   // 文字を表示する
-  public Enable(): void {
+  private Enable(): void {
     for (const mesh of this.memberList) {
       mesh.getObjectByName('font').visible = true;
     }
