@@ -392,14 +392,10 @@ export class ThreeSectionForceService {
       positions.push(memberInfo.jPosition.z);
       colors.push(color.r, color.g, color.b);
 
-      if (tmplineList.length > 1) {
+      if (tmplineList.length > i) {
         // 既にオブジェクトが生成されていた場合
         // line を修正するコード
         const line = tmplineList[i];
-        if (!('geometry' in line)) {
-          console.log('LineGeometry is undefined');
-          return;
-        }
         const LineGeometry: LineGeometry = line['geometry'];
         LineGeometry.setPositions(positions);
 

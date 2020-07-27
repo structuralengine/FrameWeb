@@ -263,7 +263,7 @@ export class ThreeDisplacementService {
         colors.push(threeColor.r, threeColor.g, threeColor.b);
       }
 
-      if (this.lineList.length > 0) {
+      if (this.lineList.length > i) {
         const line = this.lineList[i];
         // line を修正するコード
         const geometry: LineGeometry = line.geometry;
