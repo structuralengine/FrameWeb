@@ -17,6 +17,8 @@ export class ThreeJointService {
   private jointList: any[];
   private isVisible: boolean;
 
+  private selectionItem: THREE.Mesh;     // 選択中のアイテム
+
   constructor(private scene: SceneService,
     private nodeThree: ThreeNodesService,
     private node: InputNodesService,
@@ -105,7 +107,8 @@ export class ThreeJointService {
         const FocalSpot_X = position.x + localAxis.x.x;
         const FocalSpot_Y = position.y + localAxis.x.y;
         const FocalSpot_Z = position.z + localAxis.x.z;
-        pin_x.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
+        pin_x.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);  
+        pin_x.name = "0xFF0000";
         this.jointList.push(pin_x);
         this.scene.add(pin_x);
       }
@@ -117,7 +120,8 @@ export class ThreeJointService {
         const FocalSpot_X = position.x + localAxis.y.x;
         const FocalSpot_Y = position.y + localAxis.y.y;
         const FocalSpot_Z = position.z + localAxis.y.z;
-        pin_y.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z); 
+        pin_y.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);   
+        pin_y.name = "0x00FF00";
         this.jointList.push(pin_y);
         this.scene.add(pin_y);
 
@@ -130,7 +134,8 @@ export class ThreeJointService {
         const FocalSpot_X = position.x + localAxis.z.x;
         const FocalSpot_Y = position.y + localAxis.z.y;
         const FocalSpot_Z = position.z + localAxis.z.z;
-        pin_z.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);      
+        pin_z.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);  
+        pin_z.name = "0x0000FF";
         this.jointList.push(pin_z);
         this.scene.add(pin_z);
 
@@ -162,6 +167,97 @@ export class ThreeJointService {
       this.scene.remove(mesh);
     }
     this.jointList = new Array();
+  }
+
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(raycaster: THREE.Raycaster , action: string): void {
+
+    if (this.jointList.length === 0) {
+      return; // 対象がなければ何もしない
+    }
+
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.jointList);
+    switch (action) {
+      case 'click':
+        this.jointList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+            item.geometry.parameters.tube = 0.02;
+            item.geometry.parameters.radius = 0.1;
+            //item.scale.x = 1.10; item.scale.y = 1.10; item.scale.z = 1.10;
+
+          }
+        });
+        break;
+
+      case 'select':
+          this.selectionItem = null;
+          this.jointList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+            this.selectionItem = item;
+            item.geometry.parameters.tube = 0.02;
+            item.geometry.parameters.radius = 0.1;
+            //item.scale.x = 1.10; item.scale.y = 1.10; item.scale.z = 1.10;
+          } else {
+            // それ以外は元の色にする
+            if (item.name === "0xFF0000"){
+              item.material['color'].setHex(0xff0000);
+              }else if(item.name === "0x00FF00"){
+                item.material['color'].setHex(0x00ff00);
+              }else if(item.name === "0x0000FF"){
+                item.material['color'].setHex(0x0000ff);
+              }
+            item.material['opacity'] = 1.00;
+            item.geometry.parameters.tube = 0.01;
+            item.geometry.parameters.radius = 0.1;
+            //item.scale.x = 1.00; item.scale.y = 1.00; item.scale.z = 1.00;
+          }
+        });
+        break;
+
+      case 'hover':
+        this.jointList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 0.25;
+            item.geometry.parameters.tube = 0.01;
+            item.geometry.parameters.radius = 0.5;
+            //item.scale.x = 1.00; item.scale.y = 1.00; item.scale.z = 1.00;
+          } else {
+            if ( item === this.selectionItem ) {
+              item.material['color'].setHex(0xff0000);
+              item.material['opacity'] = 1.00;
+              item.geometry.parameters.tube = 0.02;
+              item.geometry.parameters.radius = 0.1;
+              //item.scale.x = 1.10; item.scale.y = 1.10; item.scale.z = 1.10;
+            } else {
+              // それ以外は元の色にする
+              if (item.name === "0xFF0000"){
+              item.material['color'].setHex(0xff0000);
+              }else if(item.name === "0x00FF00"){
+                item.material['color'].setHex(0x00ff00);
+              }else if(item.name === "0x0000FF"){
+                item.material['color'].setHex(0x0000ff);
+              }
+              item.material['opacity'] = 1.00;
+              item.geometry.parameters.tube = 0.01;
+              item.geometry.parameters.radius = 0.1;
+              //item.scale.x = 1.00; item.scale.y = 1.00; item.scale.z = 1.00;
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
+    }
   }
 
 }

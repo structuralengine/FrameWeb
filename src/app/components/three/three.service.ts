@@ -327,6 +327,8 @@ export class ThreeService {
 
       case 'members':
       case 'joints':
+        this.joint.detectObject(raycaster, action);
+        break;
       case 'notice_points':
         this.member.detectObject(raycaster, action);
         break;
