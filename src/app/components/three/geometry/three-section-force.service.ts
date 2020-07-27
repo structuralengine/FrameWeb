@@ -392,11 +392,15 @@ export class ThreeSectionForceService {
       positions.push(memberInfo.jPosition.z);
       colors.push(color.r, color.g, color.b);
 
-      if (tmplineList.length > 0) {
+      if (tmplineList.length > 1) {
         // 既にオブジェクトが生成されていた場合
         // line を修正するコード
         const line = tmplineList[i];
-        const LineGeometry: LineGeometry = line.geometry;
+        if (!('geometry' in line)) {
+          console.log('LineGeometry is undefined');
+          return;
+        }
+        const LineGeometry: LineGeometry = line['geometry'];
         LineGeometry.setPositions(positions);
 
         // 文字と面を削除する
@@ -404,7 +408,7 @@ export class ThreeSectionForceService {
           const object = line.children[0];
           object.parent.remove(object);
         }
-        
+
         // テキストを追加
         this.addTextGeometry(positions, line, danmenryoku);
         // 面を追加する

@@ -47,7 +47,6 @@ export class ResultFsecService {
           my: (Math.round(tmp.my * 100) / 100).toFixed(2),
           mz: (Math.round(tmp.mz * 100) / 100).toFixed(2)
         };
-        result = tmp;
         break;
       }
     }
