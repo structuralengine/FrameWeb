@@ -133,11 +133,11 @@ export class InputLoadComponent implements OnInit {
     this.three.ChengeMode('load_poinsts', currentPage);
   }
 
-  public loadPointsActive():void {
-    this.three.ChengeMode('load_poinsts');
+  public loadPointsActive(): void {
+    this.three.ChengeMode('load_points');
   }
 
-  public loadMembersActive():void {
+  public loadMembersActive(): void {
     this.three.ChengeMode('load_members');
   }
 

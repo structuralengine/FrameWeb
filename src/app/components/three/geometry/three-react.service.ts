@@ -39,13 +39,13 @@ export class ThreeReactService {
     }
     
     public visible(flag: boolean): void {
-      if( this.isVisible === flag){
+      if ( this.isVisible === flag) {
         return;
       }
       for (const mesh of this.pointLoadList) {
         mesh.visible = flag;
       }
-      this.isVisible = flag
+      this.isVisible = flag;
     }
 
     public maxLength(): number {
@@ -181,7 +181,7 @@ export class ThreeReactService {
           ellipse.rotateX(Math.PI / 2);
           break;
         case 'mz':
-          // 何もしない
+          ellipse.rotateX(Math.PI); // 反転
           break;
       }
 
@@ -195,7 +195,7 @@ export class ThreeReactService {
 
     // 節点荷重の矢印を作成する
     private setPointReact(value: number, pMax: number,
-                         node: any, name: string): Line2 {
+                          node: any, name: string): Line2 {
 
       if (value === 0) {
         return null;
@@ -204,7 +204,7 @@ export class ThreeReactService {
       const maxLength: number = this.maxLength() * 0.7;
       const length: number = maxLength * value / pMax;
 
-      const linewidth: number = this.nodeThree.baseScale() / 10;
+      const linewidth: number = this.nodeThree.baseScale() / 50;
 
       let color: number;
       const positions = [];

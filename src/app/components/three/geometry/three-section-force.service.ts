@@ -55,6 +55,7 @@ export class ThreeSectionForceService {
     this.ClearData();
 
     // gui
+    this.scale = 0.5;
     this.params = {
       forceScale: this.scale
     };
@@ -79,7 +80,7 @@ export class ThreeSectionForceService {
     for (const mesh of this.lineList) {
       mesh.visible = flag;
     }
-    this.isVisible = flag
+    this.isVisible = flag;
     if (flag === true) {
       this.guiEnable();
     } else {
@@ -367,8 +368,8 @@ export class ThreeSectionForceService {
       // i端の座標を登録
       positions.push(memberInfo.iPosition.x);
       positions.push(memberInfo.iPosition.y);
-      positions.push(memberInfo.iPosition.z);   
-      colors.push(color.r, color.g, color.b);   
+      positions.push(memberInfo.iPosition.z);
+      colors.push(color.r, color.g, color.b);
       // 断面力の座標を登録
       for (let j = 1; j < target.length; j++) {
         const force = target[j];
@@ -376,7 +377,7 @@ export class ThreeSectionForceService {
         let y: number = force.worldPosition.y;
         let z: number = force.worldPosition.z;
         const f: number = force[key];
-        if ( f===0 ) {
+        if ( f === 0 ) {
           continue;
         }
         x -= f * memberInfo[axis].x * scale;
@@ -406,7 +407,7 @@ export class ThreeSectionForceService {
         }
 
         // テキストを追加
-        this.addTextGeometry(positions, line, danmenryoku);
+        this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
         this.addPathGeometory(positions, line, colors);
 
@@ -414,7 +415,7 @@ export class ThreeSectionForceService {
         // 線を生成する
         const line = this.createLineGeometory(positions, colors);
         // テキストを追加
-        this.addTextGeometry(positions, line, danmenryoku);
+        this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
         this.addPathGeometory(positions, line, colors);
         // シーンに追加する
@@ -448,7 +449,7 @@ export class ThreeSectionForceService {
   }
 
   // テキストを追加
-  private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[]): void {
+  private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[], localAxis: any): void {
     let j = 0;
     for (let i = 3; i < positions.length - 3; i += 3) {
       const pos = {
@@ -458,7 +459,7 @@ export class ThreeSectionForceService {
       };
 
       // 数値を更新
-      const DanmentyokuText = String(danmenryoku[j]);
+      const DanmentyokuText = danmenryoku[j].toFixed(2);
       const TextGeometry = new THREE.TextGeometry(
         DanmentyokuText, {
         font: this.font,
@@ -467,13 +468,20 @@ export class ThreeSectionForceService {
         curveSegments: 4,
         bevelEnabled: false,
       });
+
+      // TextGeometry.rotateX(Math.PI / 2);
+      TextGeometry.rotateY(-Math.PI / 2);
+      // TextGeometry.rotateZ(-Math.PI / 2);
+
       const matText = [
         new THREE.MeshBasicMaterial({ color: 0x000000 }),
         new THREE.MeshBasicMaterial({ color: 0x000000 })
       ];
       const text = new THREE.Mesh(TextGeometry, matText);
       // 数値をx-y平面の状態から，x-z平面の状態に回転
-      text.rotation.x = Math.PI / 2;
+      text.lookAt(localAxis.x, localAxis.y, localAxis.z);
+
+      // text.rotation.x = Math.PI / 2;
       // 数値を任意の位置に配置
       text.position.set(pos.x, pos.y, pos.z);
       line.add(text);
@@ -499,8 +507,8 @@ export class ThreeSectionForceService {
           positions[i + 2]));
     }
 
-    for ( let i = 1; i < posList.length - 1; i++ ){
-      let geometry = new THREE.Geometry(); 
+    for ( let i = 1; i < posList.length - 1; i++ ) {
+      const geometry = new THREE.Geometry();
       geometry.vertices.push(posList[0]);
       geometry.vertices.push(posList[i]);
       geometry.vertices.push(posList[i + 1]);
@@ -515,7 +523,7 @@ export class ThreeSectionForceService {
   private getDistance(): number[] {
     let minDistance: number = Number.MAX_VALUE;
     let maxDistance: number = 0;
-    
+
     const member: object = this.member.getMemberJson(0);
     for ( const memberNo of Object.keys(member)){
       const l: number = this.member.getMemberLength(memberNo);

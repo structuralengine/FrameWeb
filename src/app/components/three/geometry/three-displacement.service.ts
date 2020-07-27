@@ -28,12 +28,9 @@ export class ThreeDisplacementService {
 
   private isVisible: boolean;
   private scale: number;
-  private defaultScale: number;
   private params: any;          // GUIの表示制御
   private gui: any;
-  private maxLength: number;
-  private maxDiplacement: number;
-  private defaultRatio: number;
+  private gui_max_scale: number;
 
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
@@ -48,24 +45,24 @@ export class ThreeDisplacementService {
 
     this.isVisible = null;
 
-    this.defaultScale = 0.2
-    this.defaultRatio = 0.2 / 0.5  // 最大梁長に対するたわみの表示比率初期値/dispScale初期値
-    this.maxDiplacement = 1;
     // gui
+    this.scale = 0.5;
     this.params = {
-      dispScale: 0.5,
+      dispScale: this.scale,
     };
     this.gui = null;
+    this.gui_max_scale = 1;
+
   }
 
   public visible(flag: boolean): void {
-    if( this.isVisible === flag){
+    if ( this.isVisible === flag) {
       return;
     }
     for (const mesh of this.lineList) {
       mesh.visible = flag;
     }
-    this.isVisible = flag
+    this.isVisible = flag;
     if (flag === true) {
       this.guiEnable();
     } else {
@@ -87,6 +84,7 @@ export class ThreeDisplacementService {
       }
       this.lineList = new Array();
     }
+    this.scale = 0.5;
   }
 
   private guiEnable(): void {
@@ -94,9 +92,11 @@ export class ThreeDisplacementService {
       return;
     }
 
-    this.gui = this.scene.gui.add(this.params, 'dispScale', 0, 1).step(0.001).onChange((value) => {
-      this.scale = this.defaultRatio * value * this.maxLength / this.maxDiplacement;
+    const gui_step: number = this.gui_max_scale * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'dispScale', 0, this.gui_max_scale).step(gui_step).onChange((value) => {
+      this.scale = value;
       this.onResize();
+      this.scene.render();
     });
   }
 
@@ -132,17 +132,6 @@ export class ThreeDisplacementService {
     }
     const disgData = allDisgData[targetKey];
 
-    this.maxLength = this.three_node.maxdistance; // 最大梁長
-
-    this.maxDiplacement = this.disg.getMaxDisg(); // 最大変位
-
-    // 初期表示ではdispScaleが0.5の時に最大梁長の1/5となる
-    if (this.maxDiplacement === 0) {
-      this.scale = 0;
-    } else {
-      this.scale = this.defaultScale * this.maxLength / this.maxDiplacement;
-    }
-
     this.targetData = new Array();
 
     // 新しい入力を適用する
@@ -164,6 +153,7 @@ export class ThreeDisplacementService {
       const di: any = disgData.find((tmp) => {
         return tmp.id === m.ni.toString();
       });
+
       const dj: any = disgData.find((tmp) => {
         return tmp.id === m.nj.toString();
       });
@@ -172,37 +162,46 @@ export class ThreeDisplacementService {
         continue;
       }
 
-      this.targetData.push(
-        {
-          name: key,
-          xi: i.x,
-          yi: i.y,
-          zi: i.z,
-          xj: j.x,
-          yj: j.y,
-          zj: j.z,
-          dxi: this.helper.toNumber(di.dx),
-          dyi: this.helper.toNumber(di.dy),
-          dzi: this.helper.toNumber(di.dz),
-          dxj: this.helper.toNumber(dj.dx),
-          dyj: this.helper.toNumber(dj.dy),
-          dzj: this.helper.toNumber(dj.dz),
-          rxi: this.helper.toNumber(di.rx),
-          ryi: this.helper.toNumber(di.ry),
-          rzi: this.helper.toNumber(di.rz),
-          rxj: this.helper.toNumber(dj.rx),
-          ryj: this.helper.toNumber(dj.ry),
-          rzj: this.helper.toNumber(dj.rz),
-          Division: 20,
-        }
-      );
+      this.targetData.push({
+        name: key,
+        xi: i.x,
+        yi: i.y,
+        zi: i.z,
+        xj: j.x,
+        yj: j.y,
+        zj: j.z,
+        dxi: di.dx,
+        dyi: di.dy,
+        dzi: di.dz,
+        dxj: dj.dx,
+        dyj: dj.dy,
+        dzj: dj.dz,
+        rxi: di.rx,
+        ryi: di.ry,
+        rzi: di.rz,
+        rxj: dj.rx,
+        ryj: dj.ry,
+        rzj: dj.rz,
+        Division: 20,
+      });
     }
+
+    // スケールの決定に用いる変数を写す
+    let minDistance: number;
+    let maxDistance: number;
+    [minDistance, maxDistance] = this.getDistance();
+
+    const maxValue: number = allDisgData['max_value'];
+    this.targetData['scale'] = minDistance / maxValue;
+    this.gui_max_scale = maxDistance / minDistance;
+
     this.onResize();
   }
 
   private onResize(): void {
 
     const tmplineList: THREE.Line[] = this.lineList;
+    let scale: number = this.targetData['scale'] * this.scale * 0.7;
 
     for (let i = 0; i < this.targetData.length; i++) {
       const target = this.targetData[i];
@@ -211,17 +210,17 @@ export class ThreeDisplacementService {
       let yi: number = target.yi;
       let zi: number = target.zi;
 
-      xi += target.dxi * this.scale;
-      yi += target.dyi * this.scale;
-      zi += target.dzi * this.scale;
+      xi += target.dxi * scale;
+      yi += target.dyi * scale;
+      zi += target.dzi * scale;
 
       let xj: number = target.xj;
       let yj: number = target.yj;
       let zj: number = target.zj;
 
-      xj += target.dxj * this.scale;
-      yj += target.dyj * this.scale;
-      zj += target.dzj * this.scale;
+      xj += target.dxj * scale;
+      yj += target.dyj * scale;
+      zj += target.dzj * scale;
 
       const dxi: number = target.dxi;
       const dyi: number = target.dyi;
@@ -255,9 +254,9 @@ export class ThreeDisplacementService {
           + (3 * n ** 2 - 2 * n ** 3) * dzj - L * (0 - n ** 2 + n ** 3) * ryj;
 
         // 補間点の変位を座標値に付加
-        const xk = (1 - n) * xi + n * xj + xhe * this.scale;
-        const yk = (1 - n) * yi + n * yj + yhe * this.scale;
-        const zk = (1 - n) * zi + n * zj + zhe * this.scale;
+        const xk = (1 - n) * xi + n * xj + xhe * scale;
+        const yk = (1 - n) * yi + n * yj + yhe * scale;
+        const zk = (1 - n) * zi + n * zj + zhe * scale;
 
         positions.push(xk, yk, zk);
         colors.push(threeColor.r, threeColor.g, threeColor.b);
@@ -293,4 +292,19 @@ export class ThreeDisplacementService {
     }
     this.lineList = tmplineList;
   }
+
+  private getDistance(): number[] {
+    let minDistance: number = Number.MAX_VALUE;
+    let maxDistance: number = 0;
+
+    const member: object = this.member.getMemberJson(0);
+    for ( const memberNo of Object.keys(member)){
+      const l: number = this.member.getMemberLength(memberNo);
+      minDistance = Math.min(l, minDistance);
+      maxDistance = Math.max(l, maxDistance);
+    }
+
+    return [minDistance, maxDistance];
+  }
+
 }

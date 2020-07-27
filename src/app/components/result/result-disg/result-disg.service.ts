@@ -27,7 +27,16 @@ export class ResultDisgService {
     } else {
       target = this.disg[typNo];
     }
-    const result = target[index];
+    const item = target[index];
+    const result = {
+      id: item['n'],
+      dx: item['dx'].toFixed(3),
+      dy: item['dy'].toFixed(3),
+      dz: item['dz'].toFixed(3),
+      rx: item['rx'].toFixed(3),
+      ry: item['ry'].toFixed(3),
+      rz: item['rz'].toFixed(3)
+    };
     return result;
   }
 
@@ -50,7 +59,12 @@ export class ResultDisgService {
   }
 
   public setDisgJson(jsonData: {}): void {
+
     let max_row = 0;
+
+    let max_d = 0;
+    let max_r = 0;
+
     for (const caseNo of Object.keys(jsonData)) {
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
@@ -79,19 +93,37 @@ export class ResultDisgService {
         rz = (rz == null) ? 0 : rz * 1000;
         const result = {
           id: n.replace('node', ''),
-          dx: dx.toFixed(3),
-          dy: dy.toFixed(3),
-          dz: dz.toFixed(3),
-          rx: rx.toFixed(3),
-          ry: ry.toFixed(3),
-          rz: rz.toFixed(3)
+          dx: dx,
+          dy: dy,
+          dz: dz,
+          rx: rx,
+          ry: ry,
+          rz: rz
         };
         target.push(result);
+
+        // 最大値を記録する
+        for (const v of [dx, dy, dz]) {
+          if (Math.abs(max_d) < Math.abs(v)) {
+            max_d = v;
+          }
+        }
+        for (const v of [rx, ry, rz]) {
+          if (Math.abs(max_r) < Math.abs(v)) {
+            max_r = v;
+          }
+        }
+
+
       }
       this.disg[caseNo.replace('Case', '')] = target;
       max_row = Math.max(max_row, target.length);
     }
     this.DISG_ROWS_COUNT = max_row;
+
+    this.disg['max_value'] = Math.abs(max_d); // Math.max(Math.abs(max_d), Math.abs(max_r));
+
   }
+
 
 }
