@@ -154,13 +154,18 @@ export class MenuComponent implements OnInit {
 
     FileSaver.saveAs(blob, filename);
   }
-  
+
   // 印刷
   print(): void {
     let doc = new jsPDF('p', 'pt', 'a4', false);
-    doc.setFontSize(20);
+    doc.setFontSize(10);
+    const inputJson = this.InputData.getInputJson();
+
+    // ここに inputJson の内容を印刷する 処理を追加する
     doc.text(60, 150, 'Musashino-Advent-Calendar_2017');
     doc.text(100, 200, 'Try Japanese output with jsPDF.');
+
+    // 印刷実行
     doc.output('dataurlnewwindow');
   }
 
