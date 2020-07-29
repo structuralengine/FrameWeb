@@ -15,6 +15,7 @@ import { InputDataService } from './providers/input-data.service';
 import { DataHelperModule } from './providers/data-helper.module';
 import { ResultDataService } from './providers/result-data.service';
 import { UserInfoService } from './providers/user-info.service';
+import { PrintDataModule } from './providers/print-data.module';
 
 import { MenuComponent } from './components/menu/menu.component';
 import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
@@ -78,14 +79,15 @@ import { SceneService } from './components/three/scene.service';
     BrowserAnimationsModule,
     NgbModule,
     HotTableModule,
-    DataHelperModule
+    DataHelperModule,
+    PrintDataModule
   ],
   declarations: [
     AppComponent,
     MenuComponent,
     LoginDialogComponent,
     WaitDialogComponent,
-    
+
     InputNodesComponent,
     InputMembersComponent,
     InputFixNodeComponent,
