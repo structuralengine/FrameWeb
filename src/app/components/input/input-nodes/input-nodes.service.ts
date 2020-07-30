@@ -5,7 +5,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
   providedIn: 'root'
 })
 export class InputNodesService {
-  
+
   public node: any[];
 
   constructor(private helper: DataHelperModule) {

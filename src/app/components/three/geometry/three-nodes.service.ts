@@ -13,34 +13,35 @@ export class ThreeNodesService {
   private geometry: THREE.SphereBufferGeometry;
   private isVisible: boolean[];
 
-  private _baseScale: number;   // 最近点から求めるスケール
-  public maxdistance: number;
-  private scale: number;      // 外部から調整するためのスケール
+  public baseScale: number;   // 最近点から求めるスケール
+
+  public maxDistance: number;
+  public minDistance: number;
+
   private nodeList: THREE.Mesh[];
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
   public center: any; // すべての点の重心位置
 
+  // 大きさを調整するためのスケール
+  private scale: number;
+  private params: any;          // GUIの表示制御
+  private gui: any;
+ 
   constructor(private scene: SceneService,
               private node: InputNodesService) {
 
-    this.isVisible = [null, null];
-    this.scale = 1;
-    this._baseScale = null;
-    this.maxdistance = 0;
     this.geometry = new THREE.SphereBufferGeometry(1);
     this.nodeList = new Array();
-    this.center = {x:0, y:0, z:0};
-  }
+    this.ClearData();
+    this.isVisible = [null, null];
 
-  public baseScale(): number {
-    if (this._baseScale === null) {
-      this.setBaseScale();
-    }
-    return this._baseScale;
-  }
+    // gui
+    this.scale = 1;
+    this.params = {
+      nodeScale: this.scale
+    };
+    this.gui = null;
 
-  public getSelectiveObject(): THREE.Mesh[] {
-    return this.nodeList;
   }
 
   public chengeData(): void {
@@ -59,9 +60,9 @@ export class ThreeNodesService {
         return key === this.nodeList[i].name;
       });
       if (item === undefined) {
-        while ( this.nodeList[i].children.length > 0 ) {
-          const object = this.nodeList[i].children[ 0 ];
-          object.parent.remove( object );
+        while (this.nodeList[i].children.length > 0) {
+          const object = this.nodeList[i].children[0];
+          object.parent.remove(object);
         }
         this.scene.remove(this.nodeList[i]);
         this.nodeList.splice(i, 1);
@@ -92,142 +93,155 @@ export class ThreeNodesService {
         this.scene.add(mesh);
 
         // 文字をシーンに追加
-        const div = document.createElement( 'div' );
+        const div = document.createElement('div');
         div.className = 'label';
         div.textContent = key;
         div.style.marginTop = '-1em';
-        const label = new CSS2DObject( div );
-        label.position.set( 0, 0.27, 0 );
+        const label = new CSS2DObject(div);
+        label.position.set(0, 0.27, 0);
         label.name = 'font';
-        mesh.add( label );
-
+        mesh.add(label);
       }
     }
     // サイズを調整する
     this.setBaseScale();
     this.onResize();
-
-    // 重心位置を計算する
-    let counter: number = 0;
-    this.center = {x:0, y:0, z:0};
-    for(const key of jsonKeys){
-        const p = jsonData[key];
-        this.center.x += p.x;
-        this.center.y += p.y;
-        this.center.z += p.z;
-        counter++;
-    }
-    if( counter > 0){
-      this.center.x = this.center.x / counter;
-      this.center.y = this.center.y / counter;
-      this.center.z = this.center.z / counter;
-    }
-    console.log("////////////////////center////////////////////")
-    console.log(this.center);
   }
 
   // データをクリアする
   public ClearData(): void {
     for (const mesh of this.nodeList) {
       // 文字を削除する
-      while ( mesh.children.length > 0 ) {
-        const object = mesh.children[ 0 ];
-        object.parent.remove( object );
+      while (mesh.children.length > 0) {
+        const object = mesh.children[0];
+        object.parent.remove(object);
       }
       // オブジェクトを削除する
       this.scene.remove(mesh);
     }
     this.nodeList = new Array();
-    this.center = {x:0, y:0, z:0};
+    this.baseScale = 1;
+    this.maxDistance = 0;
+    this.minDistance = 0;
+    this.center = { x: 0, y: 0, z: 0 };
   }
 
-  // 外部からスケールの調整を受ける
-  public setScale(newScale: number): void {
-    this.scale = newScale;
-    this.onResize();
-  }
 
   // 最近点からスケールを求める
   private setBaseScale(): void {
-    this._baseScale = 1;
-    // 最近傍点を探す
-    let minDistance: number = Number.MAX_VALUE;
-    for (const item1 of this.nodeList) {
-      for (const item2 of this.nodeList) {
-        const l = item1.position.distanceTo(item2.position);
+
+    // 入力データを入手
+    const jsonData = this.node.getNodeJson(0);
+    const jsonKeys = Object.keys(jsonData);
+    if (jsonKeys.length <= 0) {
+      this.ClearData();
+      return;
+    }
+
+    // # region 最近傍点を探す
+    this.minDistance = Number.MAX_VALUE;
+    this.maxDistance = 0;
+    for (const key1 of jsonKeys) {
+      const item1 = jsonData[key1];
+      for (const key2 of jsonKeys) {
+        const item2 = jsonData[key2];
+        const l = Math.sqrt((item1.x - item2.x) ** 2 + (item1.y - item2.y) ** 2 + (item1.z - item2.z) ** 2);
         if (l === 0) {
           continue;
         }
-        minDistance = Math.min(l, minDistance);
+        this.minDistance = Math.min(l, this.minDistance);
+        this.maxDistance = Math.max(l, this.maxDistance);
       }
     }
-    // baseScale を決定する
-    if (minDistance !== Number.MAX_VALUE) {
+    //#endregion
+
+    // # region baseScale を決定する
+    this.baseScale = 1;
+    if (this.minDistance !== Number.MAX_VALUE) {
       // baseScale は最近点の 1/20 とする
-      this._baseScale = minDistance / 80;
+      this.baseScale = this.minDistance / 80;
     }
-    this.setMaxDistance();
-  }
-  
-  // 最遠点からスケールを求める
-  private setMaxDistance(): void {
-    this.maxdistance = 0;
-    // 最遠点を探す
-    let maxDistance: number = -1;
-    for (const item1 of this.nodeList) {
-      for (const item2 of this.nodeList) {
-        const l = item1.position.distanceTo(item2.position);
-        if (l === 0) {
-          continue;
-        }
-        maxDistance = Math.max(l, maxDistance);
-      }
+
+    // 重心位置を計算する
+    let counter: number = 0;
+    this.center = { x: 0, y: 0, z: 0 };
+    for (const key of jsonKeys) {
+      const p = jsonData[key];
+      this.center.x += p.x;
+      this.center.y += p.y;
+      this.center.z += p.z;
+      counter++;
     }
-    this.maxdistance = maxDistance;
+    if (counter > 0) {
+      this.center.x = this.center.x / counter;
+      this.center.y = this.center.y / counter;
+      this.center.z = this.center.z / counter;
+    }
+
   }
 
   // スケールを反映する
   private onResize(): void {
     for (const item of this.nodeList) {
-      item.scale.x = this.baseScale() * this.scale;
-      item.scale.y = this.baseScale() * this.scale;
-      item.scale.z = this.baseScale() * this.scale;
+      item.scale.x = this.baseScale * this.scale;
+      item.scale.y = this.baseScale * this.scale;
+      item.scale.z = this.baseScale * this.scale;
     }
   }
 
-  // 文字を消す
-  private Disable(): void {
-    for (const mesh of this.nodeList) {
-      mesh.getObjectByName('font').visible = false;
-    }
-  }
+  // 表示設定を変更する
+  public visible(flag: boolean, text: boolean, gui: boolean): void {
 
-  // 文字を表示する
-  private Enable(): void {
-    for (const mesh of this.nodeList) {
-      mesh.getObjectByName('font').visible = true;
-    }
-  }
-
-  public visible(flag: boolean, text: boolean): void {
-    if( this.isVisible[0] !== flag){
+    // 表示設定
+    if (this.isVisible[0] !== flag) {
       for (const mesh of this.nodeList) {
         mesh.visible = flag;
       }
       this.isVisible[0] = flag;
     }
-    if( this.isVisible[1] !== text){
-      if(text === true){
-        this.Enable();
-      }else{
-        this.Disable();
+
+    // 文字の表示設定
+    if (this.isVisible[1] !== text) {
+      for (const mesh of this.nodeList) {
+        mesh.getObjectByName('font').visible = text;
       }
       this.isVisible[1] = text;
     }
+
+    // guiの表示設定
+    if (gui === true) {
+      this.guiEnable();
+    } else {
+      this.guiDisable();
+    }
+
+  }
+
+  // guiを表示する
+  private guiEnable(): void {
+    if (this.gui !== null) {
+      return;
+    }
+
+    const gui_step: number = 5 * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 5).step(gui_step).onChange((value) => {
+      this.scale = value;
+      this.onResize();
+      this.scene.render();
+    });
+  }
+
+  // guiを非表示にする
+  private guiDisable(): void {
+    if (this.gui === null) {
+      return;
+    }
+    this.scene.gui.remove(this.gui);
+    this.gui = null;
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
-  public detectObject(raycaster: THREE.Raycaster , action: string): void {
+  public detectObject(raycaster: THREE.Raycaster, action: string): void {
 
     if (this.nodeList.length === 0) {
       return; // 対象がなければ何もしない
@@ -248,8 +262,8 @@ export class ThreeNodesService {
         break;
 
       case 'select':
-          this.selectionItem = null;
-          this.nodeList.map(item => {
+        this.selectionItem = null;
+        this.nodeList.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
             item.material['color'].setHex(0xff0000);
@@ -270,7 +284,7 @@ export class ThreeNodesService {
             item.material['color'].setHex(0xff0000);
             item.material['opacity'] = 0.25;
           } else {
-            if ( item === this.selectionItem ) {
+            if (item === this.selectionItem) {
               item.material['color'].setHex(0xff0000);
               item.material['opacity'] = 1.00;
             } else {
