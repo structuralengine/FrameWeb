@@ -22,10 +22,15 @@ import { zip } from 'rxjs';
 })
 export class ThreeLoadService {
 
-  private isVisible:boolean;
+  private isVisible: boolean;
   private pointLoadList: any[];
   private memberLoadList: any[];
-  private selectionItem: THREE.Mesh;     // 選択中のアイテム
+
+  // 大きさを調整するためのスケール
+  private pointLoadScale: number;
+  private memberLoadScale: number;
+  private params: any;          // GUIの表示制御
+  private gui: any;
 
   constructor(private scene: SceneService,
               private nodeThree: ThreeNodesService,
@@ -37,11 +42,28 @@ export class ThreeLoadService {
     this.isVisible = null;
     this.pointLoadList = new Array();
     this.memberLoadList = new Array();
-    this.selectionItem = null;
+
+    // gui
+    this.pointLoadScale = 1.0;
+    this.memberLoadScale = 1.0;
+    this.params = {
+      pointLoadScale: this.pointLoadScale,
+      memberLoadScale: this.memberLoadScale
+    };
+    this.gui = null;
+
   }
 
-  public visible(flag: boolean): void {
-    if( this.isVisible === flag){
+  public visible(flag: boolean, gui: boolean): void {
+
+    // guiの表示設定
+    if (gui === true) {
+      this.guiEnable();
+    } else {
+      this.guiDisable();
+    }
+
+    if (this.isVisible === flag) {
       return;
     }
     for (const mesh of this.pointLoadList) {
@@ -50,12 +72,53 @@ export class ThreeLoadService {
     for (const mesh of this.memberLoadList) {
       mesh.visible = flag;
     }
-    this.isVisible = flag
+    this.isVisible = flag;
   }
 
-  public maxLength(): number {
+  // guiを表示する
+  private guiEnable(): void {
+    if (this.gui !== null) {
+      return;
+    }
+
+    if (this.pointLoadList.length + this.memberLoadList.length === 0) {
+      return;
+    }
+    this.gui = {};
+
+    if (this.pointLoadList.length > 0) {
+      this.gui['pointLoadScale'] = this.scene.gui.add(this.params, 'pointLoadScale', 0, 2).step(0.001).onChange((value) => {
+        this.pointLoadScale = value;
+        this.onResize();
+        this.scene.render();
+      });
+    }
+
+    if (this.memberLoadList.length > 0) {
+      this.gui['memberLoadScale'] = this.scene.gui.add(this.params, 'memberLoadScale', 0, 2).step(0.001).onChange((value) => {
+        this.memberLoadScale = value;
+        this.onResize();
+        this.scene.render();
+      });
+    }
+
+  }
+
+  // guiを非表示にする
+  private guiDisable(): void {
+    if (this.gui === null) {
+      return;
+    }
+    for (const key of Object.keys(this.gui)) {
+      this.scene.gui.remove(this.gui[key]);
+    }
+    this.gui = null;
+  }
+
+
+  public baseScale(): number {
     // 最も距離の近い2つの節点距離
-    return this.nodeThree.baseScale() * 80;
+    return this.nodeThree.minDistance;
   }
 
   public chengeData(index: number): void {
@@ -94,6 +157,8 @@ export class ThreeLoadService {
       // サイズを調整しオブジェクトを登録する
       this.createMemberLoad(memberLoadData[targetCase], nodeData, memberData);
     }
+
+    this.onResize();
 
   }
 
@@ -225,10 +290,10 @@ export class ThreeLoadService {
       return null;
     }
 
-    const maxLength: number = this.maxLength() * 0.5;
+    const maxLength: number = this.baseScale() * 0.5;
     const length: number = maxLength * value / pMax;
 
-    let linewidth: number = this.nodeThree.baseScale() / 50;
+    let linewidth: number = this.nodeThree.baseScale / 50;
 
     let color: number;
     const positions = [];
@@ -309,28 +374,28 @@ export class ThreeLoadService {
     let pMax = 0;
     let mMax = 0;  //部材番号の最大値
     let check_boxR: any = []  //ねじり情報の有無
-    const maxLength: number = this.maxLength() * 0.5;
+    const maxLength: number = this.baseScale() * 0.5;
     for (const load of targetMemberLoad) {
       pMax = Math.max(pMax, Math.abs(load.P1));
       pMax = Math.max(pMax, Math.abs(load.P2));
       mMax = Math.max(mMax, Math.abs(load.m));
-      if (load.mark === 2 && load.direction === 'r'){
+      if (load.mark === 2 && load.direction === 'r') {
         check_boxR.push(load);
       }
     }
-    
+
     // 荷重のshapeをシーンに追加する
     let p_one = 0;
     let p_two = 0;
 
     //分布荷重の被りを探すための箱, 先頭[]が部材番号, [0]が正, [1]が負, [2]以降がloadの情報
-    const check_boxY = [ ];
-    const check_boxZ = [ ];
-    for (let a = 0; a < mMax; a++){
+    const check_boxY = [];
+    const check_boxZ = [];
+    for (let a = 0; a < mMax; a++) {
       check_boxY.push([0, 0]);
       check_boxZ.push([0, 0]);
     }
-    for (let a of check_boxR){
+    for (let a of check_boxR) {
       check_boxY[a.m - 1][0] -= Math.max(p_one, p_two, Math.abs(a.P1), Math.abs(a.P2)) * maxLength / pMax * 0.2;
       check_boxY[a.m - 1][1] -= Math.max(p_one, p_two, Math.abs(a.P1), Math.abs(a.P2)) * maxLength / pMax * 0.2;
       check_boxZ[a.m - 1][0] -= Math.max(p_one, p_two, Math.abs(a.P1), Math.abs(a.P2)) * maxLength / pMax * 0.2;
@@ -341,7 +406,7 @@ export class ThreeLoadService {
 
       p_one = Math.max(p_one, Math.abs(load.P1)) * maxLength / pMax;
       p_two = Math.max(p_two, Math.abs(load.P2)) * maxLength / pMax;
-      
+
       // 節点データを集計する
       const m = memberData[load.m];
       if (m === undefined) {
@@ -360,159 +425,161 @@ export class ThreeLoadService {
       const i_x = i.x + localAxis.x.x * load.L1;
       const i_y = i.y + localAxis.x.y * load.L1;
       const i_z = i.z + localAxis.x.z * load.L1;
-      let j_x = 0; let j_y = 0; ; let j_z = 0;
-      if (load.mark === 1 || load.mark === 11){
+      let j_x = 0; let j_y = 0;; let j_z = 0;
+      if (load.mark === 1 || load.mark === 11) {
         j_x = i.x + localAxis.x.x * load.L2;
         j_y = i.y + localAxis.x.y * load.L2;
         j_z = i.z + localAxis.x.z * load.L2;
-      }else if(load.mark === 2){
+      } else if (load.mark === 2) {
         j_x = j.x - localAxis.x.x * load.L2;
         j_y = j.y - localAxis.x.y * load.L2;
         j_z = j.z - localAxis.x.z * load.L2;
-      }else{
+      } else {
         continue;
       }
 
       const len_L: number = new THREE.Vector3(j_x - i_x, j_y - i_y, j_z - i_z).length();
-      const L_position = {x1: i_x, y1: i_y, z1: i_z, x2: j_x, y2: j_y, z2: j_z};
-      const Data = {L1: load.L1, L2: load.L2, p_one: p_one, p_two: p_two, 
-                    P1: load.P1, P2: load.P2, len_L: len_L, judge: " "};
+      const L_position = { x1: i_x, y1: i_y, z1: i_z, x2: j_x, y2: j_y, z2: j_z };
+      const Data = {
+        L1: load.L1, L2: load.L2, p_one: p_one, p_two: p_two,
+        P1: load.P1, P2: load.P2, len_L: len_L, judge: " "
+      };
       var groupe = new THREE.Group();  // 親の実態のない架空のジオメトリ
-      
-      const arrow = {size: 0.3 * maxLength, direction: "z", color: 0x000000};
+
+      const arrow = { size: 0.3 * maxLength, direction: "z", color: 0x000000 };
       let arrowlist: any = [];
       let arrowlist_sub: any = [];
 
-//#region    mark === 1    markが1のときのx, y, z, rの分岐
+      //#region    mark === 1    markが1のときのx, y, z, rの分岐
       if (load.mark === 1) {
-        if (load.direction === "x"){
+        if (load.direction === "x") {
           arrow.direction = "x";
           arrow.color = 0xff0000;
-          if (load.P1 !== 0){
+          if (load.P1 !== 0) {
             Data.judge = "1";
             arrowlist = this.CreateArrow(arrow, L_position, localAxis, Data);
           }
-          if (load.P2 !== 0){
+          if (load.P2 !== 0) {
             Data.judge = "2";
             arrowlist_sub = this.CreateArrow(arrow, L_position, localAxis, Data);
           }
-        }else if (load.direction === "y"){
+        } else if (load.direction === "y") {
           arrow.direction = "y";
           arrow.color = 0x00ff00;
-          if (load.P1 !== 0){
+          if (load.P1 !== 0) {
             Data.judge = "1";
             arrowlist = this.CreateArrow(arrow, L_position, localAxis, Data);
           }
-          if (load.P2 !== 0){
+          if (load.P2 !== 0) {
             Data.judge = "2";
             arrowlist_sub = this.CreateArrow(arrow, L_position, localAxis, Data);
           }
-        }else if (load.direction === "z"){
+        } else if (load.direction === "z") {
           arrow.direction = "z";
           arrow.color = 0x0000ff;
-          if (load.P1 !== 0){
+          if (load.P1 !== 0) {
             Data.judge = "1";
             arrowlist = this.CreateArrow(arrow, L_position, localAxis, Data);
           }
-          if (load.P2 !== 0){
+          if (load.P2 !== 0) {
             Data.judge = "2";
             arrowlist_sub = this.CreateArrow(arrow, L_position, localAxis, Data);
           }
-        }else{
+        } else {
           continue;
         }
 
-        if (arrowlist !== null ){  //ここの分岐は必要？
-          for(const a of arrowlist){
-          groupe.add(a);
+        if (arrowlist !== null) {  //ここの分岐は必要？
+          for (const a of arrowlist) {
+            groupe.add(a);
           }
         }
-        if (arrowlist_sub !== null ){  //ここの分岐は必要？
-          for(const a of arrowlist_sub){
-          groupe.add(a);
+        if (arrowlist_sub !== null) {  //ここの分岐は必要？
+          for (const a of arrowlist_sub) {
+            groupe.add(a);
           }
         }
       }
-//#endregion
+      //#endregion
 
-//#region    mark === 11    markが11のときのx, y, z, rの分岐
+      //#region    mark === 11    markが11のときのx, y, z, rの分岐
       if (load.mark === 11) {
         arrow.size = arrow.size / 2.5;
-        if (load.direction === "x"){
+        if (load.direction === "x") {
           arrow.direction = "x";
           arrow.color = 0xff0000;
-          if (load.P1 !== 0){
+          if (load.P1 !== 0) {
             Data.judge = "1";
             arrowlist = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           }
-          if (load.P2 !== 0){
+          if (load.P2 !== 0) {
             Data.judge = "2";
             arrowlist_sub = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           }
-        }else if (load.direction === "y"){
+        } else if (load.direction === "y") {
           arrow.direction = "y";
           arrow.color = 0x00ff00;
-          if (load.P1 !== 0){
+          if (load.P1 !== 0) {
             Data.judge = "1";
             arrowlist = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           }
-          if (load.P2 !== 0){
+          if (load.P2 !== 0) {
             Data.judge = "2";
             arrowlist_sub = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           }
-        }else if (load.direction === "z"){
+        } else if (load.direction === "z") {
           arrow.direction = "z";
           arrow.color = 0x0000ff;
-          if (load.P1 !== 0){
+          if (load.P1 !== 0) {
             Data.judge = "1";
             arrowlist = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           }
-          if (load.P2 !== 0){
+          if (load.P2 !== 0) {
             Data.judge = "2";
             arrowlist_sub = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           }
         }
-        if (arrowlist !== null ){  //ここの分岐は必要？
-          for(const a of arrowlist){
-          groupe.add(a);
+        if (arrowlist !== null) {  //ここの分岐は必要？
+          for (const a of arrowlist) {
+            groupe.add(a);
           }
         }
-        if (arrowlist_sub !== null ){  //ここの分岐は必要？
-          for(const a of arrowlist_sub){
-          groupe.add(a);
+        if (arrowlist_sub !== null) {  //ここの分岐は必要？
+          for (const a of arrowlist_sub) {
+            groupe.add(a);
           }
         }
       }
-//#endregion
+      //#endregion
 
-//#region    mark === 2    markが2のときのx, y, z, rの分岐
+      //#region    mark === 2    markが2のときのx, y, z, rの分岐
       if (load.mark === 2) {
-        if (load.direction === "x"){
+        if (load.direction === "x") {
           arrow.direction = "x";
           arrow.color = 0xff0000;
           arrowlist = this.CreateArrow_X(arrow, L_position, localAxis);
 
-        }else if (load.direction === "y"){
+        } else if (load.direction === "y") {
           arrow.direction = "y";
           load.len_L = len_L;
           arrowlist = this.CreateArrow_Y(arrow, L_position, localAxis, Data);
-          if (load.P1 > 0 && load.P2 > 0){
+          if (load.P1 > 0 && load.P2 > 0) {
             arrowlist[0].position.x += localAxis.y.x * check_boxY[load.m - 1][0];
             arrowlist[0].position.y += localAxis.y.y * check_boxY[load.m - 1][0];
             arrowlist[0].position.z += localAxis.y.z * check_boxY[load.m - 1][0];
             check_boxY[load.m - 1][0] -= Math.max(p_one, p_two) * Math.sign(load.P2);
-          }else if (load.P1 < 0 && load.P2 < 0){
+          } else if (load.P1 < 0 && load.P2 < 0) {
             arrowlist[0].position.x -= localAxis.y.x * check_boxY[load.m - 1][1];
             arrowlist[0].position.y -= localAxis.y.y * check_boxY[load.m - 1][1];
             arrowlist[0].position.z -= localAxis.y.z * check_boxY[load.m - 1][1];
             check_boxY[load.m - 1][1] += Math.max(p_one, p_two) * Math.sign(load.P2);
-          }else if (load.P1 > 0 && load.P2 < 0){
+          } else if (load.P1 > 0 && load.P2 < 0) {
             check_boxZ[load.m - 1][0] -= p_two;
             arrowlist[0].position.x += localAxis.y.x * check_boxY[load.m - 1][0];
             arrowlist[0].position.y += localAxis.y.y * check_boxY[load.m - 1][0];
             arrowlist[0].position.z += localAxis.y.z * check_boxY[load.m - 1][0];
             check_boxY[load.m - 1][0] -= p_one;
-          }else if (load.P1 < 0 && load.P2 > 0){
+          } else if (load.P1 < 0 && load.P2 > 0) {
             check_boxY[load.m - 1][0] -= p_one;
             arrowlist[0].position.x += localAxis.y.x * check_boxY[load.m - 1][0];
             arrowlist[0].position.y += localAxis.y.y * check_boxY[load.m - 1][0];
@@ -521,27 +588,27 @@ export class ThreeLoadService {
           }
           check_boxY[load.m - 1].push(load);
 
-        }else if (load.direction === "z"){
+        } else if (load.direction === "z") {
           arrow.direction = "z";
           load.len_L = len_L;
           arrowlist = this.CreateArrow_Z(arrow, L_position, localAxis, Data);
-          if (load.P1 > 0 && load.P2 > 0){
+          if (load.P1 > 0 && load.P2 > 0) {
             arrowlist[0].position.x += localAxis.z.x * check_boxZ[load.m - 1][0];
             arrowlist[0].position.y += localAxis.z.y * check_boxZ[load.m - 1][0];
             arrowlist[0].position.z += localAxis.z.z * check_boxZ[load.m - 1][0];
             check_boxZ[load.m - 1][0] -= Math.max(p_one, p_two);
-          }else if (load.P1 < 0 && load.P2 < 0){
+          } else if (load.P1 < 0 && load.P2 < 0) {
             arrowlist[0].position.x -= localAxis.z.x * check_boxZ[load.m - 1][1];
             arrowlist[0].position.y -= localAxis.z.y * check_boxZ[load.m - 1][1];
             arrowlist[0].position.z -= localAxis.z.z * check_boxZ[load.m - 1][1];
             check_boxZ[load.m - 1][1] += Math.max(p_one, p_two) * (-1);
-          }else if (load.P1 > 0 && load.P2 < 0){
+          } else if (load.P1 > 0 && load.P2 < 0) {
             check_boxZ[load.m - 1][0] -= p_two;
             arrowlist[0].position.x += localAxis.z.x * check_boxZ[load.m - 1][0];
             arrowlist[0].position.y += localAxis.z.y * check_boxZ[load.m - 1][0];
             arrowlist[0].position.z += localAxis.z.z * check_boxZ[load.m - 1][0];
             check_boxZ[load.m - 1][0] -= p_one;
-          }else if (load.P1 < 0 && load.P2 > 0){
+          } else if (load.P1 < 0 && load.P2 > 0) {
             check_boxZ[load.m - 1][0] -= p_one;
             arrowlist[0].position.x += localAxis.z.x * check_boxZ[load.m - 1][0];
             arrowlist[0].position.y += localAxis.z.y * check_boxZ[load.m - 1][0];
@@ -550,38 +617,38 @@ export class ThreeLoadService {
           }
           check_boxZ[load.m - 1].push(load);
 
-        }else if (load.direction === "r"){
+        } else if (load.direction === "r") {
           arrow.size = arrow.size / 2.5;
           arrow.direction = "r";
           arrow.color = 0xff00ff;
           arrowlist = this.CreateArrow_R(arrow, L_position, localAxis, Data);
 
-        }else{
+        } else {
           continue;
         }
 
-        for(const a of arrowlist){
+        for (const a of arrowlist) {
           groupe.add(a);
         }
 
       }
-//#endregion
-      
+      //#endregion
+
       //meshを出力
       if (groupe !== null) {
         this.memberLoadList.push(groupe);
         this.scene.add(groupe);
-      }else{
+      } else {
         continue;
-      }       
+      }
 
     }
 
   }
 
 
-  //矢印（集中荷重）を描く
-  public CreateArrow (arrow, L_position, localAxis, Data){
+  // 矢印（集中荷重）を描く
+  public CreateArrow(arrow, L_position, localAxis, Data) {
     const arrowlist = [];
     const group = new THREE.Group();
 
@@ -589,20 +656,20 @@ export class ThreeLoadService {
 
     //矢の棒を描く
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    if (Data.judge === "1"){
-      if (Data.P1 > 0){
+    if (Data.judge === "1") {
+      if (Data.P1 > 0) {
         geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_one));
-      }else if (Data.P1 < 0){
+      } else if (Data.P1 < 0) {
         geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_one));
       }
-    }else if(Data.judge === "2"){
-      if (Data.P2 > 0){
+    } else if (Data.judge === "2") {
+      if (Data.P2 > 0) {
         geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_two));
-      }else if (Data.P2 < 0){
+      } else if (Data.P2 < 0) {
         geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_two));
       }
     }
-    let line = new THREE.LineBasicMaterial({color: arrow.color});
+    let line = new THREE.LineBasicMaterial({ color: arrow.color });
     let mesh = new THREE.Line(geometry, line);
     group.add(mesh);
 
@@ -613,22 +680,22 @@ export class ThreeLoadService {
     const cone_scale: number = arrow.size;
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
-    geometry = new THREE.ConeGeometry( cone_radius, cone_height, 3, 1, true );
-    const material = new THREE.MeshBasicMaterial( {color: arrow.color} );
-    const cone = new THREE.Mesh( geometry, material );
-    if (Data.judge === "1"){
-      if (Data.P1 > 0){
+    geometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
+    const material = new THREE.MeshBasicMaterial({ color: arrow.color });
+    const cone = new THREE.Mesh(geometry, material);
+    if (Data.judge === "1") {
+      if (Data.P1 > 0) {
         cone.position.set(0, 0, -cone_scale / 2);
         cone.rotation.x = Math.PI / 2;
-      }else if (Data.P1 < 0){
+      } else if (Data.P1 < 0) {
         cone.position.set(0, 0, cone_scale / 2);
         cone.rotation.x = -Math.PI / 2;
       }
-    }else if(Data.judge === "2"){
-      if (Data.P2 > 0){
+    } else if (Data.judge === "2") {
+      if (Data.P2 > 0) {
         cone.position.set(0, 0, -cone_scale / 2);
         cone.rotation.x = Math.PI / 2;
-      }else if (Data.P2 < 0){
+      } else if (Data.P2 < 0) {
         cone.position.set(0, 0, cone_scale / 2);
         cone.rotation.x = -Math.PI / 2;
       }
@@ -636,110 +703,110 @@ export class ThreeLoadService {
     group.add(cone);
 
     //groupの操作
-    switch (arrow.direction){
+    switch (arrow.direction) {
       case ("x"):
         group.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
-        if (Data.judge === "1"){
-          group.position.set(L_position.x1 - localAxis.y.x * 0.1, 
-                             L_position.y1 - localAxis.y.y * 0.1, 
-                             L_position.z1                      );
-        }else if(Data.judge === "2"){
-          group.position.set(L_position.x2 - localAxis.y.x * 0.1, 
-                             L_position.y2 - localAxis.y.y * 0.1, 
-                             L_position.z2                      );
+        if (Data.judge === "1") {
+          group.position.set(L_position.x1 - localAxis.y.x * 0.1,
+            L_position.y1 - localAxis.y.y * 0.1,
+            L_position.z1);
+        } else if (Data.judge === "2") {
+          group.position.set(L_position.x2 - localAxis.y.x * 0.1,
+            L_position.y2 - localAxis.y.y * 0.1,
+            L_position.z2);
         }
         break;
       case ("y"):
         group.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
-        if (Data.judge === "1"){
+        if (Data.judge === "1") {
           group.position.set(L_position.x1, L_position.y1, L_position.z1);
-        }else if(Data.judge === "2"){
+        } else if (Data.judge === "2") {
           group.position.set(L_position.x2, L_position.y2, L_position.z2);
         }
         break;
       case ("z"):
         group.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
-        if (Data.judge === "1"){
+        if (Data.judge === "1") {
           group.position.set(L_position.x1, L_position.y1, L_position.z1);
-        }else if(Data.judge === "2"){
+        } else if (Data.judge === "2") {
           group.position.set(L_position.x2, L_position.y2, L_position.z2);
         }
         break;
     }
     arrowlist.push(group)
     return arrowlist
-    
+
   }
 
-  //矢印（集中曲げモーメント）を描く
-  public CreateArrow_M (arrow, L_position, localAxis, Data){
+  // 矢印（集中曲げモーメント）を描く
+  public CreateArrow_M(arrow, L_position, localAxis, Data) {
     const arrowlist = [];
     const groupM = new THREE.Group();
 
     //モーメントの線を描く
     const curve = new THREE.EllipseCurve(
-      0,              0,                 // ax,          aY
-      arrow.size,     arrow.size,        // xRadius,     yRadius
-      -1/3 * Math.PI, 4/3 * Math.PI,     // aStartAngle, aEndAngle
-      false,          0                  // aClockwise, aRotation          
+      0, 0,                 // ax,          aY
+      arrow.size, arrow.size,        // xRadius,     yRadius
+      -1 / 3 * Math.PI, 4 / 3 * Math.PI,     // aStartAngle, aEndAngle
+      false, 0                  // aClockwise, aRotation          
     );
-    const points = curve.getPoints( 50 );
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-    const lineMaterial = new THREE.LineBasicMaterial( { color: arrow.color, linewidth: 5 } );
-    const line = new THREE.Line( lineGeometry, lineMaterial );
+    const points = curve.getPoints(50);
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: arrow.color, linewidth: 5 });
+    const line = new THREE.Line(lineGeometry, lineMaterial);
     groupM.add(line);
 
     //矢印の先を描く
     const cone_scale: number = arrow.size;
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
-    const arrowGeometry = new THREE.ConeGeometry( cone_radius, cone_height, 3, 1, true );
-    const arrowMaterial = new THREE.MeshBasicMaterial( {color: arrow.color} );
-    const cone = new THREE.Mesh( arrowGeometry, arrowMaterial );
-    
-    if (Data.judge === "1"){
-      if (Data.P1 < 0){
+    const arrowGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
+    const arrowMaterial = new THREE.MeshBasicMaterial({ color: arrow.color });
+    const cone = new THREE.Mesh(arrowGeometry, arrowMaterial);
+
+    if (Data.judge === "1") {
+      if (Data.P1 < 0) {
         cone.rotation.z = 2 / 3 * Math.PI;
-        cone.position.set(1 / 2 * arrow.size, -(3**(1/2) / 2) * arrow.size, 0);
-      }else if(Data.P1 > 0){
+        cone.position.set(1 / 2 * arrow.size, -(3 ** (1 / 2) / 2) * arrow.size, 0);
+      } else if (Data.P1 > 0) {
         cone.rotation.z = -2 / 3 * Math.PI;
-        cone.position.set(-1 / 2 * arrow.size, -(3**(1/2) / 2) * arrow.size, 0);
+        cone.position.set(-1 / 2 * arrow.size, -(3 ** (1 / 2) / 2) * arrow.size, 0);
       }
-    }else if(Data.judge === "2"){
-      if (Data.P2 < 0){
+    } else if (Data.judge === "2") {
+      if (Data.P2 < 0) {
         cone.rotation.z = 2 / 3 * Math.PI;
-        cone.position.set(1 / 2 * arrow.size, -(3**(1/2) / 2) * arrow.size, 0);
-      }else if(Data.P2 > 0){
+        cone.position.set(1 / 2 * arrow.size, -(3 ** (1 / 2) / 2) * arrow.size, 0);
+      } else if (Data.P2 > 0) {
         cone.rotation.z = -2 / 3 * Math.PI;
-        cone.position.set(-1 / 2 * arrow.size, -(3**(1/2) / 2) * arrow.size, 0);
+        cone.position.set(-1 / 2 * arrow.size, -(3 ** (1 / 2) / 2) * arrow.size, 0);
       }
     }
-    
+
     groupM.add(cone);
 
     //groupの操作
-    switch(arrow.direction){
-      case("x"):
+    switch (arrow.direction) {
+      case ("x"):
         groupM.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
         break;
-      case("y"):
+      case ("y"):
         groupM.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
         break;
-      case("z"):
+      case ("z"):
         groupM.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
         break;
     }
-    if (Data.judge === "1"){
+    if (Data.judge === "1") {
       groupM.position.set(L_position.x1, L_position.y1, L_position.z1);
-    }else if(Data.judge === "2"){
+    } else if (Data.judge === "2") {
       groupM.position.set(L_position.x2, L_position.y2, L_position.z2);
     }
     arrowlist.push(groupM)
     return arrowlist
   }
 
-  //矢印（分布荷重X）を描く
-  public CreateArrow_X (arrow, L_position, localAxis){
+  // 矢印（分布荷重X）を描く
+  public CreateArrow_X(arrow, L_position, localAxis) {
     const groupX = new THREE.Group();
 
     let geometry = new THREE.Geometry();
@@ -749,14 +816,14 @@ export class ThreeLoadService {
     L_position.y1 -= offset * localAxis.y.y;
     L_position.x2 -= offset * localAxis.y.x;
     L_position.y2 -= offset * localAxis.y.y;
-    const len_L: number = new THREE.Vector3(L_position.x2 - L_position.x1, 
-                                            L_position.y2 - L_position.y1, 
-                                            L_position.z2 - L_position.z1).length();
+    const len_L: number = new THREE.Vector3(L_position.x2 - L_position.x1,
+      L_position.y2 - L_position.y1,
+      L_position.z2 - L_position.z1).length();
     //矢の先を描く
-    geometry.vertices.push(new THREE.Vector3(arrow.size *  0.3, 0, len_L - arrow.size * 0.6));
+    geometry.vertices.push(new THREE.Vector3(arrow.size * 0.3, 0, len_L - arrow.size * 0.6));
     geometry.vertices.push(new THREE.Vector3(0, 0, len_L));
     geometry.vertices.push(new THREE.Vector3(arrow.size * -0.3, 0, len_L - arrow.size * 0.6));
-    let line = new THREE.LineBasicMaterial({color: arrow.color});
+    let line = new THREE.LineBasicMaterial({ color: arrow.color });
     let mesh = new THREE.Line(geometry, line);
     groupX.add(mesh);
 
@@ -766,7 +833,7 @@ export class ThreeLoadService {
     //矢印の棒
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
     geometry.vertices.push(new THREE.Vector3(0, 0, len_L));
-    line = new THREE.LineDashedMaterial({color: arrow.color, dashSize: 0.1, gapSize: 0.1});
+    line = new THREE.LineDashedMaterial({ color: arrow.color, dashSize: 0.1, gapSize: 0.1 });
     mesh = new THREE.Line(geometry, line);
     mesh.computeLineDistances();
     groupX.add(mesh);
@@ -777,56 +844,56 @@ export class ThreeLoadService {
     return arrowlist
   }
 
-  //矢印（分布荷重Y）を描く
-  public CreateArrow_Y (arrow, L_position, localAxis, Data){
+  // 矢印（分布荷重Y）を描く
+  public CreateArrow_Y(arrow, L_position, localAxis, Data) {
     const arrowlist = [];
     const groupY = new THREE.Group();
 
     let geometry = new THREE.Geometry(); //geometryの初期化
     const interval = 0.7;
     let count_L = Math.floor(Data.len_L / interval);
-    if (count_L > 0 && count_L < 1){
+    if (count_L > 0 && count_L < 1) {
       count_L = 1;
     }
     const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
-    for (let i = 0; i <= count_L; i ++){
+    for (let i = 0; i <= count_L; i++) {
 
       //矢の先を描く
-      let x : number;
-      let y : number = arrow.size * 0.0;
-      let z : number = arrow.size * 0.2;
-      if (Data.P1 >= 0 && Data.P2 >= 0){
+      let x: number;
+      let y: number = arrow.size * 0.0;
+      let z: number = arrow.size * 0.2;
+      if (Data.P1 >= 0 && Data.P2 >= 0) {
         x = arrow.size * -0.4;
-      }else if(Data.P1 <= 0 && Data.P2 <= 0){
+      } else if (Data.P1 <= 0 && Data.P2 <= 0) {
         x = arrow.size * 0.4;
-      }else if(Data.P1 * Data.P2 < 0){
-        if(i / count_L < Math.abs(Data.P1 / (Data.P2 - Data.P1))){
+      } else if (Data.P1 * Data.P2 < 0) {
+        if (i / count_L < Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
           x = arrow.size * 0.4 * Math.sign(Data.P1) * (-1);
-        }else if(i / count_L > Math.abs(Data.P1 / (Data.P2 - Data.P1))){
+        } else if (i / count_L > Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
           x = arrow.size * 0.4 * Math.sign(Data.P1);
-        }else{
+        } else {
           continue;
         }
       }
 
-      if (Data.P1 * Data.P2 !== 0){
+      if (Data.P1 * Data.P2 !== 0) {
         geometry.vertices.push(new THREE.Vector3(x, y, z));
         geometry.vertices.push(new THREE.Vector3(0, 0, 0));
         z = arrow.size * -0.2;
         geometry.vertices.push(new THREE.Vector3(x, y, z));
-      }else if(Data.P1 === 0 && Data.P2 !== 0){
-        if (i === 0){
+      } else if (Data.P1 === 0 && Data.P2 !== 0) {
+        if (i === 0) {
           continue;
-        }else{
+        } else {
           geometry.vertices.push(new THREE.Vector3(x, y, z));
           geometry.vertices.push(new THREE.Vector3(0, 0, 0));
           z = arrow.size * -0.2;
           geometry.vertices.push(new THREE.Vector3(x, y, z));
         }
-      }else if(Data.P1 !== 0 && Data.P2 === 0){
-        if (i + 1 > count_L){
+      } else if (Data.P1 !== 0 && Data.P2 === 0) {
+        if (i + 1 > count_L) {
           continue;
-        }else{
+        } else {
           geometry.vertices.push(new THREE.Vector3(x, y, z));
           geometry.vertices.push(new THREE.Vector3(0, 0, 0));
           z = arrow.size * -0.2;
@@ -834,7 +901,7 @@ export class ThreeLoadService {
         }
       }
 
-      const line = new THREE.LineBasicMaterial({color: arrow.color});
+      const line = new THREE.LineBasicMaterial({ color: arrow.color });
       let mesh = new THREE.Line(geometry, line);
       x = 0;
       y = 0;
@@ -843,7 +910,7 @@ export class ThreeLoadService {
       groupY.add(mesh);
 
       geometry = new THREE.Geometry(); //geometryの初期化
-      
+
       //矢印の棒
       geometry.vertices.push(new THREE.Vector3(x, y, z));
       x = Data.p_one * Math.sign(Data.P1) * (-1) - difference_P * i / count_L;
@@ -856,7 +923,7 @@ export class ThreeLoadService {
     //分布荷重をまとめる棒
     geometry.vertices.push(new THREE.Vector3(Data.p_one * Math.sign(Data.P1) * (-1), 0, 0));
     geometry.vertices.push(new THREE.Vector3(Data.p_two * Math.sign(Data.P2) * (-1), 0, Data.len_L));
-    const line = new THREE.LineBasicMaterial({color: arrow.color});
+    const line = new THREE.LineBasicMaterial({ color: arrow.color });
     let mesh = new THREE.Line(geometry, line);
     groupY.add(mesh);
 
@@ -873,10 +940,10 @@ export class ThreeLoadService {
     geometry.vertices.push(new THREE.Vector3(Data.p_one * Math.sign(Data.P1) * (-1), 0, 0));
     geometry.vertices.push(new THREE.Vector3(Data.p_two * Math.sign(Data.P2) * (-1), 0, Data.len_L));
     geometry.vertices.push(new THREE.Vector3(0, 0, Data.len_L));
-    if (Data.P1 * Data.P2 >= 0){
+    if (Data.P1 * Data.P2 >= 0) {
       var face1 = new THREE.Face3(0, 1, 2);
       var face2 = new THREE.Face3(0, 2, 3);
-    }else if(Data.P1 * Data.P2 < 0){
+    } else if (Data.P1 * Data.P2 < 0) {
       geometry.vertices.push(new THREE.Vector3(0, 0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L));
       var face1 = new THREE.Face3(0, 1, 4);
       var face2 = new THREE.Face3(2, 3, 4);
@@ -895,9 +962,9 @@ export class ThreeLoadService {
     return arrowlist
   }
 
-  //矢印（分布荷重Z）を描く
-  public CreateArrow_Z (arrow, L_position, localAxis, Data){
-    //正負が逆だったので応急処置
+  // 矢印（分布荷重Z）を描く
+  public CreateArrow_Z(arrow, L_position, localAxis, Data) {
+    // 正負が逆だったので応急処置
     Data.P1 = Data.P1 * (-1);
     Data.P2 = Data.P2 * (-1);
     const arrowlist = [];
@@ -910,47 +977,47 @@ export class ThreeLoadService {
     const len_Lz = L_position.z2 - L_position.z1;
     const len_L: number = new THREE.Vector3(len_Lx, len_Ly, len_Lz).length();
     let count_L = Math.floor(len_L / interval);
-    if (count_L > 0 && count_L < 1){
+    if (count_L > 0 && count_L < 1) {
       count_L = 1;
     }
     const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
-    for (let i = 0; i <= count_L; i ++){
+    for (let i = 0; i <= count_L; i++) {
 
       //矢の先を描く
-      let x : number = arrow.size * 0.0;
-      let y : number = arrow.size * 0.2;
-      let z : number;
-      if (Data.P1 >= 0 && Data.P2 >= 0){
+      let x: number = arrow.size * 0.0;
+      let y: number = arrow.size * 0.2;
+      let z: number;
+      if (Data.P1 >= 0 && Data.P2 >= 0) {
         z = arrow.size * 0.4;
-      }else if(Data.P1 <= 0 && Data.P2 <= 0){
+      } else if (Data.P1 <= 0 && Data.P2 <= 0) {
         z = arrow.size * -0.4;
-      }else if(Data.P1 * Data.P2 < 0){
-        if(i / count_L < Math.abs(Data.P1 / (Data.P2 - Data.P1))){
+      } else if (Data.P1 * Data.P2 < 0) {
+        if (i / count_L < Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
           z = arrow.size * 0.4 * Math.sign(Data.P1);
-        }else if(i / count_L > Math.abs(Data.P1 / (Data.P2 - Data.P1))){
+        } else if (i / count_L > Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
           z = arrow.size * 0.4 * Math.sign(Data.P1) * (-1);
-        }else{
+        } else {
           continue;
         }
       }
-      if (Data.P1 * Data.P2 !== 0){
+      if (Data.P1 * Data.P2 !== 0) {
         geometry.vertices.push(new THREE.Vector3(x, y, z));
         geometry.vertices.push(new THREE.Vector3(0, 0, 0));
         y = arrow.size * -0.2;
         geometry.vertices.push(new THREE.Vector3(x, y, z));
-      }else if(Data.P1 === 0 && Data.P2 !== 0){
-        if (i === 0){
+      } else if (Data.P1 === 0 && Data.P2 !== 0) {
+        if (i === 0) {
           continue;
-        }else{
+        } else {
           geometry.vertices.push(new THREE.Vector3(x, y, z));
           geometry.vertices.push(new THREE.Vector3(0, 0, 0));
           y = arrow.size * -0.2;
           geometry.vertices.push(new THREE.Vector3(x, y, z));
         }
-      }else if(Data.P1 !== 0 && Data.P2 === 0){
-        if (i + 1 > count_L){
+      } else if (Data.P1 !== 0 && Data.P2 === 0) {
+        if (i + 1 > count_L) {
           continue;
-        }else{
+        } else {
           geometry.vertices.push(new THREE.Vector3(x, y, z));
           geometry.vertices.push(new THREE.Vector3(0, 0, 0));
           y = arrow.size * -0.2;
@@ -958,16 +1025,16 @@ export class ThreeLoadService {
         }
       }
 
-      const line = new THREE.LineBasicMaterial({color: arrow.color});
+      const line = new THREE.LineBasicMaterial({ color: arrow.color });
       let mesh = new THREE.Line(geometry, line);
       x = 0;
       y = len_L * i / count_L;
       z = 0;
       mesh.position.set(x, y, z);
       groupZ.add(mesh);
-      
+
       geometry = new THREE.Geometry(); //geometryの初期化
-      
+
       //矢印の棒
       geometry.vertices.push(new THREE.Vector3(x, y, z));
       z = Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
@@ -978,9 +1045,9 @@ export class ThreeLoadService {
       geometry = new THREE.Geometry(); //geometryの初期化
     }
     //分布荷重をまとめる棒
-    geometry.vertices.push(new THREE.Vector3(0, 0,  Data.p_one * Math.sign(Data.P1)));
+    geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_one * Math.sign(Data.P1)));
     geometry.vertices.push(new THREE.Vector3(0, len_L, Data.p_two * Math.sign(Data.P2)));
-    const line = new THREE.LineBasicMaterial({color: arrow.color});
+    const line = new THREE.LineBasicMaterial({ color: arrow.color });
     let mesh = new THREE.Line(geometry, line);
     groupZ.add(mesh);
 
@@ -992,15 +1059,15 @@ export class ThreeLoadService {
       side: THREE.DoubleSide,
       color: 0x00cc00,
       opacity: 0.3
-    }); 
+    });
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
     geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_one * Math.sign(Data.P1)));
     geometry.vertices.push(new THREE.Vector3(0, len_L, Data.p_two * Math.sign(Data.P2)));
     geometry.vertices.push(new THREE.Vector3(0, len_L, 0));
-    if (Data.P1 * Data.P2 >= 0){
+    if (Data.P1 * Data.P2 >= 0) {
       var face1 = new THREE.Face3(0, 1, 2);
       var face2 = new THREE.Face3(0, 2, 3);
-    }else if (Data.P1 * Data.P2 < 0){
+    } else if (Data.P1 * Data.P2 < 0) {
       geometry.vertices.push(new THREE.Vector3(0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * len_L, 0));
       var face1 = new THREE.Face3(0, 1, 4);
       var face2 = new THREE.Face3(2, 3, 4);
@@ -1013,9 +1080,9 @@ export class ThreeLoadService {
     groupZ.add(mesh2);
 
     //groupの操作
-    if (len_Lz !== 0){
+    if (len_Lz !== 0) {
       groupZ.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
-    }else if (len_Lz === 0){
+    } else if (len_Lz === 0) {
       groupZ.rotation.z = Math.PI * 1.5 + Math.atan2(len_Ly, len_Lx);
     }
     groupZ.position.set(L_position.x1, L_position.y1, L_position.z1);
@@ -1023,8 +1090,8 @@ export class ThreeLoadService {
     return arrowlist
   }
 
-  //部材ねじりモーメント(分布モーメント)荷重
-  public CreateArrow_R (arrow, L_position, localAxis, Data){
+  // 部材ねじりモーメント(分布モーメント)荷重
+  public CreateArrow_R(arrow, L_position, localAxis, Data) {
 
     Data.p_one = Data.p_one * 0.2;
     Data.p_two = Data.p_two * 0.2;
@@ -1042,34 +1109,34 @@ export class ThreeLoadService {
     let y = (L_position.y2 + L_position.y1) / 2;
     let z = (L_position.z2 + L_position.z1) / 2;
     const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
-    
+
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
       color: arrow.color,
       opacity: 0.3
-    }); 
-    if (Data.P1 * Data.P2 >= 0){
+    });
+    if (Data.P1 * Data.P2 >= 0) {
       const geometry = new THREE.CylinderGeometry(
         Data.p_one * Math.sign(Data.P1), //radiusTop
         Data.p_two * Math.sign(Data.P2), //radiusBottom
-        len_L,      12,              //height, radialSegments
-        1,          true,                // heightSegments, openEnded
-        3,       3/2 * Math.PI        //thetaStart, thetaLength
+        len_L, 12,              //height, radialSegments
+        1, true,                // heightSegments, openEnded
+        3, 3 / 2 * Math.PI        //thetaStart, thetaLength
       );
       const mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.x = -Math.PI / 2;
       groupR.add(mesh);
 
-    }else if(Data.P1 * Data.P2 < 0){
+    } else if (Data.P1 * Data.P2 < 0) {
 
       //untilZeo = Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2)) * len_L;
       //i端側のコーン
       let geometry = new THREE.CylinderGeometry(
         Data.p_one * Math.sign(Data.P1), 0, //radiusTop, radiusBottom
-        untilZeo,      12,                  //height, radialSegments
-        1,             true,                // heightSegments, openEnded
-        3,             3/2 * Math.PI        //thetaStart, thetaLength
+        untilZeo, 12,                  //height, radialSegments
+        1, true,                // heightSegments, openEnded
+        3, 3 / 2 * Math.PI        //thetaStart, thetaLength
       );
       let mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.x = -Math.PI / 2;
@@ -1078,9 +1145,9 @@ export class ThreeLoadService {
       //j端側のコーン
       geometry = new THREE.CylinderGeometry(
         0, Data.p_two * Math.sign(Data.P2), //radiusTop, radiusBottom
-        len_L - untilZeo,      12,          //height, radialSegments
-        1,             true,                // heightSegments, openEnded
-        3,             3/2 * Math.PI        //thetaStart, thetaLength
+        len_L - untilZeo, 12,          //height, radialSegments
+        1, true,                // heightSegments, openEnded
+        3, 3 / 2 * Math.PI        //thetaStart, thetaLength
       );
       mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.x = -Math.PI / 2;
@@ -1088,57 +1155,57 @@ export class ThreeLoadService {
       groupR.add(mesh);
     }
 
-    for (let i = 0; i <= count_L ; i++){
+    for (let i = 0; i <= count_L; i++) {
       //lineの制御 
       x = 0;
       y = 0;
       z = len_L * i / count_L - len_L / 2;
       const CorrectionAngle = - Math.PI * 13 / 24;
       const curve = new THREE.EllipseCurve(
-        0,           0,                 // ax,          aY
+        0, 0,                 // ax,          aY
         Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L,   // xRadius,
         Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L,   // yRadius
-        CorrectionAngle + 0 * Math.PI, CorrectionAngle + 3/2 * Math.PI, // aStartAngle, aEndAngle
-        false,       0                  // aClockwise, aRotation          
+        CorrectionAngle + 0 * Math.PI, CorrectionAngle + 3 / 2 * Math.PI, // aStartAngle, aEndAngle
+        false, 0                  // aClockwise, aRotation          
       );
-      const points = curve.getPoints( 50 );
-      const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-      const lineMaterial = new THREE.LineBasicMaterial( { color: arrow.color, linewidth: 5 } );
-      const line = new THREE.Line( lineGeometry, lineMaterial );
+      const points = curve.getPoints(50);
+      const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+      const lineMaterial = new THREE.LineBasicMaterial({ color: arrow.color, linewidth: 5 });
+      const line = new THREE.Line(lineGeometry, lineMaterial);
       line.rotation.y = Math.PI;
       line.position.set(x, y, z);
 
-      if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0){
+      if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0) {
         groupR.add(line);
       }
       //コーンの制御
       const cone_radius: number = 0.1 * arrow.size;
       const cone_height: number = 1 * arrow.size;
-      const arrowGeometry = new THREE.ConeGeometry( cone_radius, cone_height, 3, 1, true );
-      const arrowMaterial = new THREE.MeshBasicMaterial( {color: arrow.color} );
-      const cone = new THREE.Mesh( arrowGeometry, arrowMaterial );
+      const arrowGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
+      const arrowMaterial = new THREE.MeshBasicMaterial({ color: arrow.color });
+      const cone = new THREE.Mesh(arrowGeometry, arrowMaterial);
 
-      if (Data.P1 * Data.P2 >= 0){
-        if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L > 0){  //pが正の方
+      if (Data.P1 * Data.P2 >= 0) {
+        if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L > 0) {  //pが正の方
           cone.rotation.z = -Math.PI / 2;
           y = -Data.p_one * Math.sign(Data.P1) - difference_P * i / count_L;
           cone.position.set(x, y, z);
-        }else if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L < 0){  //pが負の方
-          x =  Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
+        } else if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L < 0) {  //pが負の方
+          x = Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
           cone.position.set(x, y, z);
         }
-      }else if(Data.P1 * Data.P2 < 0){
-        if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L > 0){  //pが負の方
+      } else if (Data.P1 * Data.P2 < 0) {
+        if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L > 0) {  //pが負の方
           cone.rotation.z = -Math.PI / 2;
           y = -Data.p_one * Math.sign(Data.P1) - difference_P * i / count_L;
           cone.position.set(x, y, z);
-        }else if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L < 0){  //pが正の方
-          x =  Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
+        } else if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L < 0) {  //pが正の方
+          x = Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
           cone.position.set(x, y, z);
         }
       }
 
-      if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0){
+      if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0) {
         groupR.add(cone);
       }
     }
@@ -1186,6 +1253,18 @@ export class ThreeLoadService {
     this.memberLoadList = new Array();
   }
 
+  // スケールを反映する
+  private onResize(): void {
+
+    for (const item of this.pointLoadList) {
+      item.scale.set(this.pointLoadScale, this.pointLoadScale, this.pointLoadScale);
+    }
+
+    for (const item of this.memberLoadList) {
+      item.scale.set(this.memberLoadScale, this.memberLoadScale, this.memberLoadScale);
+    }
+
+  }
 
 }
 

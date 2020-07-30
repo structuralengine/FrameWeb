@@ -7,45 +7,89 @@ import { ThreeNodesService } from './three-nodes.service';
 
 import * as THREE from 'three';
 import { ThreeMembersService } from './three-members.service';
-import { CubeCamera } from 'three';
-//import { ConsoleReporter } from 'jasmine';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThreeFixMemberService {
 
-  private BufferGeometry: THREE.SphereBufferGeometry; //  分布バネ
   private fixmemberList: any[];
   private isVisible: boolean;
+
+  // 大きさを調整するためのスケール
+  private scale: number;
+  private params: any;          // GUIの表示制御
+  private gui: any;
 
   constructor(private scene: SceneService,
               private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService,
               private fixmember: InputFixMemberService,
-              private three_member: ThreeMembersService) { 
-      this.fixmemberList = new Array();
-      this.isVisible = null;
-    }
-  
-  public maxLength(): number {
+              private three_member: ThreeMembersService) {
+
+    this.fixmemberList = new Array();
+    this.isVisible = null;
+
+    // gui
+    this.scale = 1.0;
+    this.params = {
+      fixmenberScale: this.scale
+    };
+    this.gui = null;
+
+  }
+
+  public baseScale(): number {
     // 最も距離の近い2つの節点距離
-    return this.nodeThree.baseScale() * 60;
+    return this.nodeThree.minDistance;
   }
   public center(): any {
     // すべての節点の中心
-    return this.nodeThree.center; 
+    return this.nodeThree.center;
   }
 
   public visible(flag: boolean): void {
-    if( this.isVisible === flag){
+    if (this.isVisible === flag) {
       return;
     }
     for (const mesh of this.fixmemberList) {
       mesh.visible = flag;
     }
-    this.isVisible = flag
+    this.isVisible = flag;
+
+    // guiの表示設定
+    if (flag === true) {
+      if(this.fixmemberList.length > 0){
+        this.guiEnable();
+      }
+    } else {
+      this.guiDisable();
+    }
+
+  }
+
+  // guiを表示する
+  private guiEnable(): void {
+    if (this.gui !== null) {
+      return;
+    }
+
+    const gui_step: number = 2 * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'fixmenberScale', 0, 2).step(gui_step).onChange((value) => {
+      this.scale = value;
+      this.onResize();
+      this.scene.render();
+    });
+  }
+
+  // guiを非表示にする
+  private guiDisable(): void {
+    if (this.gui === null) {
+      return;
+    }
+    this.scene.gui.remove(this.gui);
+    this.gui = null;
   }
 
   public chengeData(index: number): void {
@@ -74,7 +118,7 @@ export class ThreeFixMemberService {
     // 新しい入力を適用する
     const targetFixMember = fixmemberData[key];
 
-    for(const target of targetFixMember){
+    for (const target of targetFixMember) {
 
       // 節点データを集計する
       const m = memberData[target.m];
@@ -90,63 +134,65 @@ export class ThreeFixMemberService {
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
       const len: number = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z).length();
 
-      let spring = {direction: "z", relationship: "large", color: 0xff0000};
-      const position = {x: (i.x + j.x) / 2, y: (i.y + j.y) / 2, z: (i.z + j.z) / 2};
+      const spring = { direction: 'z', relationship: 'large', color: 0xff0000 };
+      const position = { x: (i.x + j.x) / 2, y: (i.y + j.y) / 2, z: (i.z + j.z) / 2 };
 
-      if (target.tx === 1){
-        spring.direction = "x";
+      if (target.tx !== 0) {
+        spring.direction = 'x';
         spring.color = 0xff8888;
-        this.MultipleDrawing(spring, position, localAxis, len, this.maxLength());
+        this.MultipleDrawing(spring, position, localAxis, len, this.baseScale());
       }
-      if (target.ty === 1){
-        spring.direction = "y";
+      if (target.ty !== 0) {
+        spring.direction = 'y';
         spring.color = 0x88ff88;
-        if (position.y <= this.center().y){
-          spring.relationship = "small";
-        }else{
-          spring.relationship = "large";
+        if (position.y <= this.center().y) {
+          spring.relationship = 'small';
+        } else {
+          spring.relationship = 'large';
         }
-        this.MultipleDrawing(spring, position, localAxis, len, this.maxLength());
+        this.MultipleDrawing(spring, position, localAxis, len, this.baseScale());
       }
-      if (target.tz === 1){
-        spring.direction = "z";
+      if (target.tz !== 0) {
+        spring.direction = 'z';
         spring.color = 0x8888ff;
-        if (position.z <= this.center().z){
-          spring.relationship = "small";
-        }else{
-          spring.relationship = "large";
+        if (position.z <= this.center().z) {
+          spring.relationship = 'small';
+        } else {
+          spring.relationship = 'large';
         }
-        this.MultipleDrawing(spring, position, localAxis, len, this.maxLength());
+        this.MultipleDrawing(spring, position, localAxis, len, this.baseScale());
       }
-      if (target.tr === 1){
-        spring.direction = "r";
+      if (target.tr !== 0) {
+        spring.direction = 'r';
         spring.color = 0x808080;
-        this.MultipleDrawing(spring, position, localAxis, len, this.maxLength());
+        this.MultipleDrawing(spring, position, localAxis, len, this.baseScale());
       }
 
     }
-
+    this.onResize();
   }
 
-  //複数回 描くために
-  public MultipleDrawing(spring, position, localAxis, len, maxLength){
+  // 複数回 描くために
+  public MultipleDrawing(spring, position, localAxis, len, maxLength) {
     let interval = 0.3;
     let count = 0;
-    let local_position = {x: position.x, y: position.x, z: position.x};
-    //バネ用の分岐
-    if (spring.direction === "x" || spring.direction === "y" || spring.direction === "z"){
+    let local_position = { x: position.x, y: position.x, z: position.x };
+
+    // バネ用の分岐
+    if (spring.direction === 'x' || spring.direction === 'y' || spring.direction === 'z') {
       count = Math.floor(len / 2 / interval - 0.5);
-      for (let k = - count; k <= count ; k += 1 ){
+      for (let k = - count; k <= count; k += 1) {
         local_position.x = position.x + localAxis.x.x * k * interval;
         local_position.y = position.y + localAxis.x.y * k * interval;
         local_position.z = position.z + localAxis.x.z * k * interval;
         this.CreateSpring(spring, local_position, localAxis, maxLength);
       }
     }
-    //回転バネ用の分岐
-    if (spring.direction === "r" ) {
+
+    // 回転バネ用の分岐
+    if (spring.direction === 'r') {
       count = Math.floor(len / 2 / interval - 0.5);
-      for (let k = - count; k <= count ; k += 1 ){
+      for (let k = - count; k <= count; k += 1) {
         local_position.x = position.x + localAxis.x.x * k * interval;
         local_position.y = position.y + localAxis.x.y * k * interval;
         local_position.z = position.z + localAxis.x.z * k * interval;
@@ -155,15 +201,15 @@ export class ThreeFixMemberService {
     }
   }
 
-  //バネを描く
-  public CreateSpring(spring, position, localAxis, maxLength){
+  // バネを描く
+  public CreateSpring(spring, position, localAxis, maxLength) {
     let GeometrySpring = new THREE.Geometry();
     let increase = 0.0001;
-    switch (spring.relationship){
-      case("small"):
+    switch (spring.relationship) {
+      case ('small'):
         increase = 0.0001;
         break;
-      case("large"):
+      case ('large'):
         increase = -0.0001;
         break;
     }
@@ -173,35 +219,35 @@ export class ThreeFixMemberService {
     let x = position.x;
     let y = position.y;
     let z = position.z;
-    for(let i = 0; i <= laps * 360; i += split){
+    for (let i = 0; i <= laps * 360; i += split) {
       x = radius * Math.cos(Math.PI / 180 * i) * maxLength;
       y = radius * Math.sin(Math.PI / 180 * i) * maxLength;
       z = - i * increase * maxLength;
-     GeometrySpring.vertices.push(new THREE.Vector3(x, y, z));
+      GeometrySpring.vertices.push(new THREE.Vector3(x, y, z));
     }
-    const LineSpring = new THREE.LineBasicMaterial({color: spring.color});
+    const LineSpring = new THREE.LineBasicMaterial({ color: spring.color });
     const MeshSpring = new THREE.Line(GeometrySpring, LineSpring);
-    //lookAt用
+    // lookAt用
     const angle = Math.PI / 6;
-    switch (spring.direction){
-      case ("x"):
-      MeshSpring.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z); 
-      break;
-      case ("y"):
-      MeshSpring.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z); 
-      break;
-      case ("z"):
-      MeshSpring.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z); 
-      break;
+    switch (spring.direction) {
+      case ('x'):
+        MeshSpring.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
+        break;
+      case ('y'):
+        MeshSpring.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
+        break;
+      case ('z'):
+        MeshSpring.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
+        break;
     }
-    MeshSpring.position.set(position.x, position.y, position.z); 
+    MeshSpring.position.set(position.x, position.y, position.z);
     this.fixmemberList.push(MeshSpring);
-    this.scene.add(MeshSpring);  
+    this.scene.add(MeshSpring);
     GeometrySpring = new THREE.Geometry();
   }
 
-  //回転バネ支点を描く
-  public CreateRotatingSpring(rotatingspring, position, localAxis, maxLength){
+  // 回転バネ支点を描く
+  public CreateRotatingSpring(rotatingspring, position, localAxis, maxLength) {
     let geometry = new THREE.Geometry();
     const laps = 3 + 0.25;
     const split = 10;
@@ -209,15 +255,15 @@ export class ThreeFixMemberService {
     let x = position.x;
     let y = position.y;
     let z = position.z;
-    for(let j = 0; j <= laps * 360; j += split){
+    for (let j = 0; j <= laps * 360; j += split) {
       x = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
       y = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
       z = 0;
       geometry.vertices.push(new THREE.Vector3(x, y, z));
     }
-    const line = new THREE.LineBasicMaterial({color: rotatingspring.color});
+    const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
     const mesh = new THREE.Line(geometry, line);
-    mesh.lookAt(position.x + localAxis.x.x, position.y + localAxis.x.y, position.z + localAxis.x.z); //作図上y方向を見る
+    mesh.lookAt(position.x + localAxis.x.x, position.y + localAxis.x.y, position.z + localAxis.x.z); // 作図上y方向を見る
     mesh.position.set(position.x, position.y, position.z);
     this.fixmemberList.push(mesh);
     this.scene.add(mesh);
@@ -237,5 +283,11 @@ export class ThreeFixMemberService {
     this.fixmemberList = new Array();
   }
 
+  // スケールを反映する
+  private onResize(): void {
+    for (const item of this.fixmemberList) {
+      item.scale.set(this.scale, this.scale, this.scale);
+    }
+  }
 
 }

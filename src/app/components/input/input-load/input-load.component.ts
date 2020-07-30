@@ -130,7 +130,7 @@ export class InputLoadComponent implements OnInit {
     const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
-    this.three.ChengeMode('load_poinsts', currentPage);
+    this.three.ChengeMode('load_points', currentPage);
   }
 
   public loadPointsActive(): void {

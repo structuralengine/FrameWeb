@@ -25,15 +25,15 @@ export class ThreeService {
   private currentIndex: number;
 
   constructor(public scene: SceneService,
-    private node: ThreeNodesService,
-    private member: ThreeMembersService,
-    private fixNode: ThreeFixNodeService,
-    private fixMember: ThreeFixMemberService,
-    private joint: ThreeJointService,
-    private load: ThreeLoadService,
-    private disg: ThreeDisplacementService,
-    private reac: ThreeReactService,
-    private fsec: ThreeSectionForceService) {
+              private node: ThreeNodesService,
+              private member: ThreeMembersService,
+              private fixNode: ThreeFixNodeService,
+              private fixMember: ThreeFixMemberService,
+              private joint: ThreeJointService,
+              private load: ThreeLoadService,
+              private disg: ThreeDisplacementService,
+              private reac: ThreeReactService,
+              private fsec: ThreeSectionForceService) {
   }
 
   //////////////////////////////////////////////////////
@@ -58,6 +58,7 @@ export class ThreeService {
 
       case 'nodes':
         this.node.chengeData();
+        this.member.chengeData();
         break;
 
       case 'members':
@@ -136,12 +137,12 @@ export class ThreeService {
 
     switch (ModeName) {
       case 'nodes':
-        this.node.visible(true, true);
-        this.member.visible(true, false);
+        this.node.visible(true, true, true);
+        this.member.visible(true, false, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -149,13 +150,24 @@ export class ThreeService {
 
       case 'members':
       case 'elements':
-      case 'notice_points':
-        this.node.visible(true, false);
-        this.member.visible(true, true);
+        this.node.visible(true, false, false);
+        this.member.visible(true, true, true);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;
+
+      case 'notice_points':
+        this.node.visible(true, false, false);
+        this.member.visible(true, true, false);
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -165,12 +177,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.joint.chengeData(currentPage);
         }
-        this.node.visible(true, false);
-        this.member.visible(true, true);
+        this.node.visible(true, false, false);
+        this.member.visible(true, true, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(true);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -180,12 +192,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.fixNode.chengeData(currentPage);
         }
-        this.node.visible(true, true);
-        this.member.visible(true, false);
+        this.node.visible(true, true, false);
+        this.member.visible(true, false, false);
         this.fixNode.visible(true);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -196,12 +208,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.fixMember.chengeData(currentPage);
         }
-        this.node.visible(true, false);
-        this.member.visible(true, true);
+        this.node.visible(true, false, false);
+        this.member.visible(true, true, false);
         this.fixNode.visible(false);
         this.fixMember.visible(true);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -211,12 +223,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.load.chengeData(currentPage);
         }
-        this.node.visible(true, false);
-        this.member.visible(true, false);
+        this.node.visible(true, false, false);
+        this.member.visible(true, false, false);
         this.fixNode.visible(true);
         this.fixMember.visible(true);
         this.joint.visible(true);
-        this.load.visible(true);
+        this.load.visible(true, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -226,12 +238,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.load.chengeData(currentPage);
         }
-        this.node.visible(true, true);
-        this.member.visible(true, false);
+        this.node.visible(true, true, false);
+        this.member.visible(true, false, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(true);
+        this.load.visible(true, true);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -241,12 +253,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.load.chengeData(currentPage);
         }
-        this.node.visible(true, false);
-        this.member.visible(true, true);
+        this.node.visible(true, false, false);
+        this.member.visible(true, true, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(true);
+        this.load.visible(true, true);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -258,12 +270,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.disg.chengeData(currentPage);
         }
-        this.node.visible(true, true);
-        this.member.visible(true, false);
+        this.node.visible(true, true, false);
+        this.member.visible(true, false, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(true);
         this.reac.visible(false);
         this.fsec.visible(false);
@@ -275,12 +287,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.reac.chengeData(currentPage);
         }
-        this.node.visible(true, true);
-        this.member.visible(true, false);
+        this.node.visible(true, true, false);
+        this.member.visible(true, false, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(true);
         this.fsec.visible(false);
@@ -292,12 +304,12 @@ export class ThreeService {
         if (this.currentIndex !== currentPage) {
           this.fsec.chengeData(currentPage);
         }
-        this.node.visible(true, false);
-        this.member.visible(true, true);
+        this.node.visible(true, false, false);
+        this.member.visible(true, true, false);
         this.fixNode.visible(false);
         this.fixMember.visible(false);
         this.joint.visible(false);
-        this.load.visible(false);
+        this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
         this.fsec.visible(true);
@@ -325,15 +337,28 @@ export class ThreeService {
         this.node.detectObject(raycaster, action);
         break;
 
-      case 'members':
       case 'joints':
         this.joint.detectObject(raycaster, action);
         break;
-      case 'notice_points':
+
+      case 'members':
+      case 'elements':
         this.member.detectObject(raycaster, action);
         break;
 
-      case 'loads':
+      case 'fix_member':
+        this.member.detectObject(raycaster, action);
+        break;
+
+      case 'load_points':
+
+        break;
+
+      case 'load_members':
+        this.member.detectObject(raycaster, action);
+        break;
+
+      case 'load_names':
         break;
 
       case 'disg':

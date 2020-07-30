@@ -50,7 +50,7 @@ export class ThreeReactService {
 
     public maxLength(): number {
       // 最も距離の近い2つの節点距離
-      return this.nodeThree.baseScale() * 80;
+      return this.nodeThree.baseScale * 80;
     }
 
     public chengeData(index: number): void {
@@ -204,7 +204,7 @@ export class ThreeReactService {
       const maxLength: number = this.maxLength() * 0.7;
       const length: number = maxLength * value / pMax;
 
-      const linewidth: number = this.nodeThree.baseScale() / 50;
+      const linewidth: number = this.nodeThree.baseScale / 50;
 
       let color: number;
       const positions = [];

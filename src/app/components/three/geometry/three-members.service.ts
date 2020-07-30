@@ -12,27 +12,43 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 })
 export class ThreeMembersService {
 
-  private memberList: THREE.Mesh[];
-  private axisList: THREE.Group[];
-  private isEnable: boolean;
-  private selectionItem: THREE.Mesh;     // 選択中のアイテム
   private isVisible: boolean[];
+
+  public maxDistance: number;
+  public minDistance: number;
+
+  private memberList: THREE.Mesh[];
+  private axisList: THREE.Group[]; // 軸は、メンバーのスケールと関係ないので、分けて管理する
+
+  private selectionItem: THREE.Mesh;     // 選択中のアイテム
+
+    // 大きさを調整するためのスケール
+  private scale: number;
+  private params: any;          // GUIの表示制御
+  private gui: any;
 
   constructor(private scene: SceneService,
               private nodeThree: ThreeNodesService,
               private node: InputNodesService,
               private member: InputMembersService) {
-    
+
     this.isVisible = [null, null];
     this.memberList = new Array();
     this.axisList = new Array();
-    this.isEnable = true;
+    this.ClearData();
+
+    // gui
+    this.scale = 0.5;
+    this.params = {
+      memberScale: this.scale
+    };
+    this.gui = null;
+
   }
-  
 
   public baseScale(): number {
-    const scale = this.nodeThree.baseScale();
-    return scale * 0.2;
+    const scale = this.nodeThree.baseScale;
+    return scale * 0.3;
   }
 
   public chengeData(): void {
@@ -72,6 +88,9 @@ export class ThreeMembersService {
       if (len < 0.001) {
         continue;
       }
+      this.minDistance = Math.min(len, this.minDistance);
+      this.maxDistance = Math.max(len, this.maxDistance);
+
       const x: number = (i.x + j.x) / 2;
       const y: number = (i.y + j.y) / 2;
       const z: number = (i.z + j.z) / 2;
@@ -98,7 +117,7 @@ export class ThreeMembersService {
 
       label.position.set(0, 0, 0);
       label.name = 'font';
-      label.visible = this.isEnable;
+      label.visible = this.isVisible[1];
       mesh.add(label);
 
       // ローカル座標を示す線を追加
@@ -149,56 +168,93 @@ export class ThreeMembersService {
       this.scene.remove(group);
     }
     this.axisList = new Array();
+
+    this.minDistance = Number.MAX_VALUE;
+    this.maxDistance = 0;
   }
 
   // スケールを反映する
   private onResize(): void {
-    const scale: number = this.baseScale();
+    const scale: number = this.baseScale() * this.scale;
     for (const item of this.memberList) {
       item.scale.set(scale, 1, scale);
     }
+    for (const arrows of this.axisList) {
+      for (const item of arrows.children) {
+        item.scale.set(this.scale, this.scale, this.scale);
+      }
+    }
+
   }
 
-  public visible(flag: boolean, text:boolean): void {
+  public visible(flag: boolean, text: boolean, gui: boolean): void {
     if( this.isVisible[0] !== flag){
       for (const mesh of this.memberList) {
         mesh.visible = flag;
       }
-      this.isVisible[0] = flag
+      this.isVisible[0] = flag;
     }
-    if( this.isVisible[1] !== text){
-      if (text === true){
-        this.Enable();
-      }else{
-        this.Disable();
+    if ( this.isVisible[1] !== text) {
+      // テキストの表示設定
+      for (const mesh of this.memberList) {
+        mesh.getObjectByName('font').visible = text;
       }
-      this.isVisible[1] = text
+      this.isVisible[1] = text;
     }
+    if (text === false) {
+      // テキストが非表示なら部材軸の表示も消す
+      for (const group of this.axisList) {
+        group.visible = false;
+      }
+    }
+
+    // guiの表示設定
+    if (gui === true) {
+      this.guiEnable();
+    } else {
+      // 黒に戻す
+      this.selectionItem = null;
+      this.memberList.map(item => {
+        // 元の色にする
+        item.material['color'].setHex(0x000000);
+        item.material['opacity'] = 1.00;
+      });
+      this.axisList.map( item => {
+        item.visible = false;
+      });
+      this.guiDisable();
+    }
+
   }
 
-  // 文字を消す
-  private Disable(): void {
-    for (const mesh of this.memberList) {
-      mesh.getObjectByName('font').visible = false;
+
+  // guiを表示する
+  private guiEnable(): void {
+    if (this.gui !== null) {
+      return;
     }
-    for (const group of this.axisList) {
-      group.visible = false;
-    }
-    this.isEnable = false;
+
+    const gui_step: number = 10 * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'memberScale', 0, 10).step(gui_step).onChange((value) => {
+      this.scale = value;
+      this.onResize();
+      this.scene.render();
+    });
   }
 
-  // 文字を表示する
-  private Enable(): void {
-    for (const mesh of this.memberList) {
-      mesh.getObjectByName('font').visible = true;
+  // guiを非表示にする
+  private guiDisable(): void {
+    if (this.gui === null) {
+      return;
     }
-    this.isEnable = true;
+    this.scene.gui.remove(this.gui);
+    this.gui = null;
   }
 
   // 部材座標軸を
   public localAxis(xi: number, yi: number, zi: number,
-                    xj: number, yj: number, zj: number,
-                    theta: number): any {
+                   xj: number, yj: number, zj: number,
+                   theta: number): any {
 
     const xM: number[] = [1, 0, 0]; // x だけ1の行列
     const yM: number[] = [0, 1, 0]; // y だけ1の行列
@@ -297,36 +353,36 @@ export class ThreeMembersService {
     return tt;
   }
 
-    // マウス位置とぶつかったオブジェクトを検出する
-    public detectObject(raycaster: THREE.Raycaster , action: string): void {
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(raycaster: THREE.Raycaster , action: string): void {
 
-      if (this.memberList.length === 0) {
-        return; // 対象がなければ何もしない
-      }
+    if (this.memberList.length === 0) {
+      return; // 対象がなければ何もしない
+    }
 
-      // 交差しているオブジェクトを取得
-      const intersects = raycaster.intersectObjects(this.memberList);
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.memberList);
 
-      switch (action) {
-        case 'click':
-          this.memberList.map(item => {
-            if (intersects.length > 0 && item === intersects[0].object) {
-              // 色を赤くする
-              item.material['color'].setHex(0xff0000);
-              item.material['opacity'] = 1.00;
-            }
-          });
-          break;
+    switch (action) {
+      case 'click':
+        this.memberList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 1.00;
+          }
+        });
+        break;
 
-        case 'select':
+      case 'select':
+        if (intersects.length > 0){
           this.selectionItem = null;
           this.memberList.map(item => {
-            if (intersects.length > 0 && item === intersects[0].object) {
+            if (item === intersects[0].object) {
               // 色を赤くする
               item.material['color'].setHex(0xff0000);
               item.material['opacity'] = 1.00;
               this.selectionItem = item;
-
             } else {
               // それ以外は元の色にする
               item.material['color'].setHex(0x000000);
@@ -343,36 +399,34 @@ export class ThreeMembersService {
                 item.visible = false;
               }
             });
-          } else {
-            this.axisList.map( item => {
-              item.visible = false;
-            });
           }
-          break;
+        }
+        break;
 
-        case 'hover':
-          this.memberList.map(item => {
-            if (intersects.length > 0 && item === intersects[0].object) {
-              // 色を赤くする
+      case 'hover':
+        this.memberList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を赤くする
+            item.material['color'].setHex(0xff0000);
+            item.material['opacity'] = 0.25;
+          } else {
+            if ( item === this.selectionItem ) {
               item.material['color'].setHex(0xff0000);
-              item.material['opacity'] = 0.25;
+              item.material['opacity'] = 1.00;
             } else {
-              if ( item === this.selectionItem ) {
-                item.material['color'].setHex(0xff0000);
-                item.material['opacity'] = 1.00;
-              } else {
-                // それ以外は元の色にする
-                item.material['color'].setHex(0x000000);
-                item.material['opacity'] = 1.00;
-              }
+              // それ以外は元の色にする
+              item.material['color'].setHex(0x000000);
+              item.material['opacity'] = 1.00;
             }
-          });
-          break;
+          }
+        });
+        break;
 
-        default:
-          return;
-      }
+      default:
+        return;
     }
+  }
+
 }
 
 
