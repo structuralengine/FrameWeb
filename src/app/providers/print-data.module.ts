@@ -235,7 +235,7 @@ export class PrintDataModule {
     const body: any = [];
     for (const index of Object.keys(json)) {
       const elist = json[index]; // 1行分のnodeデータを取り出す
-      const item = elist['1'];
+      const item = elist['0'];
 
       // 印刷する1行分のリストを作る
       const line: string[] = new Array();

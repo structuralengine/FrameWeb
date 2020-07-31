@@ -52,3 +52,4 @@ Thumbs.db
 /test
 /unity-src/Assets/Resources/Test/*
 unity-src/.vs/
+.vs/

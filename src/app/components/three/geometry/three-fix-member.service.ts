@@ -170,6 +170,7 @@ export class ThreeFixMemberService {
 
     }
     this.onResize();
+    this.guiEnable();
   }
 
   // 複数回 描くために

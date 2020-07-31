@@ -256,6 +256,7 @@ export class ThreeFixNodeService {
 
     }
     this.onResize();
+    this.guiEnable();
   }
 
   // ピン支点を描く
