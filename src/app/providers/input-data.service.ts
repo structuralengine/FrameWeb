@@ -117,7 +117,7 @@ export class InputDataService {
       jsonData['fix_member'] = fix_member;
     }
 
-    const load: {} = this.load.getLoadJson();
+    const load: {} = this.load.getLoadJson(empty);
     if (Object.keys(load).length > 0) {
       jsonData['load'] = load;
     }
