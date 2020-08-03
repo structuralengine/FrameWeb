@@ -32,8 +32,7 @@ export class ResultFsecService {
     }
 
     // 行を探す
-    for (let i = 0; i < target.length; i++) {
-      const tmp = target[i];
+    for (const tmp of target) {
       if (tmp.row === row) {
         result = {
           row: tmp.row,
@@ -119,16 +118,23 @@ export class ResultFsecService {
           let mxi: number = this.helper.toNumber(item['mxi']);
           let myi: number = this.helper.toNumber(item['myi']);
           let mzi: number = this.helper.toNumber(item['mzi']);
+          fxi = (fxi == null) ? 0 : Math.round(fxi * 100) / 100;
+          fyi = (fyi == null) ? 0 : Math.round(fyi * 100) / 100;
+          fzi = (fzi == null) ? 0 : Math.round(fzi * 100) / 100;
+          mxi = (mxi == null) ? 0 : Math.round(mxi * 100) / 100;
+          myi = (myi == null) ? 0 : Math.round(myi * 100) / 100;
+          mzi = (mzi == null) ? 0 : Math.round(mzi * 100) / 100;
+
           result = {
             m: memberNo,
             n: ni,
             l: noticePoint,
-            fx: (fxi == null) ? 0 : fxi,
-            fy: (fyi == null) ? 0 : fyi,
-            fz: (fzi == null) ? 0 : fzi,
-            mx: (mxi == null) ? 0 : mxi,
-            my: (myi == null) ? 0 : myi,
-            mz: (mzi == null) ? 0 : mzi
+            fx: fxi,
+            fy: fyi,
+            fz: fzi,
+            mx: mxi,
+            my: myi,
+            mz: mzi
           };
 
           // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
@@ -138,7 +144,7 @@ export class ResultFsecService {
             result['row'] = row;
             target.push(result);
 
-            //　最大値を記録する
+            // 最大値を記録する
             for (const v of [fxi, fyi, fzi]) {
               if (Math.abs(max_f) < Math.abs(v)) {
                 max_f = v;
@@ -164,17 +170,24 @@ export class ResultFsecService {
           let mxj: number = this.helper.toNumber(item['mxj']);
           let myj: number = this.helper.toNumber(item['myj']);
           let mzj: number = this.helper.toNumber(item['mzj']);
+          noticePoint = Math.round(noticePoint * 1000) / 1000;
+          fxj = (fxj == null) ? 0 : Math.round(fxj * 100) / 100;
+          fyj = (fyj == null) ? 0 : Math.round(fyj * 100) / 100;
+          fzj = (fzj == null) ? 0 : Math.round(fzj * 100) / 100;
+          mxj = (mxj == null) ? 0 : Math.round(mxj * 100) / 100;
+          myj = (myj == null) ? 0 : Math.round(myj * 100) / 100;
+          mzj = (mzj == null) ? 0 : Math.round(mzj * 100) / 100;
 
           result = {
             m: '',
             n: nj,
             l: noticePoint,
-            fx: (fxj == null) ? 0 : fxj,
-            fy: (fyj == null) ? 0 : fyj,
-            fz: (fzj == null) ? 0 : fzj,
-            mx: (mxj == null) ? 0 : mxj,
-            my: (myj == null) ? 0 : myj,
-            mz: (mzj == null) ? 0 : mzj
+            fx: fxj,
+            fy: fyj,
+            fz: fzj,
+            mx: mxj,
+            my: myj,
+            mz: mzj
           };
 
           Object.assign(old, result);
@@ -183,7 +196,7 @@ export class ResultFsecService {
           target.push(result);
           counter++;
 
-          //　最大値を記録する
+          // 最大値を記録する
           for (const v of [fxj, fyj, fzj]) {
             if (Math.abs(max_f) < Math.abs(v)) {
               max_f = v;
