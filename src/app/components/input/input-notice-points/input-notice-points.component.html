@@ -13,7 +13,7 @@
   [settings]="hotTableSettings">
 
     <hot-column data="m"  title="部材No"></hot-column>
-    <!-- <hot-column data="len" [readOnly]="true" title="部材長"></hot-column> -->
+    <hot-column data="len" title="部材長" [readOnly]="true"></hot-column>
     <hot-column *ngFor="let c of colums;" [data]="c" [title]="c"></hot-column>
   </hot-table>
 </div>

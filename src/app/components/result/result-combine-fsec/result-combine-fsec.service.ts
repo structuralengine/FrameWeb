@@ -28,7 +28,7 @@ export class ResultCombineFsecService {
 
     // 着目項目を探す
     let target2: any = null;
-    if (!target1[mode]) {
+    if (!(mode in target1)) {
       target2 = new Array();
     } else {
       target2 = target1[mode];

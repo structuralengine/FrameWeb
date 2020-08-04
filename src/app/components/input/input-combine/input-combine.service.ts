@@ -56,9 +56,8 @@ export class InputCombineService {
   public getCombineJson() {
 
     const jsonData = {};
-    for (let i = 0; i < this.combine.length; i++) {
+    for (const row of this.combine) {
       const data = {};
-      const row = this.combine[i];
       const id = row['row'];
       let flg = false;
       for (let key in row) {

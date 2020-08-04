@@ -153,6 +153,8 @@ export class ResultDataService {
             }
           }
         }
+
+
         // 組み合わせにケース番号を登録する
         let coef = target[defNo]
         let j = 0;

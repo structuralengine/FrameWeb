@@ -5,6 +5,8 @@ import { InputCombineService } from '../../input/input-combine/input-combine.ser
 import { ResultDataService } from '../../../providers/result-data.service';
 import { ThreeService } from '../../three/three.service';
 
+import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-disg.service';
+
 @Component({
   selector: 'app-result-combine-disg',
   templateUrl: './result-combine-disg.component.html',
@@ -20,12 +22,14 @@ export class ResultCombineDisgComponent implements OnInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  btnPickup: string;
 
   constructor(private data: ResultCombineDisgService,
               private disg: ResultDisgService,
               private comb: InputCombineService,
               private result: ResultDataService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private pic: ResultPickupDisgService) {
     this.dataset = new Array();
   }
 
@@ -34,6 +38,14 @@ export class ResultCombineDisgComponent implements OnInit {
     const n: number = this.comb.getCombineCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
+
+    // ピックアップデータがあればボタンを表示する
+    if (Object.keys(this.pic.disgPickup).length > 0) {
+      this.btnPickup = 'btn btn-outline-primary';
+    } else {
+      this.btnPickup = 'btn btn-outline-primary disabled';
+    }
+
   }
 
   loadPage(currentPage: number) {

@@ -3,6 +3,9 @@ import { ResultDisgService } from './result-disg.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeService } from '../../three/three.service';
 
+import { ResultCombineDisgService } from '../result-combine-disg/result-combine-disg.service';
+import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-disg.service';
+
 @Component({
   selector: 'app-result-disg',
   templateUrl: './result-disg.component.html',
@@ -14,10 +17,14 @@ export class ResultDisgComponent implements OnInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  btnCombine: string;
+  btnPickup: string;
 
   constructor(private data: ResultDisgService,
               private load: InputLoadService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private comb: ResultCombineDisgService,
+              private pic: ResultPickupDisgService) {
     this.dataset = new Array();
   }
 
@@ -25,6 +32,20 @@ export class ResultDisgComponent implements OnInit {
     const n: number = this.load.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
+
+    // コンバインデータがあればボタンを表示する
+    if (Object.keys(this.comb.disgCombine).length > 0) {
+      this.btnCombine = 'btn btn-outline-primary';
+    } else {
+      this.btnCombine = 'btn btn-outline-primary disabled';
+    }
+    // ピックアップデータがあればボタンを表示する
+    if (Object.keys(this.pic.disgPickup).length > 0) {
+      this.btnPickup = 'btn btn-outline-primary';
+    } else {
+      this.btnPickup = 'btn btn-outline-primary disabled';
+    }
+
   }
 
   loadPage(currentPage: number) {
