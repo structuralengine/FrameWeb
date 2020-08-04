@@ -182,13 +182,15 @@ export class ThreeJointService {
       case 'click':
         this.jointList.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
-            // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 1.00;
-            item.geometry.parameters.tube = 0.02;
-            item.geometry.parameters.radius = 0.1;
-            //item.scale.x = 1.10; item.scale.y = 1.10; item.scale.z = 1.10;
-
+            // 色を指定する
+            if (item.name === "0xFF0000"){
+              item.material['color'].setHex(0xff0000);
+              }else if(item.name === "0x00FF00"){
+                item.material['color'].setHex(0x00ff00);
+              }else if(item.name === "0x0000FF"){
+                item.material['color'].setHex(0x0000ff);
+              }
+            item.material['opacity'] = 1.00;  //彩度 強
           }
         });
         break;
@@ -197,15 +199,7 @@ export class ThreeJointService {
           this.selectionItem = null;
           this.jointList.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
-            // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 1.00;
-            this.selectionItem = item;
-            item.geometry.parameters.tube = 0.02;
-            item.geometry.parameters.radius = 0.1;
-            //item.scale.x = 1.10; item.scale.y = 1.10; item.scale.z = 1.10;
-          } else {
-            // それ以外は元の色にする
+            // 色を指定する
             if (item.name === "0xFF0000"){
               item.material['color'].setHex(0xff0000);
               }else if(item.name === "0x00FF00"){
@@ -213,10 +207,18 @@ export class ThreeJointService {
               }else if(item.name === "0x0000FF"){
                 item.material['color'].setHex(0x0000ff);
               }
-            item.material['opacity'] = 1.00;
-            item.geometry.parameters.tube = 0.01;
-            item.geometry.parameters.radius = 0.1;
-            //item.scale.x = 1.00; item.scale.y = 1.00; item.scale.z = 1.00;
+            item.material['opacity'] = 1.00;  //彩度 強
+            this.selectionItem = item;
+          } else {
+            // それ以外は彩度を下げる
+            if (item.name === "0xFF0000"){
+              item.material['color'].setHex(0xff0000);
+              }else if(item.name === "0x00FF00"){
+                item.material['color'].setHex(0x00ff00);
+              }else if(item.name === "0x0000FF"){
+                item.material['color'].setHex(0x0000ff);
+              }
+            item.material['opacity'] = 0.50;  //彩度 中
           }
         });
         break;
@@ -224,21 +226,27 @@ export class ThreeJointService {
       case 'hover':
         this.jointList.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
-            // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 0.25;
-            item.geometry.parameters.tube = 0.01;
-            item.geometry.parameters.radius = 0.5;
-            //item.scale.x = 1.00; item.scale.y = 1.00; item.scale.z = 1.00;
+            // 色を指定する
+            if (item.name === "0xFF0000"){
+              item.material['color'].setHex(0xff0000);
+              }else if(item.name === "0x00FF00"){
+                item.material['color'].setHex(0x00ff00);
+              }else if(item.name === "0x0000FF"){
+                item.material['color'].setHex(0x0000ff);
+              }
+            item.material['opacity'] = 0.25;  //彩度 弱
           } else {
             if ( item === this.selectionItem ) {
-              item.material['color'].setHex(0xff0000);
-              item.material['opacity'] = 1.00;
-              item.geometry.parameters.tube = 0.02;
-              item.geometry.parameters.radius = 0.1;
-              //item.scale.x = 1.10; item.scale.y = 1.10; item.scale.z = 1.10;
+              if (item.name === "0xFF0000"){
+                item.material['color'].setHex(0xff0000);
+                }else if(item.name === "0x00FF00"){
+                  item.material['color'].setHex(0x00ff00);
+                }else if(item.name === "0x0000FF"){
+                  item.material['color'].setHex(0x0000ff);
+                }
+              item.material['opacity'] = 1.00;  //彩度 強
             } else {
-              // それ以外は元の色にする
+              // それ以外は彩度を下げる
               if (item.name === "0xFF0000"){
               item.material['color'].setHex(0xff0000);
               }else if(item.name === "0x00FF00"){
@@ -246,10 +254,7 @@ export class ThreeJointService {
               }else if(item.name === "0x0000FF"){
                 item.material['color'].setHex(0x0000ff);
               }
-              item.material['opacity'] = 1.00;
-              item.geometry.parameters.tube = 0.01;
-              item.geometry.parameters.radius = 0.1;
-              //item.scale.x = 1.00; item.scale.y = 1.00; item.scale.z = 1.00;
+              item.material['opacity'] = 0.50;  //彩度 中
             }
           }
         });
