@@ -366,9 +366,11 @@ export class ThreeSectionForceService {
       const danmenryoku = [];
 
       // i端の座標を登録
-      positions.push(memberInfo.iPosition.x);
-      positions.push(memberInfo.iPosition.y);
-      positions.push(memberInfo.iPosition.z);
+      positions.push({
+        x: memberInfo.iPosition.x,
+        y: memberInfo.iPosition.y,
+        z: memberInfo.iPosition.z
+      });
       colors.push(color.r, color.g, color.b);
       // 断面力の座標を登録
       for (let j = 1; j < target.length; j++) {
@@ -383,22 +385,29 @@ export class ThreeSectionForceService {
         x -= f * memberInfo[axis].x * scale;
         y -= f * memberInfo[axis].y * scale;
         z -= f * memberInfo[axis].z * scale;
-        positions.push(x, y, z);
+        positions.push({x, y, z});
         colors.push(color.r, color.g, color.b);
         danmenryoku.push(f);
       }
       // j端の座標を登録
-      positions.push(memberInfo.jPosition.x);
-      positions.push(memberInfo.jPosition.y);
-      positions.push(memberInfo.jPosition.z);
+      positions.push({
+        x: memberInfo.jPosition.x,
+        y: memberInfo.jPosition.y,
+        z: memberInfo.jPosition.z
+      });
       colors.push(color.r, color.g, color.b);
 
       if (tmplineList.length > i) {
         // 既にオブジェクトが生成されていた場合
         // line を修正するコード
         const line = tmplineList[i];
-        const LineGeometry: LineGeometry = line['geometry'];
-        LineGeometry.setPositions(positions);
+        const LineGeo = line['geometry'];
+
+        const LinePositions = [];
+        for ( const p of positions) {
+          LinePositions.push(p.x, p.y, p.z);
+        }
+        LineGeo.setPositions(LinePositions);
 
         // 文字と面を削除する
         while (line.children.length > 0) {
@@ -413,7 +422,11 @@ export class ThreeSectionForceService {
 
       } else {
         // 線を生成する
-        const line = this.createLineGeometory(positions, colors);
+        const LinePositions = [];
+        for ( const p of positions) {
+          LinePositions.push(p.x, p.y, p.z);
+        }
+        const line = this.createLineGeometory(LinePositions, colors);
         // テキストを追加
         this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
@@ -451,11 +464,11 @@ export class ThreeSectionForceService {
   // テキストを追加
   private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[], localAxis: any): void {
     let j = 0;
-    for (let i = 3; i < positions.length - 3; i += 3) {
+    for ( const p of positions) {
       const pos = {
-        x: positions[i],
-        y: positions[i + 1],
-        z: positions[i + 2],
+        x: p.x,
+        y: p.y,
+        z: p.z,
       };
 
       // 数値を更新
@@ -499,25 +512,18 @@ export class ThreeSectionForceService {
       opacity: 0.3
     });
 
-    const posList: THREE.Vector3[] = new Array();
-    for (let i = 0; i < positions.length; i += 3) {
-        posList.push(new THREE.Vector3(
-          positions[i],
-          positions[i + 1],
-          positions[i + 2]));
-    }
-
-    for ( let i = 1; i < posList.length - 1; i++ ) {
+    for ( let i = 1; i < positions.length - 1; i++ ) {
       const geometry = new THREE.Geometry();
-      geometry.vertices.push(posList[0]);
-      geometry.vertices.push(posList[i]);
-      geometry.vertices.push(posList[i + 1]);
+      geometry.vertices.push(positions[i].x);
+      geometry.vertices.push(positions[i].y);
+      geometry.vertices.push(positions[i].z);
       geometry.faces.push(new THREE.Face3(0, 1, 2));
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
       const mesh = new THREE.Mesh(geometry, material);
       line.add(mesh);
     }
+
   }
 
   private getDistance(): number[] {
