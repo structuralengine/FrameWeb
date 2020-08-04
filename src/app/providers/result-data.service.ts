@@ -15,6 +15,10 @@ import { ResultPickupDisgService } from '../components/result/result-pickup-disg
 import { ResultPickupReacService } from '../components/result/result-pickup-reac/result-pickup-reac.service';
 import { ResultPickupFsecService } from '../components/result/result-pickup-fsec/result-pickup-fsec.service';
 
+import { ThreeSectionForceService } from '../components/three/geometry/three-section-force.service';
+import { ThreeReactService } from '../components/three/geometry/three-react.service';
+import { ThreeDisplacementService } from '../components/three/geometry/three-displacement.service';
+
 import { DataHelperModule } from './data-helper.module';
 
 @Injectable({
@@ -38,6 +42,10 @@ export class ResultDataService {
     private pickdisg: ResultPickupDisgService,
     private pickreac: ResultPickupReacService,
     private pickfsec: ResultPickupFsecService,
+
+    private three_fsec: ThreeSectionForceService,
+    private three_reac: ThreeReactService,
+    private three_disg: ThreeDisplacementService,
 
     private helper: DataHelperModule) {
     this.clear();
@@ -77,12 +85,20 @@ export class ResultDataService {
     let jsonData: {} = null;
     try {
       jsonData = JSON.parse(resultText);
+
       // 基本ケース
       this.disg.setDisgJson(jsonData);
       this.reac.setReacJson(jsonData);
       this.fsec.setFsecJson(jsonData);
+
       // 組み合わせケース
       this.CombinePickup();
+
+      // 図をクリアする
+      this.three_fsec.ClearData();
+      this.three_reac.ClearData();
+      this.three_disg.ClearData();
+
     } catch (e) {
       return false;
     }

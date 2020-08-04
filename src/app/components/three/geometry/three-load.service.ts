@@ -882,7 +882,7 @@ export class ThreeLoadService {
     groupY.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
     groupY.position.set(L_position.x1, L_position.y1, L_position.z1);
     arrowlist.push(groupY);
-    return arrowlist
+    return arrowlist;
   }
 
   // 矢印（分布荷重Z）を描く
@@ -1241,7 +1241,7 @@ export class ThreeLoadService {
     const check_box = {};   // ここに登録されている変数に当たってはいけない
     const target_box = {};   // 当たらないように避けるオブジェクト
 
-    // 当り判定に用いるオブジェクトと当たらないように避けるオブジェクトを分ける
+    // 当り判定に用いるオブジェクトと当たらないように避けるオブジェクトを分ける -----------------------------------------------------
     for (const item of this.memberLoadList) {
       if ( !('check_box' in item) ) {
         continue;
@@ -1280,17 +1280,17 @@ export class ThreeLoadService {
 
 
 
-    // 当たらないように避けるオブジェクトの位置を決める
+    // 当たらないように避けるオブジェクトの位置を決める --------------------------------------------------------------------
     for (const m of Object.keys(target_box)) {
       if ( !(m in check_box)) {
-        continue;
+        check_box[m] = { check_point: [], check_load: []};
       }
       // 部材 m に載荷されている荷重について当り判定を行う
       const targets: any[] = target_box[m];
       for (const item of targets) {
 
         if (item.check_box.direction.indexOf('p') >= 0) {
-          // markが1の集中荷重荷重
+          // markが1の集中荷重
           // 当たっているオブジェクトの中で最も遠い距離を算定する
           const direction  = new THREE.Vector3(-item.localAxis.x, -item.localAxis.y, -item.localAxis.z);
           let distance: number = 0;
@@ -1330,15 +1330,17 @@ export class ThreeLoadService {
           const p1 = new THREE.Vector3(item.check_box.area.x1, item.check_box.area.y1, item.check_box.area.z1);
           const p2 = new THREE.Vector3(item.check_box.area.x2, item.check_box.area.y2, item.check_box.area.z2);
           const l0 = p1.distanceTo(p2);
+          check_box[m].check_point.push(p1);
+          check_box[m].check_point.push(p2);
 
           // 登録したすべてのポイントに対して距離を調べる
           let distance: number = 0;
           for ( const pos of check_box[m].check_point) {
             const l1 = p1.distanceTo(pos);
             const l2 = p2.distanceTo(pos);
-            if ( l1 < l0 && l2 < l0 ) {
-              const origin  = new THREE.Vector3(pos.x, pos.y, pos.z);
-              const raycaster = new THREE.Raycaster(origin , direction);
+            if ( l1 <= l0 && l2 <= l0 ) {
+              // const origin  = new THREE.Vector3(pos.x, pos.y, pos.z);
+              const raycaster = new THREE.Raycaster(pos , direction);
               // 登録したすべての荷重に対して距離を調べる
               for (const cb of check_box[m].check_load) {
                 const intersects = this.intersectObjects(cb, raycaster);
@@ -1362,8 +1364,6 @@ export class ThreeLoadService {
           item.position.set(posX, posY, posZ);
           this.scene.render();
           // 当たってはいけないオブジェクトとして登録
-          check_box[m].check_point.push(p1);
-          check_box[m].check_point.push(p2);
           check_box[m].check_load.push(item);
 
         }

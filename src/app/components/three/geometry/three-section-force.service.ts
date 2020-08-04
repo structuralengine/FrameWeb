@@ -102,7 +102,7 @@ export class ThreeSectionForceService {
       }
       this.lineList = new Array();
     }
-    this.targetData = {}; //new Array();
+    this.targetData = {};
     this.targetIndex = '';
     this.scale = 0.5;
   }
@@ -155,7 +155,7 @@ export class ThreeSectionForceService {
   // 変数 this.targetData に値をセットする
   public chengeData(index: number): void {
 
-    if(this.targetIndex === index.toString()){
+    if (this.targetIndex === index.toString()) {
       // ケースが同じなら何もしない
       return;
     }
@@ -239,7 +239,7 @@ export class ThreeSectionForceService {
             if (fsec.m.trim().length > 0) {
               break;
             }
-            currentPosition += this.helper.toNumber(fsec.l);
+            currentPosition = this.helper.toNumber(fsec.l);
             fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
             deleteindex.push(c);
           }

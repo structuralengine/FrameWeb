@@ -163,14 +163,14 @@ export class ResultFsecService {
             nj = memb.nj;
           }
 
-          noticePoint = this.helper.toNumber(item['L']);
+          const l = this.helper.toNumber(item['L']);
           let fxj: number = this.helper.toNumber(item['fxj']);
           let fyj: number = this.helper.toNumber(item['fyj']);
           let fzj: number = this.helper.toNumber(item['fzj']);
           let mxj: number = this.helper.toNumber(item['mxj']);
           let myj: number = this.helper.toNumber(item['myj']);
           let mzj: number = this.helper.toNumber(item['mzj']);
-          noticePoint = Math.round(noticePoint * 1000) / 1000;
+          noticePoint += Math.round(l * 1000) / 1000;
           fxj = (fxj == null) ? 0 : Math.round(fxj * 100) / 100;
           fyj = (fyj == null) ? 0 : Math.round(fyj * 100) / 100;
           fzj = (fzj == null) ? 0 : Math.round(fzj * 100) / 100;
@@ -221,6 +221,7 @@ export class ResultFsecService {
 
 
     this.FSEC_ROWS_COUNT = max_row;
+
   }
 
 }
