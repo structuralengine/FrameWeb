@@ -366,39 +366,70 @@ export class ThreeSectionForceService {
       const danmenryoku = [];
 
       // i端の座標を登録
-      positions.push(memberInfo.iPosition.x);
-      positions.push(memberInfo.iPosition.y);
-      positions.push(memberInfo.iPosition.z);
+      positions.push({
+        x: memberInfo.iPosition.x,
+        y: memberInfo.iPosition.y,
+        z: memberInfo.iPosition.z
+      });
       colors.push(color.r, color.g, color.b);
       // 断面力の座標を登録
+      let sgn: number;
       for (let j = 1; j < target.length; j++) {
-        const force = target[j];
-        let x: number = force.worldPosition.x;
-        let y: number = force.worldPosition.y;
-        let z: number = force.worldPosition.z;
-        const f: number = force[key];
+        const force2 = target[j];
+        let x2: number = force2.worldPosition.x;
+        let y2: number = force2.worldPosition.y;
+        let z2: number = force2.worldPosition.z;
+        const f = force2[key];
         if ( f === 0 ) {
           continue;
         }
-        x -= f * memberInfo[axis].x * scale;
-        y -= f * memberInfo[axis].y * scale;
-        z -= f * memberInfo[axis].z * scale;
-        positions.push(x, y, z);
+
+        const sg = Math.sign(f);
+        if ( j > 1 && sg !== sgn) {
+          // 前回と符号が異なるとき
+          const force1 = target[j - 1];
+          const f1 = Math.abs(force1[key]);
+          const f2 = Math.abs(f);
+          const x1: number = force1.worldPosition.x;
+          const y1: number = force1.worldPosition.y;
+          const z1: number = force1.worldPosition.z;
+          const x0: number = x1 + (((x2 - x1) / (f1 + f2)) * f1);
+          const y0: number = y1 + (((y2 - y1) / (f1 + f2)) * f1);
+          const z0: number = z1 + (((z2 - z1) / (f1 + f2)) * f1);
+          positions.push({x: x0, y: y0, z: z0, note: 'split'});
+          colors.push(color.r, color.g, color.b);
+        }
+        sgn = sg;
+
+        x2 -= f * memberInfo[axis].x * scale;
+        y2 -= f * memberInfo[axis].y * scale;
+        z2 -= f * memberInfo[axis].z * scale;
+        positions.push({x: x2, y: y2, z: z2});
         colors.push(color.r, color.g, color.b);
         danmenryoku.push(f);
       }
       // j端の座標を登録
-      positions.push(memberInfo.jPosition.x);
-      positions.push(memberInfo.jPosition.y);
-      positions.push(memberInfo.jPosition.z);
+      positions.push({
+        x: memberInfo.jPosition.x,
+        y: memberInfo.jPosition.y,
+        z: memberInfo.jPosition.z
+      });
       colors.push(color.r, color.g, color.b);
 
       if (tmplineList.length > i) {
         // 既にオブジェクトが生成されていた場合
         // line を修正するコード
         const line = tmplineList[i];
-        const LineGeometry: LineGeometry = line['geometry'];
-        LineGeometry.setPositions(positions);
+        const LineGeo = line['geometry'];
+
+        const LinePositions = [];
+        for ( const p of positions) {
+          if ('note' in p) {
+            continue; // 特殊点は無視
+          }
+          LinePositions.push(p.x, p.y, p.z);
+        }
+        LineGeo.setPositions(LinePositions);
 
         // 文字と面を削除する
         while (line.children.length > 0) {
@@ -409,11 +440,18 @@ export class ThreeSectionForceService {
         // テキストを追加
         this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
-        this.addPathGeometory(positions, line, colors);
+        this.addPathGeometory(positions, line, color);
 
       } else {
         // 線を生成する
-        const line = this.createLineGeometory(positions, colors);
+        const LinePositions = [];
+        for ( const p of positions) {
+          if ('note' in p) {
+            continue; // 特殊点は無視
+          }
+          LinePositions.push(p.x, p.y, p.z);
+        }
+        const line = this.createLineGeometory(LinePositions, colors);
         // テキストを追加
         this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
@@ -451,11 +489,16 @@ export class ThreeSectionForceService {
   // テキストを追加
   private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[], localAxis: any): void {
     let j = 0;
-    for (let i = 3; i < positions.length - 3; i += 3) {
+    for ( let i = 1; i < positions.length - 1; i++) {
+      const p = positions[i];
+      if ('note' in p) {
+        continue; // 特殊点は無視
+      }
+
       const pos = {
-        x: positions[i],
-        y: positions[i + 1],
-        z: positions[i + 2],
+        x: p.x,
+        y: p.y,
+        z: p.z,
       };
 
       // 数値を更新
@@ -490,34 +533,32 @@ export class ThreeSectionForceService {
   }
 
   // 面を追加する
-  private addPathGeometory(positions: any[], line: THREE.Line, colors: any[]): void {
+  private addPathGeometory(positions: any[], line: THREE.Line, color: any): void {
 
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
-      color: 0x00cc00,
-      opacity: 0.3
+      color: 0x00aaff,
+      opacity: 0.2
     });
 
-    const posList: THREE.Vector3[] = new Array();
-    for (let i = 0; i < positions.length; i += 3) {
-        posList.push(new THREE.Vector3(
-          positions[i],
-          positions[i + 1],
-          positions[i + 2]));
-    }
-
-    for ( let i = 1; i < posList.length - 1; i++ ) {
+    let i = 0;
+    for ( let j = 1; j < positions.length - 1; j++ ) {
       const geometry = new THREE.Geometry();
-      geometry.vertices.push(posList[0]);
-      geometry.vertices.push(posList[i]);
-      geometry.vertices.push(posList[i + 1]);
+      geometry.vertices.push(new THREE.Vector3(positions[i].x, positions[i].y, positions[i].z));
+      geometry.vertices.push(new THREE.Vector3(positions[j].x, positions[j].y, positions[j].z));
+      geometry.vertices.push(new THREE.Vector3(positions[j + 1].x, positions[j + 1].y, positions[j + 1].z));
       geometry.faces.push(new THREE.Face3(0, 1, 2));
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
       const mesh = new THREE.Mesh(geometry, material);
       line.add(mesh);
+      if ( 'note' in positions[j + 1]) {
+        i = j + 1;
+        j++;
+      }
     }
+
   }
 
   private getDistance(): number[] {

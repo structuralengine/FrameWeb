@@ -39,7 +39,7 @@ export class InputCombineComponent implements OnInit {
                 break;
               default:
                 if ( value !== null ) {
-                  changes[i][3] = value.toFixed(0);
+                  changes[i][3] = value.toFixed(3);
                   } else {
                   changes[i][3] = null;
                   }

@@ -54,14 +54,13 @@ export class InputNoticePointsComponent implements OnInit {
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
         if (Array.isArray(x[i])) {
-          hotInstance = x[i-1];
+          hotInstance = x[i - 1];
           changes = x[i];
           break;
         }
       }
       if (changes !== undefined) {
-        for (let i = 0; changes.Length; i++) {
-          const target = changes[i];
+        for (const target of changes) {
           const row: number = target[0];
           const column: string = target[1];
           const old_value: any = target[2];
@@ -78,7 +77,7 @@ export class InputNoticePointsComponent implements OnInit {
             continue;
           }
           const l: number = this.member.getMemberLength(m);
-          notice_points['len'] = (l != null) ? l : '';
+          notice_points['len'] = (l != null) ? l.toFixed(3) : '';
           this.dataset[row] = notice_points;
           console.log(hotInstance.render());
         }
@@ -122,7 +121,7 @@ export class InputNoticePointsComponent implements OnInit {
       const m: string = notice_points['m'];
       if (m !== '') {
         const l: number = this.member.getMemberLength(m);
-        notice_points['len'] = (l != null) ? l : '';
+        notice_points['len'] = (l != null) ? l.toFixed(3) : '';
       }
       this.dataset.push(notice_points);
       this.rowHeaders.push(i);

@@ -3,6 +3,9 @@ import { ResultFsecService } from './result-fsec.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeService } from '../../three/three.service';
 
+import { ResultCombineFsecService } from '../result-combine-fsec/result-combine-fsec.service';
+import { ResultPickupFsecService } from '../result-pickup-fsec/result-pickup-fsec.service';
+
 @Component({
   selector: 'app-result-fsec',
   templateUrl: './result-fsec.component.html',
@@ -14,10 +17,14 @@ export class ResultFsecComponent implements OnInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  btnCombine: string;
+  btnPickup: string;
 
   constructor(private data: ResultFsecService,
               private load: InputLoadService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private comb: ResultCombineFsecService,
+              private pic: ResultPickupFsecService) {
     this.dataset = new Array();
   }
 
@@ -25,6 +32,19 @@ export class ResultFsecComponent implements OnInit {
     const n: number = this.load.getLoadCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
+
+    // コンバインデータがあればボタンを表示する
+    if (Object.keys(this.comb.fsecCombine).length > 0) {
+      this.btnCombine = 'btn btn-outline-primary';
+    } else {
+      this.btnCombine = 'btn btn-outline-primary disabled';
+    }
+    // ピックアップデータがあればボタンを表示する
+    if (Object.keys(this.pic.fsecPickup).length > 0) {
+      this.btnPickup = 'btn btn-outline-primary';
+    } else {
+      this.btnPickup = 'btn btn-outline-primary disabled';
+    }
   }
 
   loadPage(currentPage: number) {

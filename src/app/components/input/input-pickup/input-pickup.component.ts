@@ -34,7 +34,7 @@ export class InputPickupComponent implements OnInit {
         if (changes === undefined) { return; }
         for (let i = 0; i < changes.length; i++) {
           const value: number = this.helper.toNumber(changes[i][3]);
-          switch(changes[i][1]){
+          switch (changes[i][1]) {
             case "name":
               break;
             default:
