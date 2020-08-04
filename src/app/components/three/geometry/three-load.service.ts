@@ -880,7 +880,6 @@ export class ThreeLoadService {
 
     // groupの操作
     groupY.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
-    groupY.position.set(L_position.x1, L_position.y1, L_position.z1);
     arrowlist.push(groupY);
     return arrowlist;
   }
@@ -1022,7 +1021,6 @@ export class ThreeLoadService {
     } else if (len_Lz === 0) {
       groupZ.rotation.z = Math.PI * 1.5 + Math.atan2(len_Ly, len_Lx);
     }
-    groupZ.position.set(L_position.x1, L_position.y1, L_position.z1);
     arrowlist.push(groupZ);
     return arrowlist
   }
