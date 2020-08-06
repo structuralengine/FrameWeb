@@ -54,6 +54,9 @@ export class ResultFsecComponent implements OnInit {
     this.dataset = new Array();
     for (let i = 1; i <= this.data.FSEC_ROWS_COUNT; i++) {
       const reac = this.data.getFsecColumns(this.page, i);
+      if(reac === null){
+        break;
+      }
       this.dataset.push(reac);
     }
     this.load_name = this.load.getLoadName(currentPage);

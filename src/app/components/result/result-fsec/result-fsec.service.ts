@@ -50,24 +50,6 @@ export class ResultFsecService {
       }
     }
 
-    // 対象行が無かった時に処理
-    if (result == null) {
-      result = {
-        row: row,
-        m: '',
-        n: '',
-        l: '',
-        fx: '',
-        fy: '',
-        fz: '',
-        mx: '',
-        my: '',
-        mz: ''
-      };
-      target.push(result);
-      this.fsec[typNo] = target;
-    }
-
     return result;
   }
 

@@ -118,6 +118,7 @@ export class ResultDataService {
     // define を集計
     const defList = {};
     if (Object.keys(define).length > 0) {
+      // define データが あるとき
       for (const defNo of Object.keys(define)) {
         const d: object = define[defNo];
         const defines = new Array();
@@ -127,6 +128,7 @@ export class ResultDataService {
         defList[defNo] = defines;
       }
     } else {
+      // define データがない時は基本ケース＝defineケースとなる
       for (const caseNo of Object.keys(load)) {
         defList[caseNo] = new Array(caseNo);
       }
@@ -137,7 +139,8 @@ export class ResultDataService {
     for (const combNo of Object.keys(combine)) {
       const target: object = combine[combNo];
       const combines = new Array([]);
-      for (const defNo of Object.keys(target)) {
+      for (const defKey of Object.keys(target)) {
+        const defNo: string = defKey.replace('C', '').replace('D', '');
         if (!(defNo in defList)) {
           continue; // なければ飛ばす
         }
@@ -156,7 +159,10 @@ export class ResultDataService {
 
 
         // 組み合わせにケース番号を登録する
-        let coef = target[defNo]
+        let coef: number = this.helper.toNumber(target[defKey]);
+        if(coef === null ){
+          continue;
+        }
         let j = 0;
         for (let i = 0; i < combines.length; i++) {
           let caseNo: string = def[defKeys[j]];
