@@ -51,21 +51,21 @@ export class ResultCombineFsecService {
 
         // defineのループ
         const combines: any[] = combList[combNo];
-        for (let i = 0; i < combines.length; i++) {
+        for (const com of combines) {
           const combineFsec = { fx: {}, fy: {}, fz: {}, mx: {}, my: {}, mz: {} };
 
           // 基本ケースのループ
-          const com = combines[i];
-          for (let j = 0; j < com.length; j++) {
-            const caseInfo = com[j];
+
+          for (const caseInfo of com) {
+
 
             if (!(caseInfo.caseNo in this.fsec.fsec)) {
               continue;
             }
             // 節点番号のループ
             const Fsecs: any[] = this.fsec.fsec[caseInfo.caseNo];
-            for (let n = 0; n < Fsecs.length; n++) {
-              const result: {} = Fsecs[n];
+            for (const result of Fsecs) {
+              
               const row = result['row'];
 
               // dx, dy … のループ
