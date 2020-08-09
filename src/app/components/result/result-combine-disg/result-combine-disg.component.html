@@ -1,7 +1,7 @@
 <div class="btn-group">
   <nav>
     <a routerLink="/result-disg" routerLinkActive="selected-item" class="btn btn-outline-primary">基本ケース</a>
-    <a routerLink="/result-comb_disg" routerLinkActive="selected-item" class="btn btn-outline-primary active">COMBINE</a>
+    <a routesrLink="/result-comb_disg" routerLinkActive="selected-item" class="btn btn-outline-primary active">COMBINE</a>
     <a routerLink="/result-pic_disg" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
@@ -14,17 +14,17 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<br/>
-
-<div class="datasheet" *ngFor="let r of KEYS; index as i" >
+<div *ngFor="let r of KEYS; index as i" >
   <div class="conbine-title">{{TITLES[i]}}</div>
-  <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="true" >
-    <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
-    <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
-    <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>
-    <hot-column data="rx" title="x軸回りの回転量" [readOnly]="true"></hot-column>
-    <hot-column data="ry" title="y軸回りの回転量" [readOnly]="true"></hot-column>
-    <hot-column data="rz" title="z軸回りの回転量" [readOnly]="true"></hot-column>
-    <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
-  </hot-table>
+  <div class="datasheet" >
+    <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="true"  [width]="960" [height]="tableHeight">
+      <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
+      <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
+      <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>
+      <hot-column data="rx" title="x軸回りの回転量" [readOnly]="true"></hot-column>
+      <hot-column data="ry" title="y軸回りの回転量" [readOnly]="true"></hot-column>
+      <hot-column data="rz" title="z軸回りの回転量" [readOnly]="true"></hot-column>
+      <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
+    </hot-table>
+  </div>
 </div>

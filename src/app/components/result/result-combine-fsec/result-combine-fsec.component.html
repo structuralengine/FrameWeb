@@ -1,7 +1,8 @@
 <div class="btn-group">
   <nav>
     <a routerLink="/result-fsec" routerLinkActive="selected-item" class="btn btn-outline-primary">基本ケース</a>
-    <a routerLink="/result-comb_fsec" routerLinkActive="selected-item" class="btn btn-outline-primary active">COMBINE</a>
+    <a routerLink="/result-comb_fsec" routerLinkActive="selected-item"
+      class="btn btn-outline-primary active">COMBINE</a>
     <a routerLink="/result-pic_fsec" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
@@ -14,20 +15,21 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<br />
 
-<div class="datasheet" *ngFor="let r of KEYS; index as i">
+<div *ngFor="let r of KEYS; index as i">
   <div class="conbine-title">{{TITLES[i]}}</div>
-  <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="false">
-    <hot-column data="m" title="部材No" [readOnly]="true"></hot-column>
-    <hot-column data="n" title="節点No" [readOnly]="true"></hot-column>
-    <hot-column data="l" title="着目位置" [readOnly]="true"></hot-column>
-    <hot-column data="fx" title="軸方向力" [readOnly]="true"></hot-column>
-    <hot-column data="fy" title="y方向のせん断力" [readOnly]="true"></hot-column>
-    <hot-column data="fz" title="z方向のせん断力" [readOnly]="true"></hot-column>
-    <hot-column data="mx" title="ねじりモーメント" [readOnly]="true"></hot-column>
-    <hot-column data="my" title="y軸回りの曲げモーメント" [readOnly]="true"></hot-column>
-    <hot-column data="mz" title="z軸回りの曲げモーメント" [readOnly]="true"></hot-column>
-    <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
-  </hot-table>
+  <div class="datasheet">
+    <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="false" [width]="1300" [height]="tableHeight">
+      <hot-column data="m" title="部材No" [readOnly]="true"></hot-column>
+      <hot-column data="n" title="節点No" [readOnly]="true"></hot-column>
+      <hot-column data="l" title="着目位置" [readOnly]="true"></hot-column>
+      <hot-column data="fx" title="軸方向力" [readOnly]="true"></hot-column>
+      <hot-column data="fy" title="y方向のせん断力" [readOnly]="true"></hot-column>
+      <hot-column data="fz" title="z方向のせん断力" [readOnly]="true"></hot-column>
+      <hot-column data="mx" title="ねじりモーメント" [readOnly]="true"></hot-column>
+      <hot-column data="my" title="y軸回りの曲げモーメント" [readOnly]="true"></hot-column>
+      <hot-column data="mz" title="z軸回りの曲げモーメント" [readOnly]="true"></hot-column>
+      <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
+    </hot-table>
+  </div>
 </div>

@@ -23,6 +23,7 @@ export class ResultPickupReacComponent implements OnInit {
   load_name: string;
   collectionSize: number;
   btnCombine: string;
+  tableHeight: number;
 
   constructor(private data: ResultPickupReacService,
               private reac: ResultReacService,
@@ -46,18 +47,17 @@ export class ResultPickupReacComponent implements OnInit {
       this.btnCombine = 'btn btn-outline-primary disabled';
     }
 
+    // テーブルの高さを計算する
+    this.tableHeight = (this.dataset[0].length + 1) * 30;
   }
 
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {
       this.page = currentPage;
     }
-    for (let i = 0; i < this.KEYS.length; i++) {
-      this.dataset[i] = new Array();
-      for (let j = 1; j <= this.reac.REAC_ROWS_COUNT; j++) {
-        const reac = this.data.getPickupReacColumns(this.page, j, this.KEYS[i]);
-        this.dataset[i].push(reac);
-      }
+    this.dataset = new Array();
+    for (const key of this.KEYS) {
+      this.dataset.push(this.data.getPickupReacColumns(this.page, key));
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
 

@@ -16,25 +16,39 @@ export class ResultPickupFsecService {
     this.fsecPickup = {};
   }
 
-  public getPickupFsecColumns(combNo: number, index: number, mode: string): any {
+  public getPickupFsecColumns(combNo: number, mode: string): any {
 
     // 組み合わせを探す
-    let target1: any = null;
-    if (!this.fsecPickup[combNo]) {
-      target1 = new Array();
-    } else {
+    let target1: object[] = new Array();
+    if (combNo in this.fsecPickup) {
       target1 = this.fsecPickup[combNo];
     }
 
     // 着目項目を探す
-    let target2: any = null;
-    if (!target1[mode]) {
-      target2 = new Array();
-    } else {
+    let target2 = {};
+    if (mode in target1) {
       target2 = target1[mode];
     }
 
-    const result = target2[index];
+    const result: any[] = new Array();
+    let m: string = null;
+    for (const k of Object.keys(target2)) {
+      const target3 = target2[k];
+      const item = {
+        m: (m === target3['m']) ? '' : target3['m'],
+        n: ('n' in target3) ? target3['n'] : '',
+        l: target3['l'].toFixed(3),
+        fx: target3['fx'].toFixed(2),
+        fy: target3['fy'].toFixed(2),
+        fz: target3['fz'].toFixed(2),
+        mx: target3['mx'].toFixed(2),
+        my: target3['my'].toFixed(2),
+        mz: target3['mz'].toFixed(2),
+        case: target3['case']
+      };
+      result.push(item);
+      m = target3['m'];
+    }
     return result;
   }
 

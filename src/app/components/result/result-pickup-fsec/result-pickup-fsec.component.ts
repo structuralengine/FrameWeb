@@ -23,6 +23,7 @@ export class ResultPickupFsecComponent implements OnInit {
   load_name: string;
   collectionSize: number;
   btnCombine: string;
+  tableHeight: number;
 
   constructor(private data: ResultPickupFsecService,
               private fsec: ResultFsecService,
@@ -45,20 +46,21 @@ export class ResultPickupFsecComponent implements OnInit {
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';
     }
+
+    // テーブルの高さを計算する
+    this.tableHeight = (this.dataset[0].length + 1) * 30;
+
   }
 
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {
       this.page = currentPage;
     }
-    for (let i = 0; i < this.KEYS.length; i++) {
-      this.dataset[i] = new Array();
-      for (let j = 1; j <= this.fsec.FSEC_ROWS_COUNT; j++) {
-        const fsec = this.data.getPickupFsecColumns(this.page, j, this.KEYS[i]);
-        this.dataset[i].push(fsec);
-      }
-      this.load_name = this.pickup.getPickUpName(currentPage);
+    this.dataset = new Array();
+    for (const key of this.KEYS) {
+      this.dataset.push(this.data.getPickupFsecColumns(this.page, key));
     }
+    this.load_name = this.pickup.getPickUpName(currentPage);
     this.three.ChengeMode('pik_fsec', currentPage);
   }
 }

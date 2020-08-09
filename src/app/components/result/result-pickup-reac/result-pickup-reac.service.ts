@@ -17,25 +17,36 @@ export class ResultPickupReacService {
   }
 
 
-  public getPickupReacColumns(combNo: number, index: number, mode: string): any {
+  public getPickupReacColumns(combNo: number, mode: string): any {
 
     // 組み合わせを探す
-    let target1: any = null;
-    if (!this.reacPickup[combNo]) {
-      target1 = new Array();
-    } else {
+    let target1: any[] = new Array();
+    if (combNo in this.reacPickup) {
       target1 = this.reacPickup[combNo];
     }
 
     // 着目項目を探す
-    let target2: any = null;
-    if (!target1[mode]) {
-      target2 = new Array();
-    } else {
+    let target2 = {};
+    if (mode in target1) {
       target2 = target1[mode];
     }
 
-    const result = target2[index];
+    const result: any[] = new Array();
+    for (const k of Object.keys(target2)) {
+      const target3 = target2[k];
+      const item = {
+        id: target3['id'],
+        tx: target3['tx'].toFixed(2),
+        ty: target3['ty'].toFixed(2),
+        tz: target3['tz'].toFixed(2),
+        mx: target3['mx'].toFixed(2),
+        my: target3['my'].toFixed(2),
+        mz: target3['mz'].toFixed(2),
+        case: target3['case']
+      };
+      result.push(item);
+    }
+
     return result;
   }
 

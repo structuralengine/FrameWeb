@@ -28,7 +28,7 @@ export class InputMembersService {
     }
     // 対象データが無かった時に処理
     if (result == null) {
-      result = { id: index, L: '', ni: '', nj: '', e: '', cg: '' };
+      result = { id: index.toString(), L: '', ni: '', nj: '', e: '', cg: '' };
       this.member.push(result);
     }
     return result;

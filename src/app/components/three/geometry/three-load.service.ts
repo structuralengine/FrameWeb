@@ -754,7 +754,7 @@ export class ThreeLoadService {
   }
 
   // 矢印（分布荷重Y）を描く
-  public CreateArrow_Y(arrow, L_position, localAxis, Data) {
+  public CreateArrow_Y(arrow, L_position, localAxis, Data): any[] {
     const arrowlist = [];
     const groupY = new THREE.Group();
 
@@ -885,7 +885,7 @@ export class ThreeLoadService {
   }
 
   // 矢印（分布荷重Z）を描く
-  public CreateArrow_Z(arrow, L_position, localAxis, Data) {
+  public CreateArrow_Z(arrow, L_position, localAxis, Data): any[] {
     // 正負が逆だったので応急処置
     Data.P1 = Data.P1 * (-1);
     Data.P2 = Data.P2 * (-1);
