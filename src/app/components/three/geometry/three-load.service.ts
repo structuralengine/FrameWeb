@@ -426,132 +426,137 @@ export class ThreeLoadService {
         judge: ' '
       };
 
-      const groupe = new THREE.Group();  // 親の実態のない架空のジオメトリ
+      const arrowSize: number = 0.3 * maxLength; // 基準サイズ
+      this.addMemberLoad(load, Data, L_position, localAxis, arrowSize);
+    }
 
-      const arrow = { size: 0.3 * maxLength, direction: 'z', color: 0x000000 };
-      let arrowlist1: any = [];
-      let arrowlist2: any = [];
+  }
 
-      switch (load.mark) {
+  private addMemberLoad(load: any, Data: any, L_position: any, localAxis: any, arrowSize: number):void {
+    
+    const groupe = new THREE.Group();  // 親の実態のない架空のジオメトリ
 
-        case 1: // markが1のときのx, y, z, rの分岐
+    const arrow = { size: arrowSize, direction: 'z', color: 0x000000 };
+    let arrowlist1: any = [];
+    let arrowlist2: any = [];
 
-          const pos = [];
+    switch (load.mark) {
 
-          arrow.direction = load.direction;
-          arrow.color = { x: 0xff0000, y: 0x00ff00, z: 0x0000ff }[load.direction];
+      case 1: // markが1のときのx, y, z, rの分岐
 
-          if (load.P1 !== 0) {
-            Data.judge = '1';
-            arrowlist1 = this.CreateArrow(arrow, L_position, localAxis, Data);
-            pos.push( {x: L_position.x1, y: L_position.y1, z: L_position.z1});
-          }
-          if (load.P2 !== 0) {
-            Data.judge = '2';
-            arrowlist2 = this.CreateArrow(arrow, L_position, localAxis, Data);
-            pos.push( {x: L_position.x2, y: L_position.y2, z: L_position.z2});
-          }
+        const pos = [];
 
-          groupe['localAxis'] = localAxis[load.direction]; // 荷重の方向を示すベクトル
-          groupe['check_box'] = { m: Data.m, direction: 'p' + load.direction, pos}; // 荷重の重なりを回避するためのプロパティ
+        arrow.direction = load.direction;
+        arrow.color = { x: 0xff0000, y: 0x00ff00, z: 0x0000ff }[load.direction];
 
-          for (const a of arrowlist1) {
-            groupe.add(a);
-          }
-          for (const a of arrowlist2) {
-            groupe.add(a);
-          }
-          break;
+        if (load.P1 !== 0) {
+          Data.judge = '1';
+          arrowlist1 = this.CreateArrow(arrow, L_position, localAxis, Data);
+          pos.push( {x: L_position.x1, y: L_position.y1, z: L_position.z1});
+        }
+        if (load.P2 !== 0) {
+          Data.judge = '2';
+          arrowlist2 = this.CreateArrow(arrow, L_position, localAxis, Data);
+          pos.push( {x: L_position.x2, y: L_position.y2, z: L_position.z2});
+        }
 
-        case 11: // markが11のときのx, y, z, rの分岐
+        groupe['localAxis'] = localAxis[load.direction]; // 荷重の方向を示すベクトル
+        groupe['check_box'] = { m: Data.m, direction: 'p' + load.direction, pos}; // 荷重の重なりを回避するためのプロパティ
 
-          arrow.size = arrow.size / 2.5;
-          arrow.direction = load.direction;
-          arrow.color = { x: 0xff0000, y: 0x00ff00, z: 0x0000ff }[load.direction];
+        for (const a of arrowlist1) {
+          groupe.add(a);
+        }
+        for (const a of arrowlist2) {
+          groupe.add(a);
+        }
+        break;
 
-          const mpos = [];
+      case 11: // markが11のときのx, y, z, rの分岐
 
-          if (load.P1 !== 0) {
-            Data.judge = '1';
-            arrowlist1 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
-            mpos.push( {x: L_position.x1, y: L_position.y1, z: L_position.z1});
-          }
+        arrow.size = arrow.size / 2.5;
+        arrow.direction = load.direction;
+        arrow.color = { x: 0xff0000, y: 0x00ff00, z: 0x0000ff }[load.direction];
 
-          if (load.P2 !== 0) {
-            Data.judge = '2';
-            arrowlist2 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
-            mpos.push( {x: L_position.x2, y: L_position.y2, z: L_position.z2});
-          }
+        const mpos = [];
 
+        if (load.P1 !== 0) {
+          Data.judge = '1';
+          arrowlist1 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
+          mpos.push( {x: L_position.x1, y: L_position.y1, z: L_position.z1});
+        }
+
+        if (load.P2 !== 0) {
+          Data.judge = '2';
+          arrowlist2 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
+          mpos.push( {x: L_position.x2, y: L_position.y2, z: L_position.z2});
+        }
+
+        groupe['localAxis'] = { // 荷重の方向を示すベクトル
+          x: localAxis.y.x + localAxis.z.x,
+          y: localAxis.y.y + localAxis.z.y,
+          z: localAxis.y.z + localAxis.z.z
+        };
+        groupe['check_box'] = { m: Data.m, direction: 'm' + load.direction, pos: mpos}; // 荷重の重なりを回避するためのプロパティ
+
+        for (const a of arrowlist1) {
+          groupe.add(a);
+        }
+        for (const a of arrowlist2) {
+          groupe.add(a);
+        }
+        break;
+
+      case 2: // markが2のときのx, y, z, rの分岐
+
+        groupe['check_box'] = { m: Data.m, direction: 'w' + load.direction, area: L_position};  // 荷重の重なりを回避するためのプロパティ
+        arrow.direction = load.direction;
+
+        if (load.direction === 'x') {
+          arrow.color = 0xff0000;
+          arrowlist1 = this.CreateArrow_X(arrow, L_position, localAxis);
           groupe['localAxis'] = { // 荷重の方向を示すベクトル
             x: localAxis.y.x + localAxis.z.x,
             y: localAxis.y.y + localAxis.z.y,
             z: localAxis.y.z + localAxis.z.z
           };
-          groupe['check_box'] = { m: Data.m, direction: 'm' + load.direction, pos: mpos}; // 荷重の重なりを回避するためのプロパティ
 
-          for (const a of arrowlist1) {
-            groupe.add(a);
-          }
-          for (const a of arrowlist2) {
-            groupe.add(a);
-          }
-          break;
+        } else if (load.direction === 'y') {
+          load.len_L = Data.len_L;
+          arrowlist1 = this.CreateArrow_Y(arrow, L_position, localAxis, Data);
+          groupe['localAxis'] = localAxis.y; // 荷重の方向を示すベクトル
 
-        case 2: // markが2のときのx, y, z, rの分岐
+        } else if (load.direction === 'z') {
+          load.len_L = Data.len_L;
+          arrowlist1 = this.CreateArrow_Z(arrow, L_position, localAxis, Data);
+          groupe['localAxis'] = localAxis.z; // 荷重の方向を示すベクトル
 
-          groupe['check_box'] = { m: Data.m, direction: 'w' + load.direction, area: L_position};  // 荷重の重なりを回避するためのプロパティ
-          arrow.direction = load.direction;
+        } else if (load.direction === 'r') {
+          arrow.size = arrow.size / 2.5;
+          arrow.color = 0xff00ff;
+          arrowlist1 = this.CreateArrow_R(arrow, L_position, localAxis, Data);
+          groupe['localAxis'] = { // 荷重の方向を示すベクトル
+            x: localAxis.y.x + localAxis.z.x,
+            y: localAxis.y.y + localAxis.z.y,
+            z: localAxis.y.z + localAxis.z.z
+          };
+          groupe['check_box']['p1'] = Data.p_one;
+          groupe['check_box']['p2'] = Data.p_two;
 
-          if (load.direction === 'x') {
-            arrow.color = 0xff0000;
-            arrowlist1 = this.CreateArrow_X(arrow, L_position, localAxis);
-            groupe['localAxis'] = { // 荷重の方向を示すベクトル
-              x: localAxis.y.x + localAxis.z.x,
-              y: localAxis.y.y + localAxis.z.y,
-              z: localAxis.y.z + localAxis.z.z
-            };
+        } else {
+          return;
+        }
 
-          } else if (load.direction === 'y') {
-            load.len_L = Data.len_L;
-            arrowlist1 = this.CreateArrow_Y(arrow, L_position, localAxis, Data);
-            groupe['localAxis'] = localAxis.y; // 荷重の方向を示すベクトル
+        for (const a of arrowlist1) {
+          groupe.add(a);
+        }
 
-          } else if (load.direction === 'z') {
-            load.len_L = Data.len_L;
-            arrowlist1 = this.CreateArrow_Z(arrow, L_position, localAxis, Data);
-            groupe['localAxis'] = localAxis.z; // 荷重の方向を示すベクトル
-
-          } else if (load.direction === 'r') {
-            arrow.size = arrow.size / 2.5;
-            arrow.color = 0xff00ff;
-            arrowlist1 = this.CreateArrow_R(arrow, L_position, localAxis, Data);
-            groupe['localAxis'] = { // 荷重の方向を示すベクトル
-              x: localAxis.y.x + localAxis.z.x,
-              y: localAxis.y.y + localAxis.z.y,
-              z: localAxis.y.z + localAxis.z.z
-            };
-            groupe['check_box']['p1'] = Data.p_one;
-            groupe['check_box']['p2'] = Data.p_two;
-
-          } else {
-            continue;
-          }
-
-          for (const a of arrowlist1) {
-            groupe.add(a);
-          }
-
-          break;
-
-      }
-
-      // meshを出力
-      this.memberLoadList.push(groupe);
-      this.scene.add(groupe);
+        break;
 
     }
 
+    // meshを出力
+    this.memberLoadList.push(groupe);
+    this.scene.add(groupe);
   }
 
 
@@ -1317,9 +1322,9 @@ export class ThreeLoadService {
           this.scene.render();
           // 当たってはいけないオブジェクトとして登録
           for (const obj of item.children) {
-            check_box[m].check_load.push(obj);
             check_box[m].check_point.push(obj.position);
           }
+          check_box[m].check_load.push(item);
 
         } else {
           // markが2のy, z の分布荷重荷重
