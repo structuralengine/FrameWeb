@@ -79,7 +79,7 @@ export class ThreeLoadService {
   // guiを表示する
   private guiEnable(): void {
 
-    if ( !('pointLoadScale' in this.gui)) {
+    if (!('pointLoadScale' in this.gui)) {
       if (this.pointLoadList.length > 0) {
         this.gui['pointLoadScale'] = this.scene.gui.add(this.params, 'pointLoadScale', 0, 2).step(0.001).onChange((value) => {
           this.pointLoadScale = value;
@@ -89,7 +89,7 @@ export class ThreeLoadService {
       }
     }
 
-    if ( !('memberLoadScale' in this.gui)) {
+    if (!('memberLoadScale' in this.gui)) {
       if (this.memberLoadList.length > 0) {
         this.gui['memberLoadScale'] = this.scene.gui.add(this.params, 'memberLoadScale', 0, 2).step(0.001).onChange((value) => {
           this.memberLoadScale = value;
@@ -239,7 +239,7 @@ export class ThreeLoadService {
 
     const curve = new THREE.EllipseCurve(
       0, 0,                 // ax, aY
-      4 , 4, // xRadius, yRadius
+      4, 4, // xRadius, yRadius
       0, 1.5 * Math.PI,     // aStartAngle, aEndAngle
       false,                // aClockwise
       0                     // aRotation
@@ -432,8 +432,8 @@ export class ThreeLoadService {
 
   }
 
-  private addMemberLoad(load: any, Data: any, L_position: any, localAxis: any, arrowSize: number):void {
-    
+  private addMemberLoad(load: any, Data: any, L_position: any, localAxis: any, arrowSize: number): void {
+
     const groupe = new THREE.Group();  // 親の実態のない架空のジオメトリ
 
     const arrow = { size: arrowSize, direction: 'z', color: 0x000000 };
@@ -452,16 +452,16 @@ export class ThreeLoadService {
         if (load.P1 !== 0) {
           Data.judge = '1';
           arrowlist1 = this.CreateArrow(arrow, L_position, localAxis, Data);
-          pos.push( {x: L_position.x1, y: L_position.y1, z: L_position.z1});
+          pos.push({ x: L_position.x1, y: L_position.y1, z: L_position.z1 });
         }
         if (load.P2 !== 0) {
           Data.judge = '2';
           arrowlist2 = this.CreateArrow(arrow, L_position, localAxis, Data);
-          pos.push( {x: L_position.x2, y: L_position.y2, z: L_position.z2});
+          pos.push({ x: L_position.x2, y: L_position.y2, z: L_position.z2 });
         }
 
         groupe['localAxis'] = localAxis[load.direction]; // 荷重の方向を示すベクトル
-        groupe['check_box'] = { m: Data.m, direction: 'p' + load.direction, pos}; // 荷重の重なりを回避するためのプロパティ
+        groupe['check_box'] = { m: Data.m, direction: 'p' + load.direction, pos }; // 荷重の重なりを回避するためのプロパティ
 
         for (const a of arrowlist1) {
           groupe.add(a);
@@ -482,13 +482,13 @@ export class ThreeLoadService {
         if (load.P1 !== 0) {
           Data.judge = '1';
           arrowlist1 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
-          mpos.push( {x: L_position.x1, y: L_position.y1, z: L_position.z1});
+          mpos.push({ x: L_position.x1, y: L_position.y1, z: L_position.z1 });
         }
 
         if (load.P2 !== 0) {
           Data.judge = '2';
           arrowlist2 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
-          mpos.push( {x: L_position.x2, y: L_position.y2, z: L_position.z2});
+          mpos.push({ x: L_position.x2, y: L_position.y2, z: L_position.z2 });
         }
 
         groupe['localAxis'] = { // 荷重の方向を示すベクトル
@@ -496,7 +496,7 @@ export class ThreeLoadService {
           y: localAxis.y.y + localAxis.z.y,
           z: localAxis.y.z + localAxis.z.z
         };
-        groupe['check_box'] = { m: Data.m, direction: 'm' + load.direction, pos: mpos}; // 荷重の重なりを回避するためのプロパティ
+        groupe['check_box'] = { m: Data.m, direction: 'm' + load.direction, pos: mpos }; // 荷重の重なりを回避するためのプロパティ
 
         for (const a of arrowlist1) {
           groupe.add(a);
@@ -508,7 +508,7 @@ export class ThreeLoadService {
 
       case 2: // markが2のときのx, y, z, rの分岐
 
-        groupe['check_box'] = { m: Data.m, direction: 'w' + load.direction, area: L_position};  // 荷重の重なりを回避するためのプロパティ
+        groupe['check_box'] = { m: Data.m, direction: 'w' + load.direction, area: L_position };  // 荷重の重なりを回避するためのプロパティ
         arrow.direction = load.direction;
 
         if (load.direction === 'x') {
@@ -849,7 +849,7 @@ export class ThreeLoadService {
     const thickness: number = this.baseScale() / 2000;
     const cGeometry = new THREE.CylinderGeometry(thickness, thickness, len, 12);
     const cMesh = new THREE.Mesh(cGeometry,
-                  new THREE.MeshLambertMaterial({ color: arrow.color }));
+      new THREE.MeshLambertMaterial({ color: arrow.color }));
     cMesh.rotation.z = Math.acos(v.y / len);
     cMesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
     cMesh.position.set(x, y, z);
@@ -986,7 +986,7 @@ export class ThreeLoadService {
     const thickness: number = this.baseScale() / 2000;
     const cGeometry = new THREE.CylinderGeometry(thickness, thickness, len, 12);
     const cMesh = new THREE.Mesh(cGeometry,
-                  new THREE.MeshLambertMaterial({ color: arrow.color }));
+      new THREE.MeshLambertMaterial({ color: arrow.color }));
     cMesh.rotation.z = Math.acos(v.y / len);
     cMesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
     cMesh.position.set(x, y, z);
@@ -1214,7 +1214,7 @@ export class ThreeLoadService {
           item.scale.set(1, 1, this.pointLoadScale);
           break;
         default:
-          if ( 'baseScale' in item ) {
+          if ('baseScale' in item) {
             const scale: number = item.baseScale * this.pointLoadScale;
             item.scale.set(scale, scale, scale);
           }
@@ -1227,7 +1227,7 @@ export class ThreeLoadService {
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
-      if ( 'localAxis' in item ) {
+      if ('localAxis' in item) {
         const scaleX: number = 1 + item.localAxis.x * (this.memberLoadScale - 1);
         const scaleY: number = 1 + item.localAxis.y * (this.memberLoadScale - 1);
         const scaleZ: number = 1 + item.localAxis.z * (this.memberLoadScale - 1);
@@ -1246,7 +1246,7 @@ export class ThreeLoadService {
 
     // 当り判定に用いるオブジェクトと当たらないように避けるオブジェクトを分ける -----------------------------------------------------
     for (const item of this.memberLoadList) {
-      if ( !('check_box' in item) ) {
+      if (!('check_box' in item)) {
         continue;
       }
 
@@ -1255,8 +1255,8 @@ export class ThreeLoadService {
 
       if (cb.direction === 'wr' || cb.direction === 'wx') {
         // markが2 の 分布回転モーメント荷重, 軸方向荷重 は座標を登録するだけ
-        if ( !(m in check_box)) {
-          check_box[m] = { check_point: [], check_load: []};
+        if (!(m in check_box)) {
+          check_box[m] = { check_point: [], check_load: [] };
         }
         check_box[m].check_point.push(new THREE.Vector3(cb.area.x1, cb.area.y1, cb.area.z1));
         check_box[m].check_point.push(new THREE.Vector3(cb.area.x2, cb.area.y2, cb.area.z2));
@@ -1264,9 +1264,9 @@ export class ThreeLoadService {
 
       } else if (cb.direction.indexOf('m') >= 0) {
         // markが11 の 集中回転モーメント荷重 は座標を登録するだけ
-        for ( const p of cb.pos) {
-          if ( !(m in check_box)) {
-            check_box[m] = { check_point: [], check_load: []};
+        for (const p of cb.pos) {
+          if (!(m in check_box)) {
+            check_box[m] = { check_point: [], check_load: [] };
           }
           check_box[m].check_point.push(new THREE.Vector3(p.x, p.y, p.z));
           check_box[m].check_load.push(item);
@@ -1274,7 +1274,7 @@ export class ThreeLoadService {
 
       } else {
         // 当り判定をする荷重を登録
-        if ( !(m in target_box)) {
+        if (!(m in target_box)) {
           target_box[m] = new Array();
         }
         target_box[m].push(item);
@@ -1285,8 +1285,8 @@ export class ThreeLoadService {
 
     // 当たらないように避けるオブジェクトの位置を決める --------------------------------------------------------------------
     for (const m of Object.keys(target_box)) {
-      if ( !(m in check_box)) {
-        check_box[m] = { check_point: [], check_load: []};
+      if (!(m in check_box)) {
+        check_box[m] = { check_point: [], check_load: [] };
       }
       // 部材 m に載荷されている荷重について当り判定を行う
       const targets: any[] = target_box[m];
@@ -1295,21 +1295,21 @@ export class ThreeLoadService {
         if (item.check_box.direction.indexOf('p') >= 0) {
           // markが1の集中荷重
           // 当たっているオブジェクトの中で最も遠い距離を算定する
-          const direction  = new THREE.Vector3(-item.localAxis.x, -item.localAxis.y, -item.localAxis.z);
+          const direction = new THREE.Vector3(-item.localAxis.x, -item.localAxis.y, -item.localAxis.z);
           let distance: number = 0;
-          for ( const pos of item.check_box.pos) {
-            const origin  = new THREE.Vector3(pos.x, pos.y, pos.z);
-            const raycaster = new THREE.Raycaster(origin , direction);
+          for (const pos of item.check_box.pos) {
+            const origin = new THREE.Vector3(pos.x, pos.y, pos.z);
+            const raycaster = new THREE.Raycaster(origin, direction);
             for (const cb of check_box[m].check_load) {
               const intersects = this.intersectObjects(cb, raycaster);
               if (cb.check_box.direction === 'wr' && intersects.length > 0) {
                 // ねじりモーメント荷重との交差判定だけ特別な処理をする
                 const p_one: number = Math.abs(cb.check_box.p1) * this.memberLoadScale;
                 const p_two: number = Math.abs(cb.check_box.p2) * this.memberLoadScale;
-                distance = Math.max(distance, p_one, p_two );
+                distance = Math.max(distance, p_one, p_two);
               } else {
                 for (const ins of intersects) {
-                  distance = Math.max(distance, ins.distance );
+                  distance = Math.max(distance, ins.distance);
                 }
               }
             }
@@ -1329,7 +1329,7 @@ export class ThreeLoadService {
         } else {
           // markが2のy, z の分布荷重荷重
           // 当たっているオブジェクトの中で最も遠い距離を算定する
-          const direction  = new THREE.Vector3(-item.localAxis.x, -item.localAxis.y, -item.localAxis.z);
+          const direction = new THREE.Vector3(-item.localAxis.x, -item.localAxis.y, -item.localAxis.z);
           const p1 = new THREE.Vector3(item.check_box.area.x1, item.check_box.area.y1, item.check_box.area.z1);
           const p2 = new THREE.Vector3(item.check_box.area.x2, item.check_box.area.y2, item.check_box.area.z2);
           const l0 = p1.distanceTo(p2);
@@ -1338,12 +1338,12 @@ export class ThreeLoadService {
 
           // 登録したすべてのポイントに対して距離を調べる
           let distance: number = 0;
-          for ( const pos of check_box[m].check_point) {
+          for (const pos of check_box[m].check_point) {
             const l1 = p1.distanceTo(pos);
             const l2 = p2.distanceTo(pos);
-            if ( l1 <= l0 && l2 <= l0 ) {
+            if (l1 <= l0 && l2 <= l0) {
               // const origin  = new THREE.Vector3(pos.x, pos.y, pos.z);
-              const raycaster = new THREE.Raycaster(pos , direction);
+              const raycaster = new THREE.Raycaster(pos, direction);
               // 登録したすべての荷重に対して距離を調べる
               for (const cb of check_box[m].check_load) {
                 const intersects = this.intersectObjects(cb, raycaster);
@@ -1351,10 +1351,10 @@ export class ThreeLoadService {
                   // ねじりモーメント荷重との交差判定だけ特別な処理をする
                   const p_one: number = Math.abs(cb.check_box.p1) * this.memberLoadScale;
                   const p_two: number = Math.abs(cb.check_box.p2) * this.memberLoadScale;
-                  distance = Math.max(distance, p_one, p_two );
+                  distance = Math.max(distance, p_one, p_two);
                 } else {
                   for (const ins of intersects) {
-                    distance = Math.max(distance, ins.distance );
+                    distance = Math.max(distance, ins.distance);
                   }
                 }
               }
@@ -1379,8 +1379,8 @@ export class ThreeLoadService {
 
     const result: THREE.Intersection[] = new Array();
 
-    if ( 'children' in  item ) {
-      for (const item2 of item.children ) {
+    if ('children' in item) {
+      for (const item2 of item.children) {
         for (const a of this.intersectObjects(item2, raycaster)) {
           result.push(a);
         }

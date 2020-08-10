@@ -11,7 +11,7 @@ export class InputLoadService {
   public load: any[];
 
   constructor(private member: InputMembersService,
-              private helper: DataHelperModule) {
+    private helper: DataHelperModule) {
     this.clear();
   }
 
@@ -24,10 +24,10 @@ export class InputLoadService {
 
     const caseNo: string = index.toString();
 
-    let result = this.load_name.find( (tmp) => {
+    let result = this.load_name.find((tmp) => {
       return tmp.id === caseNo;
     });
-    
+
     if (result === undefined) {
       result = {
         id: caseNo,
@@ -47,8 +47,8 @@ export class InputLoadService {
 
   public getLoadColumns(typNo: number, row: number): any {
 
-    let target: any = null;
-    let result: any = null;
+    let target: any;
+    let result: any = undefined;
 
     // タイプ番号を探す
     if (!this.load[typNo]) {
@@ -58,18 +58,14 @@ export class InputLoadService {
     }
 
     // 行を探す
-    for (let i = 0; i < target.length; i++) {
-      const tmp = target[i];
-      if (tmp['row'] === row) {
-        result = tmp;
-        break;
-      }
-    }
+    result = target.find((tmp) => {
+      return tmp.row === row;
+    })
 
     // 対象行が無かった時に処理
-    if (result == null) {
+    if (result === undefined) {
       result = {
-        row: row, 
+        row: row,
         m1: '',
         m2: '',
         direction: '',
@@ -107,7 +103,7 @@ export class InputLoadService {
       const tmp_load2 = {};
 
       const item1: {} = json[index];
-      
+
       const _rate: string = ('rate' in item1) ? item1['rate'] : '';
       const _symbol: string = ('symbol' in item1) ? item1['symbol'] : '';
       const _name: string = ('name' in item1) ? item1['name'] : '';
@@ -116,14 +112,14 @@ export class InputLoadService {
       const _element: string = ('element' in item1) ? item1['element'] : '';
       const _joint: string = ('joint' in item1) ? item1['joint'] : '';
 
-      this.load_name.push( {
-        id: index, 
-        rate: _rate, 
-        symbol: _symbol, 
+      this.load_name.push({
+        id: index,
+        rate: _rate,
+        symbol: _symbol,
         name: _name,
-        fix_node: _fix_node, 
-        fix_member: _fix_member, 
-        element: _element, 
+        fix_node: _fix_node,
+        fix_member: _fix_member,
+        element: _element,
         joint: _joint
       });
 
@@ -143,17 +139,17 @@ export class InputLoadService {
           const _ry: string = ('ry' in item2) ? item2.ry : '';
           const _rz: string = ('rz' in item2) ? item2.rz : '';
 
-          tmp_load1[_row] = { 
-            row: _row, 
-            n: _n, 
-            tx: _tx, 
-            ty: _ty, 
-            tz: _tz, 
-            rx: _rx, 
-            ry: _ry, 
-            rz: _rz 
+          tmp_load1[_row] = {
+            row: _row,
+            n: _n,
+            tx: _tx,
+            ty: _ty,
+            tz: _tz,
+            rx: _rx,
+            ry: _ry,
+            rz: _rz
           };
-          
+
         }
       }
       if ('load_member' in item1) {
@@ -175,16 +171,16 @@ export class InputLoadService {
           const _P1: string = ('P1' in item3) ? item3.P1 : '';
           const _P2: string = ('P2' in item3) ? item3.P2 : '';
 
-          tmp_load2[_row] = { 
-            row: _row, 
-            m1: _m1, 
-            m2: _m2, 
-            direction: _direction, 
-            mark: _mark, 
-            L1: _L1, 
-            L2: _L2, 
-            P1: _P1, 
-            P2: _P2 
+          tmp_load2[_row] = {
+            row: _row,
+            m1: _m1,
+            m2: _m2,
+            direction: _direction,
+            mark: _mark,
+            L1: _L1,
+            L2: _L2,
+            P1: _P1,
+            P2: _P2
           };
 
         }
@@ -292,7 +288,7 @@ export class InputLoadService {
 
       const tmp = this.load_name[i];
       const key: string = tmp['id'];
-      
+
       // ケースの指定がある場合、カレントケース以外は無視する
       if (targetCase.length > 0 && key !== targetCase) {
         continue;
@@ -319,13 +315,13 @@ export class InputLoadService {
 
       const load_id = (i + 1).toString();
 
-      const temp = { 
+      const temp = {
         fix_node: (fix_node == null) ? empty : fix_node,
-        fix_member: (fix_member == null) ? empty : fix_member, 
-        element: (element == null) ? empty : element, 
+        fix_member: (fix_member == null) ? empty : fix_member,
+        element: (element == null) ? empty : element,
         joint: (joint == null) ? empty : joint
       };
-      
+
       if (empty === null) {
         temp['rate'] = (rate == null) ? empty : rate;
         temp['symbol'] = symbol;
@@ -363,7 +359,7 @@ export class InputLoadService {
     const load_node = {};
 
     for (const load_id of Object.keys(this.load)) {
-      
+
       // ケースの指定がある場合、カレントケース以外は無視する
       if (targetCase.length > 0 && load_id !== targetCase) {
         continue;
@@ -371,7 +367,7 @@ export class InputLoadService {
 
       const tmp_node = new Array();
 
-      for ( const row of this.load[load_id]) {
+      for (const row of this.load[load_id]) {
 
         const n = this.helper.toNumber(row['n']);
         let tx = this.helper.toNumber(row['tx']);
@@ -388,9 +384,9 @@ export class InputLoadService {
             n: row.n,
             tx: (tx == null) ? empty : tx,
             ty: (ty == null) ? empty : ty,
-            tz: (tz == null) ? empty : tz, 
-            rx: (rx == null) ? empty : rx, 
-            ry: (ry == null) ? empty : ry, 
+            tz: (tz == null) ? empty : tz,
+            rx: (rx == null) ? empty : rx,
+            ry: (ry == null) ? empty : ry,
             rz: (rz == null) ? empty : rz
           };
 
@@ -426,7 +422,7 @@ export class InputLoadService {
       if (load1.length === 0) {
         continue;
       }
-      
+
       const tmp_member = new Array();
       if (empty === null) {
 
@@ -456,7 +452,7 @@ export class InputLoadService {
               P1: P1,
               P2: P2
             });
-            
+
 
           }
         }
@@ -500,7 +496,7 @@ export class InputLoadService {
       let m2 = this.helper.toNumber(row['m2']);
       let direction: string = row['direction'];
 
-      if(direction === null){
+      if (direction === null) {
         direction = '';
       }
 
@@ -522,15 +518,15 @@ export class InputLoadService {
         P1 = (P1 == null) ? 0 : P1;
         P2 = (P2 == null) ? 0 : P2;
 
-        load2.push({ 
-          row: r, 
-          m1: m1, 
-          m2: m2, 
-          direction: direction, 
-          mark: mark, 
-          L1: sL1, 
-          L2: L2, 
-          P1: P1, 
+        load2.push({
+          row: r,
+          m1: m1,
+          m2: m2,
+          direction: direction,
+          mark: mark,
+          L1: sL1,
+          L2: L2,
+          P1: P1,
           P2: P2
         });
 
@@ -928,5 +924,5 @@ export class InputLoadService {
     }
     return maxCase;
   }
-  
+
 }
