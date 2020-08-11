@@ -14,7 +14,7 @@ import { GeometryUtils } from '../libs/GeometryUtils.js';
 import * as THREE from 'three';
 import { ThreeService } from '../three.service';
 import { ThreeMembersService } from './three-members.service';
-import { Mesh } from 'three';
+import { Mesh, ReverseSubtractEquation } from 'three';
 import { zip } from 'rxjs';
 
 @Injectable({
@@ -449,14 +449,30 @@ export class ThreeLoadService {
         arrow.direction = load.direction;
         arrow.color = { x: 0xff0000, y: 0x00ff00, z: 0x0000ff }[load.direction];
 
-        if (load.P1 !== 0) {
+        if (Data.P1 !== 0) {
           Data.judge = '1';
-          arrowlist1 = this.CreateArrow(arrow, L_position, localAxis, Data);
+          arrowlist1 = this.CreateArrow(arrow,
+             {x: L_position.x1, y: L_position.y1, z: L_position.z1},
+              localAxis,
+              Data.P1,
+              Data.p_one);
           pos.push({ x: L_position.x1, y: L_position.y1, z: L_position.z1 });
         }
-        if (load.P2 !== 0) {
+
+        if( Data.P1 !== 0 && Data.P2 !== 0 && Math.sign(Data.P1) !== Math.sign(Data.P2)){
+          // P1 と P2 の符号が逆だった場合 P2を別の荷重として扱う（重ならないようにずらす方向が違うため）
+          const tmp: number = Data.P1;
+          Data.P1 = 0;
+          this.addMemberLoad(load, Data, L_position, localAxis, arrowSize)
+          Data.P1 = tmp;
+
+        }else if (Data.P2 !== 0) {
           Data.judge = '2';
-          arrowlist2 = this.CreateArrow(arrow, L_position, localAxis, Data);
+          arrowlist2 = this.CreateArrow(arrow, 
+            {x: L_position.x2, y: L_position.y2, z: L_position.z2},
+            localAxis,
+            Data.P2,
+            Data.p_two);
           pos.push({ x: L_position.x2, y: L_position.y2, z: L_position.z2 });
         }
 
@@ -479,13 +495,13 @@ export class ThreeLoadService {
 
         const mpos = [];
 
-        if (load.P1 !== 0) {
+        if (Data.P1 !== 0) {
           Data.judge = '1';
           arrowlist1 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           mpos.push({ x: L_position.x1, y: L_position.y1, z: L_position.z1 });
         }
 
-        if (load.P2 !== 0) {
+        if (Data.P2 !== 0) {
           Data.judge = '2';
           arrowlist2 = this.CreateArrow_M(arrow, L_position, localAxis, Data);
           mpos.push({ x: L_position.x2, y: L_position.y2, z: L_position.z2 });
@@ -561,7 +577,7 @@ export class ThreeLoadService {
 
 
   // 矢印（集中荷重）を描く
-  public CreateArrow(arrow, L_position, localAxis, Data) {
+  public CreateArrow(arrow, pos: any, localAxis, P: number, p_: number) {
     const arrowlist = [];
     const group = new THREE.Group();
 
@@ -569,18 +585,12 @@ export class ThreeLoadService {
 
     // 矢の棒を描く
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    if (Data.judge === '1') {
-      if (Data.P1 > 0) {
-        geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_one));
-      } else if (Data.P1 < 0) {
-        geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_one));
-      }
-    } else if (Data.judge === '2') {
-      if (Data.P2 > 0) {
-        geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * Data.p_two));
-      } else if (Data.P2 < 0) {
-        geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_two));
-      }
+    if (P > 0) {
+      geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * p_));
+    } else if (P < 0) {
+      geometry.vertices.push(new THREE.Vector3(0, 0, p_));
+    } else {
+      return;
     }
     const line = new THREE.LineBasicMaterial({ color: arrow.color });
     const mesh = new THREE.Line(geometry, line);
@@ -596,22 +606,12 @@ export class ThreeLoadService {
     geometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
     const material = new THREE.MeshBasicMaterial({ color: arrow.color });
     const cone = new THREE.Mesh(geometry, material);
-    if (Data.judge === '1') {
-      if (Data.P1 > 0) {
-        cone.position.set(0, 0, -cone_scale / 2);
-        cone.rotation.x = Math.PI / 2;
-      } else if (Data.P1 < 0) {
-        cone.position.set(0, 0, cone_scale / 2);
-        cone.rotation.x = -Math.PI / 2;
-      }
-    } else if (Data.judge === '2') {
-      if (Data.P2 > 0) {
-        cone.position.set(0, 0, -cone_scale / 2);
-        cone.rotation.x = Math.PI / 2;
-      } else if (Data.P2 < 0) {
-        cone.position.set(0, 0, cone_scale / 2);
-        cone.rotation.x = -Math.PI / 2;
-      }
+    if (P > 0) {
+      cone.position.set(0, 0, -cone_scale / 2);
+      cone.rotation.x = Math.PI / 2;
+    } else if (P < 0) {
+      cone.position.set(0, 0, cone_scale / 2);
+      cone.rotation.x = -Math.PI / 2;
     }
     group.add(cone);
 
@@ -619,31 +619,18 @@ export class ThreeLoadService {
     switch (arrow.direction) {
       case ('x'):
         group.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
-        if (Data.judge === '1') {
-          group.position.set(L_position.x1 - localAxis.y.x * 0.1,
-            L_position.y1 - localAxis.y.y * 0.1,
-            L_position.z1);
-        } else if (Data.judge === '2') {
-          group.position.set(L_position.x2 - localAxis.y.x * 0.1,
-            L_position.y2 - localAxis.y.y * 0.1,
-            L_position.z2);
-        }
+        group.position.set(
+          pos.x - localAxis.y.x * 0.1,
+          pos.y - localAxis.y.y * 0.1,
+          pos.z);
         break;
       case ('y'):
         group.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
-        if (Data.judge === '1') {
-          group.position.set(L_position.x1, L_position.y1, L_position.z1);
-        } else if (Data.judge === '2') {
-          group.position.set(L_position.x2, L_position.y2, L_position.z2);
-        }
+        group.position.set(pos.x, pos.y, pos.z);
         break;
       case ('z'):
         group.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
-        if (Data.judge === '1') {
-          group.position.set(L_position.x1, L_position.y1, L_position.z1);
-        } else if (Data.judge === '2') {
-          group.position.set(L_position.x2, L_position.y2, L_position.z2);
-        }
+        group.position.set(pos.x, pos.y, pos.z);
         break;
     }
     arrowlist.push(group);
