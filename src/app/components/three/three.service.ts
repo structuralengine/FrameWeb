@@ -312,7 +312,7 @@ export class ThreeService {
         this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
-        this.fsec.visible(true);
+        this.fsec.visible(true, ModeName);
         break;
 
     }
