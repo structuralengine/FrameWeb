@@ -445,38 +445,56 @@ export class ThreeLoadService {
       case 1: // markが1のときのx, y, z, rの分岐
 
         const pos = [];
-
+        let myLocalAxis = localAxis[load.direction];
         arrow.direction = load.direction;
         arrow.color = { x: 0xff0000, y: 0x00ff00, z: 0x0000ff }[load.direction];
 
         if (Data.P1 !== 0) {
           Data.judge = '1';
+          const p = {x: L_position.x1, y: L_position.y1, z: L_position.z1};
           arrowlist1 = this.CreateArrow(arrow,
-             {x: L_position.x1, y: L_position.y1, z: L_position.z1},
-              localAxis,
-              Data.P1,
-              Data.p_one);
-          pos.push({ x: L_position.x1, y: L_position.y1, z: L_position.z1 });
+                                        p,
+                                        localAxis,
+                                        Data.P1,
+                                        Data.p_one);
+          pos.push(p);
+          // マイナスあんら重なりを判定する軸を反転する
+          if ( Math.sign(Data.P1) < 0) {
+            myLocalAxis = {
+              x: -localAxis[load.direction].x,
+              y: -localAxis[load.direction].y,
+              z: -localAxis[load.direction].z
+            };
+          }
         }
 
-        if( Data.P1 !== 0 && Data.P2 !== 0 && Math.sign(Data.P1) !== Math.sign(Data.P2)){
+        if ( Data.P1 !== 0 && Data.P2 !== 0 && Math.sign(Data.P1) !== Math.sign(Data.P2)) {
           // P1 と P2 の符号が逆だった場合 P2を別の荷重として扱う（重ならないようにずらす方向が違うため）
           const tmp: number = Data.P1;
           Data.P1 = 0;
           this.addMemberLoad(load, Data, L_position, localAxis, arrowSize)
           Data.P1 = tmp;
 
-        }else if (Data.P2 !== 0) {
+        } else if (Data.P2 !== 0) {
           Data.judge = '2';
-          arrowlist2 = this.CreateArrow(arrow, 
-            {x: L_position.x2, y: L_position.y2, z: L_position.z2},
-            localAxis,
-            Data.P2,
-            Data.p_two);
-          pos.push({ x: L_position.x2, y: L_position.y2, z: L_position.z2 });
+          const p = {x: L_position.x2, y: L_position.y2, z: L_position.z2};
+          arrowlist2 = this.CreateArrow(arrow,
+                                        p,
+                                        localAxis,
+                                        Data.P2,
+                                        Data.p_two);
+          pos.push(p);
+          // マイナスあんら重なりを判定する軸を反転する
+          if ( Math.sign(Data.P2) < 0) {
+            myLocalAxis = {
+              x: -localAxis[load.direction].x,
+              y: -localAxis[load.direction].y,
+              z: -localAxis[load.direction].z
+            };
+          }
         }
 
-        groupe['localAxis'] = localAxis[load.direction]; // 荷重の方向を示すベクトル
+        groupe['localAxis'] = myLocalAxis; // 荷重の方向を示すベクトル
         groupe['check_box'] = { m: Data.m, direction: 'p' + load.direction, pos }; // 荷重の重なりを回避するためのプロパティ
 
         for (const a of arrowlist1) {
@@ -1215,9 +1233,9 @@ export class ThreeLoadService {
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
       if ('localAxis' in item) {
-        const scaleX: number = 1 + item.localAxis.x * (this.memberLoadScale - 1);
-        const scaleY: number = 1 + item.localAxis.y * (this.memberLoadScale - 1);
-        const scaleZ: number = 1 + item.localAxis.z * (this.memberLoadScale - 1);
+        const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
+        const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);
+        const scaleZ: number = 1 + Math.abs(item.localAxis.z) * (this.memberLoadScale - 1);
         item.scale.set(scaleX, scaleY, scaleZ);
       }
     }
