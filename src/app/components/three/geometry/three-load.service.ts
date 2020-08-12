@@ -557,12 +557,28 @@ export class ThreeLoadService {
         } else if (load.direction === 'y') {
           load.len_L = Data.len_L;
           arrowlist1 = this.CreateArrow_Y(arrow, L_position, localAxis, Data);
-          groupe['localAxis'] = localAxis.y; // 荷重の方向を示すベクトル
+          if (load.P1 <= 0 && load.P2 <= 0) { 
+            groupe['localAxis'] = {
+              x: -1 * localAxis.y.x,
+              y: -1 * localAxis.y.y,
+              z: -1 * localAxis.y.z
+            };
+          } else {
+            groupe['localAxis'] = localAxis.y; // 荷重の方向を示すベクトル
+          }
 
         } else if (load.direction === 'z') {
           load.len_L = Data.len_L;
           arrowlist1 = this.CreateArrow_Z(arrow, L_position, localAxis, Data);
-          groupe['localAxis'] = localAxis.z; // 荷重の方向を示すベクトル
+          if (load.P1 <= 0 && load.P2 <= 0) {
+            groupe['localAxis'] = {
+              x: -1 * localAxis.z.x,
+              y: -1 * localAxis.z.y,
+              z: -1 * localAxis.z.z
+            };
+          } else {
+            groupe['localAxis'] = localAxis.z; // 荷重の方向を示すベクトル
+          }
 
         } else if (load.direction === 'r') {
           arrow.size = arrow.size / 2.5;
@@ -774,6 +790,10 @@ export class ThreeLoadService {
     if (count_L > 0 && count_L < 1) {
       count_L = 1;
     }
+    const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
+    const d1: number = offset + Data.p_one * Math.sign(Data.P1) * (-1);
+    const d2: number = offset + Data.p_two * Math.sign(Data.P2) * (-1);
+
     const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
     for (let i = 0; i <= count_L; i++) {
 
@@ -832,7 +852,7 @@ export class ThreeLoadService {
 
       // 矢印の棒
       geometry.vertices.push(new THREE.Vector3(x, y, z));
-      x = Data.p_one * Math.sign(Data.P1) * (-1) - difference_P * i / count_L;
+      x = d1 - difference_P * i / count_L;
       geometry.vertices.push(new THREE.Vector3(x, y, z));
       mesh = new THREE.Line(geometry, line);
       groupY.add(mesh);
@@ -842,8 +862,9 @@ export class ThreeLoadService {
 
 
     // 分布荷重をまとめる棒
-    const i = new THREE.Vector3(Data.p_one * Math.sign(Data.P1) * (-1), 0, 0);
-    const j = new THREE.Vector3(Data.p_two * Math.sign(Data.P2) * (-1), 0, Data.len_L);
+
+    const i = new THREE.Vector3(d1, 0, 0);
+    const j = new THREE.Vector3(d2, 0, Data.len_L);
 
     const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
     const len: number = v.length();
@@ -870,8 +891,8 @@ export class ThreeLoadService {
       opacity: 0.3
     });
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(Data.p_one * Math.sign(Data.P1) * (-1), 0, 0));
-    geometry.vertices.push(new THREE.Vector3(Data.p_two * Math.sign(Data.P2) * (-1), 0, Data.len_L));
+    geometry.vertices.push(new THREE.Vector3(d1, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(d2, 0, Data.len_L));
     geometry.vertices.push(new THREE.Vector3(0, 0, Data.len_L));
     if (Data.P1 * Data.P2 >= 0) {
       geometry.faces.push(new THREE.Face3(0, 1, 2));
@@ -909,6 +930,10 @@ export class ThreeLoadService {
     if (count_L > 0 && count_L < 1) {
       count_L = 1;
     }
+    const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
+    const d1: number = offset + Data.p_one * Math.sign(Data.P1);
+    const d2: number = offset + Data.p_two * Math.sign(Data.P2);
+
     const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
     for (let i = 0; i <= count_L; i++) {
 
@@ -966,7 +991,7 @@ export class ThreeLoadService {
 
       // 矢印の棒
       geometry.vertices.push(new THREE.Vector3(x, y, z));
-      z = Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
+      z = d1 + difference_P * i / count_L;
       geometry.vertices.push(new THREE.Vector3(x, y, z));
       mesh = new THREE.Line(geometry, line);
       groupZ.add(mesh);
@@ -976,8 +1001,8 @@ export class ThreeLoadService {
 
 
     // 分布荷重をまとめる棒
-    const i = new THREE.Vector3(0, 0, Data.p_one * Math.sign(Data.P1));
-    const j = new THREE.Vector3(0, len_L, Data.p_two * Math.sign(Data.P2));
+    const i = new THREE.Vector3(0, 0, d1);
+    const j = new THREE.Vector3(0, len_L, d2);
 
     const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
     const len: number = v.length();
@@ -1004,8 +1029,8 @@ export class ThreeLoadService {
       opacity: 0.3
     });
     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(0, 0, Data.p_one * Math.sign(Data.P1)));
-    geometry.vertices.push(new THREE.Vector3(0, len_L, Data.p_two * Math.sign(Data.P2)));
+    geometry.vertices.push(new THREE.Vector3(0, 0, d1));
+    geometry.vertices.push(new THREE.Vector3(0, len_L, d2));
     geometry.vertices.push(new THREE.Vector3(0, len_L, 0));
     if (Data.P1 * Data.P2 >= 0) {
       var face1 = new THREE.Face3(0, 1, 2);

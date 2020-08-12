@@ -73,7 +73,7 @@ export class ThreeSectionForceService {
     });
   }
 
-  public visible(flag: boolean): void {
+  public visible(flag: boolean, mode: string): void {
     if (this.isVisible === flag) {
       return;
     }
