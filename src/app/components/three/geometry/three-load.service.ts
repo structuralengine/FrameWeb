@@ -874,19 +874,16 @@ export class ThreeLoadService {
     geometry.vertices.push(new THREE.Vector3(Data.p_two * Math.sign(Data.P2) * (-1), 0, Data.len_L));
     geometry.vertices.push(new THREE.Vector3(0, 0, Data.len_L));
     if (Data.P1 * Data.P2 >= 0) {
-      var face1 = new THREE.Face3(0, 1, 2);
-      var face2 = new THREE.Face3(0, 2, 3);
+      geometry.faces.push(new THREE.Face3(0, 1, 2));
+      geometry.faces.push(new THREE.Face3(0, 2, 3));
     } else if (Data.P1 * Data.P2 < 0) {
       geometry.vertices.push(new THREE.Vector3(0, 0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L));
-      var face1 = new THREE.Face3(0, 1, 4);
-      var face2 = new THREE.Face3(2, 3, 4);
+      geometry.faces.push(new THREE.Face3(0, 1, 4));
+      geometry.faces.push(new THREE.Face3(2, 3, 4));
     }
-    geometry.faces.push(face1);
-    geometry.faces.push(face2);
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
-    let mesh2 = new THREE.Mesh(geometry, material);
-    groupY.add(mesh2);
+    groupY.add(new THREE.Mesh(geometry, material));
 
     // groupの操作
     groupY.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
