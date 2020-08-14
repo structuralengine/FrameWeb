@@ -92,4 +92,9 @@ export class ResultPickupFsecService {
       console.log(e);
     }
   }
+
+  public getFsecJson(): object {
+    return this.fsecPickup;
+  }
+
 }

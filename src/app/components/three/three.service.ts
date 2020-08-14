@@ -93,6 +93,9 @@ export class ThreeService {
         this.load.chengeData(index);
         break;
 
+      default:
+        // 何御しない
+        return;
     }
 
     // 再描画
@@ -136,6 +139,7 @@ export class ThreeService {
     }
 
     switch (ModeName) {
+
       case 'nodes':
         this.node.visible(true, true, true);
         this.member.visible(true, false, false);
@@ -265,8 +269,6 @@ export class ThreeService {
         break;
 
       case 'disg':
-      case 'comb_disg':
-      case 'pik_disg':
         if (this.currentIndex !== currentPage) {
           this.disg.chengeData(currentPage);
         }
@@ -281,9 +283,21 @@ export class ThreeService {
         this.fsec.visible(false);
         break;
 
+      case 'comb_disg':
+      case 'pik_disg':
+        // 何も表示しない
+        this.node.visible(true, true, true);
+        this.member.visible(true, false, false);
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(false, false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);
+        break;
+
       case 'reac':
-      case 'comb_reac':
-      case 'pik_reac':
         if (this.currentIndex !== currentPage) {
           this.reac.chengeData(currentPage);
         }
@@ -297,12 +311,26 @@ export class ThreeService {
         this.reac.visible(true);
         this.fsec.visible(false);
         break;
-
+      
+      case 'comb_reac':
+      case 'pik_reac':
+        // 何も表示しない
+        this.node.visible(true, true, true);
+        this.member.visible(true, false, false);
+        this.fixNode.visible(false);
+        this.fixMember.visible(false);
+        this.joint.visible(false);
+        this.load.visible(false, false);
+        this.disg.visible(false);
+        this.reac.visible(false);
+        this.fsec.visible(false);       
+        break;
+    
       case 'fsec':
       case 'comb_fsec':
       case 'pik_fsec':
         if (this.currentIndex !== currentPage) {
-          this.fsec.chengeData(currentPage);
+          this.fsec.chengeData(currentPage, ModeName);
         }
         this.node.visible(true, false, false);
         this.member.visible(true, true, false);
@@ -312,7 +340,7 @@ export class ThreeService {
         this.load.visible(false, false);
         this.disg.visible(false);
         this.reac.visible(false);
-        this.fsec.visible(true, ModeName);
+        this.fsec.visible(true);
         break;
 
     }

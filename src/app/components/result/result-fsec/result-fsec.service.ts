@@ -60,9 +60,6 @@ export class ResultFsecService {
   public setFsecJson(jsonData: {}): void {
     let max_row = 0;
 
-    let max_f = 0;
-    let max_m = 0;
-
     for (const caseNo of Object.keys(jsonData)) {
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
@@ -126,17 +123,6 @@ export class ResultFsecService {
             result['row'] = row;
             target.push(result);
 
-            // 最大値を記録する
-            for (const v of [fxi, fyi, fzi]) {
-              if (Math.abs(max_f) < Math.abs(v)) {
-                max_f = v;
-              }
-            }
-            for (const v of [mxi, myi, mzi]) {
-              if (Math.abs(max_m) < Math.abs(v)) {
-                max_m = v;
-              }
-            }
           }
 
           memberNo = '';
@@ -178,29 +164,11 @@ export class ResultFsecService {
           target.push(result);
           counter++;
 
-          // 最大値を記録する
-          for (const v of [fxj, fyj, fzj]) {
-            if (Math.abs(max_f) < Math.abs(v)) {
-              max_f = v;
-            }
-          }
-          for (const v of [mxj, myj, mzj]) {
-            if (Math.abs(max_m) < Math.abs(v)) {
-              max_m = v;
-            }
-          }
-
         }
       }
       this.fsec[caseNo.replace('Case', '')] = target;
       max_row = Math.max(max_row, target.length);
     }
-
-    // three のスケールを決定するのに最大値をストックする
-    this.fsec['max_value'] = Math.max(Math.abs(max_f), Math.abs(max_m));
-    this.fsec['max_f_value'] = max_f;
-    this.fsec['max_m_value'] = max_m;
-
 
     this.FSEC_ROWS_COUNT = max_row;
 

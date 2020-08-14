@@ -186,5 +186,8 @@ export class ResultCombineFsecService {
 
   }
 
+  public getFsecJson(): object {
+    return this.fsecCombine;
+  }
 
 }

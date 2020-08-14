@@ -29,9 +29,10 @@ export class ThreeSectionForceService {
   private lineList: THREE.Line[];
   private targetData: any;
   private targetIndex: string;
+  private modeName: string;
 
   private scale: number;
-  private params: any;          // GUIの表示制御
+  private params: any;   // GUIの表示制御
   private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
   private gui_max_scale: number;
@@ -73,7 +74,7 @@ export class ThreeSectionForceService {
     });
   }
 
-  public visible(flag: boolean, mode: string): void {
+  public visible(flag: boolean): void {
     if (this.isVisible === flag) {
       return;
     }
@@ -104,6 +105,7 @@ export class ThreeSectionForceService {
     }
     this.targetData = {};
     this.targetIndex = '';
+    this.modeName = '';
     this.scale = 0.5;
   }
 
@@ -153,18 +155,20 @@ export class ThreeSectionForceService {
 
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
-  public chengeData(index: number): void {
+  public chengeData(index: number, ModeName: string): void {
 
-    if (this.targetIndex === index.toString()) {
-      // ケースが同じなら何もしない
-      return;
-    }
+    if (this.modeName === ModeName ){  
+      if (this.targetIndex === index.toString()) {
+        // ケースが同じなら何もしない
+        return;
+      }
 
-    if (this.lineList.length > 0) {
-      // 既に Geometryを作成していたら リサイズするだけ
-      this.targetIndex = index.toString();
-      this.onResize();
-      return;
+      if (ModeName === 'fsec' && this.lineList.length > 0) {
+        // 既に Geometryを作成していたら リサイズするだけ
+        this.targetIndex = index.toString();
+        this.onResize();
+        return;
+      }
     }
 
     // 要素を排除する
@@ -183,81 +187,161 @@ export class ThreeSectionForceService {
     if (memberKeys.length <= 0) {
       return;
     }
-
+    
     // 断面力データを入手
-    const allFsecgData = this.fsec.getFsecJson();
+    let allFsecgData: object;
+    switch(ModeName){
+      case 'comb_fsec':
+        allFsecgData = this.comb_fsec.getFsecJson();
+        break;
+     case 'pik_fsec':
+        allFsecgData = this.pik_fsec.getFsecJson();
+        break;
+      default:
+        allFsecgData = this.fsec.getFsecJson();
+        break;
+    }
+
     this.targetIndex = index.toString();
+    this.modeName = ModeName;
+
+    if (!(this.targetIndex in allFsecgData)) {
+      return;      // 荷重Case番号 this.targetIndex が 計算結果 this.targetData に含まれていなかったら何もしない
+    }
+
+    const maxValue ={
+      fx: 0,
+      fy: 0,
+      fz: 0,
+      mx: 0,
+      my: 0,
+      mz: 0
+    }
 
     for (const targetKey of Object.keys(allFsecgData)) {
 
-      if (!Array.isArray(allFsecgData[targetKey])){
-        continue;
+      let targetCase: any = allFsecgData[targetKey]; // 対象ケースのデータを複製して扱っている
+
+      let targetFsecName: string[];
+      if( ModeName == 'comb_fsec' || ModeName == 'pik_fsec'){
+        targetFsecName = ['max', 'min']
+      } else {
+        if (!Array.isArray(targetCase)){
+          continue;
+        }
+        targetFsecName = ['']
       }
-      let fsecData = allFsecgData[targetKey].slice();
 
       // 新しい入力を適用する
       const targetList = new Array();
 
-      for (const id of memberKeys) {
+      for(const key of targetFsecName){
 
-        // 節点データを集計する
-        const m = memberData[id];
-        const i = nodeData[m.ni];
-        const j = nodeData[m.nj];
-        if (i === undefined || j === undefined) {
-          continue;
-        }
-
-        // 部材の座標軸を取得
-        const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
-        const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
-
-        // 着目点
-        const fsecPoints: any = new Array();
-        let flg = false;
-        const deleteindex: number[] = new Array();
-        let currentPosition: number = 0;
-        for (let c = 0; c < fsecData.length; c++) {
-          const fsec = fsecData[c];
-          if (fsec.m === id) {
-            flg = true;
-            // 1つめのデータは部材情報
-            fsecPoints.push({
-              id: fsec.m,
-              iPosition: i,
-              jPosition: j,
-              length: MemberLength,
-              localAxisX: localAxis.x,
-              localAxisY: localAxis.y,
-              localAxisZ: localAxis.z
+        let fsecData: any[];
+        if(key.length === 0){
+          fsecData = targetCase.slice();
+        } else {
+          fsecData = new Array();
+          const fx_obj: object = targetCase['fx_' + key];
+          const fy_obj: object = targetCase['fy_' + key];
+          const fz_obj: object = targetCase['fz_' + key];
+          const mx_obj: object = targetCase['mx_' + key];
+          const my_obj: object = targetCase['my_' + key];
+          const mz_obj: object = targetCase['mz_' + key];
+          let m: string = '';
+          for(const row of Object.keys(fx_obj)){
+            const fx_tmp = fx_obj[row];
+            const fy_tmp = fy_obj[row];
+            const fz_tmp = fz_obj[row];
+            const mx_tmp = mx_obj[row];
+            const my_tmp = my_obj[row];
+            const mz_tmp = mz_obj[row];
+            fsecData.push({
+              m: (m !== fx_tmp.m) ? fx_tmp.m : '',
+              n: fx_tmp.n,
+              l: fx_tmp.l,
+              fx: fx_tmp.fx,
+              fy: fy_tmp.fy,
+              fz: fz_tmp.fz,
+              mx: mx_tmp.mx,
+              my: my_tmp.my,
+              mz: mz_tmp.mz
             });
-            // ２つめのデータ以降が断面力情報
-            currentPosition = this.helper.toNumber(fsec.l);
-            fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
-            deleteindex.push(c);
-          } else if (flg === true) {
-            if (fsec.m.trim().length > 0) {
-              break;
+            if(fx_tmp.m !== '') {
+              m = fx_tmp.m;
             }
-            currentPosition = this.helper.toNumber(fsec.l);
-            fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
-            deleteindex.push(c);
           }
         }
-        targetList.push(fsecPoints);
 
-        // 登録済のデータは削除する
-        for (let d = deleteindex.length - 1; d >= 0; d--) {
-          const c = deleteindex[d];
-          fsecData.splice(c, 1);
+        // スケールの決定に用いる最大値を集計する
+        for ( const f of fsecData){
+          for (const k of Object.keys(maxValue)){
+            if( !(k in f)){
+              continue;
+            }
+            maxValue[k] = Math.max(Math.abs(f[k]), maxValue[k])
+          }
+        }
+
+        for (const id of memberKeys) {
+
+          // 節点データを集計する
+          const m = memberData[id];
+          const i = nodeData[m.ni];
+          const j = nodeData[m.nj];
+          if (i === undefined || j === undefined) {
+            continue;
+          }
+
+          // 部材の座標軸を取得
+          const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+          const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
+
+          // 着目点
+          const fsecPoints: any = new Array();
+          let flg = 0;
+          const deleteindex: number[] = new Array();
+          let currentPosition: number = 0;
+          for (let c = 0; c < fsecData.length; c++) {
+            const fsec = fsecData[c];
+            if ( fsec.m === id) {
+              flg++;
+              // 1つめのデータは部材情報
+              fsecPoints.push({
+                id: fsec.m,
+                iPosition: i,
+                jPosition: j,
+                length: MemberLength,
+                localAxisX: localAxis.x,
+                localAxisY: localAxis.y,
+                localAxisZ: localAxis.z
+              });
+              // ２つめのデータ以降が断面力情報
+              currentPosition = this.helper.toNumber(fsec.l);
+              fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
+              deleteindex.push(c);
+            } else if (flg > 0) {
+              if (fsec.m.trim().length > 0) {
+                break;
+              }
+              currentPosition = this.helper.toNumber(fsec.l);
+              fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
+              deleteindex.push(c);
+            }
+          }
+          targetList.push(fsecPoints);
+
+          // 登録済のデータは削除する
+          for (let d = deleteindex.length - 1; d >= 0; d--) {
+            const c = deleteindex[d];
+            fsecData.splice(c, 1);
+          }
+
         }
 
       }
-      this.targetData[targetKey] = targetList;
-    }
 
-    if (!(this.targetIndex in this.targetData)) {
-      return;      // 荷重Case番号 this.targetIndex が 計算結果 this.targetData に含まれていなかったら何もしない
+      this.targetData[targetKey] = targetList;
     }
 
     // スケールの決定に用いる変数を写す
@@ -265,8 +349,13 @@ export class ThreeSectionForceService {
     let maxDistance: number;
     [minDistance, maxDistance] = this.getDistance();
 
-    const maxValue: number = allFsecgData['max_value'];
-    this.targetData['scale'] = minDistance / maxValue;
+    for (const k of Object.keys(maxValue)){
+      if (!(maxValue[k] === 0)){
+        this.targetData[k + '_scale'] = minDistance / maxValue[k];
+      } else {
+        this.targetData[k + '_scale'] = 1;
+      }
+    }
     this.gui_max_scale = maxDistance / minDistance;
 
     // 断面力図を描く
@@ -318,38 +407,44 @@ export class ThreeSectionForceService {
     let key: string;
     let axis: string;
     let color: THREE.Color;
-    let scale: number = this.targetData['scale'] * this.scale;
+    let scale: number;
 
     if (this.params.axialForce === true) {
       // 軸方向の圧縮力
       color = new THREE.Color(0xFF0000);
       key = 'axialForce';
       axis = 'localAxisY';
+      scale = this.scale * this.targetData['fx_scale'];
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
       color = new THREE.Color(0xFF0000);
       key = 'torsionalMoment';
       axis = 'localAxisZ';
+      scale = this.scale * this.targetData['mx_scale'];
     } else if (this.params.shearForceY === true) {
       // Y方向のせん断力
       color = new THREE.Color(0x00FF00);
       key = 'shearForceY';
       axis = 'localAxisY';
+      scale = this.scale * this.targetData['fy_scale'];
     } else if (this.params.momentY === true) {
       // Y軸周りの曲げモーメント
       color = new THREE.Color(0x00FF00);
       key = 'momentY';
       axis = 'localAxisZ';
+      scale = this.scale * this.targetData['my_scale'];
     } else if (this.params.shearForceZ === true) {
       // Z方向のせん断力
       color = new THREE.Color(0x0000FF);
       key = 'shearForceZ';
       axis = 'localAxisZ';
+      scale = this.scale * this.targetData['fz_scale'];
     } else if (this.params.momentZ === true) {
       // Z軸周りの曲げモーメント
       color = new THREE.Color(0x0000FF);
       key = 'momentZ';
       axis = 'localAxisY';
+      scale = this.scale * this.targetData['mz_scale'];
     } else {
       return;
     }
