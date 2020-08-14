@@ -116,93 +116,7 @@ export class ThreeFixNodeService {
 
       const position = { x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z };
 
-      // ピン支点の分岐
-      let pin = { direction: 'x', relationship: 'small', color: 0x000000 };
-      if (target.rx === 0 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        pin.direction = 'x';
-        pin.color = 0xff0000;
-        if (position.x <= this.center().x) {
-          pin.relationship = 'small';
-        } else if (position.x > this.center().x) {
-          pin.relationship = 'large';
-        }
-        this.CreatePinfix(pin, position, this.baseScale());
-      }
-      if (target.ry === 0 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        pin.direction = 'y';
-        pin.color = 0x00ff00;
-        if (position.y <= this.center().y) {
-          pin.relationship = 'small';
-        } else if (position.y > this.center().y) {
-          pin.relationship = 'large';
-        }
-        this.CreatePinfix(pin, position, this.baseScale());
-      }
-      if (target.rz === 0 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        pin.direction = 'z';
-        pin.color = 0x0000ff;
-        if (position.z <= this.center().z) {
-          pin.relationship = 'small';
-        } else if (position.z > this.center().z) {
-          pin.relationship = 'large';
-        }
-        this.CreatePinfix(pin, position, this.baseScale());
-      }
-
-      // 固定支点の分岐
-      let fixed = { direction: 'x', relationship: 'small', color: 0x808080 };
-      if (target.rx === 1 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        fixed.color = 0xff0000;
-        fixed.direction = 'x';
-        if (position.x <= this.center().x) {
-          fixed.relationship = 'small';
-        } else if (position.x > this.center().x) {
-          fixed.relationship = 'large';
-        }
-        this.CreateFixed(fixed, position, this.baseScale());
-      }
-      if (target.ry === 1 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        fixed.color = 0x00ff00;
-        fixed.direction = 'y';
-        if (position.y <= this.center().y) {
-          fixed.relationship = 'small';
-        } else if (position.y > this.center().y) {
-          fixed.relationship = 'large';
-        }
-        this.CreateFixed(fixed, position, this.baseScale());
-      }
-      if (target.rz === 1 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        fixed.color = 0x0000ff;
-        fixed.direction = 'z';
-        if (position.z <= this.center().z) {
-          fixed.relationship = 'small';
-        } else if (position.z > this.center().z) {
-          fixed.relationship = 'large';
-        }
-        this.CreateFixed(fixed, position, this.baseScale());
-      }
-
-      // 完全な固定支点の分岐
-      let fixed_Parfect = { relationshipX: 'small', relationshipY: 'small', relationshipZ: 'small', color: 0x808080 };
-      if (target.rx === 1 && target.ry === 1 && target.rz === 1 && (target.tx === 1 || target.ty === 1 || target.tz === 1)) {
-        if (position.x <= this.center().x) {
-          fixed_Parfect.relationshipX = 'small';
-        } else if (position.x > this.center().x) {
-          fixed_Parfect.relationshipX = 'large';
-        }
-        if (position.y <= this.center().y) {
-          fixed_Parfect.relationshipY = 'small';
-        } else if (position.y > this.center().y) {
-          fixed_Parfect.relationshipY = 'large';
-        }
-        if (position.z <= this.center().z) {
-          fixed_Parfect.relationshipZ = 'small';
-        } else if (position.z > this.center().z) {
-          fixed_Parfect.relationshipZ = 'large';
-        }
-        this.CreateFixed_P(fixed_Parfect, position, this.baseScale());
-      }
-
+      
       // バネ支点の分岐
       let spring = { direction: 'x', relationship: 'small', color: 0x000000 };
       if (target.tx ** 2 !== 0 && target.tx ** 2 !== 1) {
@@ -254,86 +168,143 @@ export class ThreeFixNodeService {
         this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
       }
 
+      // 完全な固定支点の分岐
+      let fixed_Parfect = { relationshipX: 'small', relationshipY: 'small', relationshipZ: 'small', color: 0x808080 };
+      if (target.rx === 1 && target.ry === 1 && target.rz === 1 
+          && target.tx === 1 && target.ty === 1 && target.tz === 1) {
+        if (position.x <= this.center().x) {
+          fixed_Parfect.relationshipX = 'small';
+        } else if (position.x > this.center().x) {
+          fixed_Parfect.relationshipX = 'large';
+        }
+        if (position.y <= this.center().y) {
+          fixed_Parfect.relationshipY = 'small';
+        } else if (position.y > this.center().y) {
+          fixed_Parfect.relationshipY = 'large';
+        }
+        if (position.z <= this.center().z) {
+          fixed_Parfect.relationshipZ = 'small';
+        } else if (position.z > this.center().z) {
+          fixed_Parfect.relationshipZ = 'large';
+        }
+        this.CreateFixed_P(fixed_Parfect, position, this.baseScale());
+        break;
+      }
+
+      // ピン支点の分岐
+      if( target.tx === 1 ){
+        const pin = { direction: 'x', color: 0xff0000 };
+        if (position.x <= this.center().x) {
+          pin['relationship'] = 'small';
+        } else if (position.x > this.center().x) {
+          pin['relationship'] = 'large';
+        }
+        this.CreatePin(pin, position, this.baseScale());
+      }
+      if( target.ty === 1 ){
+        const pin = { direction: 'y', color: 0x00ff00 };
+        if (position.y <= this.center().y) {
+          pin['relationship'] = 'small';
+        } else if (position.y > this.center().y) {
+          pin['relationship'] = 'large';
+        }
+        this.CreatePin(pin, position, this.baseScale());
+      }
+      if( target.tz === 1 ){
+        const pin = { direction: 'z', color: 0x0000ff };
+        if (position.z <= this.center().z) {
+          pin['relationship'] = 'small';
+        } else if (position.z > this.center().z) {
+          pin['relationship'] = 'large';
+        }
+        this.CreatePin(pin, position, this.baseScale());
+      }
+
+      // 固定支点の分岐
+      let fixed = { direction: 'x', relationship: 'small', color: 0x808080 };
+      if (target.rx === 1) {
+        fixed.color = 0xff0000;
+        fixed.direction = 'x';
+        if (position.x <= this.center().x) {
+          fixed.relationship = 'small';
+        } else if (position.x > this.center().x) {
+          fixed.relationship = 'large';
+        }
+        this.CreateFixed(fixed, position, this.baseScale());
+      }
+      if (target.ry === 1) {
+        fixed.color = 0x00ff00;
+        fixed.direction = 'y';
+        if (position.y <= this.center().y) {
+          fixed.relationship = 'small';
+        } else if (position.y > this.center().y) {
+          fixed.relationship = 'large';
+        }
+        this.CreateFixed(fixed, position, this.baseScale());
+      }
+      if (target.rz === 1) {
+        fixed.color = 0x0000ff;
+        fixed.direction = 'z';
+        if (position.z <= this.center().z) {
+          fixed.relationship = 'small';
+        } else if (position.z > this.center().z) {
+          fixed.relationship = 'large';
+        }
+        this.CreateFixed(fixed, position, this.baseScale());
+      }
+
     }
     this.onResize();
     this.guiEnable();
   }
 
   // ピン支点を描く
-  public CreatePinfix(pin, position, maxLength) {
-    let geometry = new THREE.Geometry;
-    const material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, color: pin.color });
-    let x = position.x;
-    let y = position.y;
-    let z = position.z;
-    geometry.vertices.push(new THREE.Vector3(x, y, z));  //一点目
+  public CreatePin(pin, position, maxLength) {
+
+    const height: number = maxLength * 0.2;
+    const radius: number = height * 0.3;
+    const geometry = new THREE.ConeGeometry( radius, height, 12, 1, false );
+    geometry.translate( 0, -height/2, 0 );
+    const material = new THREE.MeshBasicMaterial({ color: pin.color });
+    const cone = new THREE.Mesh(geometry, material);
+    cone.position.set(position.x, position.y, position.z);
+    
     switch (pin.direction) {
       case 'x':
-        x = position.x
         switch (pin.relationship) {
           case 'small':
-            y = position.y + 0.1 * maxLength;
-            z = position.z - 0.2 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //二点目
-            y = position.y - 0.1 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //三点目
+            cone.rotation.z = Math.PI / 2 * 3;
             break;
           case 'large':
-            y = position.y + 0.1 * maxLength;
-            z = position.z + 0.2 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //二点目
-            y = position.y - 0.1 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //三点目
+            cone.rotation.z = Math.PI / 2;
             break;
         }
         break;
       case 'y':
-        y = position.y;
         switch (pin.relationship) {
           case 'small':
-            x = position.x + 0.1 * maxLength;
-            z = position.z - 0.2 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //二点目
-            x = position.x - 0.1 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //三点目
+            // 何もしない
             break;
           case 'large':
-            x = position.x + 0.1 * maxLength;
-            z = position.z + 0.2 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //二点目
-            x = position.x - 0.1 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //三点目
+            cone.rotation.y = Math.PI / 2;
             break;
         }
         break;
       case 'z':
-        z = position.z;
         switch (pin.relationship) {
           case 'small':
-            x = position.x + 0.1 * maxLength;
-            y = position.y - 0.2 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //二点目
-            x = position.x - 0.1 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //三点目
+            cone.rotation.x = Math.PI / 2;
             break;
           case 'large':
-            x = position.x + 0.1 * maxLength;
-            y = position.y + 0.2 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //二点目
-            x = position.x - 0.1 * maxLength;
-            geometry.vertices.push(new THREE.Vector3(x, y, z));  //三点目
+            cone.rotation.x = Math.PI / 2 * 3;
             break;
         }
         break;
     }
-    const normal = new THREE.Vector3(0, 0, 1);
-    const face = new THREE.Face3(0, 1, 2, normal, pin.color);
-    geometry.faces.push(face);
-    let mesh = new THREE.Mesh(geometry, material);
-    this.fixnodeList.push(mesh);
-    this.scene.add(mesh);
-    geometry = new THREE.Geometry;
+    this.fixnodeList.push(cone);
+    this.scene.add(cone);
   }
+
 
   // 固定支点を描く
   public CreateFixed(fixed, position, maxLength) {
@@ -466,7 +437,7 @@ export class ThreeFixNodeService {
     let geometry = new THREE.Geometry();
     const laps = 3 + 0.25;
     const split = 10;
-    const radius = 0.1 * 0.002;
+    const radius = 0.1 * 0.001;
     let x = position.x;
     let y = position.y;
     let z = position.z;
