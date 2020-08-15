@@ -3,6 +3,8 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
 import { Http, Headers } from '@angular/http';
 
+import { Router } from '@angular/router';
+
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 
@@ -31,6 +33,7 @@ export class MenuComponent implements OnInit {
 
   constructor(private modalService: NgbModal,
               private app: AppComponent,
+              private router: Router,
               private user: UserInfoService,
               private InputData: InputDataService,
               private ResultData: ResultDataService,
@@ -160,8 +163,7 @@ export class MenuComponent implements OnInit {
 
   // 印刷
   print(): void {
-
-    const doc = this.printData.printInputData(this.InputData.getInputJson(0));
+    const  doc = this.printData.printData(this.router.url.replace('/', ''));
     // 印刷実行
     doc.output('dataurlnewwindow');
   }

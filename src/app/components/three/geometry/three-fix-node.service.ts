@@ -188,7 +188,7 @@ export class ThreeFixNodeService {
           fixed_Parfect.relationshipZ = 'large';
         }
         this.CreateFixed_P(fixed_Parfect, position, this.baseScale());
-        break;
+        continue;
       }
 
       // ピン支点の分岐
@@ -317,41 +317,14 @@ export class ThreeFixNodeService {
     let z = position.z;
     switch (fixed.direction) {
       case 'x':
-        switch (fixed.relationship) {
-          case 'small':
-            x = position.x - side / 2;
-            break;
-          case 'large':
-            x = position.x + side / 2;
-            break;
-        }
-        plane.position.set(x, y, z);
+        plane.rotation.y = Math.PI / 2;
         break;
       case 'y':
         plane.rotation.z = Math.PI / 2;
-        switch (fixed.relationship) {
-          case 'small':
-            y = position.y - side / 2;
-            break;
-          case 'large':
-            y = position.y + side / 2;
-            break;
-        }
-        plane.position.set(x, y, z);
-        break;
-      case 'z':
-        plane.rotation.y = Math.PI / 2;
-        switch (fixed.relationship) {
-          case 'small':
-            z = position.z - side / 2;
-            break;
-          case 'large':
-            z = position.z + side / 2;
-            break;
-        }
-        plane.position.set(x, y, z);
+        plane.rotation.x = Math.PI / 2;
         break;
     }
+    plane.position.set(x, y, z);
     this.fixnodeList.push(plane);
     this.scene.add(plane);
     geometry = new THREE.PlaneGeometry;
