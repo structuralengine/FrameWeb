@@ -123,10 +123,23 @@ export class PrintDataModule {
       currentY = printAfterInfo.table.finalY;
     }
 
-    
-    const LoadJson: any = this.InputData.load.getLoadJson()
-    if (Object.keys(LoadJson).length > 0) {
-    
+    const defineJson: any = this.InputData.define.getDefineJson();
+    if (Object.keys(defineJson).length > 0) {
+      printAfterInfo = this.printDefine(defineJson, doc, currentY, fontsize, pageHeight, LineFeed);
+      currentY = printAfterInfo.table.finalY;
+    }
+
+    const combineJson: any = this.InputData.combine.getCombineJson();
+    if (Object.keys(combineJson).length > 0) {
+      printAfterInfo = this.printCombine(combineJson, doc, currentY, fontsize, pageHeight, LineFeed);
+      currentY = printAfterInfo.table.finalY;
+    }
+
+    const pickupJson: any = this.InputData.pickup.getPickUpJson();
+    if (Object.keys(pickupJson).length > 0) {
+      printAfterInfo = this.printPickup(pickupJson, doc, currentY, fontsize, pageHeight, LineFeed);
+      currentY = printAfterInfo.table.finalY;
+    }
 
     return doc;
   }
@@ -489,8 +502,6 @@ export class PrintDataModule {
     for (const index of Object.keys(json)) {
 
       const item = json[index]; // 1行分のnodeデータを取り出す
-      //const item = elist['1'];
-      console.log(item);
 
       // 印刷する1行分のリストを作る
       let line: string[] = new Array();
@@ -772,6 +783,216 @@ export class PrintDataModule {
       }
       No++;
     }
+    LineFeed = this.defaultLinefeed;
+    return printAfterInfo;
+  }
+
+  // DEFINEデータ  を印刷する
+  private printDefine(json, doc, currentY, fontsize, pageHeight, LineFeed): any {
+
+    let printAfterInfo: any;
+
+    // あらかじめテーブルの高さを計算する
+    const dataCount: number = Object.keys(json).length;
+    const TableHeight: number = (dataCount + 1) * (fontsize * 2.15);
+
+    // はみ出るなら改ページ
+    if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
+      if (pageHeight - currentY < (pageHeight - this.margine.top - this.margine.bottom) / 2) { // かつ余白が頁の半分以下ならば
+        doc.addPage();
+        currentY = this.margine.top + fontsize;
+        LineFeed = 0;
+      }
+    }
+
+    const body: any = [];
+    for (const index of Object.keys(json)) {
+
+      const item = json[index]; // 1行分のnodeデータを取り出す
+
+      // 印刷する1行分のリストを作る
+      let line: string[] = new Array();
+      line.push(index); // DefineNo
+      let counter: number = 0;
+      for (const key of Object.keys(item)) {
+        if (key === 'row') { continue; }
+        line.push(item[key]);
+        counter += 1;
+        if (counter === 10) {
+          body.push(line); // 表の1行 登録
+          counter = 0;
+          line = new Array();
+          line.push(''); // DefineNo
+        }
+      }
+      if (counter > 0) {
+        body.push(line); // 表の1行 登録
+      }
+    }
+    doc.text(this.margine.left, currentY + LineFeed, "DEFINEデータ")
+    doc.autoTable({
+      theme: ['plain'],
+      margin: {
+        left: this.margine.left,
+        right: this.margine.right
+      },
+      styles: { font: 'default', halign: "right" },
+      startY: fontsize + currentY + LineFeed,
+      head: [['DefineNo.', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']],
+      body: body,
+      didParseCell: function (CellHookData) {
+        printAfterInfo = CellHookData
+      }
+    })
+    LineFeed = this.defaultLinefeed;
+    return printAfterInfo;
+  }
+
+  // COMBINEデータ  を印刷する
+  private printCombine(json, doc, currentY, fontsize, pageHeight, LineFeed): any {
+
+    let printAfterInfo: any;
+
+    // あらかじめテーブルの高さを計算する
+    const dataCount: number = Object.keys(json).length;
+    const TableHeight: number = (2 * dataCount + 2) * (fontsize * 2.15);
+
+    // はみ出るなら改ページ
+    if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
+      if (pageHeight - currentY < (pageHeight - this.margine.top - this.margine.bottom) / 2) { // かつ余白が頁の半分以下ならば
+        doc.addPage();
+        currentY = this.margine.top + fontsize;
+        LineFeed = 0;
+      }
+    }
+
+    const body: any = [];
+    for (const index of Object.keys(json)) {
+
+      const item = json[index]; // 1行分のnodeデータを取り出す
+
+      // 印刷する1行分のリストを作る
+      let line1: any[] = new Array();
+      let line2: string[] = new Array();
+      line1.push(index); // CombNo
+      line2.push('');
+      if('name' in item){
+        line1.push({ content: item.name, styles: { halign: "left" }}); // 荷重名称
+      } else {
+        line1.push(''); 
+      }
+      line2.push('');
+
+      let counter: number = 0;
+      for (const key of Object.keys(item)) {
+        if (key === 'row') { continue; }
+        if (key === 'name') { continue; }
+        line1.push(key.replace('C', ''));
+        line2.push(item[key]);
+        counter += 1;
+        if (counter === 8) {
+          body.push(line1); // 表の1行 登録
+          body.push(line2); 
+          counter = 0;
+          line1 = new Array();
+          line2 = new Array();
+          line1.push(''); // CombNo
+          line2.push('');
+          line1.push(''); // 荷重名称
+          line2.push('');
+        }
+      }
+      if (counter > 0) {
+        body.push(line1); // 表の1行 登録
+        body.push(line2); 
+      }
+    }
+    doc.text(this.margine.left, currentY + LineFeed, "COMBINEデータ")
+    doc.autoTable({
+      theme: ['plain'],
+      margin: {
+        left: this.margine.left,
+        right: this.margine.right
+      },
+      styles: { font: 'default', halign: "right" },
+      startY: fontsize + currentY + LineFeed,
+      head: [['Comb', '', '', '', '', '', '', '', '', ''],
+             ['No.', { content: '荷重名称', styles: { halign: "left" }},'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']],
+      body: body,
+      didParseCell: function (CellHookData) {
+        printAfterInfo = CellHookData
+      }
+    })
+    LineFeed = this.defaultLinefeed;
+    return printAfterInfo;
+  }
+
+  // PICKUPEデータ  を印刷する
+  private printPickup(json, doc, currentY, fontsize, pageHeight, LineFeed): any {
+
+    let printAfterInfo: any;
+
+    // あらかじめテーブルの高さを計算する
+    const dataCount: number = Object.keys(json).length;
+    const TableHeight: number = (dataCount + 2) * (fontsize * 2.15);
+
+    // はみ出るなら改ページ
+    if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
+      if (pageHeight - currentY < (pageHeight - this.margine.top - this.margine.bottom) / 2) { // かつ余白が頁の半分以下ならば
+        doc.addPage();
+        currentY = this.margine.top + fontsize;
+        LineFeed = 0;
+      }
+    }
+
+    const body: any = [];
+    for (const index of Object.keys(json)) {
+
+      const item = json[index]; // 1行分のnodeデータを取り出す
+
+      // 印刷する1行分のリストを作る
+      let line: any[] = new Array();
+      line.push(index); // PickUpNo
+      if('name' in item){
+        line.push({ content: item.name, styles: { halign: "left" }}); // 荷重名称
+      } else {
+        line.push(''); 
+      }
+
+      let counter: number = 0;
+      for (const key of Object.keys(item)) {
+        if (key === 'row') { continue; }
+        if (key === 'name') { continue; }
+        line.push(item[key]);
+        counter += 1;
+        if (counter === 10) {
+          body.push(line); // 表の1行 登録
+          counter = 0;
+          line = new Array();
+          line.push(''); // PickUpNo
+        }
+      }
+      if (counter > 0) {
+        body.push(line); // 表の1行 登録
+      }
+    }
+    doc.text(this.margine.left, currentY + LineFeed, "PICKUPデータ")
+    doc.autoTable({
+      theme: ['plain'],
+      margin: {
+        left: this.margine.left,
+        right: this.margine.right
+      },
+      styles: { font: 'default', halign: "right" },
+      startY: fontsize + currentY + LineFeed,
+      head: [ ['PickUp', '', '', '', '', '', '', '', '', '', '', ''],
+              ['No.', { content: '荷重名称', styles: { halign: "left" }}, 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']
+      ],
+      body: body,
+      didParseCell: function (CellHookData) {
+        printAfterInfo = CellHookData
+      }
+    })
     LineFeed = this.defaultLinefeed;
     return printAfterInfo;
   }
