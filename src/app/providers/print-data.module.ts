@@ -20,7 +20,8 @@ export class PrintDataModule {
   };
 
   constructor(private InputData: InputDataService,
-    private ResultData: ResultDataService) { }
+    private ResultData: ResultDataService) {
+  }
 
   public printData(mode: string): any {
 
@@ -32,8 +33,10 @@ export class PrintDataModule {
     switch (mode) {
 
       case 'result-disg':
+        this.printDisg(doc);
         break;
       case 'result-reac':
+        this.printReact(doc);
         break;
       case 'result-fsec':
         break;
@@ -62,6 +65,159 @@ export class PrintDataModule {
     return doc;
   }
 
+  // 変位量データを印刷する
+  private printDisg(doc: any): any {
+
+    const json: {} = this.ResultData.disg.getDisgJson();
+
+    const fontsize: number = 10;
+    doc.setFontSize(fontsize);
+
+    const currentY = this.margine.top + fontsize;
+    let pageHeight = doc.internal.pageSize.height; // 841.89
+    let pageWidth = doc.internal.pageSize.width;   // 595.31
+
+    doc.text(this.margine.left, currentY, "変位量")
+
+    let body: any[] = new Array();
+    let daraCount: number = 0;
+
+    for (const index of Object.keys(json)) {
+
+      const elist = json[index]; // 1行分のnodeデータを取り出す
+      if (!Array.isArray(elist)) {
+        continue;
+      }
+
+      // 荷重名称
+      let loadName: string = '';
+      const l: any = this.InputData.load.getLoadNameJson(null, index);
+      if (index in l) {
+        loadName = l[index].name;
+      }
+
+      // あらかじめテーブルの高さを計算する
+      daraCount += elist.length;
+      const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
+
+      // はみ出るなら改ページ
+      if (currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
+        doc.autoTable({
+          theme: ['plain'],
+          margin: {
+            left: this.margine.left,
+            right: this.margine.right
+          },
+          styles: { font: 'default', halign: "right" },
+          startY: fontsize + currentY,
+          head: [
+            ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotatino', 'Y-Rotatino', 'Z-Rotatino'],
+            ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
+          ],
+          body: body,
+        })
+        body = new Array();
+        daraCount = 0;
+        doc.addPage();
+      }
+
+
+      body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
+
+      for (const item of elist) {
+        // 印刷する1行分のリストを作る
+        const line: string[] = new Array();
+        line.push(item.id.toString());
+        line.push(item.dx.toFixed(3));
+        line.push(item.dy.toFixed(3));
+        line.push(item.dz.toFixed(3));
+        line.push(item.rx.toFixed(3));
+        line.push(item.ry.toFixed(3));
+        line.push(item.rz.toFixed(3));
+        body.push(line);
+      }
+    }
+
+    if (daraCount > 0) {
+      doc.autoTable({
+        theme: ['plain'],
+        margin: {
+          left: this.margine.left,
+          right: this.margine.right
+        },
+        styles: { font: 'default', halign: "right" },
+        startY: fontsize + currentY,
+        head: [
+          ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotatino', 'Y-Rotatino', 'Z-Rotatino'],
+          ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
+        ],
+        body: body,
+      })
+    }
+
+    return doc;
+  }
+
+  // 反力データを印刷する
+  private printReact(doc: any): any {
+
+    const json: {} = this.ResultData.reac.getReacJson();
+
+    const fontsize: number = 10;
+    doc.setFontSize(fontsize);
+
+    const currentY = this.margine.top + fontsize;
+    let pageHeight = doc.internal.pageSize.height; // 841.89
+    let pageWidth = doc.internal.pageSize.width;   // 595.31
+
+    doc.text(this.margine.left, currentY, "反力")
+
+    let body: any[] = new Array();
+
+    for (const index of Object.keys(json)) {
+
+      const elist = json[index]; // 1行分のnodeデータを取り出す
+
+      // 荷重名称
+      let loadName: string = '';
+      const l: any = this.InputData.load.getLoadNameJson(null, index);
+      if (index in l) {
+        loadName = l[index].name;
+      }
+
+      // 印刷する1行分のリストを作る
+      let line: any[] = new Array();
+      line.push('Case ' + index);
+      line.push({ content: loadName, styles: { halign: "left" } });
+      for(const item of elist){
+        line.push(item.id.toString());
+        line.push(item.tx);
+        line.push(item.ty);
+        line.push(item.tz);
+        line.push(item.mx);
+        line.push(item.my);
+        line.push(item.mz);
+        body.push(line);
+        line = new Array();
+        line.push('');
+        line.push('');
+      }
+    }
+
+    doc.autoTable({
+      theme: ['plain'],
+      margin: {
+        left: this.margine.left,
+        right: this.margine.right
+      },
+      styles: { font: 'default', halign: "right" },
+      startY: fontsize + currentY,
+      head: [['', '', 'SUPPORT', 'TX', 'TY', 'TZ', 'MX', 'MY', 'MZ']],
+      body: body,
+    })
+
+    return doc;
+  }
 
   // 入力データを印刷する
   private printInputData(doc: any): any {
@@ -228,7 +384,7 @@ export class PrintDataModule {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const TableHeight: number = (dataCount + 1) * (fontsize * 2.15);
+    const TableHeight: number = (dataCount + 1) * (fontsize * 2.3);
 
     // はみ出るなら改ページ
     if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -287,7 +443,7 @@ export class PrintDataModule {
 
       // あらかじめテーブルの高さを計算する
       const dataCount: number = elist.length;;
-      const TableHeight: number = (dataCount + 3) * (fontsize * 2.15);
+      const TableHeight: number = (dataCount + 3) * (fontsize * 2.3);
 
       // はみ出るなら改ページ
       if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -354,7 +510,7 @@ export class PrintDataModule {
 
       // あらかじめテーブルの高さを計算する
       const dataCount: number = elist.length;;
-      const TableHeight: number = (dataCount + 2) * (fontsize * 2.15);
+      const TableHeight: number = (dataCount + 2) * (fontsize * 2.3);
 
       // はみ出るなら改ページ
       if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -419,7 +575,7 @@ export class PrintDataModule {
 
       // あらかじめテーブルの高さを計算する
       const dataCount: number = elist.length;;
-      const TableHeight: number = (dataCount + 3) * (fontsize * 2.15);
+      const TableHeight: number = (dataCount + 3) * (fontsize * 2.3);
 
       // はみ出るなら改ページ
       if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -487,7 +643,7 @@ export class PrintDataModule {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const TableHeight: number = (dataCount + 1) * (fontsize * 2.15);
+    const TableHeight: number = (dataCount + 1) * (fontsize * 2.3);
 
     // はみ出るなら改ページ
     if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -561,7 +717,7 @@ export class PrintDataModule {
 
       // あらかじめテーブルの高さを計算する
       const dataCount: number = elist.length;;
-      const TableHeight: number = (dataCount + 3) * (fontsize * 2.15);
+      const TableHeight: number = (dataCount + 3) * (fontsize * 2.3);
 
       // はみ出るなら改ページ
       if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -621,7 +777,7 @@ export class PrintDataModule {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const TableHeight: number = (dataCount + 2) * (fontsize * 2.15);
+    const TableHeight: number = (dataCount + 2) * (fontsize * 2.3);
 
     // はみ出るなら改ページ
     if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -687,8 +843,8 @@ export class PrintDataModule {
       if ('load_node' in elist) {
         ploadCount = elist.load_node.length;
       }
-      const mTableHeight: number = (mloadCount + 2) * (fontsize * 2.15);
-      const pTableHeight: number = (ploadCount + 1) * (fontsize * 2.15);
+      const mTableHeight: number = (mloadCount + 2) * (fontsize * 2.3);
+      const pTableHeight: number = (ploadCount + 1) * (fontsize * 2.3);
       const TableHeight: number = mTableHeight + pTableHeight;
 
       // はみ出るなら改ページ
@@ -794,7 +950,7 @@ export class PrintDataModule {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const TableHeight: number = (dataCount + 1) * (fontsize * 2.15);
+    const TableHeight: number = (dataCount + 1) * (fontsize * 2.3);
 
     // はみ出るなら改ページ
     if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -855,7 +1011,7 @@ export class PrintDataModule {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const TableHeight: number = (2 * dataCount + 2) * (fontsize * 2.15);
+    const TableHeight: number = (2 * dataCount + 2) * (fontsize * 2.3);
 
     // はみ出るなら改ページ
     if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -876,10 +1032,10 @@ export class PrintDataModule {
       let line2: string[] = new Array();
       line1.push(index); // CombNo
       line2.push('');
-      if('name' in item){
-        line1.push({ content: item.name, styles: { halign: "left" }}); // 荷重名称
+      if ('name' in item) {
+        line1.push({ content: item.name, styles: { halign: "left" } }); // 荷重名称
       } else {
-        line1.push(''); 
+        line1.push('');
       }
       line2.push('');
 
@@ -892,7 +1048,7 @@ export class PrintDataModule {
         counter += 1;
         if (counter === 8) {
           body.push(line1); // 表の1行 登録
-          body.push(line2); 
+          body.push(line2);
           counter = 0;
           line1 = new Array();
           line2 = new Array();
@@ -904,7 +1060,7 @@ export class PrintDataModule {
       }
       if (counter > 0) {
         body.push(line1); // 表の1行 登録
-        body.push(line2); 
+        body.push(line2);
       }
     }
     doc.text(this.margine.left, currentY + LineFeed, "COMBINEデータ")
@@ -917,7 +1073,7 @@ export class PrintDataModule {
       styles: { font: 'default', halign: "right" },
       startY: fontsize + currentY + LineFeed,
       head: [['Comb', '', '', '', '', '', '', '', '', ''],
-             ['No.', { content: '荷重名称', styles: { halign: "left" }},'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']],
+      ['No.', { content: '荷重名称', styles: { halign: "left" } }, 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']],
       body: body,
       didParseCell: function (CellHookData) {
         printAfterInfo = CellHookData
@@ -934,7 +1090,7 @@ export class PrintDataModule {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const TableHeight: number = (dataCount + 2) * (fontsize * 2.15);
+    const TableHeight: number = (dataCount + 2) * (fontsize * 2.3);
 
     // はみ出るなら改ページ
     if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
@@ -953,10 +1109,10 @@ export class PrintDataModule {
       // 印刷する1行分のリストを作る
       let line: any[] = new Array();
       line.push(index); // PickUpNo
-      if('name' in item){
-        line.push({ content: item.name, styles: { halign: "left" }}); // 荷重名称
+      if ('name' in item) {
+        line.push({ content: item.name, styles: { halign: "left" } }); // 荷重名称
       } else {
-        line.push(''); 
+        line.push('');
       }
 
       let counter: number = 0;
@@ -985,8 +1141,8 @@ export class PrintDataModule {
       },
       styles: { font: 'default', halign: "right" },
       startY: fontsize + currentY + LineFeed,
-      head: [ ['PickUp', '', '', '', '', '', '', '', '', '', '', ''],
-              ['No.', { content: '荷重名称', styles: { halign: "left" }}, 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']
+      head: [['PickUp', '', '', '', '', '', '', '', '', '', '', ''],
+      ['No.', { content: '荷重名称', styles: { halign: "left" } }, 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']
       ],
       body: body,
       didParseCell: function (CellHookData) {
