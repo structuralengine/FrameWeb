@@ -20,7 +20,7 @@ export class PrintDataModule {
   };
 
   constructor(private InputData: InputDataService,
-    private ResultData: ResultDataService) {
+              private ResultData: ResultDataService) {
   }
 
   public printData(mode: string): any {
@@ -39,6 +39,7 @@ export class PrintDataModule {
         this.printReact(doc);
         break;
       case 'result-fsec':
+        this.printRForce(doc);
         break;
       case 'result-comb_disg':
         break;
@@ -65,8 +66,100 @@ export class PrintDataModule {
     return doc;
   }
 
+  // 断面力データを印刷する
+  private printRForce(doc: any) {
+
+    const json: {} = this.ResultData.fsec.getFsecJson();
+
+    const fontsize: number = 10;
+    doc.setFontSize(fontsize);
+
+    const currentY = this.margine.top + fontsize;
+    let pageHeight = doc.internal.pageSize.height; // 841.89
+
+    doc.text(this.margine.left, currentY, "断面力")
+
+    let body: any[] = new Array();
+    let daraCount: number = 0;
+
+    for (const index of Object.keys(json)) {
+
+      const elist = json[index]; // 1行分のnodeデータを取り出す
+      if (!Array.isArray(elist)) {
+        continue;
+      }
+
+      // 荷重名称
+      let loadName: string = '';
+      const l: any = this.InputData.load.getLoadNameJson(null, index);
+      if (index in l) {
+        loadName = l[index].name;
+      }
+
+      // あらかじめテーブルの高さを計算する
+      daraCount += elist.length;
+      const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
+
+      // はみ出るなら改ページ
+      if (currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
+        doc.autoTable({
+          theme: ['plain'],
+          margin: {
+            left: this.margine.left,
+            right: this.margine.right
+          },
+          styles: { font: 'default', halign: "right" },
+          startY: fontsize + currentY,
+          head: [
+            ['部材','節点', '',     'FX',   'FY',   'FZ',   'MX',      'MY',      'MZ'],
+            ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
+          ],
+          body: body,
+        })
+        body = new Array();
+        daraCount = 0;
+        doc.addPage();
+      }
+
+
+      body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 8 }]);
+
+      for (const item of elist) {
+        // 印刷する1行分のリストを作る
+        const line: string[] = new Array();
+        line.push(item.m);
+        line.push(item.n);
+        line.push(item.l.toFixed(3));
+        line.push(item.fx.toFixed(2));
+        line.push(item.fy.toFixed(2));
+        line.push(item.fz.toFixed(2));
+        line.push(item.mx.toFixed(2));
+        line.push(item.my.toFixed(2));
+        line.push(item.mz.toFixed(2));
+        body.push(line);
+      }
+    }
+
+    if (daraCount > 0) {
+      doc.autoTable({
+        theme: ['plain'],
+        margin: {
+          left: this.margine.left,
+          right: this.margine.right
+        },
+        styles: { font: 'default', halign: "right" },
+        startY: fontsize + currentY,
+        head: [
+          ['部材','節点', '',     'FX',   'FY',   'FZ',   'MX',      'MY',      'MZ'],
+          ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
+        ],
+        body: body,
+      })
+    }
+  }
+
   // 変位量データを印刷する
-  private printDisg(doc: any): any {
+  private printDisg(doc: any): void {
 
     const json: {} = this.ResultData.disg.getDisgJson();
 
@@ -75,7 +168,6 @@ export class PrintDataModule {
 
     const currentY = this.margine.top + fontsize;
     let pageHeight = doc.internal.pageSize.height; // 841.89
-    let pageWidth = doc.internal.pageSize.width;   // 595.31
 
     doc.text(this.margine.left, currentY, "変位量")
 
@@ -111,7 +203,7 @@ export class PrintDataModule {
           styles: { font: 'default', halign: "right" },
           startY: fontsize + currentY,
           head: [
-            ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotatino', 'Y-Rotatino', 'Z-Rotatino'],
+            ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation'],
             ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
           ],
           body: body,
@@ -148,18 +240,16 @@ export class PrintDataModule {
         styles: { font: 'default', halign: "right" },
         startY: fontsize + currentY,
         head: [
-          ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotatino', 'Y-Rotatino', 'Z-Rotatino'],
+          ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation'],
           ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
         ],
         body: body,
       })
     }
-
-    return doc;
   }
 
   // 反力データを印刷する
-  private printReact(doc: any): any {
+  private printReact(doc: any): void {
 
     const json: {} = this.ResultData.reac.getReacJson();
 
@@ -167,8 +257,6 @@ export class PrintDataModule {
     doc.setFontSize(fontsize);
 
     const currentY = this.margine.top + fontsize;
-    let pageHeight = doc.internal.pageSize.height; // 841.89
-    let pageWidth = doc.internal.pageSize.width;   // 595.31
 
     doc.text(this.margine.left, currentY, "反力")
 
@@ -199,8 +287,7 @@ export class PrintDataModule {
         line.push(item.mz);
         body.push(line);
         line = new Array();
-        line.push('');
-        line.push('');
+        line.push('', '');
       }
     }
 
@@ -216,11 +303,10 @@ export class PrintDataModule {
       body: body,
     })
 
-    return doc;
   }
 
   // 入力データを印刷する
-  private printInputData(doc: any): any {
+  private printInputData(doc: any): void {
 
     const inputJson: any = this.InputData.getInputJson(0)
 
@@ -230,7 +316,7 @@ export class PrintDataModule {
     let currentY = this.margine.top + fontsize;
     let LineFeed = this.defaultLinefeed;
     let pageHeight = doc.internal.pageSize.height; // 841.89
-    let pageWidth = doc.internal.pageSize.width;   // 595.31
+    
     let printAfterInfo: any = null;
 
 
@@ -296,8 +382,6 @@ export class PrintDataModule {
       printAfterInfo = this.printPickup(pickupJson, doc, currentY, fontsize, pageHeight, LineFeed);
       currentY = printAfterInfo.table.finalY;
     }
-
-    return doc;
   }
 
   // 格子点データ node を印刷する
