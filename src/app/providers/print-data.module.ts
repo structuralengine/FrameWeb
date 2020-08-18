@@ -42,6 +42,7 @@ export class PrintDataModule {
         this.printRForce(doc);
         break;
       case 'result-comb_disg':
+        this.printCombDisg(doc);
         break;
       case 'result-comb_reac':
         break;
@@ -65,6 +66,115 @@ export class PrintDataModule {
 
     return doc;
   }
+
+  // 変位量データを印刷する
+  private printCombDisg(doc: any, mode: string = 'COMBINE'): void {
+
+    const KEYS = ['dx_max', 'dx_min', 'dy_max', 'dy_min', 'dz_max', 'dz_min', 'rx_max', 'rx_min', 'ry_max', 'ry_min', 'rz_max', 'rz_min'];
+    const TITLES = ['x方向の移動量 最大', 'x方向の移動量 最小', 'y方向の移動量 最大', 'y方向の移動量 最小', 'z方向の移動量 最大', 'Z方向の移動量 最小',
+      'x軸回りの回転角 最大', 'x軸回りの回転角 最小', 'y軸回りの回転角 最大', 'y軸回りの回転角 最小', 'z軸回りの回転角 最大', 'Z軸回りの回転角 最小'];
+
+    let jsonData: object;
+    if (mode === 'COMBINE') {
+      jsonData =  this.ResultData.combdisg.disgCombine;
+     } else {
+      jsonData = this.ResultData.pickdisg.disgPickup;
+     }
+
+    const fontsize: number = 10;
+    doc.setFontSize(fontsize);
+
+    const currentY = this.margine.top + fontsize;
+    const pageHeight = doc.internal.pageSize.height; // 841.89
+
+    doc.text(this.margine.left, currentY, mode + " 変位量")
+    
+    for (let i = 0; i < KEYS.length; i++) {
+      const key: string = KEYS[i];
+      const title: string = TITLES[i];
+
+      doc.text(this.margine.left + (fontsize/2), currentY + fontsize, title)
+
+      let body: any[] = new Array();
+      let daraCount: number = 0;
+      const json: {} = jsonData[key];
+
+      for (const index of Object.keys(json[key])) {
+
+        const klist = json[index]; // 1行分のnodeデータを取り出す
+        const elist = klist[key]; // 1行分のnodeデータを取り出す
+        if (!Array.isArray(elist)) {
+          continue;
+        }
+
+        // 荷重名称
+        let loadName: string = '';
+        const l: any = this.InputData.load.getLoadNameJson(null, index);
+        if (index in l) {
+          loadName = l[index].name;
+        }
+
+        // あらかじめテーブルの高さを計算する
+        daraCount += elist.length;
+        const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
+
+        // はみ出るなら改ページ
+        if (fontsize + currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
+          doc.autoTable({
+            theme: ['plain'],
+            margin: {
+              left: this.margine.left + fontsize,
+              right: this.margine.right
+            },
+            styles: { font: 'default', halign: "right" },
+            startY: fontsize + currentY + fontsize,
+            head: [
+              ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation'],
+              ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
+            ],
+            body: body,
+          })
+          body = new Array();
+          daraCount = 0;
+          doc.addPage();
+        }
+
+
+        body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
+
+        for (const item of elist) {
+          // 印刷する1行分のリストを作る
+          const line: string[] = new Array();
+          line.push(item.id.toString());
+          line.push(item.dx.toFixed(3));
+          line.push(item.dy.toFixed(3));
+          line.push(item.dz.toFixed(3));
+          line.push(item.rx.toFixed(3));
+          line.push(item.ry.toFixed(3));
+          line.push(item.rz.toFixed(3));
+          body.push(line);
+        }
+      }
+
+      if (daraCount > 0) {
+        doc.autoTable({
+          theme: ['plain'],
+          margin: {
+            left: this.margine.left + fontsize,
+            right: this.margine.right
+          },
+          styles: { font: 'default', halign: "right" },
+          startY: fontsize + currentY + fontsize,
+          head: [
+            ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation'],
+            ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
+          ],
+          body: body,
+        })
+      }
+    }
+  }
+
 
   // 断面力データを印刷する
   private printRForce(doc: any) {
@@ -111,7 +221,7 @@ export class PrintDataModule {
           styles: { font: 'default', halign: "right" },
           startY: fontsize + currentY,
           head: [
-            ['部材','節点', '',     'FX',   'FY',   'FZ',   'MX',      'MY',      'MZ'],
+            ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'],
             ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
           ],
           body: body,
@@ -150,7 +260,7 @@ export class PrintDataModule {
         styles: { font: 'default', halign: "right" },
         startY: fontsize + currentY,
         head: [
-          ['部材','節点', '',     'FX',   'FY',   'FZ',   'MX',      'MY',      'MZ'],
+          ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'],
           ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
         ],
         body: body,
@@ -277,7 +387,7 @@ export class PrintDataModule {
       let line: any[] = new Array();
       line.push('Case ' + index);
       line.push({ content: loadName, styles: { halign: "left" } });
-      for(const item of elist){
+      for (const item of elist) {
         line.push(item.id.toString());
         line.push(item.tx);
         line.push(item.ty);
@@ -316,7 +426,7 @@ export class PrintDataModule {
     let currentY = this.margine.top + fontsize;
     let LineFeed = this.defaultLinefeed;
     let pageHeight = doc.internal.pageSize.height; // 841.89
-    
+
     let printAfterInfo: any = null;
 
 
