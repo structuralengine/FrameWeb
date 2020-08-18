@@ -68,8 +68,10 @@ export class MenuComponent implements OnInit {
         this.app.isCalculated = false;
         this.three.chengeData('fileLoad');
       })
-      .catch(err => console.log(err));
-  }
+      .catch(err => {
+        console.log(err);
+      });
+    }
 
   private fileToText(file): any {
     const reader = new FileReader();

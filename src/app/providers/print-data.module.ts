@@ -20,7 +20,7 @@ export class PrintDataModule {
   };
 
   constructor(private InputData: InputDataService,
-              private ResultData: ResultDataService) {
+    private ResultData: ResultDataService) {
   }
 
   public printData(mode: string): any {
@@ -49,6 +49,7 @@ export class PrintDataModule {
       case 'result-comb_fsec':
         break;
       case 'result-pic_disg':
+        this.printCombDisg(doc, 'PICKUP');
         break;
       case 'result-pic_reac':
         break;
@@ -76,27 +77,27 @@ export class PrintDataModule {
 
     let jsonData: object;
     if (mode === 'COMBINE') {
-      jsonData =  this.ResultData.combdisg.disgCombine;
-     } else {
+      jsonData = this.ResultData.combdisg.disgCombine;
+    } else {
       jsonData = this.ResultData.pickdisg.disgPickup;
-     }
+    }
 
     const fontsize: number = 10;
     doc.setFontSize(fontsize);
 
     let currentY = this.margine.top + fontsize;
     const pageHeight = doc.internal.pageSize.height; // 841.89
+    const LineFeed = fontsize * 2;
 
     doc.text(this.margine.left, currentY, mode + " 変位量")
-    
+
     for (let i = 0; i < KEYS.length; i++) {
       const key: string = KEYS[i];
       const title: string = TITLES[i];
 
-      doc.text(this.margine.left + (fontsize/2), currentY + fontsize, title)
-
       let body: any[] = new Array();
-      let daraCount: number = 0;
+
+      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title)
 
       for (const index of Object.keys(jsonData)) {
 
@@ -105,37 +106,12 @@ export class PrintDataModule {
 
         // 荷重名称
         let loadName: string = '';
-        const l: any = this.InputData.load.getLoadNameJson(null, index);
-        if (index in l) {
-          loadName = l[index].name;
+        const combineJson: any = (mode === 'COMBINE')  ? this.InputData.combine.getCombineJson() : this.InputData.pickup.getPickUpJson();
+        if( index in combineJson){
+          if('name' in combineJson[index]){
+            loadName = combineJson[index].name;
+          }
         }
-
-        // あらかじめテーブルの高さを計算する
-        daraCount += Object.keys(elist).length;
-        const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
-
-        // はみ出るなら改ページ
-        if (fontsize + currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
-          doc.autoTable({
-            theme: ['plain'],
-            margin: {
-              left: this.margine.left + fontsize,
-              right: this.margine.right
-            },
-            styles: { font: 'default', halign: "right" },
-            startY: fontsize + currentY + fontsize,
-            head: [
-              ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation'],
-              ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
-            ],
-            body: body,
-          })
-          body = new Array();
-          daraCount = 0;
-          doc.addPage();
-          currentY = this.margine.top + fontsize;
-        }
-
 
         body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
 
@@ -150,30 +126,40 @@ export class PrintDataModule {
           line.push(item.rx.toFixed(3));
           line.push(item.ry.toFixed(3));
           line.push(item.rz.toFixed(3));
+          line.push(item.case);
           body.push(line);
         }
       }
 
-      if (daraCount > 0) {
-        let printAfterInfo: any;
-        doc.autoTable({
-          theme: ['plain'],
-          margin: {
-            left: this.margine.left + fontsize,
-            right: this.margine.right
-          },
-          styles: { font: 'default', halign: "right" },
-          startY: fontsize + currentY + fontsize,
-          head: [
-            ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation'],
-            ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
-          ],
-          body: body,
-          didParseCell: function (CellHookData) {
-            printAfterInfo = CellHookData;
-          }
-        });
-        currentY = printAfterInfo.table.finalY;
+      let printAfterInfo: any;
+      doc.autoTable({
+        theme: ['plain'],
+        margin: {
+          left: this.margine.left + fontsize,
+          right: this.margine.right
+        },
+        styles: { font: 'default', halign: "right" },
+        startY: currentY + LineFeed + fontsize,
+        head: [
+          ['節点', 'X-Disp', 'Y-Disp', 'Z-Disp', 'X-Rotation', 'Y-Rotation', 'Z-Rotation', 'comb'],
+          ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)', '']
+        ],
+        body: body,
+        didParseCell: function (CellHookData) {
+          printAfterInfo = CellHookData;
+        }
+      });
+      body = new Array();
+      if(i < KEYS.length - 1){ // 最後のページ以外
+        const TableHeight = printAfterInfo.table.finalY - currentY;
+        const nextTablebottom = printAfterInfo.table.finalY + this.defaultLinefeed + TableHeight;
+        if (nextTablebottom >= (pageHeight - this.margine.top - this.margine.bottom)) {
+          doc.addPage();
+          currentY = this.margine.top + fontsize;
+          doc.text(this.margine.left, currentY, mode + " 変位量")
+        } else {
+          currentY = printAfterInfo.table.finalY  + this.defaultLinefeed;
+        }
       }
     }
   }
@@ -1073,8 +1059,8 @@ export class PrintDataModule {
           line.push(item.mark);
           line.push(item.L1);
           line.push(item.L2);
-          line.push((item.P1 === null ) ? '' : item.P1.toFixed(2));
-          line.push((item.P2 === null ) ? '' : item.P2.toFixed(2));
+          line.push((item.P1 === null) ? '' : item.P1.toFixed(2));
+          line.push((item.P2 === null) ? '' : item.P2.toFixed(2));
           body.push(line);
         }
         doc.autoTable({
