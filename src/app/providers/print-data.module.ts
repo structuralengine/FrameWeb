@@ -84,7 +84,7 @@ export class PrintDataModule {
     const fontsize: number = 10;
     doc.setFontSize(fontsize);
 
-    const currentY = this.margine.top + fontsize;
+    let currentY = this.margine.top + fontsize;
     const pageHeight = doc.internal.pageSize.height; // 841.89
 
     doc.text(this.margine.left, currentY, mode + " 変位量")
@@ -97,15 +97,11 @@ export class PrintDataModule {
 
       let body: any[] = new Array();
       let daraCount: number = 0;
-      const json: {} = jsonData[key];
 
-      for (const index of Object.keys(json[key])) {
+      for (const index of Object.keys(jsonData)) {
 
-        const klist = json[index]; // 1行分のnodeデータを取り出す
-        const elist = klist[key]; // 1行分のnodeデータを取り出す
-        if (!Array.isArray(elist)) {
-          continue;
-        }
+        const json = jsonData[index]; // 1行分のnodeデータを取り出す
+        const elist = json[key]; // 1行分のnodeデータを取り出す
 
         // 荷重名称
         let loadName: string = '';
@@ -115,7 +111,7 @@ export class PrintDataModule {
         }
 
         // あらかじめテーブルの高さを計算する
-        daraCount += elist.length;
+        daraCount += Object.keys(elist).length;
         const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
 
         // はみ出るなら改ページ
@@ -137,12 +133,14 @@ export class PrintDataModule {
           body = new Array();
           daraCount = 0;
           doc.addPage();
+          currentY = this.margine.top + fontsize;
         }
 
 
         body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
 
-        for (const item of elist) {
+        for (const k of Object.keys(elist)) {
+          const item = elist[k];
           // 印刷する1行分のリストを作る
           const line: string[] = new Array();
           line.push(item.id.toString());
@@ -157,6 +155,7 @@ export class PrintDataModule {
       }
 
       if (daraCount > 0) {
+        let printAfterInfo: any;
         doc.autoTable({
           theme: ['plain'],
           margin: {
@@ -170,7 +169,11 @@ export class PrintDataModule {
             ['No.', '(mm)', '(mm)', '(mm)', '(mRad)', '(mRad)', '(mRad)']
           ],
           body: body,
-        })
+          didParseCell: function (CellHookData) {
+            printAfterInfo = CellHookData;
+          }
+        });
+        currentY = printAfterInfo.table.finalY;
       }
     }
   }
@@ -1070,8 +1073,8 @@ export class PrintDataModule {
           line.push(item.mark);
           line.push(item.L1);
           line.push(item.L2);
-          line.push(item.P1.toFixed(2));
-          line.push(item.P2.toFixed(2));
+          line.push((item.P1 === null ) ? '' : item.P1.toFixed(2));
+          line.push((item.P2 === null ) ? '' : item.P2.toFixed(2));
           body.push(line);
         }
         doc.autoTable({
