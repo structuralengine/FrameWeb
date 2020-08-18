@@ -85,11 +85,21 @@ export class MenuComponent implements OnInit {
   }
 
   // ファイルを保存
-  save(): void {9
+  save(): void {
     const inputJson: string = JSON.stringify(this.InputData.getInputJson());
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
     if (this.fileName.length === 0) {
       this.fileName = 'frameWebForJS.json';
+    }
+    FileSaver.saveAs(blob, this.fileName);
+  }
+
+  dxf(): void {
+    const dxf: string = "aaa";
+
+    const blob = new window.Blob([dxf], { type: 'text/plain' });
+    if (this.fileName.length === 0) {
+      this.fileName = 'frameWebForJS.dxf';
     }
     FileSaver.saveAs(blob, this.fileName);
   }
