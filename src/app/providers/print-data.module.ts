@@ -35,23 +35,25 @@ export class PrintDataModule {
       case 'result-disg':
         this.printDisg(doc);
         break;
-      case 'result-reac':
-        this.printReact(doc);
-        break;
-      case 'result-fsec':
-        this.printRForce(doc);
-        break;
       case 'result-comb_disg':
         this.printCombDisg(doc);
-        break;
-      case 'result-comb_reac':
-        break;
-      case 'result-comb_fsec':
         break;
       case 'result-pic_disg':
         this.printCombDisg(doc, 'PICKUP');
         break;
+      case 'result-reac':
+        this.printReact(doc);
+        break;
+      case 'result-comb_reac':
+        this.printCombReact(doc);
+        break;
       case 'result-pic_reac':
+        break;
+
+      case 'result-fsec':
+        this.printRForce(doc);
+        break;
+      case 'result-comb_fsec':
         break;
       case 'result-pic_fsec':
         break;
@@ -106,9 +108,9 @@ export class PrintDataModule {
 
         // 荷重名称
         let loadName: string = '';
-        const combineJson: any = (mode === 'COMBINE')  ? this.InputData.combine.getCombineJson() : this.InputData.pickup.getPickUpJson();
-        if( index in combineJson){
-          if('name' in combineJson[index]){
+        const combineJson: any = (mode === 'COMBINE') ? this.InputData.combine.getCombineJson() : this.InputData.pickup.getPickUpJson();
+        if (index in combineJson) {
+          if ('name' in combineJson[index]) {
             loadName = combineJson[index].name;
           }
         }
@@ -150,7 +152,7 @@ export class PrintDataModule {
         }
       });
       body = new Array();
-      if(i < KEYS.length - 1){ // 最後のページ以外
+      if (i < KEYS.length - 1) { // 最後のページ以外
         const TableHeight = printAfterInfo.table.finalY - currentY;
         const nextTablebottom = printAfterInfo.table.finalY + this.defaultLinefeed + TableHeight;
         if (nextTablebottom >= (pageHeight - this.margine.top - this.margine.bottom)) {
@@ -158,12 +160,11 @@ export class PrintDataModule {
           currentY = this.margine.top + fontsize;
           doc.text(this.margine.left, currentY, mode + " 変位量")
         } else {
-          currentY = printAfterInfo.table.finalY  + this.defaultLinefeed;
+          currentY = printAfterInfo.table.finalY + this.defaultLinefeed;
         }
       }
     }
   }
-
 
   // 断面力データを印刷する
   private printRForce(doc: any) {
@@ -402,6 +403,101 @@ export class PrintDataModule {
       body: body,
     })
 
+  }
+
+  // 反力データを印刷する
+  private printCombReact(doc: any, mode: string = 'COMBINE'): void {
+
+    const KEYS = ['tx_max', 'tx_min', 'ty_max', 'ty_min', 'tz_max', 'tz_min', 'mx_max', 'mx_min', 'my_max', 'my_min', 'mz_max', 'mz_min'];
+    const TITLES = ['x方向の支点反力 最大', 'x方向の支点反力 最小', 'y方向の支点反力 最大', 'y方向の支点反力 最小', 'z方向の支点反力 最大', 'Z方向の支点反力 最小',
+      'x軸回りの回転反力 最大', 'x軸回りの回転反力 最小', 'y軸回りの回転反力 最大', 'y軸回りの回転反力 最小', 'z軸回りの回転反力 最大', 'Z軸回りの回転反力 最小'];
+
+
+    let jsonData: object;
+    if (mode === 'COMBINE') {
+      jsonData = this.ResultData.combreac.reacCombine;
+    } else {
+      jsonData = this.ResultData.pickreac.reacPickup;
+    }
+
+    const fontsize: number = 10;
+    doc.setFontSize(fontsize);
+
+    let currentY = this.margine.top + fontsize;
+    const pageHeight = doc.internal.pageSize.height; // 841.89
+    const LineFeed = fontsize * 2;
+
+    doc.text(this.margine.left, currentY, mode + "反力")
+
+    for (let i = 0; i < KEYS.length; i++) {
+      const key: string = KEYS[i];
+      const title: string = TITLES[i];
+
+      let body: any[] = new Array();
+
+      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title)
+
+      for (const index of Object.keys(jsonData)) {
+
+        const json = jsonData[index]; // 1行分のnodeデータを取り出す
+        const elist = json[key]; // 1行分のnodeデータを取り出す
+
+        // 荷重名称
+        let loadName: string = '';
+        const combineJson: any = (mode === 'COMBINE') ? this.InputData.combine.getCombineJson() : this.InputData.pickup.getPickUpJson();
+        if (index in combineJson) {
+          if ('name' in combineJson[index]) {
+            loadName = combineJson[index].name;
+          }
+        }
+
+        // 印刷する1行分のリストを作る
+        let line: any[] = new Array();
+        line.push('Case ' + index);
+        line.push({ content: loadName, styles: { halign: "left" } });
+        for (const item of elist) {
+          line.push(item.id.toString());
+          line.push(item.tx);
+          line.push(item.ty);
+          line.push(item.tz);
+          line.push(item.mx);
+          line.push(item.my);
+          line.push(item.mz);
+          body.push(line);
+          line = new Array();
+          line.push('', '');
+        }
+      }
+
+      let printAfterInfo: any;
+
+      doc.autoTable({
+        theme: ['plain'],
+        margin: {
+          left: this.margine.left,
+          right: this.margine.right
+        },
+        styles: { font: 'default', halign: "right" },
+        startY: fontsize + currentY,
+        head: [['', '', 'SUPPORT', 'TX', 'TY', 'TZ', 'MX', 'MY', 'MZ']],
+        body: body,
+        didParseCell: function (CellHookData) {
+          printAfterInfo = CellHookData;
+        }
+      });
+      body = new Array();
+      if (i < KEYS.length - 1) { // 最後のページ以外
+        const TableHeight = printAfterInfo.table.finalY - currentY;
+        const nextTablebottom = printAfterInfo.table.finalY + this.defaultLinefeed + TableHeight;
+        if (nextTablebottom >= (pageHeight - this.margine.top - this.margine.bottom)) {
+          doc.addPage();
+          currentY = this.margine.top + fontsize;
+          doc.text(this.margine.left, currentY, mode + " 反力")
+        } else {
+          currentY = printAfterInfo.table.finalY + this.defaultLinefeed;
+        }
+      }
+    }
   }
 
   // 入力データを印刷する
