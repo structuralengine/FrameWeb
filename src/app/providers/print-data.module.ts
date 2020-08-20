@@ -427,7 +427,7 @@ export class PrintDataModule {
     const pageHeight = doc.internal.pageSize.height; // 841.89
     const LineFeed = fontsize * 2;
 
-    doc.text(this.margine.left, currentY, mode + "反力")
+    doc.text(this.margine.left, currentY, mode + " 反力")
 
     for (let i = 0; i < KEYS.length; i++) {
       const key: string = KEYS[i];
@@ -455,14 +455,16 @@ export class PrintDataModule {
         let line: any[] = new Array();
         line.push('Case ' + index);
         line.push({ content: loadName, styles: { halign: "left" } });
-        for (const item of elist) {
+        for (const k of Object.keys(elist)) {
+          const item = elist[k];
           line.push(item.id.toString());
-          line.push(item.tx);
-          line.push(item.ty);
-          line.push(item.tz);
-          line.push(item.mx);
-          line.push(item.my);
-          line.push(item.mz);
+          line.push(item.tx.toFixed(2));
+          line.push(item.ty.toFixed(2));
+          line.push(item.tz.toFixed(2));
+          line.push(item.mx.toFixed(2));
+          line.push(item.my.toFixed(2));
+          line.push(item.mz.toFixed(2));
+          line.push(item.case);
           body.push(line);
           line = new Array();
           line.push('', '');
@@ -470,7 +472,6 @@ export class PrintDataModule {
       }
 
       let printAfterInfo: any;
-
       doc.autoTable({
         theme: ['plain'],
         margin: {
@@ -479,7 +480,7 @@ export class PrintDataModule {
         },
         styles: { font: 'default', halign: "right" },
         startY: fontsize + currentY,
-        head: [['', '', 'SUPPORT', 'TX', 'TY', 'TZ', 'MX', 'MY', 'MZ']],
+        head: [['', '', 'SUPPORT', 'TX', 'TY', 'TZ', 'MX', 'MY', 'MZ', 'comb']],
         body: body,
         didParseCell: function (CellHookData) {
           printAfterInfo = CellHookData;
