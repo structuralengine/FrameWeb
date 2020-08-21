@@ -69,6 +69,9 @@ export class ResultPickupReacService {
             const comparison = tmp[k];
             for (const id of Object.keys(comparison)) {
               const a = comparison[id];
+              if ( !(id in target) ){
+                continue;
+              }
               const b = target[id];
               if (key[1] === 'max') {
                 if (b[key[0]] > a[key[0]]) {

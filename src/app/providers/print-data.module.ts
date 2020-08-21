@@ -20,7 +20,7 @@ export class PrintDataModule {
   };
 
   constructor(private InputData: InputDataService,
-    private ResultData: ResultDataService) {
+              private ResultData: ResultDataService) {
   }
 
   public printData(mode: string): any {
@@ -48,19 +48,24 @@ export class PrintDataModule {
         this.printCombReact(doc);
         break;
       case 'result-pic_reac':
+        this.printCombReact(doc, 'PICKUP');
         break;
 
       case 'result-fsec':
-        this.printRForce(doc);
+        this.printForce(doc);
         break;
       case 'result-comb_fsec':
+        this.printCombForce(doc);
         break;
       case 'result-pic_fsec':
+        this.printCombForce(doc, 'PICKUP');
         break;
 
+      /*
       case 'input-loads':
         // 荷重図を描画する
         break;
+      */
 
       default:
         this.printInputData(doc);
@@ -91,7 +96,7 @@ export class PrintDataModule {
     const pageHeight = doc.internal.pageSize.height; // 841.89
     const LineFeed = fontsize * 2;
 
-    doc.text(this.margine.left, currentY, mode + " 変位量")
+    doc.text(this.margine.left, currentY, mode + " 変位量");
 
     for (let i = 0; i < KEYS.length; i++) {
       const key: string = KEYS[i];
@@ -99,7 +104,7 @@ export class PrintDataModule {
 
       let body: any[] = new Array();
 
-      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title)
+      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
       for (const index of Object.keys(jsonData)) {
 
@@ -167,7 +172,7 @@ export class PrintDataModule {
   }
 
   // 断面力データを印刷する
-  private printRForce(doc: any) {
+  private printForce(doc: any) {
 
     const json: {} = this.ResultData.fsec.getFsecJson();
 
@@ -257,6 +262,106 @@ export class PrintDataModule {
       })
     }
   }
+
+  private printCombForce(doc: any, mode: string = 'COMBINE'): void {
+
+    const KEYS = ['fx_max', 'fx_min', 'fy_max', 'fy_min', 'fz_max', 'fz_min', 'mx_max', 'mx_min', 'my_max', 'my_min', 'mz_max', 'mz_min'];
+    const TITLES = ['軸方向力 最大', '軸方向力 最小', 'y方向のせん断力 最大', 'y方向のせん断力 最小', 'z方向のせん断力 最大', 'z方向のせん断力 最小',
+      'ねじりモーメント 最大', 'ねじりモーメント 最小', 'y軸回りの曲げモーメント 最大', 'y軸回りの曲げモーメント力 最小', 'z軸回りの曲げモーメント 最大', 'z軸回りの曲げモーメント 最小'];
+  
+    let jsonData: object;
+    if (mode === 'COMBINE') {
+      jsonData = this.ResultData.combfsec.fsecCombine;
+    } else {
+      jsonData = this.ResultData.pickfsec.fsecPickup;
+    }
+
+    const fontsize: number = 10;
+    doc.setFontSize(fontsize);
+
+    let currentY = this.margine.top + fontsize;
+    const pageHeight = doc.internal.pageSize.height; // 841.89
+    const LineFeed = fontsize * 2;
+
+    doc.text(this.margine.left, currentY, mode + ' 断面力');
+
+    for (let i = 0; i < KEYS.length; i++) {
+      const key: string = KEYS[i];
+      const title: string = TITLES[i];
+
+      let body: any[] = new Array();
+
+      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
+
+      for (const index of Object.keys(jsonData)) {
+
+        const json = jsonData[index]; // 1行分のnodeデータを取り出す
+        const elist = json[key]; // 1行分のnodeデータを取り出す
+
+        // 荷重名称
+        let loadName: string = '';
+        const combineJson: any = (mode === 'COMBINE') ? this.InputData.combine.getCombineJson() : this.InputData.pickup.getPickUpJson();
+        if (index in combineJson) {
+          if ('name' in combineJson[index]) {
+            loadName = combineJson[index].name;
+          }
+        }
+
+        body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
+
+        for (const k of Object.keys(elist)) {
+          const item = elist[k];
+          // 印刷する1行分のリストを作る
+          const line: string[] = new Array();
+          line.push(item.m);
+          line.push(item.n);
+          line.push(item.l.toFixed(3));
+          line.push(item.fx.toFixed(2));
+          line.push(item.fy.toFixed(2));
+          line.push(item.fz.toFixed(2));
+          line.push(item.mx.toFixed(2));
+          line.push(item.my.toFixed(2));
+          line.push(item.mz.toFixed(2));
+          line.push(item.case);
+          body.push(line);
+        }
+      }
+
+      let printAfterInfo: any;
+      doc.autoTable({
+        theme: ['plain'],
+        margin: {
+          left: this.margine.left + fontsize,
+          right: this.margine.right
+        },
+        styles: { font: 'default', halign: "right" },
+        startY: currentY + LineFeed + fontsize,
+        head: [
+          ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ', 'comb'],
+          ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)', '']
+        ],
+        body: body,
+        didParseCell: function (CellHookData) {
+          printAfterInfo = CellHookData;
+        }
+      });
+      body = new Array();
+      if (i < KEYS.length - 1) { // 最後のページ以外
+        const TableHeight = printAfterInfo.table.finalY - currentY;
+        const nextTablebottom = printAfterInfo.table.finalY + this.defaultLinefeed + TableHeight;
+        if (nextTablebottom >= (pageHeight - this.margine.top - this.margine.bottom)) {
+          doc.addPage();
+          currentY = this.margine.top + fontsize;
+          doc.text(this.margine.left, currentY, mode + ' 断面力')
+        } else {
+          currentY = printAfterInfo.table.finalY + this.defaultLinefeed;
+        }
+      }
+    }
+
+
+  }
+
 
   // 変位量データを印刷する
   private printDisg(doc: any): void {
@@ -435,7 +540,7 @@ export class PrintDataModule {
 
       let body: any[] = new Array();
 
-      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title)
+      doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
       for (const index of Object.keys(jsonData)) {
 
@@ -479,7 +584,7 @@ export class PrintDataModule {
           right: this.margine.right
         },
         styles: { font: 'default', halign: "right" },
-        startY: fontsize + currentY,
+        startY: currentY + LineFeed + fontsize,
         head: [['', '', 'SUPPORT', 'TX', 'TY', 'TZ', 'MX', 'MY', 'MZ', 'comb']],
         body: body,
         didParseCell: function (CellHookData) {
