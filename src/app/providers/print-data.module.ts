@@ -1292,16 +1292,24 @@ export class PrintDataModule {
         body.push(['Case ' + index, { content: elist.name, styles: { halign: "left" }, colSpan: 8 }]);
 
         for (const item of elist.load_node) {
+
+          const tx = (item.tx !== null) ? item.tx : 0;
+          const ty = (item.ty !== null) ? item.ty : 0;
+          const tz = (item.tz !== null) ? item.tz : 0;
+          const rx = (item.rx !== null) ? item.rx : 0;
+          const ry = (item.ry !== null) ? item.ry : 0;
+          const rz = (item.rz !== null) ? item.rz : 0;
+
           // 印刷する1行分のリストを作る
           const line: string[] = new Array();
           line.push('');
           line.push(item.n.toString());
-          line.push(item.tx.toFixed(2));
-          line.push(item.ty.toFixed(2));
-          line.push(item.tz.toFixed(2));
-          line.push(item.rx.toFixed(2));
-          line.push(item.ry.toFixed(2));
-          line.push(item.rz.toFixed(2));
+          line.push(tx.toFixed(2));
+          line.push(ty.toFixed(2));
+          line.push(tz.toFixed(2));
+          line.push(rx.toFixed(2));
+          line.push(ry.toFixed(2));
+          line.push(rz.toFixed(2));
           body.push(line);
         }
         doc.autoTable({

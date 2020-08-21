@@ -553,7 +553,7 @@ export class ThreeLoadService {
             y: localAxis.y.y + localAxis.z.y,
             z: localAxis.y.z + localAxis.z.z
           };
-
+          groupe.name = 'qx'; // この名前は memberLoadResize() で使っている
         } else if (load.direction === 'y') {
           load.len_L = Data.len_L;
           arrowlist1 = this.CreateArrow_Y(arrow, L_position, localAxis, Data);
@@ -751,7 +751,8 @@ export class ThreeLoadService {
     L_position.y1 -= offset * localAxis.y.y;
     L_position.x2 -= offset * localAxis.y.x;
     L_position.y2 -= offset * localAxis.y.y;
-    const len_L: number = new THREE.Vector3(L_position.x2 - L_position.x1,
+    const len_L: number = new THREE.Vector3(
+      L_position.x2 - L_position.x1,
       L_position.y2 - L_position.y1,
       L_position.z2 - L_position.z1).length();
     // 矢の先を描く
@@ -1254,6 +1255,9 @@ export class ThreeLoadService {
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
+      if( item.name === 'qx'){
+        continue;
+      }
       if ('localAxis' in item) {
         const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
         const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);

@@ -28,14 +28,21 @@ export class ResultDisgService {
       target = this.disg[typNo];
     }
     const item = target[index];
+    const dx = Math.round(10000 * item['dx']) / 10000;
+    const dy = Math.round(10000 * item['dy']) / 10000;
+    const dz = Math.round(10000 * item['dz']) / 10000;
+    const rx = Math.round(10000 * item['rx']) / 10000;
+    const ry = Math.round(10000 * item['ry']) / 10000;
+    const rz = Math.round(10000 * item['rz']) / 10000;
+
     const result = {
       id: item['n'],
-      dx: item['dx'].toFixed(4),
-      dy: item['dy'].toFixed(4),
-      dz: item['dz'].toFixed(4),
-      rx: item['rx'].toFixed(4),
-      ry: item['ry'].toFixed(4),
-      rz: item['rz'].toFixed(4)
+      dx: dx.toFixed(4),
+      dy: dy.toFixed(4),
+      dz: dz.toFixed(4),
+      rx: rx.toFixed(4),
+      ry: ry.toFixed(4),
+      rz: rz.toFixed(4)
     };
     return result;
   }
@@ -77,7 +84,7 @@ export class ResultDisgService {
         continue;
       }
       const json: {} = caseData['disg'];
-      
+
       for (const n of Object.keys(json)) {
 
         const item: {} = json[n];
