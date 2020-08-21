@@ -141,7 +141,6 @@ export class MenuComponent implements OnInit {
         } else {
           // ユーザーポイントの更新
           this.loadResultData(response.text());
-          this.app.isCalculated = true;
           this.three.chengeData();
         }
         modalRef.close();
@@ -158,6 +157,7 @@ export class MenuComponent implements OnInit {
   private loadResultData(resultText: string): void {
     this.user.loadResultData(resultText);
     this.userPoint = this.user.purchase_value.toString();
+    this.app.Calculated(this.ResultData);
   }
 
   // ピックアップファイル出力

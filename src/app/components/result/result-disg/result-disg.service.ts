@@ -30,12 +30,12 @@ export class ResultDisgService {
     const item = target[index];
     const result = {
       id: item['n'],
-      dx: item['dx'].toFixed(3),
-      dy: item['dy'].toFixed(3),
-      dz: item['dz'].toFixed(3),
-      rx: item['rx'].toFixed(3),
-      ry: item['ry'].toFixed(3),
-      rz: item['rz'].toFixed(3)
+      dx: item['dx'].toFixed(4),
+      dy: item['dy'].toFixed(4),
+      dz: item['dz'].toFixed(4),
+      rx: item['rx'].toFixed(4),
+      ry: item['ry'].toFixed(4),
+      rz: item['rz'].toFixed(4)
     };
     return result;
   }
@@ -68,6 +68,8 @@ export class ResultDisgService {
     for (const caseNo of Object.keys(jsonData)) {
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
+
+      // 存在チェック
       if (typeof (caseData) !== 'object') {
         continue;
       }
@@ -75,6 +77,7 @@ export class ResultDisgService {
         continue;
       }
       const json: {} = caseData['disg'];
+      
       for (const n of Object.keys(json)) {
 
         const item: {} = json[n];

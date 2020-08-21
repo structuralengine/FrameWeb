@@ -40,6 +40,8 @@ export class ResultReacService {
     for (const caseNo of Object.keys(jsonData)) {
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
+
+      // 存在チェック
       if (typeof (caseData) !== 'object') {
         continue;
       }
@@ -47,6 +49,10 @@ export class ResultReacService {
         continue;
       }
       const json: {} = caseData['reac'];
+      if (json === null) {
+        continue;
+      }
+
       for (const n of Object.keys(json)) {
         const item: {} = json[n];
 

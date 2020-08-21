@@ -35,12 +35,12 @@ export class ResultCombineDisgService {
     for (const k of Object.keys(target2)) {
       const target3 = target2[k];
       const item = {
-        dx: target3['dx'].toFixed(3),
-        dy: target3['dy'].toFixed(3),
-        dz: target3['dz'].toFixed(3),
-        rx: target3['rx'].toFixed(3),
-        ry: target3['ry'].toFixed(3),
-        rz: target3['rz'].toFixed(3),
+        dx: target3['dx'].toFixed(4),
+        dy: target3['dy'].toFixed(4),
+        dz: target3['dz'].toFixed(4),
+        rx: target3['rx'].toFixed(4),
+        ry: target3['ry'].toFixed(4),
+        rz: target3['rz'].toFixed(4),
         case: target3['case']
       };
       result.push(item);

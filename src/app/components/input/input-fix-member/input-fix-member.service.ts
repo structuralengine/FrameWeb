@@ -102,17 +102,26 @@ export class InputFixMemberService {
         let tz = this.helper.toNumber(row['tz']);
         let tr = this.helper.toNumber(row['tr']);
 
-        if (m == null && tx == null && ty == null && tz == null && tr == null) {
+        if (m === null && tx === null && ty === null && tz === null && tr === null) {
           continue;
         }
 
-        jsonData.push({ 
-          row: r, 
-          m: row.m, 
-          tx: (tx == null) ? empty : tx, 
-          ty: (ty == null) ? empty : ty, 
-          tz: (tz == null) ? empty : tz, 
-          tr: (tr == null) ? empty : tr
+        tx = (tx == null) ? empty : tx;
+        ty = (ty == null) ? empty : ty;
+        tz = (tz == null) ? empty : tz;
+        tr = (tr == null) ? empty : tr;
+
+        if (tx === empty && ty === empty && tz === empty && tr === empty) {
+          continue;
+        }
+
+        jsonData.push({
+          row: r,
+          m: row.m,
+          tx,
+          ty,
+          tz,
+          tr
         });
 
       }

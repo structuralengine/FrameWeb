@@ -3,7 +3,7 @@
       <div class="liner">
           <img src="./assets/img/logo.png" />
           <div class="title-and-menu">
-              <h1>立体骨組構造解析ソフトver0.1.1</h1>
+              <h1>立体骨組構造解析ソフトver1.0.0</h1>
               <app-menu></app-menu>
           </div>
       </div>
@@ -36,7 +36,7 @@
           <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow(9)" routerLinkActive="selected-item"
               class="btn btn-outline-primary" id="9">変位</a>
           <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(10)" routerLinkActive="selected-item"
-              class="btn btn-outline-primary" id="10">支点反力</a>
+              [class]="btnReac" id="10">支点反力</a>
           <a routerLink="./result-fsec" *ngIf="isCalculated" (click)="contentsDailogShow(11)" routerLinkActive="selected-item"
               class="btn btn-outline-primary" id="11">基本荷重断面力</a>
       </nav>

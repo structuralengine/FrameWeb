@@ -75,8 +75,8 @@ export class InputElementsService {
           Xp: (Xp === null) ? '' : Xp.toExponential(2),
           A: (A === null) ? '' : A.toFixed(3),
           J: (J === null) ? '' : J.toFixed(4),
-          Iy: (Iy === null) ? '' : Iy.toFixed(5),
-          Iz: (Iz === null) ? '' : Iz.toFixed(5)
+          Iy: (Iy === null) ? '' : Iy.toFixed(6),
+          Iz: (Iz === null) ? '' : Iz.toFixed(6)
         };
 
         target.push(result);

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { ResultDataService } from './providers/result-data.service';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +11,10 @@ export class AppComponent implements OnInit {
 
   isContentsDailogShow: boolean;
   isCalculated: boolean;
+  btnReac: string;
 
-  constructor(private _router: Router) { 
+  constructor(private _router: Router,
+              private ResultData: ResultDataService) { 
   }
 
   ngOnInit() {
@@ -32,6 +35,18 @@ export class AppComponent implements OnInit {
 
     this.isContentsDailogShow = true;
     this.setDialogHeight();
+
+  }
+
+  // 解析終了したら呼ばれる関数
+  public Calculated(ResultData: ResultDataService): void {
+    this.isCalculated = true;
+
+    if ( ResultData.reac.REAC_ROWS_COUNT > 0) {
+      this.btnReac = 'btn btn-outline-primary';
+    } else {
+      this.btnReac = 'btn btn-outline-primary disabled';
+    }
 
   }
 

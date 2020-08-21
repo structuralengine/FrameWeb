@@ -114,7 +114,15 @@ export class ThreeFixNodeService {
     const targetFixNode = fixnodeData[key_fixnode];
     for (const target of targetFixNode) {
 
-      const position = { x: nodeData[target.n].x, y: nodeData[target.n].y, z: nodeData[target.n].z };
+      if (!(target.n in nodeData)){
+        continue;
+      }
+      const n = nodeData[target.n];
+      const x = n.x;
+      const y = n.y;
+      const z = n.z;
+ 
+      const position = { x, y, z };
 
       
       // バネ支点の分岐

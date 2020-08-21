@@ -127,12 +127,12 @@ export class PrintDataModule {
           // 印刷する1行分のリストを作る
           const line: string[] = new Array();
           line.push(item.id.toString());
-          line.push(item.dx.toFixed(3));
-          line.push(item.dy.toFixed(3));
-          line.push(item.dz.toFixed(3));
-          line.push(item.rx.toFixed(3));
-          line.push(item.ry.toFixed(3));
-          line.push(item.rz.toFixed(3));
+          line.push(item.dx.toFixed(4));
+          line.push(item.dy.toFixed(4));
+          line.push(item.dz.toFixed(4));
+          line.push(item.rx.toFixed(4));
+          line.push(item.ry.toFixed(4));
+          line.push(item.rz.toFixed(4));
           line.push(item.case);
           body.push(line);
         }
@@ -425,12 +425,12 @@ export class PrintDataModule {
         // 印刷する1行分のリストを作る
         const line: string[] = new Array();
         line.push(item.id.toString());
-        line.push(item.dx.toFixed(3));
-        line.push(item.dy.toFixed(3));
-        line.push(item.dz.toFixed(3));
-        line.push(item.rx.toFixed(3));
-        line.push(item.ry.toFixed(3));
-        line.push(item.rz.toFixed(3));
+        line.push(item.dx.toFixed(4));
+        line.push(item.dy.toFixed(4));
+        line.push(item.dz.toFixed(4));
+        line.push(item.rx.toFixed(4));
+        line.push(item.ry.toFixed(4));
+        line.push(item.rz.toFixed(4));
         body.push(line);
       }
     }
@@ -853,8 +853,8 @@ export class PrintDataModule {
         line.push(item.E.toExponential(2));
         line.push(item.G.toExponential(2));
         line.push(item.Xp.toExponential(2));
-        line.push(item.Iy.toFixed(5));
-        line.push(item.Iz.toFixed(5));
+        line.push(item.Iy.toFixed(6));
+        line.push(item.Iz.toFixed(6));
         line.push(item.J.toFixed(4));
         body.push(line);
       }
