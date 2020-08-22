@@ -28,12 +28,13 @@ export class ResultDisgService {
       target = this.disg[typNo];
     }
     const item = target[index];
-    const dx = Math.round(10000 * item['dx']) / 10000;
-    const dy = Math.round(10000 * item['dy']) / 10000;
-    const dz = Math.round(10000 * item['dz']) / 10000;
-    const rx = Math.round(10000 * item['rx']) / 10000;
-    const ry = Math.round(10000 * item['ry']) / 10000;
-    const rz = Math.round(10000 * item['rz']) / 10000;
+
+    const dx = (item.dx === null) ? 0 : Math.round(10000 * item.dx) / 10000;
+    const dy = (item.dx === null) ? 0 : Math.round(10000 * item.dy) / 10000;
+    const dz = (item.dx === null) ? 0 : Math.round(10000 * item.dz) / 10000;
+    const rx = (item.dx === null) ? 0 : Math.round(10000 * item.rx) / 10000;
+    const ry = (item.dx === null) ? 0 : Math.round(10000 * item.ry) / 10000;
+    const rz = (item.dx === null) ? 0 : Math.round(10000 * item.rz) / 10000;
 
     const result = {
       id: item['n'],

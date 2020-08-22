@@ -245,7 +245,7 @@ export class PrintDataModule {
       }
     }
 
-    if (daraCount > 0) {
+    if(body.length > 0){
       doc.autoTable({
         theme: ['plain'],
         margin: {
@@ -435,7 +435,7 @@ export class PrintDataModule {
       }
     }
 
-    if (daraCount > 0) {
+    if(body.length > 0) {
       doc.autoTable({
         theme: ['plain'],
         margin: {
@@ -1175,17 +1175,24 @@ export class PrintDataModule {
 
     const body: any = [];
     for (const index of Object.keys(json)) {
-      const item = json[index]; // 1行分のnodeデータを取り出す      
+      const item = json[index]; // 1行分のnodeデータを取り出す
+
+      const rate: number = (item.rate !== null ) ? item.rate : 1;
+      const fix_node: number = (item.fix_node !== null ) ? item.fix_node : 1;
+      const fix_member: number = (item.fix_member !== null ) ? item.fix_member : 1;
+      const element: number = (item.element !== null ) ? item.element : 1;
+      const joint: number = (item.joint !== null ) ? item.joint : 1;
+
       // 印刷する1行分のリストを作る
       const line: any[] = new Array();
       line.push(index);
-      line.push(item.rate.toFixed(4));
+      line.push(rate.toFixed(4));
       line.push(item.symbol);
       line.push({ content: item.name, styles: { halign: "left" } });
-      line.push(item.fix_node.toString());
-      line.push(item.fix_member.toString());
-      line.push(item.element.toString());
-      line.push(item.joint.toString());
+      line.push(fix_node.toString());
+      line.push(fix_member.toString());
+      line.push(element.toString());
+      line.push(joint.toString());
       body.push(line);
     }
     doc.text(this.margine.left, currentY + LineFeed, "基本荷重データ")

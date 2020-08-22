@@ -123,6 +123,9 @@ export class ResultDataService {
         const d: object = define[defNo];
         const defines = new Array();
         for (const dKey of Object.keys(d)) {
+          if( dKey === 'row'){ 
+            continue;
+          }
           defines.push(d[dKey]);
         }
         defList[defNo] = defines;
@@ -140,6 +143,9 @@ export class ResultDataService {
       const target: object = combine[combNo];
       const combines = new Array([]);
       for (const defKey of Object.keys(target)) {
+        if( defKey === 'row'){ 
+          continue;
+        }
         const defNo: string = defKey.replace('C', '').replace('D', '');
         if (!(defNo in defList)) {
           continue; // なければ飛ばす
@@ -187,6 +193,9 @@ export class ResultDataService {
       const p: object = pickup[pickNo];
       const combines = new Array();
       for (const pKey of Object.keys(p)) {
+        if( pKey === 'row'){ 
+          continue;
+        }
         const comNo: string = p[pKey];
         if (!(comNo in combList)) {
           continue; // なければ飛ばす
