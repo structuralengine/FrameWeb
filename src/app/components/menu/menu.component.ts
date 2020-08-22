@@ -96,15 +96,6 @@ export class MenuComponent implements OnInit {
     FileSaver.saveAs(blob, this.fileName);
   }
 
-  dxf(): void {
-    const dxf: string = "aaa";
-
-    const blob = new window.Blob([dxf], { type: 'text/plain' });
-    if (this.fileName.length === 0) {
-      this.fileName = 'frameWebForJS.dxf';
-    }
-    FileSaver.saveAs(blob, this.fileName);
-  }
 
   // 計算
   calcrate(): void {

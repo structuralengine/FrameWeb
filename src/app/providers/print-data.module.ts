@@ -204,28 +204,28 @@ export class PrintDataModule {
       // あらかじめテーブルの高さを計算する
       daraCount += elist.length;
       const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
-
-      // はみ出るなら改ページ
-      if (currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
-        doc.autoTable({
-          theme: ['plain'],
-          margin: {
-            left: this.margine.left,
-            right: this.margine.right
-          },
-          styles: { font: 'default', halign: "right" },
-          startY: fontsize + currentY,
-          head: [
-            ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'],
-            ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
-          ],
-          body: body,
-        })
-        body = new Array();
-        daraCount = 0;
-        doc.addPage();
+      if(body.length > 0){
+        // はみ出るなら改ページ
+        if (currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
+          doc.autoTable({
+            theme: ['plain'],
+            margin: {
+              left: this.margine.left,
+              right: this.margine.right
+            },
+            styles: { font: 'default', halign: "right" },
+            startY: fontsize + currentY,
+            head: [
+              ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'],
+              ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
+            ],
+            body: body,
+          })
+          body = new Array();
+          daraCount = 0;
+          doc.addPage();
+        }
       }
-
 
       body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 8 }]);
 
@@ -396,7 +396,7 @@ export class PrintDataModule {
       // あらかじめテーブルの高さを計算する
       daraCount += elist.length;
       const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
-
+      if(body.length > 0){
       // はみ出るなら改ページ
       if (currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
         doc.autoTable({
@@ -417,7 +417,7 @@ export class PrintDataModule {
         daraCount = 0;
         doc.addPage();
       }
-
+    }
 
       body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
 
