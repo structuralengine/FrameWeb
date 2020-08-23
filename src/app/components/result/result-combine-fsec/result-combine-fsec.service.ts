@@ -99,8 +99,19 @@ export class ResultCombineFsecService {
         for(const m of Object.keys(noticePoints)){
           for (const point of noticePoints[m]){
 
+            let caseStr: string = '';
             for (const caseInfo of com) {
+              if (caseInfo.coef >= 0) {
+                caseStr += '+' + caseInfo.caseNo.toString();
+              } else {
+                caseStr += '-' + caseInfo.caseNo.toString();
+              }
               if (!(caseInfo.caseNo in this.fsec.fsec)) {
+                for (const key1 of Object.keys(combineFsec)) {
+                  for (const key2 of Object.keys(combineFsec[key1])){
+                    combineFsec[key1][key2].case = caseStr;
+                  }
+                }
                 continue;
               }
 
@@ -129,7 +140,7 @@ export class ResultCombineFsecService {
                 for (const key2 in f) {
                   if (key2 === 'row') {
                     continue;
-                  }else if (key2 === 'm' ) {
+                  } else if (key2 === 'm' ) {
                     temp[key2] = m;
                   } else if (key2 === 'l' ) {
                     temp[key2] = point;
@@ -141,7 +152,7 @@ export class ResultCombineFsecService {
                     temp[key2] += caseInfo.coef * f[key2];
                   }
                 }
-                temp['case'] += '+' + caseInfo.caseNo.toString();
+                temp['case'] = caseStr;
                 value[row.toString()] = temp;
                 combineFsec[key1] = value;
                 // end key1

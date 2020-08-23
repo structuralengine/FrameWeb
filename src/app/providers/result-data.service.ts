@@ -143,7 +143,7 @@ export class ResultDataService {
       const target: object = combine[combNo];
       const combines = new Array([]);
       for (const defKey of Object.keys(target)) {
-        if( defKey === 'row'){ 
+        if ( defKey === 'row') {
           continue;
         }
         const defNo: string = defKey.replace('C', '').replace('D', '');
@@ -151,37 +151,46 @@ export class ResultDataService {
           continue; // なければ飛ばす
         }
         const def = defList[defNo];
-        const defKeys = Object.keys(def);
-        // defineNo が複数あった場合に配列を複製する
-        if (defKeys.length > 1) {
-          const count: number = combines.length;
-          for (let i = 0; i < count; i++) {
-            const base = combines[i];
-            for (let j = 1; j < defKeys.length; j++) {
-              combines.push(base.slice(0, base.length));
-            }
-          }
-        }
-
 
         // 組み合わせにケース番号を登録する
         let coef: number = this.helper.toNumber(target[defKey]);
-        if(coef === null ){
+        if (coef === null ) {
           continue;
         }
-        let j = 0;
-        for (let i = 0; i < combines.length; i++) {
-          let caseNo: string = def[defKeys[j]];
-          if (caseNo.indexOf('-') >= 0) {
-            caseNo = caseNo.replace('-', '');
-            coef = -1 * coef;
+
+        let count: number = combines.length;
+        for (let i = 0; i < count; i++) {
+          const base = combines[i];
+
+          // defineNo が複数あった場合に配列を複製する
+          for (let j = 1; j < def.length; j++)  {
+            const oomb = base.slice(0, base.length);
+
+            let caseNo1: string = def[j];
+            let coef1: number = coef;
+            if ( caseNo1 === '0') {
+              combines.push(oomb);
+              continue;
+            }
+            if (caseNo1.indexOf('-') >= 0) {
+              caseNo1 = caseNo1.replace('-', '');
+              coef1 = -1 * coef1;
+            }
+            oomb.push({ caseNo: caseNo1, coef: coef1 });
+            combines.push(oomb);
           }
-          combines[i].push({ caseNo: caseNo, coef: coef });
-          j++;
-          if (j === defKeys.length) {
-            j = 0;
+
+          let caseNo: string = def[0];
+          if ( caseNo !== '0') { 
+            if (caseNo.indexOf('-') >= 0) {
+              caseNo = caseNo.replace('-', '');
+              coef = -1 * coef;
+            }
+            base.push({ caseNo, coef });
           }
+
         }
+
       }
       combList[combNo] = combines;
     }
@@ -240,7 +249,10 @@ export class ResultDataService {
         let point_name: string = '';
 
         for (let row = 1; row <= rows; row++) {
-
+          const r: string = row.toString();
+          if ( !(r in maxList) ){
+            continue;
+          }
           const maxFsec = maxList[row.toString()];
           const minFsec = minList[row.toString()];
 
@@ -248,6 +260,8 @@ export class ResultDataService {
           const mm: number = this.helper.toNumber(maxFsec.m);
           if (mm != null) {
             mNo = maxFsec.m;
+          } else {
+            console.log(mm);
           }
 
           // 着目点名を設定する

@@ -67,10 +67,21 @@ export class ResultCombineReacService {
 
           // 基本ケースのループ
           const com = combines[i];
+          let caseStr: string = '';
           for (let j = 0; j < com.length; j++) {
             const caseInfo = com[j];
+            if (caseInfo.coef >= 0) {
+              caseStr += '+' + caseInfo.caseNo.toString();
+            } else {
+              caseStr += '-' + caseInfo.caseNo.toString();
+            }
 
             if (!(caseInfo.caseNo in this.reac.reac)) {
+              for (const key1 of Object.keys(combineReac)) {
+                for (const key2 of Object.keys(combineReac[key1])){
+                  combineReac[key1][key2].case = caseStr;
+                }
+              }
               continue;
             }
             // 節点番号のループ
@@ -91,7 +102,7 @@ export class ResultCombineReacService {
                   }
                   temp[key2] += caseInfo.coef * result[key2];
                 }
-                temp['case'] += '+' + caseInfo.caseNo.toString();
+                temp['case'] = caseStr;
                 value[id] = temp;
                 combineReac[key1] = value;
               }
