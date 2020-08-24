@@ -609,7 +609,7 @@ export class PrintDataModule {
   // 入力データを印刷する
   private printInputData(doc: any): void {
 
-    const inputJson: any = this.InputData.getInputJson(0)
+    const inputJson: any = this.InputData.getInputJson(0);
 
     const fontsize: number = 10;
     doc.setFontSize(fontsize);

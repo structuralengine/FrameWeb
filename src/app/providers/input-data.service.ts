@@ -11,6 +11,8 @@ import { InputNodesService } from '../components/input/input-nodes/input-nodes.s
 import { InputNoticePointsService } from '../components/input/input-notice-points/input-notice-points.service';
 import { InputPickupService } from '../components/input/input-pickup/input-pickup.service';
 
+import { SceneService } from '../components/three/scene.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,7 +28,8 @@ export class InputDataService {
               public member: InputMembersService,
               public node: InputNodesService,
               public notice: InputNoticePointsService,
-              public pickup: InputPickupService) {
+              public pickup: InputPickupService,
+              private three: SceneService) {
     this.clear();
   }
 
@@ -60,6 +63,7 @@ export class InputDataService {
     this.define.setDefineJson(jsonData);
     this.combine.setCombineJson(jsonData);
     this.pickup.setPickUpJson(jsonData);
+    this.three.setSetting(jsonData);
   }
 
   // データを生成 /////////////////////////////////////////////////////////////////////
@@ -78,6 +82,8 @@ export class InputDataService {
   }
 
   // ファイルに保存用データを生成
+  // empty = null: ファイル保存時
+  // empty = 0: 計算時
   public getInputJson(empty: number = null): object {
 
     const jsonData = {};
@@ -123,20 +129,29 @@ export class InputDataService {
     }
 
     if (empty === null) {
-      const define: {} = this.define.getDefineJson();
-      if (Object.keys(define).length > 0) {
-        jsonData['define'] = define;
-      }
+      jsonData['three'] = this.three.getSettingJson();
+    }
 
-      const combine: {} = this.combine.getCombineJson();
-      if (Object.keys(combine).length > 0) {
-        jsonData['combine'] = combine;
-      }
+    return jsonData;
+  }
 
-      const pickup: {} = this.pickup.getPickUpJson();
-      if (Object.keys(pickup).length > 0) {
-        jsonData['pickup'] = pickup;
-      }
+  public getResultJson(): object {
+    
+    const jsonData = {};
+    
+    const define: {} = this.define.getDefineJson();
+    if (Object.keys(define).length > 0) {
+      jsonData['define'] = define;
+    }
+
+    const combine: {} = this.combine.getCombineJson();
+    if (Object.keys(combine).length > 0) {
+      jsonData['combine'] = combine;
+    }
+
+    const pickup: {} = this.pickup.getPickUpJson();
+    if (Object.keys(pickup).length > 0) {
+      jsonData['pickup'] = pickup;
     }
 
     return jsonData;

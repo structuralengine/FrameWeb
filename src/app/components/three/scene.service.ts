@@ -5,7 +5,7 @@ import { GUI } from './libs/dat.gui.module.js';
 import { OrbitControls } from './libs/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from './libs/CSS2DRenderer.js';
 import { SafeHtml } from '@angular/platform-browser';
-
+import { DataHelperModule } from '../../providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,7 @@ export class SceneService {
   cone2: any;
 
   // 初期化
-  public constructor() {
+  public constructor(private helper: DataHelperModule) {
     // シーンを作成
     this.scene = new THREE.Scene();
     // シーンの背景を白に設定
@@ -186,6 +186,35 @@ export class SceneService {
       }
       this.scene.remove(target);
     }
+  }
+
+  // ファイルに視点を保存する
+  public getSettingJson(): any {
+    return {
+      camera: {
+        x: this.camera.position.x,
+        y: this.camera.position.y,
+        z: this.camera.position.z,
+      }
+    };
+  }
+
+  // 視点を読み込む
+  public setSetting( jsonData: {} ): void {
+    if (!('three' in jsonData)) {
+      return;
+    }
+    const setting: any = jsonData['three'];
+    const x: number = this.helper.toNumber(setting.camera.x);
+    if (x !== null ){
+      const y: number = this.helper.toNumber(setting.camera.y);
+      if (y !== null ){
+        const z: number = this.helper.toNumber(setting.camera.z);
+        if (z !== null ){
+          this.camera.position.set(x, y, z);
+    }}}
+
+
   }
 
 }

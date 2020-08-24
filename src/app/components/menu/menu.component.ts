@@ -3,7 +3,7 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
 import { Http, Headers } from '@angular/http';
 
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
@@ -34,6 +34,7 @@ export class MenuComponent implements OnInit {
   constructor(private modalService: NgbModal,
               private app: AppComponent,
               private router: Router,
+              private route: ActivatedRoute,
               private user: UserInfoService,
               private InputData: InputDataService,
               private ResultData: ResultDataService,
@@ -45,7 +46,25 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
+    // 起動時にサンプルデータを読み込む時
+    try {
+      this.route.queryParams.subscribe(params => {
+        if ('sample' in params) {
+          this.http.get('assets/sample/' + params.sample).subscribe(
+            data => {
+              this.InputData.loadInputData(data['_body']); // データを読み込む
+              this.three.chengeData('fileLoad');
+              this.three.ChengeMode('load_points', 1);
+            },
+            error => {
+              console.log('起動時サンプルデータの読み込み失敗');
+            }
+          );
+        }
+      });
+    } catch {}
   }
+
 
   // 新規作成
   renew(): void {
@@ -71,7 +90,7 @@ export class MenuComponent implements OnInit {
       .catch(err => {
         console.log(err);
       });
-    }
+  }
 
   private fileToText(file): any {
     const reader = new FileReader();
@@ -99,18 +118,18 @@ export class MenuComponent implements OnInit {
 
   // 計算
   calcrate(): void {
-/*
-    if (this.user.loggedIn === false) {
-      this.logIn();
-    }
-    if (this.user.loggedIn === false) {
-      return;
-    }
-*/
+    /*
+        if (this.user.loggedIn === false) {
+          this.logIn();
+        }
+        if (this.user.loggedIn === false) {
+          return;
+        }
+    */
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const inputJson =
-      this.InputData.getCalcText( { username: this.user.loginUserName, password: this.user.loginPassword });
+      this.InputData.getCalcText({ username: this.user.loginUserName, password: this.user.loginPassword });
 
     console.log(inputJson);;
 
@@ -152,7 +171,7 @@ export class MenuComponent implements OnInit {
   }
 
   // ピックアップファイル出力
-  public pickup(): void{
+  public pickup(): void {
     const pickupJson: string = this.ResultData.GetPicUpText();
     const blob = new window.Blob([pickupJson], { type: 'text/plain' });
     let filename: string = 'frameWebForJS.csv';
@@ -166,7 +185,7 @@ export class MenuComponent implements OnInit {
 
   // 印刷
   print(): void {
-    const  doc = this.printData.printData(this.router.url.replace('/', ''));
+    const doc = this.printData.printData(this.router.url.replace('/', ''));
     // 印刷実行
     doc.output('dataurlnewwindow');
   }
@@ -189,5 +208,5 @@ export class MenuComponent implements OnInit {
     this.loggedIn = false;
     this.user.clear();
   }
-  
+
 }
