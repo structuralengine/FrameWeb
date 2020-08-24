@@ -3,7 +3,7 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
 import { Http, Headers } from '@angular/http';
 
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
@@ -34,7 +34,6 @@ export class MenuComponent implements OnInit {
   constructor(private modalService: NgbModal,
               private app: AppComponent,
               private router: Router,
-              private route: ActivatedRoute,
               private user: UserInfoService,
               private InputData: InputDataService,
               private ResultData: ResultDataService,
@@ -46,23 +45,6 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    // 起動時にサンプルデータを読み込む時
-    try {
-      this.route.queryParams.subscribe(params => {
-        if ('sample' in params) {
-          this.http.get('assets/sample/' + params.sample).subscribe(
-            data => {
-              this.InputData.loadInputData(data['_body']); // データを読み込む
-              this.three.chengeData('fileLoad');
-              this.three.ChengeMode('load_points', 1);
-            },
-            error => {
-              console.log('起動時サンプルデータの読み込み失敗');
-            }
-          );
-        }
-      });
-    } catch {}
   }
 
 
