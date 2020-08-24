@@ -158,8 +158,13 @@ export class MenuComponent implements OnInit {
       error => {
         // 通信失敗時の処理（失敗コールバック）
         this.app.isCalculated = false;
-        console.log(error.statusText);
         modalRef.close();
+
+        let messege: string = '通信 ' + error.statusText;
+        if('_body' in error){
+          messege += '\n' + error._body;
+        }
+        alert(messege);
       }
     );
   }
