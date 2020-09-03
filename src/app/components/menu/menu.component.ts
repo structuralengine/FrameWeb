@@ -126,14 +126,15 @@ export class MenuComponent implements OnInit {
       response => {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
-        console.log(response.text());
+        const response_text: string = JSON.stringify(response);
+        console.log(response_text);
 
         // サーバーのレスポンスを集計する
-        if (!this.ResultData.loadResultData(response.text())) {
-          alert(response.text());
+        if (!this.ResultData.loadResultData(response_text)) {
+          alert(response_text);
         } else {
           // ユーザーポイントの更新
-          this.loadResultData(response.text());
+          this.loadResultData(response_text);
           this.three.chengeData();
         }
         modalRef.close();

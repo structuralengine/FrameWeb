@@ -17,7 +17,8 @@
 <div *ngFor="let r of KEYS; index as i">
   <div class="conbine-title">{{TITLES[i]}}</div>
   <div class="datasheet" >
-    <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="true"  [width]="960" [height]="tableHeight">
+    <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="true"  [width]="960" [height]="tableHeight"
+    licenseKey="non-commercial-and-evaluation">
       <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
       <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
       <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>

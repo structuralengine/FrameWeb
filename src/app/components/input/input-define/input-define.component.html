@@ -23,7 +23,8 @@
     [rowHeaders]="rowHeaders" 
     [height]="500"
     [width]="300"
-    [settings]="hotTableSettings">
+    [settings]="hotTableSettings"
+    licenseKey="non-commercial-and-evaluation">
       <hot-column *ngFor="let c of defineColums;" [data]="c" [title]="c"></hot-column>
     </hot-table>
   </div>

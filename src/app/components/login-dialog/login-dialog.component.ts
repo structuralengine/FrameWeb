@@ -49,17 +49,17 @@ export class LoginDialogComponent implements OnInit {
       .subscribe(
         response => {
           // 通信成功時の処理（成功コールバック）
-          const response_text = JSON.parse(response.text());
+          const response_text = response;
           if ('error' in response_text) {
-            this.errorMessage = response_text.error;
+            this.errorMessage = response_text['error'];
             this.loginError = true;
             this.connecting = false;
 
           } else {
             this.user.loginUserName = this.loginUserName;
             this.user.loginPassword = this.loginPassword;
-            this.user.user_id = response_text.user_id;
-            this.user.purchase_value = response_text.purchase_value;
+            this.user.user_id = response_text['user_id'];
+            this.user.purchase_value = response_text['purchase_value'];
             this.user.loggedIn = true;
             this.activeModal.close('Submit');
           }

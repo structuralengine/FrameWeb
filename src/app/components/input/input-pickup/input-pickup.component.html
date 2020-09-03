@@ -19,7 +19,8 @@
   [rowHeaders]="rowHeaders" 
   [height]="500"
   [width]="900"
-  [settings]="hotTableSettings">
+  [settings]="hotTableSettings"
+  licenseKey="non-commercial-and-evaluation">
     <hot-column *ngFor="let c of pickupColums; index as i" [data]="c" [title]="pickupTitles[i]"></hot-column>
   </hot-table>
 </div>

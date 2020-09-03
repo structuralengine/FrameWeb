@@ -19,7 +19,8 @@
   [rowHeaders]="rowHeaders" 
   [height]="500"
   [width]="900"
-  [settings]="hotTableSettings">
+  [settings]="hotTableSettings"
+  licenseKey="non-commercial-and-evaluation">
     <hot-column *ngFor="let c of combineColums; index as i" [data]="c" [title]="combineTitles[i]"></hot-column>
   </hot-table>
 </div>
