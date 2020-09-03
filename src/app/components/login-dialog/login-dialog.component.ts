@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Http, Headers } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserInfoService } from '../../providers/user-info.service';
 
 
@@ -19,7 +19,7 @@ export class LoginDialogComponent implements OnInit {
   connecting: boolean;
 
   constructor(public activeModal: NgbActiveModal,
-    private http: Http,
+    private http: HttpClient,
     private user: UserInfoService) {
       this.loginError = false;
       this.connecting = false;
@@ -42,7 +42,7 @@ export class LoginDialogComponent implements OnInit {
     const url = 'https://structuralengine.com/my-module/get_points_balance.php?id=' + this.loginUserName + '&ps=' + this.loginPassword;
 
     this.http.get(url, {
-      headers: new Headers({
+      headers: new HttpHeaders({
         'Content-Type': 'application/x-www-form-urlencoded'
       })
     })

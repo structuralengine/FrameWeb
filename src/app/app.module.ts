@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { HttpModule } from '@angular/http';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -74,7 +73,6 @@ import { SceneService } from './components/three/scene.service';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    HttpModule,
     DragDropModule,
     BrowserAnimationsModule,
     NgbModule,

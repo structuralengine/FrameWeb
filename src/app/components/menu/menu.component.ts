@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
-import { Http, Headers } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 
 import { Router } from '@angular/router';
 
@@ -37,7 +38,7 @@ export class MenuComponent implements OnInit {
               private user: UserInfoService,
               private InputData: InputDataService,
               private ResultData: ResultDataService,
-              private http: Http,
+              private http: HttpClient,
               private three: ThreeService,
               private printData: PrintDataModule) {
     this.loggedIn = this.user.loggedIn;
@@ -118,7 +119,7 @@ export class MenuComponent implements OnInit {
     const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
 
     this.http.post(url, inputJson, {
-      headers: new Headers({
+      headers: new HttpHeaders({
         'Content-Type': 'application/x-www-form-urlencoded',
       })
     }).subscribe(
