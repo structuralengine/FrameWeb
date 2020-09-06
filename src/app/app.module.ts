@@ -65,6 +65,7 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
 
 import { ThreeComponent } from './components/three/three.component';
 import { SceneService } from './components/three/scene.service';
+import { InputPanelComponent } from './components/input/input-panel/input-panel.component';
 
 @NgModule({
   imports: [
@@ -108,7 +109,8 @@ import { SceneService } from './components/three/scene.service';
     ResultPickupReacComponent,
     ResultPickupFsecComponent,
     ResultCombineFsecComponent,
-    ThreeComponent
+    ThreeComponent,
+    InputPanelComponent
   ],
   entryComponents: [
     LoginDialogComponent,

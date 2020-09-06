@@ -5,6 +5,7 @@ import { InputNodesComponent } from './components/input/input-nodes/input-nodes.
 import { InputMembersComponent } from './components/input/input-members/input-members.component';
 import { InputFixNodeComponent } from './components/input/input-fix-node/input-fix-node.component';
 import { InputElementsComponent } from './components/input/input-elements/input-elements.component';
+import { InputPanelComponent } from './components/input/input-panel/input-panel.component';
 import { InputJointComponent } from './components/input/input-joint/input-joint.component';
 import { InputNoticePointsComponent } from './components/input/input-notice-points/input-notice-points.component';
 import { InputFixMemberComponent } from './components/input/input-fix-member/input-fix-member.component';
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'input-members', component: InputMembersComponent },
   { path: 'input-fix_nodes', component: InputFixNodeComponent },
   { path: 'input-elements', component: InputElementsComponent },
+  { path: 'input-panel', component: InputPanelComponent },
   { path: 'input-joints', component: InputJointComponent },
   { path: 'input-notice_points', component: InputNoticePointsComponent },
   { path: 'input-fix_members', component: InputFixMemberComponent },

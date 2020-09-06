@@ -20,25 +20,27 @@
                 class="btn btn-outline-primary" id="2">部材</a>
             <a routerLink="./input-elements" (click)="contentsDailogShow(3)" routerLinkActive="selected-item"
                 class="btn btn-outline-primary" id="3">材料</a>
-            <a routerLink="./input-joints" (click)="contentsDailogShow(4)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="4">結合</a>
-            <a routerLink="./input-notice_points" (click)="contentsDailogShow(5)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="5">着目点</a>
-            <a routerLink="./input-fix_members" (click)="contentsDailogShow(6)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="6">バネ</a>
+            <a routerLink="./input-panel" (click)="contentsDailogShow(4)" routerLinkActive="selected-item"
+                class="btn btn-outline-primary" id="4">パネル</a>
+            <a routerLink="./input-joints" (click)="contentsDailogShow(5)" routerLinkActive="selected-item"
+                class="btn btn-outline-primary" id="5">結合</a>
+            <a routerLink="./input-notice_points" (click)="contentsDailogShow(6)" routerLinkActive="selected-item"
+                class="btn btn-outline-primary" id="6">着目点</a>
+            <a routerLink="./input-fix_members" (click)="contentsDailogShow(7)" routerLinkActive="selected-item"
+                class="btn btn-outline-primary" id="7">バネ</a>
 
-            <a routerLink="./input-load-name" (click)="contentsDailogShow(7)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="7">荷重</a>
+            <a routerLink="./input-load-name" (click)="contentsDailogShow(8)" routerLinkActive="selected-item"
+                class="btn btn-outline-primary" id="8">荷重</a>
 
-            <a routerLink="./input-define" (click)="contentsDailogShow(8)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="8">組合せ</a>
+            <a routerLink="./input-define" (click)="contentsDailogShow(9)" routerLinkActive="selected-item"
+                class="btn btn-outline-primary" id="9">組合せ</a>
 
-            <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow(9)"
-                routerLinkActive="selected-item" class="btn btn-outline-primary" id="9">変位</a>
-            <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(10)"
-                routerLinkActive="selected-item" [class]="btnReac" id="10">支点反力</a>
-            <a routerLink="./result-fsec" *ngIf="isCalculated" (click)="contentsDailogShow(11)"
-                routerLinkActive="selected-item" class="btn btn-outline-primary" id="11">基本荷重断面力</a>
+            <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow(10)" routerLinkActive="selected-item" 
+                class="btn btn-outline-primary" id="10">変位</a>
+            <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(11)" routerLinkActive="selected-item" 
+                [class]="btnReac" id="11">支点反力</a>
+            <a routerLink="./result-fsec" *ngIf="isCalculated" (click)="contentsDailogShow(12)" routerLinkActive="selected-item" 
+                class="btn btn-outline-primary" id="12">基本荷重断面力</a>
         </nav>
     </div>
 </div>
