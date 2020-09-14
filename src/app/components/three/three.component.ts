@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener, Renderer2, NgZone } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener, Renderer2, NgZone, OnInit } from '@angular/core';
 import * as THREE from 'three';
 
 import Stats from './libs/stats.module.js';
@@ -15,7 +15,31 @@ import { SafeHtml } from '@angular/platform-browser';
   templateUrl: './three.component.html',
   styleUrls: ['./three.component.scss']
 })
-export class ThreeComponent implements AfterViewInit {
+export class ThreeComponent implements  AfterViewInit {
+
+
+  // ngOnInit{
+  //   this.setcanvasWidth();
+  // }
+
+
+
+  // setcanvasWidth() {
+  //   setTimeout(function () {
+  //     const parent = document.getElementById('body-container-id');
+  //     // ヘッダ領域を取得
+  //     const canvas = document.getElementsByClassName('three-container')  as HTMLCollectionOf<HTMLElement>;
+  //     for (let i = 0; i < canvas.length; i++) {
+  //       const left = canvas[i].style.left;
+  //       console.log(left);
+  //     }
+  //     const widthSize = parent[0].clientWidth ;
+
+  //     canvas[0].style.width= '100px';//widthSize;
+
+  //   }, 100);
+  // }
+
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
 

@@ -9,42 +9,42 @@
         </div>
     </div>
 </div>
-<div class="container">
+<div class="body-container">
     <div class="btn-group">
         <nav>
             <a routerLink="./input-nodes" (click)="contentsDailogShow(0)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="0">節点</a>
+                id="0"><button class="btn-md btn-blue">節点</button></a>
             <a routerLink="./input-fix_nodes" (click)="contentsDailogShow(1)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="1">支点</a>
+                id="1"><button class="btn-md btn-blue">支点</button></a>
             <a routerLink="./input-members" (click)="contentsDailogShow(2)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="2">部材</a>
+                id="2"><button class="btn-md btn-blue">部材</button></a>
             <a routerLink="./input-elements" (click)="contentsDailogShow(3)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="3">材料</a>
+                id="3"><button class="btn-md btn-blue">材料</button></a>
             <a routerLink="./input-joints" (click)="contentsDailogShow(4)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="4">結合</a>
+                id="4"><button class="btn-md btn-blue">結合</button></a>
             <a routerLink="./input-notice_points" (click)="contentsDailogShow(5)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="5">着目点</a>
+                id="5"><button class="btn-md btn-blue">着目点</button></a>
             <a routerLink="./input-fix_members" (click)="contentsDailogShow(6)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="6">バネ</a>
+                id="6"><button class="btn-md btn-blue">バネ</button></a>
 
             <a routerLink="./input-load-name" (click)="contentsDailogShow(7)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="7">荷重</a>
+                id="7"><button class="btn-md btn-blue">荷重</button></a>
 
             <a routerLink="./input-define" (click)="contentsDailogShow(8)" routerLinkActive="selected-item"
-                class="btn btn-outline-primary" id="8">組合せ</a>
-
+                id="8"><button class="btn-md btn-blue">組み合わせ</button></a>
             <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow(9)"
-                routerLinkActive="selected-item" class="btn btn-outline-primary" id="9">変位</a>
+                id="9"><button class="btn btn-outline-primary">変位</button></a>
             <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(10)"
-                routerLinkActive="selected-item" [class]="btnReac" id="10">支点反力</a>
+                [class]="btnReac" id="10"><button class="btn-md btn-blue">支点反力</button></a>
             <a routerLink="./result-fsec" *ngIf="isCalculated" (click)="contentsDailogShow(11)"
-                routerLinkActive="selected-item" class="btn btn-outline-primary" id="11">基本荷重断面力</a>
+                routerLinkActive="selected-item" id="11"><button class="btn-md btn-blue">基本荷重断面力</button></a>
         </nav>
     </div>
 </div>
-
-<div class="three-container">
+<div class="body-container"  id="body-container-id">
+<div class="three-container" id="three-container-id">
     <app-three></app-three>
+</div>
 </div>
 
 <div cdkDrag *ngIf="isContentsDailogShow" class="contents-dailog" id="contents-dialog-id">
