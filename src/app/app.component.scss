@@ -5,13 +5,11 @@ h1 {
   color: black;
 }
 
+
 .header {
-  margin-top: 10px;
-  margin-left: 10px;
-  margin-bottom: 5px;
+  padding:16px;
   z-index: 10;
   .container {
-    margin-left: 15px;
     max-width: 100%;
   }
 	.liner {
@@ -20,22 +18,22 @@ h1 {
 	}
 	.title-and-menu {
 		border-bottom: 1px solid $border-color;
-		padding: 0;
+		padding: 16px;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-end;
 		flex: 1 0 auto;
 	}
-	img {
-		width: 3rem;
-		margin-right: 1rem;
-	}
+	
 }
-.container {
-    margin-left: 15px;
+.body-container {
+  width: 100%;
+  margin:0;
+  padding: 0 16px;
 }
 
 .three-container {
+  width: 100%;
   margin-top: 5px;
 }
 
@@ -99,4 +97,22 @@ h1 {
   position: absolute;
   width:100%;
   height:70px;
+}
+
+
+.btn-md  {
+  width:100px;
+  line-height: normal;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  border: none;
+  display: inline-block;
+  text-align: center;
+}
+    
+.btn-blue {
+  background-color: #fff;
+  border: 1px solid #dddddd;
+  color:#333333;
 }

@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     this.deactiveButtons();
 
     document.getElementById(id).classList.add('active');
-
+    
     this.isContentsDailogShow = true;
     this.setDialogHeight();
 
@@ -62,9 +62,9 @@ export class AppComponent implements OnInit {
     }
   }
 
+
   // contents-dialogの高さをウィンドウサイズに合わせる
   setDialogHeight() {
-
     setTimeout(function () {
       const dialog = document.getElementById('contents-dialog-id');
       // ヘッダ領域を取得
