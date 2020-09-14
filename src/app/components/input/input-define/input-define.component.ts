@@ -3,11 +3,12 @@ import { InputDefineService } from './input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-define',
   templateUrl: './input-define.component.html',
-  styleUrls: ['./input-define.component.scss']
+  styleUrls: ['./input-define.component.scss','../../../app.component.scss']
 })
 export class InputDefineComponent implements OnInit {
 
@@ -58,7 +59,8 @@ export class InputDefineComponent implements OnInit {
   constructor(private input: InputDefineService,
               private load: InputLoadService,
               private result: ResultDataService,
-              private helper: DataHelperModule) {
+              private helper: DataHelperModule,
+              public user:UserInfoService,) {
 
     this.page = 1;
     this.defineData = new Array();
@@ -77,6 +79,12 @@ export class InputDefineComponent implements OnInit {
 
     this.loadPage(1);
   }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
+  }
+
 
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {

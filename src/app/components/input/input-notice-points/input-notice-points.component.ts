@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from '../input-members/input-members.service';
 import { InputNoticePointsService } from './input-notice-points.service';
 import { ThreeService } from '../../three/three.service';
+import{ UserInfoService } from '../../../providers/user-info.service'
 import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Component({
   selector: 'app-input-notice-points',
   templateUrl: './input-notice-points.component.html',
-  styleUrls: ['./input-notice-points.component.scss']
+  styleUrls: ['./input-notice-points.component.scss','../../../app.component.scss']
 })
 
 export class InputNoticePointsComponent implements OnInit {
@@ -89,7 +90,8 @@ export class InputNoticePointsComponent implements OnInit {
   constructor(private data: InputNoticePointsService,
               private member: InputMembersService,
               private three: ThreeService,
-              private helper: DataHelperModule) {
+              private helper: DataHelperModule,
+              public user:UserInfoService,) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -104,6 +106,11 @@ export class InputNoticePointsComponent implements OnInit {
   ngOnInit() {
     this.loadPage(1);
     this.three.ChengeMode('notice_points');
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

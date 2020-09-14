@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class UserInfoService {
 
+  isContentsDailogShow: boolean;
   loginUserName: string;
   loginPassword: string;
   user_id: number;

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import{ UserInfoService } from './providers/user-info.service'
 import { ResultDataService } from './providers/result-data.service';
 
 @Component({
@@ -9,21 +10,22 @@ import { ResultDataService } from './providers/result-data.service';
 })
 export class AppComponent implements OnInit {
 
-  isContentsDailogShow: boolean;
+  //isContentsDailogShow: boolean;
   isCalculated: boolean;
   btnReac: string;
 
   constructor(private _router: Router,
-              private ResultData: ResultDataService) { 
+              private ResultData: ResultDataService,
+              public user:UserInfoService) { 
   }
 
   ngOnInit() {
-    this.isContentsDailogShow = false;
+    this.user.isContentsDailogShow = false;
     this.isCalculated = false;
   }
 
   public dialogClose(): void {
-    this.isContentsDailogShow = false;
+    this.user.isContentsDailogShow = false;
     this.deactiveButtons();
   }
 
@@ -33,7 +35,7 @@ export class AppComponent implements OnInit {
 
     document.getElementById(id).classList.add('active');
     
-    this.isContentsDailogShow = true;
+    this.user.isContentsDailogShow = true;
     this.setDialogHeight();
 
   }

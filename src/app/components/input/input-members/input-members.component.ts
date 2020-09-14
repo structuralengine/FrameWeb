@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { InputMembersService } from './input-members.service';
 import { ThreeService } from '../../three/three.service';
+import{ UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-members',
   templateUrl: './input-members.component.html',
-  styleUrls: ['./input-members.component.scss']
+  styleUrls: ['./input-members.component.scss','../../../app.component.scss']
 })
 
 export class InputMembersComponent implements OnInit {
@@ -60,13 +61,19 @@ export class InputMembersComponent implements OnInit {
   };
 
   constructor(private data: InputMembersService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              public user:UserInfoService) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
     this.three.ChengeMode('members');
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

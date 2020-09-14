@@ -7,9 +7,16 @@
     }
 }
 
+.datasheet_inner::after{
+    content: "";
+    clear: both;
+    display:block;
+}
+
 .datasheet{
     padding-left: 5px;
     padding-right: 5px;
     padding-bottom: 10px;
     float: left;
 }
+

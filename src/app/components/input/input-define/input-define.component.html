@@ -14,6 +14,7 @@
     <div class="pager-title">ページ</div>
     <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
     </ngb-pagination>
+    <button (click)="dialogClose()" class="dialog-close-button"><span>×</span></button>
   </div>
 
   <div class="datasheet">

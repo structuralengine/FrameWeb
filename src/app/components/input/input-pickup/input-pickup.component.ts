@@ -4,11 +4,12 @@ import { InputLoadService } from '../input-load/input-load.service';
 import { InputCombineService } from '../input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-pickup',
   templateUrl: './input-pickup.component.html',
-  styleUrls: ['./input-pickup.component.scss']
+  styleUrls: ['./input-pickup.component.scss','../../../app.component.scss']
 })
 
 export class InputPickupComponent implements OnInit {
@@ -68,7 +69,8 @@ export class InputPickupComponent implements OnInit {
               private load: InputLoadService,
               private comb: InputCombineService,
               private result: ResultDataService,
-              private helper: DataHelperModule) {
+              private helper: DataHelperModule,
+              public user:UserInfoService,) {
 
     this.page = 1;
     this.pickupData = new Array();
@@ -93,6 +95,13 @@ export class InputPickupComponent implements OnInit {
     this.pickupTitles.push('名称　　　　　　　　　　　　　　');
     this.loadPage(1);
   }
+
+  
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
+  }
+
 
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {

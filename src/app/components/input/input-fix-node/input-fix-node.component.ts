@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { InputFixNodeService } from './input-fix-node.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import { ThreeService } from '../../three/three.service';
+import{ UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-fix-node',
   templateUrl: './input-fix-node.component.html',
-  styleUrls: ['./input-fix-node.component.scss']
+  styleUrls: ['./input-fix-node.component.scss','../../../app.component.scss']
 })
 
 export class InputFixNodeComponent implements OnInit {
@@ -45,7 +46,8 @@ export class InputFixNodeComponent implements OnInit {
 
   constructor(private data: InputFixNodeService,
               private helper: DataHelperModule,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private user : UserInfoService,) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -53,6 +55,11 @@ export class InputFixNodeComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage(1);
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

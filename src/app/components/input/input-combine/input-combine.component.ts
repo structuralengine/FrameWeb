@@ -4,11 +4,12 @@ import { InputDefineService } from '../input-define/input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-combine',
   templateUrl: './input-combine.component.html',
-  styleUrls: ['./input-combine.component.scss']
+  styleUrls: ['./input-combine.component.scss','../../../app.component.scss']
 })
 
 export class InputCombineComponent implements OnInit {
@@ -68,7 +69,8 @@ export class InputCombineComponent implements OnInit {
     private define: InputDefineService,
     private load: InputLoadService,
     private result: ResultDataService,
-    private helper: DataHelperModule) {
+    private helper: DataHelperModule, 
+    public user:UserInfoService,) {
 
     this.page = 1;
     this.combineData = new Array();
@@ -95,6 +97,11 @@ export class InputCombineComponent implements OnInit {
     this.combineColums.push('name');
     this.combineTitles.push('名称　　　　　　　　　　　　　　');
     this.loadPage(1);
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

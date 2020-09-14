@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-joint',
   templateUrl: './input-joint.component.html',
-  styleUrls: ['./input-joint.component.scss']
+  styleUrls: ['./input-joint.component.scss','../../../app.component.scss']
 })
 export class InputJointComponent implements OnInit {
 
@@ -46,13 +47,19 @@ export class InputJointComponent implements OnInit {
 
   constructor(private input: InputJointService,
               private helper: DataHelperModule,
-              private three: ThreeService) {
+              private three: ThreeService, 
+              public user:UserInfoService) {
     this.dataset = new Array();
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

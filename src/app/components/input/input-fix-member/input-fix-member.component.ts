@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { InputFixMemberService } from './input-fix-member.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-fix-member',
   templateUrl: './input-fix-member.component.html',
-  styleUrls: ['./input-fix-member.component.scss']
+  styleUrls: ['./input-fix-member.component.scss','../../../app.component.scss']
 })
 
 export class InputFixMemberComponent implements OnInit {
@@ -45,7 +46,8 @@ export class InputFixMemberComponent implements OnInit {
 
   constructor(private data: InputFixMemberService,
               private helper: DataHelperModule,
-              private three: ThreeService) {
+              private three: ThreeService,
+              public user:UserInfoService,) {
 
     this.dataset = new Array();
     this.page = 1;
@@ -53,6 +55,11 @@ export class InputFixMemberComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage(1);
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

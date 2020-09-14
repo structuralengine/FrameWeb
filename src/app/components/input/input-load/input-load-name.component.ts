@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
 import { ThreeService } from '../../three/three.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-load-name',
   templateUrl: './input-load-name.component.html',
-  styleUrls: ['./input-load-name.component.scss']
+  styleUrls: ['./input-load-name.component.scss','../../../app.component.scss']
 })
 export class InputLoadNameComponent implements OnInit {
 
@@ -66,12 +67,17 @@ export class InputLoadNameComponent implements OnInit {
 
   constructor(private data: InputLoadService,
               private three: ThreeService,
-              private helper: DataHelperModule) {
+              private helper: DataHelperModule,public user:UserInfoService,) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
+  }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
   }
 
   loadPage(currentPage: number) {

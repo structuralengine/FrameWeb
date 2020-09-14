@@ -30,6 +30,9 @@ h1 {
   width: 100%;
   margin:0;
   padding: 0 16px;
+  .btn-group{
+    padding-bottom:24px 
+  }
 }
 
 .three-container {
@@ -38,6 +41,7 @@ h1 {
 }
 
 .contents-dailog {
+  padding:16px;
   border: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
@@ -66,30 +70,16 @@ h1 {
 }
 
 .dialog-close-button {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  width: 32px;
-  height: 32px;
-  opacity: 0.3;
+  background-color:#f5f5f5;
+  border:1px solid #f5f5f5;
+  span{
+    font-size:20px;
+  }
 }
+
+
 .dialog-close-button:hover {
-  opacity: 1;
-}
-.dialog-close-button:before, .dialog-close-button:after {
-  position: absolute;
-  left: 15px;
-  top: 0px;
-  content: ' ';
-  height: 33px;
-  width: 2px;
-  background-color: #333;
-}
-.dialog-close-button:before {
-  transform: rotate(45deg);
-}
-.dialog-close-button:after {
-  transform: rotate(-45deg);
+  opacity: 0.7;
 }
 
 .dialog-drag-handle {
@@ -101,8 +91,9 @@ h1 {
 
 
 .btn-md  {
-  width:100px;
+  min-width:135px;
   line-height: normal;
+  margin:8px 8px 0;
   padding: 8px;
   border-radius: 8px;
   font-size: 16px;
@@ -112,7 +103,29 @@ h1 {
 }
     
 .btn-blue {
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid #dddddd;
   color:#333333;
+}
+
+.btn-blue:hover{
+  cursor: pointer;
+  opacity: 0.7;
+  color:#ffffff;
+  background-color:#333333;
+}
+
+.btn-blue:active{
+  border:1px solid #d2d6de;
+}
+
+.btn-blue:not(:disabled):not(.disabled).active{
+  color:#ffffff;
+  background-color:#333333;
+}
+
+.Calculated{
+  background-color: #999999;
+  border: 1px solid #dddddd;
+  color:#ffffff;
 }

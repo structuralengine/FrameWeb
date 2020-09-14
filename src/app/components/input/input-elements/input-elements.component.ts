@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { InputElementsService } from './input-elements.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-elements',
   templateUrl: './input-elements.component.html',
-  styleUrls: ['./input-elements.component.scss']
+  styleUrls: ['./input-elements.component.scss','../../../app.component.scss']
 })
 
 export class InputElementsComponent implements OnInit {
@@ -66,7 +67,8 @@ export class InputElementsComponent implements OnInit {
   constructor(
     private data: InputElementsService,
     private helper: DataHelperModule,
-    private three: ThreeService) {
+    private three: ThreeService,
+    public user:UserInfoService) {
     this.dataset = new Array();
     this.page = 1;
   }
@@ -74,6 +76,12 @@ export class InputElementsComponent implements OnInit {
   ngOnInit() {
     this.loadPage(1);
   }
+
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
+  }
+
 
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {

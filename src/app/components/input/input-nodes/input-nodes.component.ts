@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { InputNodesService } from './input-nodes.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 import { ThreeService } from '../../three/three.service';
 
 @Component({
   selector: 'app-input-nodes',
   templateUrl: './input-nodes.component.html',
-  styleUrls: ['./input-nodes.component.scss']
+  styleUrls: ['./input-nodes.component.scss','../../../app.component.scss']
 })
 
 export class InputNodesComponent implements OnInit {
@@ -45,14 +46,22 @@ export class InputNodesComponent implements OnInit {
 
   constructor(private data: InputNodesService,
     private helper: DataHelperModule,
-    private three: ThreeService) {
+    private three: ThreeService,
+    public user:UserInfoService,) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
     this.three.ChengeMode('nodes');
+
   }
+  
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
+  }
+
 
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {
