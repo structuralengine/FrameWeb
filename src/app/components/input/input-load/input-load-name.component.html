@@ -5,6 +5,12 @@
   </nav>
 </div>
 
+<div class="pager">
+  <div class="pager-title">ページ</div>
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+  </ngb-pagination>
+</div>
+
 <div class="datasheet">
   <hot-table class="hot" 
   [data]="dataset" 
@@ -22,10 +28,4 @@
     <hot-column data="element" title="断面"></hot-column>
     <hot-column data="joint" title="結合"></hot-column>
   </hot-table>
-</div>
-
-<div class="pager">
-  <div class="pager-title">ページ</div>
-  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
-  </ngb-pagination>
 </div>
