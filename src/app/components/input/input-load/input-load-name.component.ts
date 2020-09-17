@@ -11,7 +11,7 @@ import{ UserInfoService } from '../../../providers/user-info.service';
 })
 export class InputLoadNameComponent implements OnInit {
 
-  static ROWS_COUNT = 20;
+  static ROWS_COUNT = 200;
   dataset: any[];
   page: number;
   rowHeaders: any[];

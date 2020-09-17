@@ -10,7 +10,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 })
 export class InputLoadComponent implements OnInit {
 
-  ROWS_COUNT = 20;
+  ROWS_COUNT = 200;
   collectionSize = 100;
   dataset: any[];
   page: number;
