@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
 import { ThreeService } from '../../three/three.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
-import{ UserInfoService } from '../../../providers/user-info.service'
+import{ UserInfoService } from '../../../providers/user-info.service';
 
 @Component({
   selector: 'app-input-load-name',
