@@ -49,7 +49,12 @@
 
 <div cdkDrag *ngIf="user.isContentsDailogShow" class="contents-dailog" id="contents-dialog-id">
     <!-- ドラッグハンドルをテーブルの後ろに敷いて、テーブル領域以外がドラッグされたらcontetns-dialogを移動するイメージ -->
-    <div cdkDragHandle class="dialog-drag-handle"></div>
-    
+  <div class="dialog-header">
+        <div cdkDragHandle class="dialog-drag-handle">
+        </div>
+        <div class="button-area">
+        <button (click)="dialogClose()" class="dialog-close-button"><span>×</span></button>
+        </div>
+  </div>
     <router-outlet></router-outlet>
 </div>

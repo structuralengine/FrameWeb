@@ -1,10 +1,4 @@
-<div class="pager">
-  <div class="pager-title">ページ</div>
-  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)"></ngb-pagination>
-  <button (click)="dialogClose()" class="dialog-close-button"><span>×</span></button>
-</div>
-
-<div class="datasheet">
+<div class="datasheet" style="margin-top:32px">
   <hot-table class="hot" 
   [data]="dataset" 
   [colHeaders]="true" 
@@ -18,4 +12,9 @@
     <hot-column data="len" title="部材長" [readOnly]="true"></hot-column>
     <hot-column *ngFor="let c of colums;" [data]="c" [title]="c"></hot-column>
   </hot-table>
+</div>
+
+<div class="pager">
+  <div class="pager-title">ページ</div>
+  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)"></ngb-pagination>
 </div>
