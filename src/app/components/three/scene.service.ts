@@ -69,6 +69,7 @@ export class SceneService {
 
     //
     this.gui = new GUI();
+    this.gui.domElement.id = 'gui_css';
     this.gui.add( this.params, 'GridHelper' ).onChange( ( value ) => {
       // guiによる設定
       this.axisHelper.visible = value;
