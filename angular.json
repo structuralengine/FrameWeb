@@ -29,9 +29,12 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/handsontable.full.css"
+              "src/handsontable.full.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/@fortawesome/fontawesome-free/js/all.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -93,9 +96,12 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/@fortawesome/fontawesome-free/js/all.min.js"
+            ]
           }
         },
         "lint": {
@@ -124,6 +130,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "FrameWebforJS"
+    }
+  },
+  "defaultProject": "FrameWebforJS",
+  "cli": {
+    "analytics": "54ff35ff-6d20-4f4b-b6e9-9c77f07948ae"
+  }
 }

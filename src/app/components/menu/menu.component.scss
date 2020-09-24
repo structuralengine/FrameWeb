@@ -1,8 +1,52 @@
+$border-color: #428bca;
+
 .welcome-message{
-    display: flex;
+  display: flex;
 }
 
 .margin{
-    margin-left: 5px;
-    margin-right: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.title-and-menu {
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  width: 100%;
+  padding: 4px;
+  flex: 1 0 auto;
+  font-weight: lighter;
+  .icon-area{
+    display: flex;
+    div:hover{
+      cursor: pointer;
+    }
+
+  }
+  .icon{
+    color: #fff;
+  }
+  .login-area{
+    font-size: 12px;
+    :hover{
+      cursor: pointer;
+    }
+  }
+}
+
+i.fa{
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.title h1
+{
+  margin: 0;
+  font-size:12px;
+  font-weight: lighter;
+}
+
+.login-item{
+  color: #fff;
 }

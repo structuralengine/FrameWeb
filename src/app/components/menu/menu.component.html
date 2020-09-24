@@ -1,58 +1,71 @@
-<div class="row">
-  <div class="col-xs-4 margin">
-      <div *ngIf="loggedIn" class="welcome-message">
-        {{loginUserName}}さん！あなたの保有ポイントは{{userPoint}}ポイントです
-      </div>
-    
-  </div>
+<div class="title-and-menu">
+  <div class="icon-area">
+    <div class="col-xs-4 margin">
+      <div ngbDropdown class="d-inline-block">
+        <a class="icon" id="dropdownBasic1" ngbDropdownToggle><i class="far fa-file"></i></a>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button ngbDropdownItem (click)="renew()">新規作成</button>
 
-  <div class="col-xs-4 margin">
-    <div ngbDropdown class="d-inline-block">
-      <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>ファイル</button>
-      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-        <button ngbDropdownItem (click)="renew()">新規作成</button>
-
-        <label>
-          <span  ngbDropdownItem>
+          <label>
+          <span ngbDropdownItem>
             ファイルを開く
-            <input type="file" accept="application/fwj" (change)="open($event)" style="display:none" />
+            <input type="file" accept="application/fwj" (change)="open($event)" style="display:none"/>
           </span>
-        </label>
-        
-        <button ngbDropdownItem (click)="save()">ファイルを保存</button>
-        <button ngbDropdownItem (click)="pickup()">ピックアップファイル出力</button>
+          </label>
+
+          <button ngbDropdownItem (click)="save()">ファイルを保存</button>
+          <button ngbDropdownItem (click)="pickup()">ピックアップファイル出力</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-4 margin">
+      <div class="d-inline-block">
+        <a (click)="calcrate()"><i class="fas fa-calculator"></i></a>
+      </div>
+    </div>
+
+
+    <div class="col-xs-4 margin">
+      <div class="d-inline-block">
+        <a (click)="print()"><i class="fas fa-print"></i></a>
+      </div>
+    </div>
+
+    <div class="col-xs-4 margin">
+      <div class="d-inline-block">
+        <a onClick="window.open('https://doboku-design-program.slack.com/archives/C0199TMHMA9','_blank')"><i
+          class="far fa-question-circle"></i></a>
       </div>
     </div>
   </div>
 
-  <div class="col-xs-4 margin">
-    <div class="d-inline-block">
-      <button (click)="print()" class="btn btn-outline-primary">印刷</button>
-    </div>
-  </div>
-  
-  <div class="col-xs-4 margin">
-    <div class="d-inline-block">
-      <button (click)="calcrate()" class="btn btn-outline-primary">計算</button>
-    </div>
+  <div class="title">
+    <h1>立体骨組構造解析ソフトver1.0.1</h1>
   </div>
 
-  <div class="col-xs-4 margin">
-    <div *ngIf="!loggedIn" class="d-inline-block">
-      <button (click)="logIn()" class="btn btn-outline-primary">ログイン</button>
-    </div>
-    <div *ngIf="loggedIn" class="d-inline-block">
-      <div class="logout-button">
-        <button (click)="logOut()" class="btn btn-outline-primary">ログアウト</button>
+  <div class="login-area">
+    <div class="col-xs-4 margin">
+      <div *ngIf="!loggedIn" class="d-inline-block">
+        <a (click)="logIn()">
+          <i class="fas fa-sign-in-alt"></i>
+          ログイン
+        </a>
+      </div>
+      <div *ngIf="loggedIn" class="d-inline-block">
+        <div ngbDropdown class="d-inline-block">
+          <a id="dropdownBasic2" class="login-item" ngbDropdownToggle>
+            <i class="far fa-user-circle"></i>
+            {{loginUserName}}さん
+          </a>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic2" style="cursor : default !important;">
+            <p ngbDropdownItem style="pointer-events: none;cursor : default !important;">保有ポイント:{{userPoint}}ポイント</p>
+            <button (click)="logOut()" ngbDropdownItem style=" cursor:pointer !important;">ログアウト</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="col-xs-4 margin">
-    <div class="d-inline-block">
-      <button class="btn btn-outline-primary" onClick="window.open('https://doboku-design-program.slack.com/archives/C0199TMHMA9','_blank')" >ヘルプ</button>
-    </div>
-  </div>
-
-
 </div>
+
+
