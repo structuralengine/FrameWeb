@@ -7,6 +7,7 @@ $border-color: #428bca; // ボーダーライン
   z-index: 10;
 
   .container {
+    position: relative;
     max-width: 100%;
     padding-right: 8px !important;
   }
@@ -16,11 +17,13 @@ $border-color: #428bca; // ボーダーライン
 .input-area{
   display: inline-block;
   margin: 0 auto;
+  padding-right: 4px;
 }
 
 .output-area{
   display: inline-block;
   margin: 0 auto;
+  padding-left: 4px;
   border-left: 1px solid #333333;
 }
 

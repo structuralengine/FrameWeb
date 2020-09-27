@@ -2,10 +2,9 @@
   <div class="icon-area">
     <div class="col-xs-4 margin">
       <div ngbDropdown class="d-inline-block">
-        <a class="icon" id="dropdownBasic1" ngbDropdownToggle><i class="far fa-file"></i></a>
+        <a class="icon file" id="dropdownBasic1" ngbDropdownToggle onfocus="this.blur();"><i class="far fa-file"></i></a>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
           <button ngbDropdownItem (click)="renew()">新規作成</button>
-
           <label>
           <span ngbDropdownItem>
             ファイルを開く
@@ -22,6 +21,7 @@
     <div class="col-xs-4 margin">
       <div class="d-inline-block">
         <a (click)="calcrate()"><i class="fas fa-calculator"></i></a>
+        <p class="fukidashi calculator">計算</p>
       </div>
     </div>
 
@@ -29,6 +29,7 @@
     <div class="col-xs-4 margin">
       <div class="d-inline-block">
         <a (click)="print()"><i class="fas fa-print"></i></a>
+        <p class="fukidashi print">印刷</p>
       </div>
     </div>
 
@@ -36,6 +37,7 @@
       <div class="d-inline-block">
         <a onClick="window.open('https://doboku-design-program.slack.com/archives/C0199TMHMA9','_blank')"><i
           class="far fa-question-circle"></i></a>
+        <p class="fukidashi help">ヘルプ</p>
       </div>
     </div>
   </div>

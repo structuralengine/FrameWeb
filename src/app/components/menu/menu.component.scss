@@ -50,3 +50,84 @@ i.fa{
 .login-item{
   color: #fff;
 }
+
+.fukidashi {
+  display: none;
+  position: absolute;
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: #333333;
+  font-size: 12px;
+  background: #ffffff;
+  border: solid 2px #333333;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.fukidashi.file{
+  width: 70px;
+  top: 40px;
+  left: -20px;
+}
+
+.fukidashi.calculator{
+  width: 45px;
+  top: 45px;
+  left: 47px;
+}
+
+.fukidashi.print{
+  width: 45px;
+  top: 45px;
+  left: 72px;
+}
+
+.fukidashi.help{
+  width: 60px;
+  top: 45px;
+  left: 90px;
+}
+
+.fukidashi:before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  margin-left: -15px;
+  border: 12px solid transparent;
+  border-bottom: 14px solid #ffffff;
+  z-index: 2;
+}
+
+.fukidashi:after {
+  content: "";
+  position: absolute;
+  top: -30px;
+  margin-left: -17px;
+  border: 14px solid transparent;
+  border-bottom: 16px solid #333333;
+  z-index: 1;
+}
+
+.fukidashi.file:before,.fukidashi.file:after{
+  left:45%;
+}
+
+.fukidashi.calculator:before,.fukidashi.calculator:after{
+  left:50%;
+}
+
+.fukidashi.print:before,.fukidashi.print:after{
+  left:50%;
+}
+
+.fukidashi.help:before,.fukidashi.help:after{
+  left:50%;
+}
+
+.icon-area a:hover + .fukidashi{
+  display: block;
+}
+
+.icon-area a.file:checked + .fukidashi{
+  display: none;
+}
