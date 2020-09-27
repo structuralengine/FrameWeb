@@ -105,9 +105,10 @@ $border-color: #428bca; // ボーダーライン
   background: #fff;
   border-radius: 4px;
   position: absolute;
-  top: 110px;
+  top: 180px;
+  left: 16px;
   margin: 0;
-  z-index: 100;
+  z-index: 456789;
   overflow: scroll;
   display: inline;
   resize: both;
@@ -151,7 +152,6 @@ $border-color: #428bca; // ボーダーライン
   }
 
 }
-
 
 #myCanvas {
   width: 100% !important;
