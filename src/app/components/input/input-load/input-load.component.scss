@@ -19,7 +19,7 @@
     .ngb-pagination{
         float: left;
     }
-    
+
     display: inline-block;
 }
 
@@ -33,6 +33,7 @@
     padding-left: 15px;
     padding-right: 5px;
     padding-bottom: 10px;
+  z-index: 1;
 }
 
 .nav-item{
