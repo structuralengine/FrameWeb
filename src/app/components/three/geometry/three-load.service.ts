@@ -786,81 +786,9 @@ export class ThreeLoadService {
     const groupY = new THREE.Group();
 
     let geometry = new THREE.Geometry(); // geometryの初期化
-    const interval = 0.7;
-    let count_L = Math.floor(Data.len_L / interval);
-    if (count_L > 0 && count_L < 1) {
-      count_L = 1;
-    }
     const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
     const d1: number = offset + Data.p_one * Math.sign(Data.P1) * (-1);
     const d2: number = offset + Data.p_two * Math.sign(Data.P2) * (-1);
-
-    const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
-    for (let i = 0; i <= count_L; i++) {
-
-      // 矢の先を描く
-      let x: number;
-      let y: number = arrow.size * 0.0;
-      let z: number = arrow.size * 0.2;
-      if (Data.P1 >= 0 && Data.P2 >= 0) {
-        x = arrow.size * -0.4;
-      } else if (Data.P1 <= 0 && Data.P2 <= 0) {
-        x = arrow.size * 0.4;
-      } else if (Data.P1 * Data.P2 < 0) {
-        if (i / count_L < Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
-          x = arrow.size * 0.4 * Math.sign(Data.P1) * (-1);
-        } else if (i / count_L > Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
-          x = arrow.size * 0.4 * Math.sign(Data.P1);
-        } else {
-          continue;
-        }
-      }
-
-      if (Data.P1 * Data.P2 !== 0) {
-        geometry.vertices.push(new THREE.Vector3(x, y, z));
-        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        z = arrow.size * -0.2;
-        geometry.vertices.push(new THREE.Vector3(x, y, z));
-      } else if (Data.P1 === 0 && Data.P2 !== 0) {
-        if (i === 0) {
-          continue;
-        } else {
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-          geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-          z = arrow.size * -0.2;
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-        }
-      } else if (Data.P1 !== 0 && Data.P2 === 0) {
-        if (i + 1 > count_L) {
-          continue;
-        } else {
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-          geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-          z = arrow.size * -0.2;
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-        }
-      }
-
-      const line = new THREE.LineBasicMaterial({ color: arrow.color });
-      let mesh = new THREE.Line(geometry, line);
-      x = 0;
-      y = 0;
-      z = Data.len_L * i / count_L;
-      mesh.position.set(0, 0, Data.len_L * i / count_L);
-      groupY.add(mesh);
-
-      geometry = new THREE.Geometry(); // geometryの初期化
-
-      // 矢印の棒
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
-      x = d1 - difference_P * i / count_L;
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
-      mesh = new THREE.Line(geometry, line);
-      groupY.add(mesh);
-
-      geometry = new THREE.Geometry(); // geometryの初期化
-    }
-
 
     // 分布荷重をまとめる棒
 
@@ -873,7 +801,10 @@ export class ThreeLoadService {
     const x: number = (i.x + j.x) / 2;
     const y: number = (i.y + j.y) / 2;
     const z: number = (i.z + j.z) / 2;
-    const thickness: number = this.baseScale() / 2000;
+    let thickness: number = this.baseScale() / 2000;
+    if (thickness <= 0.00005){
+      thickness = 0.0001;
+    } //thickness <= 0.00005だと表示不可
     const cGeometry = new THREE.CylinderGeometry(thickness, thickness, len, 12);
     const cMesh = new THREE.Mesh(cGeometry,
       new THREE.MeshLambertMaterial({ color: arrow.color }));
@@ -927,79 +858,9 @@ export class ThreeLoadService {
     const len_Ly = L_position.y2 - L_position.y1;
     const len_Lz = L_position.z2 - L_position.z1;
     const len_L: number = new THREE.Vector3(len_Lx, len_Ly, len_Lz).length();
-    let count_L = Math.floor(len_L / interval);
-    if (count_L > 0 && count_L < 1) {
-      count_L = 1;
-    }
     const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
     const d1: number = offset + Data.p_one * Math.sign(Data.P1);
     const d2: number = offset + Data.p_two * Math.sign(Data.P2);
-
-    const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
-    for (let i = 0; i <= count_L; i++) {
-
-      // 矢の先を描く
-      let x: number = arrow.size * 0.0;
-      let y: number = arrow.size * 0.2;
-      let z: number;
-      if (Data.P1 >= 0 && Data.P2 >= 0) {
-        z = arrow.size * 0.4;
-      } else if (Data.P1 <= 0 && Data.P2 <= 0) {
-        z = arrow.size * -0.4;
-      } else if (Data.P1 * Data.P2 < 0) {
-        if (i / count_L < Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
-          z = arrow.size * 0.4 * Math.sign(Data.P1);
-        } else if (i / count_L > Math.abs(Data.P1 / (Data.P2 - Data.P1))) {
-          z = arrow.size * 0.4 * Math.sign(Data.P1) * (-1);
-        } else {
-          continue;
-        }
-      }
-      if (Data.P1 * Data.P2 !== 0) {
-        geometry.vertices.push(new THREE.Vector3(x, y, z));
-        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        y = arrow.size * -0.2;
-        geometry.vertices.push(new THREE.Vector3(x, y, z));
-      } else if (Data.P1 === 0 && Data.P2 !== 0) {
-        if (i === 0) {
-          continue;
-        } else {
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-          geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-          y = arrow.size * -0.2;
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-        }
-      } else if (Data.P1 !== 0 && Data.P2 === 0) {
-        if (i + 1 > count_L) {
-          continue;
-        } else {
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-          geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-          y = arrow.size * -0.2;
-          geometry.vertices.push(new THREE.Vector3(x, y, z));
-        }
-      }
-
-      const line = new THREE.LineBasicMaterial({ color: arrow.color });
-      let mesh = new THREE.Line(geometry, line);
-      x = 0;
-      y = len_L * i / count_L;
-      z = 0;
-      mesh.position.set(x, y, z);
-      groupZ.add(mesh);
-
-      geometry = new THREE.Geometry(); // geometryの初期化
-
-      // 矢印の棒
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
-      z = d1 + difference_P * i / count_L;
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
-      mesh = new THREE.Line(geometry, line);
-      groupZ.add(mesh);
-
-      geometry = new THREE.Geometry(); // geometryの初期化
-    }
-
 
     // 分布荷重をまとめる棒
     const i = new THREE.Vector3(0, 0, d1);
@@ -1011,7 +872,10 @@ export class ThreeLoadService {
     const x: number = (i.x + j.x) / 2;
     const y: number = (i.y + j.y) / 2;
     const z: number = (i.z + j.z) / 2;
-    const thickness: number = this.baseScale() / 2000;
+    let thickness: number = this.baseScale() / 2000;
+    if (thickness <= 0.00005){
+      thickness = 0.0001;
+    } //thickness <= 0.00005だと表示不可
     const cGeometry = new THREE.CylinderGeometry(thickness, thickness, len, 12);
     const cMesh = new THREE.Mesh(cGeometry,
       new THREE.MeshLambertMaterial({ color: arrow.color }));
@@ -1066,17 +930,17 @@ export class ThreeLoadService {
     const arrowlist = [];
     const groupR = new THREE.Group();
 
-    const interval = 0.7;
+    //const interval = 0.7;
     const len_Lx = L_position.x2 - L_position.x1;
     const len_Ly = L_position.y2 - L_position.y1;
     const len_Lz = L_position.z2 - L_position.z1;
     const len_L: number = new THREE.Vector3(len_Lx, len_Ly, len_Lz).length();
     let untilZeo = Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2)) * len_L;
-    const count_L = Math.floor(len_L / interval);
+    //const count_L = Math.floor(len_L / interval);
     let x = (L_position.x2 + L_position.x1) / 2;
     let y = (L_position.y2 + L_position.y1) / 2;
     let z = (L_position.z2 + L_position.z1) / 2;
-    const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
+    //const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
 
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -1123,7 +987,7 @@ export class ThreeLoadService {
       groupR.add(mesh);
     }
 
-    for (let i = 0; i <= count_L; i++) {
+    /*for (let i = 0; i <= count_L; i++) {
       // lineの制御
       x = 0;
       y = 0;
@@ -1176,7 +1040,7 @@ export class ThreeLoadService {
       if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0) {
         groupR.add(cone);
       }
-    }
+    }*/
     x = (L_position.x2 + L_position.x1) / 2;
     y = (L_position.y2 + L_position.y1) / 2;
     z = (L_position.z2 + L_position.z1) / 2;
