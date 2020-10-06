@@ -59,7 +59,7 @@ export class InputJointService {
         const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
         const result = {
           row: row,
-          m: (item.m === null) ? '' : item.m.toFixed(0),
+          m: (item.m === null) ? '' : item.m.toString(),
           xi: (item.xi === null) ? '' : item.xi.toFixed(0),
           yi: (item.yi === null) ? '' : item.yi.toFixed(0),
           zi: (item.zi === null) ? '' : item.zi.toFixed(0),

@@ -116,7 +116,8 @@ export class MenuComponent implements OnInit {
 
     console.log(inputJson);;
 
-    const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
+    // const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
+    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
 
     this.http.post(url, inputJson, {
       headers: new HttpHeaders({
