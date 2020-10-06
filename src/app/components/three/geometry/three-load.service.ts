@@ -156,13 +156,13 @@ export class ThreeLoadService {
     if (this.isVisible[1] === true) {
       this.guiEnable();
     }
-    //const end = performance.now();
-    //const elapsed = (end - start);
-    //const elapsedStr = elapsed.toPrecision(3);
+    /*const end = performance.now();
+    const elapsed = (end - start);
+    const elapsedStr = elapsed.toPrecision(3);
+    const name = "load";
     //console.log(`${name}: ${start}`);
     //console.log(`${name}: ${end}`);
-    //const name = "load";
-    //console.log(`${name}: ${elapsedStr}`);
+    console.log(`${name}: ${elapsedStr}`);*/
   }
 
   // 節点荷重の矢印を描く
@@ -289,7 +289,7 @@ export class ThreeLoadService {
   }
 
   // 節点荷重の矢印を作成する
-  private setPointLoad(value: number, pMax: number,
+  private setPointLoad_memory(value: number, pMax: number,
     node: any, name: string): Line2 {
 
     if (value === 0) {
@@ -364,6 +364,86 @@ export class ThreeLoadService {
     line.name = name;
 
     return line;
+
+  }
+
+  // 節点荷重の矢印を作成する
+  private setPointLoad(value: number, pMax: number,
+    node: any, name: string): Line2 {
+
+    if (value === 0) {
+      return null;
+    }
+
+    const group = new THREE.Group();
+
+    const maxLength: number = this.baseScale() * 0.5;
+    const length: number = maxLength * value / pMax;
+    let color: number;
+    
+    switch (name) {
+      case 'px':
+        color = 0xFF0000;
+        break;
+      case 'py':
+        color = 0x00FF00;
+        break;
+      case 'pz':
+        color = 0x0000FF;
+        break;
+    }
+    const cone_scale: number = length * 0.1 * 2;
+    const cone_radius: number = 0.1 * cone_scale;
+    const cone_height: number = 1 * cone_scale;
+    const coneGeometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
+    const coneMaterial = new THREE.MeshBasicMaterial({ color: color });
+    const cone: THREE.Mesh = new THREE.Mesh(coneGeometry, coneMaterial);
+    switch (name) {
+      case 'px':
+        cone.position.set(-cone_height / 2, 0, 0);
+        cone.rotation.z = Math.PI / 2 * 3;
+        break;
+      case 'py':
+        cone.position.set(0, -cone_height / 2, 0);
+        break;
+      case 'pz':
+        cone.position.set(0, 0, -cone_height / 2);
+        cone.rotation.x = Math.PI / 2;
+        break;
+    }
+    group.add(cone);
+
+    const threeColor = new THREE.Color(color);
+    const colors = [];
+    colors.push(threeColor.r, threeColor.g, threeColor.b);
+    colors.push(threeColor.r, threeColor.g, threeColor.b);
+
+    let geometry = new THREE.BufferGeometry();
+    let vertices = [];
+    vertices.push(new THREE.Vector3(0, 0, 0));
+    switch (name) {
+      case 'px':
+        vertices.push(new THREE.Vector3(-length, 0, 0));
+        break;
+      case 'py':
+        vertices.push(new THREE.Vector3(0, -length, 0));
+        break;
+      case 'pz':
+        vertices.push(new THREE.Vector3(0, 0, -length));
+        break;
+    }
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+
+    const matLine = new THREE.LineBasicMaterial({ color: color });
+    
+    const line = new THREE.Line(geometry, matLine);
+    line.computeLineDistances();
+    group.add(line);
+
+    group.scale.set(1, 1, 1);
+    group.position.set(node.x, node.y, node.z);
+
+    return group;
 
   }
 
@@ -760,7 +840,7 @@ export class ThreeLoadService {
     return arrowlist
   }
 
-  // 矢印（分布荷重X）を描く BufferGeometryに未変更
+  // 矢印（分布荷重X）を描く
   public CreateArrow_X(arrow, L_position, localAxis) {
     const groupX = new THREE.Group();
 

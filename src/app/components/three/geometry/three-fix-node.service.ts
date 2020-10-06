@@ -390,19 +390,19 @@ export class ThreeFixNodeService {
     for (let i = 0; i <= laps * 360; i += split) {
       switch (spring.direction) {
         case ('x'):
-          x = position.x - i * increase * maxLength;
-          y = position.y + radius * Math.cos(Math.PI / 180 * i) * maxLength;
-          z = position.z + radius * Math.sin(Math.PI / 180 * i) * maxLength;
+          x = - i * increase * maxLength;
+          y = radius * Math.cos(Math.PI / 180 * i) * maxLength;
+          z = radius * Math.sin(Math.PI / 180 * i) * maxLength;
           break;
         case ('y'):
-          x = position.x + radius * Math.cos(Math.PI / 180 * i) * maxLength;
-          y = position.y - i * increase * maxLength;
-          z = position.z + radius * Math.sin(Math.PI / 180 * i) * maxLength;
+          x = radius * Math.cos(Math.PI / 180 * i) * maxLength;
+          y = - i * increase * maxLength;
+          z = radius * Math.sin(Math.PI / 180 * i) * maxLength;
           break;
         case ('z'):
-          x = position.x + radius * Math.cos(Math.PI / 180 * i) * maxLength;
-          y = position.y + radius * Math.sin(Math.PI / 180 * i) * maxLength;
-          z = position.z - i * increase * maxLength;
+          x = radius * Math.cos(Math.PI / 180 * i) * maxLength;
+          y = radius * Math.sin(Math.PI / 180 * i) * maxLength;
+          z = - i * increase * maxLength;
           break;
       }
       vertices.push(new THREE.Vector3(x, y, z));
@@ -410,6 +410,7 @@ export class ThreeFixNodeService {
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: spring.color });
     const mesh = new THREE.Line(geometry, line);
+    mesh.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
     geometry = new THREE.BufferGeometry();
@@ -428,19 +429,19 @@ export class ThreeFixNodeService {
     for (let j = 0; j <= laps * 360; j += split) {
       switch (rotatingspring.direction) {
         case 'x':
-          x = position.x;
-          y = position.y + radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
-          z = position.z + radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
+          x = 0;
+          y = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
+          z = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
           break;
         case 'y':
-          x = position.x + radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
-          y = position.y;
-          z = position.z + radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
+          x = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
+          y = 0;
+          z = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
           break;
         case 'z':
-          x = position.x + radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
-          y = position.y + radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
-          z = position.z;
+          x = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
+          y = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
+          z = 0;
           break;
       }
       vertices.push(new THREE.Vector3(x, y, z));
@@ -448,6 +449,7 @@ export class ThreeFixNodeService {
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
     const mesh = new THREE.Line(geometry, line);
+    mesh.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
   }
