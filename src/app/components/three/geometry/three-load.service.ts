@@ -626,6 +626,7 @@ export class ThreeLoadService {
     const group = new THREE.Group();
 
     let geometry = new THREE.BufferGeometry();
+    let vertices = [];
 
     // 矢の棒を描く
     /*geometry.vertices.push(new THREE.Vector3(0, 0, 0));
@@ -636,20 +637,15 @@ export class ThreeLoadService {
     } else {
       return;
     }*/
-    let vertices = new Float32Array( [ ] );
-    if (P > 0){
-      vertices = new Float32Array( [
-        0, 0, 0,
-        0, 0, (-1) * p_,
-      ] );
-    } else if(P < 0){
-      vertices = new Float32Array( [
-        0, 0, 0,
-        0, 0, p_,
-      ] );
+    vertices.push(new THREE.Vector3(0, 0, 0));
+    if (P > 0) {
+      vertices.push(new THREE.Vector3(0, 0, (-1) * p_));
+    } else if (P < 0) {
+      vertices.push(new THREE.Vector3(0, 0, p_));
     } else {
       return;
-    };
+    }
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: arrow.color });
     const mesh = new THREE.Line(geometry, line);
     group.add(mesh);
@@ -661,7 +657,6 @@ export class ThreeLoadService {
     const cone_scale: number = arrow.size;
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
-    //geometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
     geometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
     const material = new THREE.MeshBasicMaterial({ color: arrow.color });
     const cone = new THREE.Mesh(geometry, material);
@@ -720,7 +715,6 @@ export class ThreeLoadService {
     const cone_scale: number = arrow.size;
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
-    //const arrowGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
     const arrowGeometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
     const arrowMaterial = new THREE.MeshBasicMaterial({ color: arrow.color });
     const cone = new THREE.Mesh(arrowGeometry, arrowMaterial);
@@ -770,8 +764,9 @@ export class ThreeLoadService {
   public CreateArrow_X(arrow, L_position, localAxis) {
     const groupX = new THREE.Group();
 
-    let geometry = new THREE.Geometry();
-    //let geometry = new THREE.BufferGeometry();
+    let geometry = new THREE.BufferGeometry();
+    let vertices = [];
+
     const arrowlist = [];
     const offset = 0.1;
     L_position.x1 -= offset * localAxis.y.x;
@@ -783,38 +778,24 @@ export class ThreeLoadService {
       L_position.y2 - L_position.y1,
       L_position.z2 - L_position.z1).length();
     // 矢の先を描く
-    geometry.vertices.push(new THREE.Vector3(arrow.size * 0.3, 0, len_L - arrow.size * 0.6));
-    geometry.vertices.push(new THREE.Vector3(0, 0, len_L));
-    geometry.vertices.push(new THREE.Vector3(arrow.size * -0.3, 0, len_L - arrow.size * 0.6));
-    //let vertices = new Float32Array( [ ] );
-    /*vertices = new Float32Array( [
-      arrow.size * 0.3,  0, len_L - arrow.size * 0.6,
-      0,                 0, len_L,
-      arrow.size * -0.3, 0, len_L - arrow.size * 0.6
-    ] );*/
-    let line = new THREE.LineBasicMaterial({ color: arrow.color });
-    //let material = new THREE.LineBasicMaterial({ color: arrow.color });
-    //geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3) );
-    let mesh = new THREE.Line(geometry, line);
+    vertices.push(new THREE.Vector3(arrow.size * 0.3, 0, len_L - arrow.size * 0.6));
+    vertices.push(new THREE.Vector3(0, 0, len_L));
+    vertices.push(new THREE.Vector3(arrow.size * -0.3, 0, len_L - arrow.size * 0.6));
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    let material = new THREE.LineBasicMaterial({ color: arrow.color });
+    let mesh = new THREE.Line(geometry, material);
     groupX.add(mesh);
-    //groupX.add(new THREE.Mesh(geometry, material));
 
     // geometryの初期化
-    geometry = new THREE.Geometry();
-    //geometry = new THREE.BufferGeometry();
+    geometry = new THREE.BufferGeometry();
 
     // 矢印の棒
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(0, 0, len_L));
-    /*vertices = new Float32Array( [
-      0, 0, 0,
-      0, 0, len_L,
-    ] );*/
-    //geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3) );
-    line = new THREE.LineDashedMaterial({ color: arrow.color, dashSize: 0.1, gapSize: 0.1 });
-    //material = new THREE.LineDashedMaterial({ color: arrow.color, dashSize: 0.1, gapSize: 0.1 });
-    mesh = new THREE.Line(geometry, line);
-    //const mesh = new THREE.Line(geometry, material);
+    vertices.push(new THREE.Vector3(0, 0, 0));
+    vertices.push(new THREE.Vector3(0, 0, len_L));
+
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    material = new THREE.LineDashedMaterial({ color: arrow.color, dashSize: 0.1, gapSize: 0.1 });
+    mesh = new THREE.Line(geometry, material);
     mesh.computeLineDistances();
     groupX.add(mesh);
 
@@ -851,10 +832,8 @@ export class ThreeLoadService {
     if (thickness <= 0.00005){
       thickness = 0.0001;
     } //thickness <= 0.00005だと表示不可
-    //const cGeometry = new THREE.CylinderGeometry(thickness, thickness, len, 12);
     const cGeometry = new THREE.CylinderBufferGeometry(thickness, thickness, len, 12);
     const cMesh = new THREE.Mesh(cGeometry,
-      //new THREE.MeshLambertMaterial({ color: arrow.color }));
       new THREE.MeshBasicMaterial({ color: arrow.color }));
     cMesh.rotation.z = Math.acos(v.y / len);
     cMesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
@@ -863,8 +842,6 @@ export class ThreeLoadService {
 
 
     // 荷重の面Meshを作る
-    //geometry = new THREE.Geometry(); // geometryの初期化
-    //geometry = new THREE.BufferGeometry(); // geometryの初期化
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -909,9 +886,6 @@ export class ThreeLoadService {
         0,  0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L
       ] );
     };
-    //geometry.computeFaceNormals();
-    //geometry.computeVertexNormals();
-    //groupY.add(new THREE.Mesh(geometry, material));
     geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertices1, 3) );
     groupY.add(new THREE.Mesh(geometry1, material));
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3) );
@@ -956,10 +930,8 @@ export class ThreeLoadService {
     if (thickness <= 0.00005){
       thickness = 0.0001;
     } //thickness <= 0.00005だと表示不可
-    //const cGeometry = new THREE.CylinderGeometry(thickness, thickness, len, 12);
     const cGeometry = new THREE.CylinderBufferGeometry(thickness, thickness, len, 12);
     const cMesh = new THREE.Mesh(cGeometry,
-      //new THREE.MeshLambertMaterial({ color: arrow.color }));
       new THREE.MeshBasicMaterial({ color: arrow.color }));
     cMesh.rotation.z = Math.acos(v.y / len);
     cMesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
@@ -968,8 +940,6 @@ export class ThreeLoadService {
 
 
     // 荷重の面Meshを作る
-    //geometry = new THREE.Geometry(); // geometryの初期化
-    //geometry = new THREE.BufferGeometry(); // geometryの初期化
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -1019,8 +989,6 @@ export class ThreeLoadService {
     //geometry.faces.push(face2);
     //geometry.computeFaceNormals();
     //geometry.computeVertexNormals();
-    //let mesh2 = new THREE.Mesh(geometry, material);
-    //groupZ.add(mesh2);
     geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertice1, 3) );
     groupZ.add(new THREE.Mesh(geometry1, material));
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertice2, 3) );
@@ -1050,11 +1018,9 @@ export class ThreeLoadService {
     const len_Lz = L_position.z2 - L_position.z1;
     const len_L: number = new THREE.Vector3(len_Lx, len_Ly, len_Lz).length();
     let untilZeo = Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2)) * len_L;
-    //const count_L = Math.floor(len_L / interval);
     let x = (L_position.x2 + L_position.x1) / 2;
     let y = (L_position.y2 + L_position.y1) / 2;
     let z = (L_position.z2 + L_position.z1) / 2;
-    //const difference_P = Data.p_two * Math.sign(Data.P2) - Data.p_one * Math.sign(Data.P1);
 
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -1063,7 +1029,6 @@ export class ThreeLoadService {
       opacity: 0.3
     });
     if (Data.P1 * Data.P2 >= 0) {
-      //const geometry = new THREE.CylinderGeometry(
       const geometry = new THREE.CylinderBufferGeometry(
         Data.p_one * Math.sign(Data.P1),  // radiusTop
         Data.p_two * Math.sign(Data.P2),  // radiusBottom
@@ -1079,7 +1044,6 @@ export class ThreeLoadService {
 
       // untilZeo = Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2)) * len_L;
       // i端側のコーン
-      //let geometry = new THREE.CylinderGeometry(
       let geometry = new THREE.CylinderBufferGeometry(
         Data.p_one * Math.sign(Data.P1), 0, // radiusTop, radiusBottom
         untilZeo, 12,                  // height, radialSegments
@@ -1091,7 +1055,6 @@ export class ThreeLoadService {
       mesh.position.set(0, 0, -(len_L - untilZeo) / 2);
       groupR.add(mesh);
       // j端側のコーン
-      //geometry = new THREE.CylinderGeometry(
       geometry = new THREE.CylinderBufferGeometry(
         0, Data.p_two * Math.sign(Data.P2), // radiusTop, radiusBottom
         len_L - untilZeo, 12,          // height, radialSegments

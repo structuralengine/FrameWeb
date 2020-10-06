@@ -145,7 +145,7 @@ export class ThreeJointService {
 
   private createJoint_base(position, color){
 
-    const pin_geometry = new THREE.TorusGeometry(0.10, 0.01, 16, 64);
+    const pin_geometry = new THREE.TorusBufferGeometry(0.10, 0.01, 16, 64);
     const pin_material = new THREE.MeshBasicMaterial({color: color , side: THREE.DoubleSide});
     const pin = new THREE.Mesh(pin_geometry, pin_material);
     pin.position.set(position.x, position.y, position.z);

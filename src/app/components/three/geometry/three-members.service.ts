@@ -53,8 +53,6 @@ export class ThreeMembersService {
 
   public chengeData(): void {
 
-    //const start = performance.now();
-
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
     const nodeKeys = Object.keys(nodeData);
@@ -152,14 +150,6 @@ export class ThreeMembersService {
       this.scene.add( group );
     }
     this.onResize();
-
-    //const end = performance.now();
-    //const elapsed = (end - start);
-    //const elapsedStr = elapsed.toPrecision(3);
-    //console.log(`${name}: ${start}`);
-    //console.log(`${name}: ${end}`);
-    //const name = "members";
-    //console.log(`${name}: ${elapsedStr}`);
 
   }
 

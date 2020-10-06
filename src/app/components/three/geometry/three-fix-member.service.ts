@@ -7,6 +7,7 @@ import { ThreeNodesService } from './three-nodes.service';
 
 import * as THREE from 'three';
 import { ThreeMembersService } from './three-members.service';
+import { Material } from 'three';
 
 @Injectable({
   providedIn: 'root'
@@ -204,7 +205,8 @@ export class ThreeFixMemberService {
 
   // バネを描く
   public CreateSpring(spring, position, localAxis, maxLength) {
-    let GeometrySpring = new THREE.Geometry();
+    let geometry = new THREE.BufferGeometry();
+    let vertices = [];
     let increase = 0.0001;
     switch (spring.relationship) {
       case ('small'):
@@ -224,32 +226,32 @@ export class ThreeFixMemberService {
       x = radius * Math.cos(Math.PI / 180 * i) * maxLength;
       y = radius * Math.sin(Math.PI / 180 * i) * maxLength;
       z = - i * increase * maxLength;
-      GeometrySpring.vertices.push(new THREE.Vector3(x, y, z));
+      vertices.push(new THREE.Vector3(x, y, z));
     }
-    const LineSpring = new THREE.LineBasicMaterial({ color: spring.color });
-    const MeshSpring = new THREE.Line(GeometrySpring, LineSpring);
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    const line = new THREE.LineBasicMaterial({ color: spring.color });
+    const mesh = new THREE.Line(geometry, line);
     // lookAt用
-    const angle = Math.PI / 6;
     switch (spring.direction) {
       case ('x'):
-        MeshSpring.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
+        mesh.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
         break;
       case ('y'):
-        MeshSpring.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
+        mesh.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
         break;
       case ('z'):
-        MeshSpring.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
+        mesh.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
         break;
     }
-    MeshSpring.position.set(position.x, position.y, position.z);
-    this.fixmemberList.push(MeshSpring);
-    this.scene.add(MeshSpring);
-    GeometrySpring = new THREE.Geometry();
+    mesh.position.set(position.x, position.y, position.z);
+    this.fixmemberList.push(mesh);
+    this.scene.add(mesh);
   }
 
   // 回転バネ支点を描く
   public CreateRotatingSpring(rotatingspring, position, localAxis, maxLength) {
-    let geometry = new THREE.Geometry();
+    let geometry = new THREE.BufferGeometry();
+    let vertices = [];
     const laps = 3 + 0.25;
     const split = 10;
     const radius = 0.1 * 0.0005;
@@ -260,15 +262,15 @@ export class ThreeFixMemberService {
       x = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
       y = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
       z = 0;
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
+      vertices.push(new THREE.Vector3(x, y, z));
     }
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
     const mesh = new THREE.Line(geometry, line);
     mesh.lookAt(position.x + localAxis.x.x, position.y + localAxis.x.y, position.z + localAxis.x.z); // 作図上y方向を見る
     mesh.position.set(position.x, position.y, position.z);
     this.fixmemberList.push(mesh);
     this.scene.add(mesh);
-    geometry = new THREE.Geometry();
   }
 
   public ClearData(): void {

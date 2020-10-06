@@ -271,7 +271,7 @@ export class ThreeFixNodeService {
 
     const height: number = maxLength * 0.2;
     const radius: number = height * 0.3;
-    const geometry = new THREE.ConeGeometry( radius, height, 12, 1, false );
+    const geometry = new THREE.ConeBufferGeometry( radius, height, 12, 1, false );
     geometry.translate( 0, -height/2, 0 );
     const material = new THREE.MeshBasicMaterial({ color: pin.color });
     const cone = new THREE.Mesh(geometry, material);
@@ -317,7 +317,7 @@ export class ThreeFixNodeService {
   // 固定支点を描く
   public CreateFixed(fixed, position, maxLength) {
     const side = 0.06 * maxLength;
-    let geometry = new THREE.PlaneGeometry(side, 2.5 * side);
+    let geometry = new THREE.PlaneBufferGeometry(side, 2.5 * side);
     const material = new THREE.MeshBasicMaterial({ color: fixed.color, side: THREE.DoubleSide });
     const plane = new THREE.Mesh(geometry, material);
     let x = position.x;
@@ -335,14 +335,14 @@ export class ThreeFixNodeService {
     plane.position.set(x, y, z);
     this.fixnodeList.push(plane);
     this.scene.add(plane);
-    geometry = new THREE.PlaneGeometry;
+    geometry = new THREE.PlaneBufferGeometry;
   }
 
   // 完全な固定支点を描く
   public CreateFixed_P(fixed_Parfect, position, maxLength) {
     fixed_Parfect.color = 0x808080;
     const size = 0.2 * maxLength;
-    const geometry = new THREE.BoxGeometry(size, size, size);
+    const geometry = new THREE.BoxBufferGeometry(size, size, size);
     const material = new THREE.MeshBasicMaterial({ color: fixed_Parfect.color });
     const cube = new THREE.Mesh(geometry, material);
     switch (fixed_Parfect.directionX) {
@@ -370,7 +370,8 @@ export class ThreeFixNodeService {
 
   // バネ支点を描く
   public CreateSpring(spring, position, maxLength) {
-    let geometry = new THREE.Geometry();
+    let geometry = new THREE.BufferGeometry();
+    let vertices = [];
     let increase = 0.00015;
     switch (spring.relationship) {
       case ('small'):
@@ -404,18 +405,20 @@ export class ThreeFixNodeService {
           z = position.z - i * increase * maxLength;
           break;
       }
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
+      vertices.push(new THREE.Vector3(x, y, z));
     }
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: spring.color });
     const mesh = new THREE.Line(geometry, line);
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
-    geometry = new THREE.Geometry();
+    geometry = new THREE.BufferGeometry();
   }
 
   // 回転バネ支点を描く
   public CreateRotatingSpring(rotatingspring, position, maxLength) {
-    let geometry = new THREE.Geometry();
+    let geometry = new THREE.BufferGeometry();
+    let vertices = [];
     const laps = 3 + 0.25;
     const split = 10;
     const radius = 0.1 * 0.001;
@@ -440,13 +443,13 @@ export class ThreeFixNodeService {
           z = position.z;
           break;
       }
-      geometry.vertices.push(new THREE.Vector3(x, y, z));
+      vertices.push(new THREE.Vector3(x, y, z));
     }
+    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
     const mesh = new THREE.Line(geometry, line);
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
-    geometry = new THREE.Geometry();
   }
 
   // データをクリアする
