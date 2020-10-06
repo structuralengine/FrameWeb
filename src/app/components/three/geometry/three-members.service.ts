@@ -53,6 +53,8 @@ export class ThreeMembersService {
 
   public chengeData(): void {
 
+    const start = performance.now();
+
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
     const nodeKeys = Object.keys(nodeData);
@@ -95,11 +97,13 @@ export class ThreeMembersService {
       const y: number = (i.y + j.y) / 2;
       const z: number = (i.z + j.z) / 2;
       // 要素をシーンに追加
-      const geometry = new THREE.CylinderGeometry(1, 1, len, 12);
+      //const geometry = new THREE.CylinderGeometry(1, 1, len, 12);
+      const geometry = new THREE.CylinderBufferGeometry(1, 1, len, 12);
 
       // 要素をシーンに追加
       const mesh = new THREE.Mesh(geometry,
-                  new THREE.MeshLambertMaterial({ color: 0x000000 }));
+                  //new THREE.MeshLambertMaterial({ color: 0x000000 }));
+                  new THREE.MeshBasicMaterial({ color: 0x000000 }));
       mesh.name = 'member' + key;
       mesh.rotation.z = Math.acos(v.y / len);
       mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
@@ -148,6 +152,15 @@ export class ThreeMembersService {
       this.scene.add( group );
     }
     this.onResize();
+
+    const end = performance.now();
+    const elapsed = (end - start);
+    const elapsedStr = elapsed.toPrecision(3);
+    //console.log(`${name}: ${start}`);
+    //console.log(`${name}: ${end}`);
+    const name = "members";
+    console.log(`${name}: ${elapsedStr}`);
+
   }
 
   // データをクリアする
