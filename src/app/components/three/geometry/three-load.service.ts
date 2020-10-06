@@ -115,7 +115,7 @@ export class ThreeLoadService {
 
   public chengeData(index: number): void {
 
-    const start = performance.now();
+    //const start = performance.now();
 
     // 一旦全排除
     this.ClearData();
@@ -156,13 +156,13 @@ export class ThreeLoadService {
     if (this.isVisible[1] === true) {
       this.guiEnable();
     }
-    const end = performance.now();
-    const elapsed = (end - start);
-    const elapsedStr = elapsed.toPrecision(3);
+    //const end = performance.now();
+    //const elapsed = (end - start);
+    //const elapsedStr = elapsed.toPrecision(3);
     //console.log(`${name}: ${start}`);
     //console.log(`${name}: ${end}`);
-    const name = "load";
-    console.log(`${name}: ${elapsedStr}`);
+    //const name = "load";
+    //console.log(`${name}: ${elapsedStr}`);
   }
 
   // 節点荷重の矢印を描く

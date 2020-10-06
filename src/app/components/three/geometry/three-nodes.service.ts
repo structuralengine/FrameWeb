@@ -46,7 +46,7 @@ export class ThreeNodesService {
 
   public chengeData(): void {
 
-    const start = performance.now();
+    //const start = performance.now();
 
     // 入力データを入手
     const jsonData = this.node.getNodeJson(0);
@@ -110,13 +110,13 @@ export class ThreeNodesService {
     this.setBaseScale();
     this.onResize();
 
-    const end = performance.now();
-    const elapsed = (end - start);
-    const elapsedStr = elapsed.toPrecision(3);
+    //const end = performance.now();
+    //const elapsed = (end - start);
+    //const elapsedStr = elapsed.toPrecision(3);
     //console.log(`${name}: ${start}`);
     //console.log(`${name}: ${end}`);
-    const name = "nodes";
-    console.log(`${name}: ${elapsedStr}`);
+    //const name = "nodes";
+    //console.log(`${name}: ${elapsedStr}`);
   }
 
   // データをクリアする

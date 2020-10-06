@@ -53,7 +53,7 @@ export class ThreeMembersService {
 
   public chengeData(): void {
 
-    const start = performance.now();
+    //const start = performance.now();
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
@@ -153,13 +153,13 @@ export class ThreeMembersService {
     }
     this.onResize();
 
-    const end = performance.now();
-    const elapsed = (end - start);
-    const elapsedStr = elapsed.toPrecision(3);
+    //const end = performance.now();
+    //const elapsed = (end - start);
+    //const elapsedStr = elapsed.toPrecision(3);
     //console.log(`${name}: ${start}`);
     //console.log(`${name}: ${end}`);
-    const name = "members";
-    console.log(`${name}: ${elapsedStr}`);
+    //const name = "members";
+    //console.log(`${name}: ${elapsedStr}`);
 
   }
 
