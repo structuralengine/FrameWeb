@@ -66,8 +66,8 @@ export class ThreeFixNodeService {
       return;
     }
 
-    const gui_step: number = 2 * 0.001;
-    this.gui = this.scene.gui.add(this.params, 'fixnodeScale', 0, 2).step(gui_step).onChange((value) => {
+    const gui_step: number = 80 * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'fixnodeScale', 0, 80).step(gui_step).onChange((value) => {
       this.scale = value;
       this.onResize();
       this.scene.render();

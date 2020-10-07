@@ -81,7 +81,8 @@ export class ThreeLoadService {
 
     if (!('pointLoadScale' in this.gui)) {
       if (this.pointLoadList.length > 0) {
-        this.gui['pointLoadScale'] = this.scene.gui.add(this.params, 'pointLoadScale', 0, 2).step(0.001).onChange((value) => {
+        const gui_step: number = 80 * 0.001;
+        this.gui['pointLoadScale'] = this.scene.gui.add(this.params, 'pointLoadScale', 0, 80).step(gui_step).onChange((value) => {
           this.pointLoadScale = value;
           this.pointLoadResize();
           this.scene.render();
@@ -91,7 +92,8 @@ export class ThreeLoadService {
 
     if (!('memberLoadScale' in this.gui)) {
       if (this.memberLoadList.length > 0) {
-        this.gui['memberLoadScale'] = this.scene.gui.add(this.params, 'memberLoadScale', 0, 2).step(0.001).onChange((value) => {
+        const gui_step: number = 80 * 0.001;
+        this.gui['memberLoadScale'] = this.scene.gui.add(this.params, 'memberLoadScale', 0, 80).step(gui_step).onChange((value) => {
           this.memberLoadScale = value;
           this.memberLoadResize();
           this.scene.render();
@@ -115,7 +117,7 @@ export class ThreeLoadService {
 
   public chengeData(index: number): void {
 
-    //const start = performance.now();
+    // const start = performance.now();
 
     // 一旦全排除
     this.ClearData();
@@ -258,7 +260,6 @@ export class ThreeLoadService {
     const lineMaterial = new THREE.LineBasicMaterial({ color, linewidth: 5 });
     const ellipse = new THREE.Line(lineGeometry, lineMaterial);
 
-    //const arrowGeometry = new THREE.ConeGeometry(0.1, 1, 3, 1, true);
     const arrowGeometry = new THREE.ConeBufferGeometry(0.1, 1, 3, 1, true);
     const arrowMaterial = new THREE.MeshBasicMaterial({ color });
     const cone = new THREE.Mesh(arrowGeometry, arrowMaterial);
@@ -289,8 +290,10 @@ export class ThreeLoadService {
   }
 
   // 節点荷重の矢印を作成する
-  private setPointLoad_memory(value: number, pMax: number,
-    node: any, name: string): Line2 {
+  private setPointLoad_memory(value: number, 
+                              pMax: number,
+                              node: any, 
+                              name: string): Line2 {
 
     if (value === 0) {
       return null;
@@ -323,7 +326,6 @@ export class ThreeLoadService {
     const cone_scale: number = length * 0.1 * 2;
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
-    //const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
     const arrowGeometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
     const arrowMaterial = new THREE.MeshBasicMaterial({ color });
     const cone: THREE.Mesh = new THREE.Mesh(arrowGeometry, arrowMaterial);
@@ -368,8 +370,10 @@ export class ThreeLoadService {
   }
 
   // 節点荷重の矢印を作成する
-  private setPointLoad(value: number, pMax: number,
-    node: any, name: string): Line2 {
+  private setPointLoad(value: number, 
+                       pMax: number,
+                       node: any, 
+                       name: string): Line2 {
 
     if (value === 0) {
       return null;

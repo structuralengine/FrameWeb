@@ -83,7 +83,6 @@ export class ThreeNodesService {
       } else {
         // 要素をシーンに追加
         const mesh = new THREE.Mesh(this.geometry,
-          //new THREE.MeshLambertMaterial({ color: 0x000000 }));
           new THREE.MeshBasicMaterial({ color: 0x000000 }));
         mesh.name = 'node' + key;
         mesh.position.x = jsonData[key].x;
@@ -225,8 +224,8 @@ export class ThreeNodesService {
       return;
     }
 
-    const gui_step: number = 5 * 0.001;
-    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 5).step(gui_step).onChange((value) => {
+    const gui_step: number = 80 * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 80).step(gui_step).onChange((value) => {
       this.scale = value;
       this.onResize();
       this.scene.render();

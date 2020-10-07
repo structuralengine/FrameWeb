@@ -95,12 +95,10 @@ export class ThreeMembersService {
       const y: number = (i.y + j.y) / 2;
       const z: number = (i.z + j.z) / 2;
       // 要素をシーンに追加
-      //const geometry = new THREE.CylinderGeometry(1, 1, len, 12);
       const geometry = new THREE.CylinderBufferGeometry(1, 1, len, 12);
 
       // 要素をシーンに追加
       const mesh = new THREE.Mesh(geometry,
-                  //new THREE.MeshLambertMaterial({ color: 0x000000 }));
                   new THREE.MeshBasicMaterial({ color: 0x000000 }));
       mesh.name = 'member' + key;
       mesh.rotation.z = Math.acos(v.y / len);
@@ -237,8 +235,8 @@ export class ThreeMembersService {
       return;
     }
 
-    const gui_step: number = 10 * 0.001;
-    this.gui = this.scene.gui.add(this.params, 'memberScale', 0, 10).step(gui_step).onChange((value) => {
+    const gui_step: number = 80 * 0.001;
+    this.gui = this.scene.gui.add(this.params, 'memberScale', 0, 80).step(gui_step).onChange((value) => {
       this.scale = value;
       this.onResize();
       this.scene.render();

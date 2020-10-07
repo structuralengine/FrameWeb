@@ -19,9 +19,8 @@ export class InputNodesService {
   public getNodeColumns(index: number): any {
 
     let result: any = null;
-    for (let i = 0; i < this.node.length; i++) {
-      const tmp = this.node[i];
-      if (tmp['id'].toString() === index.toString()) {
+    for (const tmp  of this.node) {
+      if (tmp.id.toString() === index.toString()) {
         result = tmp;
         break;
       }
@@ -64,12 +63,11 @@ export class InputNodesService {
       }
 
       const key: string = row.id;
-      jsonData[key] = { 
-        'x': (item.x == null) ? empty : item.x, 
-        'y': (item.y == null) ? empty : item.y, 
-        'z': (item.z == null) ? empty : item.z
+      jsonData[key] = {
+        x: (item.x == null) ? empty : item.x,
+        y: (item.y == null) ? empty : item.y,
+        z: (item.z == null) ? empty : item.z
       };
-      
     }
     return jsonData;
   }

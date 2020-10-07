@@ -45,18 +45,17 @@ export class InputNodesComponent implements OnInit {
   };
 
   constructor(private data: InputNodesService,
-    private helper: DataHelperModule,
-    private three: ThreeService,
-    public user:UserInfoService,) {
+              private helper: DataHelperModule,
+              private three: ThreeService,
+              public user: UserInfoService) {
     this.page = 1;
   }
 
   ngOnInit() {
     this.loadPage(1);
     this.three.ChengeMode('nodes');
-
   }
-  
+
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

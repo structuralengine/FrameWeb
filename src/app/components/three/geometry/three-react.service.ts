@@ -37,7 +37,7 @@ export class ThreeReactService {
       this.pointLoadList = new Array();
       this.selectionItem = null;
     }
-    
+
     public visible(flag: boolean): void {
       if ( this.isVisible === flag) {
         return;

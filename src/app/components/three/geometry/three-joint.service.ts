@@ -20,11 +20,11 @@ export class ThreeJointService {
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   constructor(private scene: SceneService,
-    private nodeThree: ThreeNodesService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private joint: InputJointService,
-    private three_member: ThreeMembersService){
+              private nodeThree: ThreeNodesService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private joint: InputJointService,
+              private three_member: ThreeMembersService){
       this.jointList = new Array();
       this.isVisible = null;
     }
@@ -36,7 +36,7 @@ export class ThreeJointService {
     for (const mesh of this.jointList) {
       mesh.visible = flag;
     }
-    this.isVisible = flag
+    this.isVisible = flag;
   }
 
   public chengeData(index: number): void {
@@ -62,12 +62,12 @@ export class ThreeJointService {
       return;
     } 
 
-    //createJointLoadを実行させる
+    // createJointLoadを実行させる
     const targetJoint = jointData[key];
 
     for (const jo of targetJoint) {
 
-      //jointDataデータのに 要素番号 m を探す
+      // jointDataデータのに 要素番号 m を探す
       if(!(jo.m in memberData)){
         continue;
       }
@@ -97,7 +97,7 @@ export class ThreeJointService {
     }
   }
 
-  //ピンを示すドーナッツを描く
+  // ピンを示すドーナッツを描く
   private createJoint(position: any, direction: any, localAxis): void {
 
       // x方向の結合
@@ -107,7 +107,7 @@ export class ThreeJointService {
         const FocalSpot_X = position.x + localAxis.x.x;
         const FocalSpot_Y = position.y + localAxis.x.y;
         const FocalSpot_Z = position.z + localAxis.x.z;
-        pin_x.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);  
+        pin_x.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
         pin_x.name = "0xFF0000";
         this.jointList.push(pin_x);
         this.scene.add(pin_x);
@@ -120,7 +120,7 @@ export class ThreeJointService {
         const FocalSpot_X = position.x + localAxis.y.x;
         const FocalSpot_Y = position.y + localAxis.y.y;
         const FocalSpot_Z = position.z + localAxis.y.z;
-        pin_y.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);   
+        pin_y.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
         pin_y.name = "0x00FF00";
         this.jointList.push(pin_y);
         this.scene.add(pin_y);
@@ -128,13 +128,13 @@ export class ThreeJointService {
       }
 
       // z方向の結合
-      
+
       if(direction.z === 0 ){
         const pin_z = this.createJoint_base(position, 0x0000FF);
         const FocalSpot_X = position.x + localAxis.z.x;
         const FocalSpot_Y = position.y + localAxis.z.y;
         const FocalSpot_Z = position.z + localAxis.z.z;
-        pin_z.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);  
+        pin_z.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
         pin_z.name = "0x0000FF";
         this.jointList.push(pin_z);
         this.scene.add(pin_z);
@@ -149,7 +149,7 @@ export class ThreeJointService {
     const pin_material = new THREE.MeshBasicMaterial({color: color , side: THREE.DoubleSide});
     const pin = new THREE.Mesh(pin_geometry, pin_material);
     pin.position.set(position.x, position.y, position.z);
-    
+
     return pin;
   }
 
@@ -183,14 +183,14 @@ export class ThreeJointService {
         this.jointList.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を指定する
-            if (item.name === "0xFF0000"){
+            if ( item.name === "0xFF0000" ){
               item.material['color'].setHex(0xff0000);
-            }else if(item.name === "0x00FF00"){
+            }else if ( item.name === "0x00FF00" ){
               item.material['color'].setHex(0x00ff00);
-            }else if(item.name === "0x0000FF"){
+            }else if ( item.name === "0x0000FF" ){
               item.material['color'].setHex(0x0000ff);
             }
-            item.material['opacity'] = 1.00;  //彩度 強
+            item.material['opacity'] = 1.00;  // 彩度 強
           }
         });
         break;
