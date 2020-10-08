@@ -63,41 +63,23 @@ export class ResultDataService {
     this.pickreac.clear();
     this.pickfsec.clear();
     this.isCombinePickupChenge = true;
+
+    // 図をクリアする
+    this.three_fsec.ClearData();
+    this.three_reac.ClearData();
+    this.three_disg.ClearData();
   }
 
-  // 計算結果 テキスト形式
-  public getResultText(): string {
-
-    const jsonData = {};
-
-    jsonData['disg'] = this.disg.getDisgJson();
-    jsonData['reac'] = this.reac.getReacJson();
-    jsonData['fsec'] = this.fsec.getFsecJson();
-
-    const result: string = JSON.stringify(jsonData);
-    return result;
-  }
 
   // 計算結果を読み込む 
-  public loadResultData(resultText: string): boolean {
-    this.clear();
+  public loadResultData(jsonData: object): boolean {
 
-    let jsonData: {} = null;
     try {
-      jsonData = JSON.parse(resultText);
-
       // 基本ケース
       this.disg.setDisgJson(jsonData);
       this.reac.setReacJson(jsonData);
       this.fsec.setFsecJson(jsonData);
 
-      // 組み合わせケース
-      this.CombinePickup();
-
-      // 図をクリアする
-      this.three_fsec.ClearData();
-      this.three_reac.ClearData();
-      this.three_disg.ClearData();
 
     } catch (e) {
       return false;
@@ -105,9 +87,10 @@ export class ResultDataService {
     return true;
   }
 
+
   public CombinePickup(): void {
 
-    if (this.isCombinePickupChenge = false) {
+    if (this.isCombinePickupChenge === false) {
       return;
     }
     const load = this.load.getLoadNameJson(1);

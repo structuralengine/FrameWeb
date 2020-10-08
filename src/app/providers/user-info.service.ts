@@ -25,8 +25,7 @@ export class UserInfoService {
   }
 
   // 計算結果情報から ユーザーポイントを更新する
-  public loadResultData(resultText: string): void {
-    const jsonData: {} = JSON.parse(resultText);
+  public loadResultData(jsonData: object): void {
     if ('new_points' in jsonData) {
       this.purchase_value = jsonData['new_points'];
     }

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -100,7 +100,7 @@ export class MenuComponent implements OnInit {
 
 
   // 計算
-  calcrate(): void {
+  public calcrate(): void {
     /*
         if (this.user.loggedIn === false) {
           this.logIn();
@@ -111,42 +111,68 @@ export class MenuComponent implements OnInit {
     */
     const modalRef = this.modalService.open(WaitDialogComponent);
 
-    const inputJson =
-      this.InputData.getCalcText({ username: this.user.loginUserName, password: this.user.loginPassword });
+    const jsonData: {} = this.InputData.getInputJson(0);
 
-    console.log(inputJson);;
+    const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
+    for (const key of Object.keys(jsonData)) {
+      if ( 'load' === key ){
+        continue;
+      }
+      inputJson[key] = jsonData[key];
+    }
+
+    this.ResultData.clear(); // 解析結果情報をクリア
+
+    const Keys = Object.keys(jsonData['load']);
+    this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
+
+
+  }
+
+  private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
+
+    if (Keys.length <= index) {
+      // 全ての解析ケースを計算し終えたら
+      this.ResultData.CombinePickup(); // 組み合わせケースを集計する
+      this.three.chengeData();
+      modalRef.close(); // モーダルダイアログを消す
+      return;
+    }
+    const key: string = Keys[index];
+    const current = {};
+    current[key] = load[key];
+    jsonData['load'] = current;
+    const inputJson = JSON.stringify(jsonData);
+    console.log('荷重ケース ' + key);
+    console.log(inputJson);
 
     // const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
     const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
 
     this.http.post(url, inputJson, {
       headers: new HttpHeaders({
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       })
     }).subscribe(
       response => {
         // 通信成功時の処理（成功コールバック）
-        console.log('通信成功!!');
-        const response_text: string = JSON.stringify(response);
-        console.log(response_text);
+        console.log('通信成功!! 解析ケース' + index.toString());
 
         // サーバーのレスポンスを集計する
-        if (!this.ResultData.loadResultData(response_text)) {
-          alert(response_text);
+        if (!this.ResultData.loadResultData(response)) {
+          alert('解析結果の集計に失敗しました');
         } else {
           // ユーザーポイントの更新
-          this.loadResultData(response_text);
-          this.three.chengeData();
+          this.loadResultData(response);
         }
-        modalRef.close();
+        this.post(jsonData, load, Keys, index + 1);
       },
       error => {
         // 通信失敗時の処理（失敗コールバック）
         this.app.isCalculated = false;
-        modalRef.close();
 
         let messege: string = '通信 ' + error.statusText;
-        if('_body' in error){
+        if ('_body' in error){
           messege += '\n' + error._body;
         }
         alert(messege);
@@ -154,8 +180,8 @@ export class MenuComponent implements OnInit {
     );
   }
 
-  private loadResultData(resultText: string): void {
-    this.user.loadResultData(resultText);
+  private loadResultData(jsonData: object): void {
+    this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
     this.app.Calculated(this.ResultData);
   }
