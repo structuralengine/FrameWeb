@@ -165,7 +165,7 @@ export class MenuComponent implements OnInit {
           // ユーザーポイントの更新
           this.loadResultData(response);
         }
-        this.post(jsonData, load, Keys, index + 1);
+        this.post(jsonData, load, Keys, index + 1, modalRef);
       },
       error => {
         // 通信失敗時の処理（失敗コールバック）
