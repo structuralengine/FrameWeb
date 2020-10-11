@@ -157,7 +157,7 @@ export class ThreeSectionForceService {
   // 変数 this.targetData に値をセットする
   public chengeData(index: number, ModeName: string): void {
 
-    if (this.modeName === ModeName ){  
+    if (this.modeName === ModeName ){
       if (this.targetIndex === index.toString()) {
         // ケースが同じなら何もしない
         return;
@@ -187,7 +187,7 @@ export class ThreeSectionForceService {
     if (memberKeys.length <= 0) {
       return;
     }
-    
+
     // 断面力データを入手
     let allFsecgData: object;
     switch(ModeName){
@@ -209,7 +209,7 @@ export class ThreeSectionForceService {
       return;      // 荷重Case番号 this.targetIndex が 計算結果 this.targetData に含まれていなかったら何もしない
     }
 
-    const maxValue ={
+    const maxValue = {
       fx: 0,
       fy: 0,
       fz: 0,
@@ -220,10 +220,10 @@ export class ThreeSectionForceService {
 
     for (const targetKey of Object.keys(allFsecgData)) {
 
-      let targetCase: any = allFsecgData[targetKey]; // 対象ケースのデータを複製して扱っている
+      const targetCase: any = allFsecgData[targetKey]; // 対象ケースのデータを複製して扱っている
 
       let targetFsecName: string[];
-      if( ModeName == 'comb_fsec' || ModeName == 'pik_fsec'){
+      if ( ModeName === 'comb_fsec' || ModeName === 'pik_fsec'){
         targetFsecName = ['max', 'min']
       } else {
         if (!Array.isArray(targetCase)){

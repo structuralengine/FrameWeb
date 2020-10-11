@@ -162,6 +162,7 @@ export class MenuComponent implements OnInit {
         if (!this.ResultData.loadResultData(response)) {
           alert('解析結果の集計に失敗しました');
         } else {
+          console.log(response);
           // ユーザーポイントの更新
           this.loadResultData(response);
         }

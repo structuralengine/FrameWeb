@@ -21,16 +21,16 @@ export class InputNoticePointsService {
 
     let result: any = null;
 
-    for (let i = 0; i < this.notice_points.length; i++) {
-      const tmp = this.notice_points[i];
+    for (const tmp of this.notice_points) {
       if (tmp['row'] === row) {
         result = tmp;
         break;
       }
     }
+
     // 対象データが無かった時に処理
     if (result == null) {
-      result = { row: row, m: '', len: '' };
+      result = { row, m: '', len: '' };
       for (let i = 1; i <= InputNoticePointsService.NOTICE_POINTS_COUNT; i++) {
         result['L' + i] = '';
       }
@@ -84,15 +84,15 @@ export class InputNoticePointsService {
         }
       }
 
-      let m = this.helper.toNumber(row['m']);
+      const m = this.helper.toNumber(row['m']);
 
       if (m == null || Object.keys(points).length === 0) {
         continue;
       }
 
-      result.push({ 
+      result.push({
         row: r,
-        m: row.m, 
+        m: row.m,
         Points: points
        });
     }
