@@ -37,7 +37,7 @@ export class ResultDisgService {
     const rz = (item.dx === null) ? 0 : Math.round(10000 * item.rz) / 10000;
 
     const result = {
-      id: item['n'],
+      id: item.id,
       dx: dx.toFixed(4),
       dy: dy.toFixed(4),
       dz: dz.toFixed(4),

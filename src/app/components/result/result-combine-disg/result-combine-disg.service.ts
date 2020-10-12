@@ -35,6 +35,7 @@ export class ResultCombineDisgService {
     for (const k of Object.keys(target2)) {
       const target3 = target2[k];
       const item = {
+        id: target3['id'],
         dx: target3['dx'].toFixed(4),
         dy: target3['dy'].toFixed(4),
         dz: target3['dz'].toFixed(4),
