@@ -12,7 +12,7 @@ import { ThreeService } from '../../three/three.service';
 
 export class InputFixMemberComponent implements OnInit {
 
-  static ROWS_COUNT = 20;
+  static ROWS_COUNT = 200;
   dataset: any[];
   page: number;
 
