@@ -132,13 +132,56 @@ export class InputDataService {
       jsonData['three'] = this.three.getSettingJson();
     }
 
+    const error = this.checkError(jsonData);
+    if ( error !== null ){
+      jsonData['error'] = error;
+    }
+
     return jsonData;
   }
 
+  private checkError(jsonData: object): string {
+
+      // 存在しない節点を使っているかチェックする
+      if (!('node' in jsonData )){
+        return 'node データがありません';
+      }
+      const nodes: object = jsonData['node'];
+      if ( Object.keys(nodes).length <= 0 ){
+        return 'node データがありません';
+      }
+
+      if (!('member' in jsonData )){
+        return 'member データがありません';
+      }
+      const members: object = jsonData['member'];
+      const memberKeys = Object.keys(members);
+      if ( memberKeys.length <= 0 ){
+        return 'member データがありません';
+      }
+
+      // 部材で使われている 節点番号が存在するか調べる
+      const n: object = {};
+      for (const key of memberKeys){
+        const m = members[key];
+        for (const name of [m.ni, m.nj]) {
+          if (!(name in nodes)){
+            return 'member' + key + 'で使われている node ' + name + 'は、存在しません';
+          }
+          n[name] = nodes[name];
+        }
+      }
+      jsonData['node'] = n;
+
+      return null;
+  }
+
+
+  
   public getResultJson(): object {
-    
+
     const jsonData = {};
-    
+
     const define: {} = this.define.getDefineJson();
     if (Object.keys(define).length > 0) {
       jsonData['define'] = define;

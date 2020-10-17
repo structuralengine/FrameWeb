@@ -112,6 +112,13 @@ export class MenuComponent implements OnInit {
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const jsonData: {} = this.InputData.getInputJson(0);
+    // console.log(JSON.stringify(jsonData));
+
+    if ( 'error' in jsonData ){
+        alert(jsonData['error']);
+        modalRef.close(); // モーダルダイアログを消す
+        return;
+    }
 
     const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
     for (const key of Object.keys(jsonData)) {
@@ -125,7 +132,6 @@ export class MenuComponent implements OnInit {
 
     const Keys = Object.keys(jsonData['load']);
     this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
-
 
   }
 
