@@ -379,6 +379,9 @@ export class ThreeLoadService {
       return null;
     }
 
+    let scale: number = value / pMax;
+    scale /= 8;
+
     const group = new THREE.Group();
 
     const maxLength: number = this.baseScale() * 0.5;
@@ -396,22 +399,26 @@ export class ThreeLoadService {
         color = 0x0000FF;
         break;
     }
-    const cone_scale: number = length * 0.1 * 2;
+    const cone_scale: number = length;
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
     const coneGeometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
+    //const coneGeometry = new THREE.ConeBufferGeometry(0.02, 0.2, 3, 1, true);
     const coneMaterial = new THREE.MeshBasicMaterial({ color: color });
     const cone: THREE.Mesh = new THREE.Mesh(coneGeometry, coneMaterial);
     switch (name) {
       case 'px':
         cone.position.set(-cone_height / 2, 0, 0);
+        //cone.position.set(-0.2 / 2, 0, 0);
         cone.rotation.z = Math.PI / 2 * 3;
         break;
       case 'py':
         cone.position.set(0, -cone_height / 2, 0);
+        //cone.position.set(0, -0.2 / 2, 0);
         break;
       case 'pz':
         cone.position.set(0, 0, -cone_height / 2);
+        //cone.position.set(0, 0, -0.2 / 2);
         cone.rotation.x = Math.PI / 2;
         break;
     }
@@ -427,13 +434,13 @@ export class ThreeLoadService {
     vertices.push(new THREE.Vector3(0, 0, 0));
     switch (name) {
       case 'px':
-        vertices.push(new THREE.Vector3(-length, 0, 0));
+        vertices.push(new THREE.Vector3(-length * 3, 0, 0));
         break;
       case 'py':
-        vertices.push(new THREE.Vector3(0, -length, 0));
+        vertices.push(new THREE.Vector3(0, -length * 3, 0));
         break;
       case 'pz':
-        vertices.push(new THREE.Vector3(0, 0, -length));
+        vertices.push(new THREE.Vector3(0, 0, -length * 3));
         break;
     }
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
@@ -444,8 +451,11 @@ export class ThreeLoadService {
     line.computeLineDistances();
     group.add(line);
 
-    group.scale.set(1, 1, 1);
     group.position.set(node.x, node.y, node.z);
+    group.name = name;
+    //group.scale.set(1, 1, 1);
+    group.scale.set(scale, scale, scale);
+    group['baseScale'] = scale;
 
     return group;
 
@@ -660,6 +670,7 @@ export class ThreeLoadService {
           } else {
             groupe['localAxis'] = localAxis.y; // 荷重の方向を示すベクトル
           }
+          groupe.name = 'qy'; // この名前は memberLoadResize() で使っている
 
         } else if (load.direction === 'z') {
           load.len_L = Data.len_L;
@@ -673,6 +684,7 @@ export class ThreeLoadService {
           } else {
             groupe['localAxis'] = localAxis.z; // 荷重の方向を示すベクトル
           }
+          groupe.name = 'qz'; // この名前は memberLoadResize() で使っている
 
         } else if (load.direction === 'r') {
           arrow.size = arrow.size / 2.5;
@@ -685,6 +697,10 @@ export class ThreeLoadService {
           };
           groupe['check_box']['p1'] = Data.p_one;
           groupe['check_box']['p2'] = Data.p_two;
+          groupe.name = 'qr'; // この名前は memberLoadResize() で使っている
+          //groupe.up.x = localAxis.x.x;
+          //groupe.up.y = localAxis.x.y;
+          //groupe.up.z = localAxis.x.z;
 
         } else {
           return;
@@ -699,7 +715,11 @@ export class ThreeLoadService {
     }
 
     // meshを出力
+    //console.log('-----groupe-----');
+    //console.log(groupe);
     this.memberLoadList.push(groupe);
+    //console.log('-----memberLoadList-----');
+    //console.log(this.memberLoadList);
     this.scene.add(groupe);
   }
 
@@ -885,6 +905,7 @@ export class ThreeLoadService {
 
     groupX.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
     groupX.position.set(L_position.x1, L_position.y1, L_position.z1);
+    groupX.name = "qx";
     arrowlist.push(groupX);
     return arrowlist;
   }
@@ -975,8 +996,13 @@ export class ThreeLoadService {
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3) );
     groupY.add(new THREE.Mesh(geometry2, material));
 
+    groupY.up.x = localAxis.z.x;
+    groupY.up.y = localAxis.z.y;
+    groupY.up.z = localAxis.z.z;
+
     // groupの操作
     groupY.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
+    groupY.name = 'qy';
     arrowlist.push(groupY);
     return arrowlist;
   }
@@ -1078,18 +1104,27 @@ export class ThreeLoadService {
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertice2, 3) );
     groupZ.add(new THREE.Mesh(geometry2, material));
 
+    groupZ.up.x = localAxis.z.x;
+    groupZ.up.y = localAxis.z.y;
+    groupZ.up.z = localAxis.z.z;
+
     //groupの操作
     if (len_Lz !== 0) {
       groupZ.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
     } else if (len_Lz === 0) {
       groupZ.rotation.z = Math.PI * 1.5 + Math.atan2(len_Ly, len_Lx);
     }
+    groupZ.name = 'qz';
+
     arrowlist.push(groupZ);
     return arrowlist
   }
 
   // 部材ねじりモーメント(分布モーメント)荷重
   public CreateArrow_R(arrow, L_position, localAxis, Data) {
+
+    //let scale: number = value / pMax;
+    //scale /= 8;
 
     Data.p_one = Data.p_one * 0.2;
     Data.p_two = Data.p_two * 0.2;
@@ -1208,8 +1243,12 @@ export class ThreeLoadService {
     x = (L_position.x2 + L_position.x1) / 2;
     y = (L_position.y2 + L_position.y1) / 2;
     z = (L_position.z2 + L_position.z1) / 2;
+    groupR.up.x = localAxis.z.x;
+    groupR.up.y = localAxis.z.y;
+    groupR.up.z = localAxis.z.z;
     groupR.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
     groupR.position.set(x, y, z);
+    groupR.name = "qr";
 
     arrowlist.push(groupR);
     return arrowlist;
@@ -1260,7 +1299,7 @@ export class ThreeLoadService {
     // 節点荷重のスケールを変更する
     for (const item of this.pointLoadList) {
       switch (item.name) {
-        case 'px':
+        /*case 'px':
           item.scale.set(this.pointLoadScale, 1, 1);
           break;
         case 'py':
@@ -1268,7 +1307,7 @@ export class ThreeLoadService {
           break;
         case 'pz':
           item.scale.set(1, 1, this.pointLoadScale);
-          break;
+          break;*/
         default:
           if ('baseScale' in item) {
             const scale: number = item.baseScale * this.pointLoadScale;
@@ -1283,14 +1322,21 @@ export class ThreeLoadService {
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
+      /*if (item.name === 'qr'){
+        console.log("-----item-----")
+        console.log(item)
+      }*/
       if( item.name === 'qx'){
         continue;
       }
       if ('localAxis' in item) {
-        const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
-        const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);
-        const scaleZ: number = 1 + Math.abs(item.localAxis.z) * (this.memberLoadScale - 1);
-        item.scale.set(scaleX, scaleY, scaleZ);
+        //const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
+        //const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);
+        //const scaleZ: number = 1 + Math.abs(item.localAxis.z) * (this.memberLoadScale - 1);
+        const scaleX: number = this.memberLoadScale ;
+        const scaleY: number = this.memberLoadScale ;
+        const scaleZ: number = 1;
+        item.children[0].scale.set(scaleX, scaleY, scaleZ);
       }
     }
 
