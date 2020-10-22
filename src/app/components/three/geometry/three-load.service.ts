@@ -135,7 +135,7 @@ export class ThreeLoadService {
       this.ClearNodeLoad();
     } else {
       // サイズを調整しオブジェクトを登録する
-      this.createNodeLoad(nodeLoadData[targetCase], nodeData);
+      this.createNodeLoad(nodeLoadData, nodeData);
     }
 
     // 要素データを入手
@@ -151,7 +151,7 @@ export class ThreeLoadService {
       this.ClearMemberLoad();
     } else {
       // サイズを調整しオブジェクトを登録する
-      this.createMemberLoad(memberLoadData[targetCase], nodeData, memberData);
+      this.createMemberLoad(memberLoadData, nodeData, memberData);
     }
 
     this.onResize();
@@ -195,6 +195,15 @@ export class ThreeLoadService {
       if (node === undefined) {
         continue;
       }
+
+      for ( const key of ['x', 'y', 'z']) {
+        const Arrow: Line2 = this.setPointLoad(load['t' + key], pMax, node, 'p' + key);
+        if (Arrow !== null) {
+          this.pointLoadList.push(Arrow);
+          this.scene.add(Arrow);
+        }
+      }
+      /*
       // x方向の集中荷重
       const xArrow: Line2 = this.setPointLoad(load.tx, pMax, node, 'px');
       if (xArrow !== null) {
@@ -213,7 +222,7 @@ export class ThreeLoadService {
         this.pointLoadList.push(zArrow);
         this.scene.add(zArrow);
       }
-
+      */
       // x軸周りのモーメント
       const xMoment = this.setMomentLoad(load.rx, mMax, node, 0xFF0000, 'mx');
       if (xMoment !== null) {
