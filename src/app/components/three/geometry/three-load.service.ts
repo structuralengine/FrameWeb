@@ -409,7 +409,8 @@ export class ThreeLoadService {
         color = 0x0000FF;
         break;
     }
-    const cone_scale: number = length;
+    //const cone_scale: number = length;
+    const cone_scale: number = Math.abs(length);
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
     const coneGeometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
@@ -442,15 +443,39 @@ export class ThreeLoadService {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     vertices.push(new THREE.Vector3(0, 0, 0));
+    let length2 : number = 0;
+    if (length > 0){
+      length2 = length * (-3);
+    } else if (length < 0){
+      length2 = length * 3;
+    }
     switch (name) {
       case 'px':
-        vertices.push(new THREE.Vector3(-length * 3, 0, 0));
+        //vertices.push(new THREE.Vector3(-length * 3, 0, 0));
+        vertices.push(new THREE.Vector3(length2, 0, 0));
+        /*if ( length > 0 ) {
+          vertices.push(new THREE.Vector3(-length * 3, 0, 0));
+        } else if ( length < 0 ) {
+          vertices.push(new THREE.Vector3( length * 3, 0, 0));
+        }*/
         break;
       case 'py':
-        vertices.push(new THREE.Vector3(0, -length * 3, 0));
+        //vertices.push(new THREE.Vector3(0, -length * 3, 0));
+        vertices.push(new THREE.Vector3(0, length2, 0));
+        /*if ( length > 0 ) {
+          vertices.push(new THREE.Vector3(0, -length * 3, 0));
+        } else if ( length < 0 ) {
+          vertices.push(new THREE.Vector3(0,  length * 3, 0));
+        }*/
         break;
       case 'pz':
-        vertices.push(new THREE.Vector3(0, 0, -length * 3));
+        //vertices.push(new THREE.Vector3(0, 0, -length * 3));
+        vertices.push(new THREE.Vector3(0, 0, length2));
+        /*if ( length > 0 ) {
+          vertices.push(new THREE.Vector3(0, 0, -length * 3));
+        } else if ( length < 0 ) {
+          vertices.push(new THREE.Vector3(0, 0,  length * 3));
+        }*/
         break;
     }
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
