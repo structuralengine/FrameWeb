@@ -453,29 +453,14 @@ export class ThreeLoadService {
       case 'px':
         //vertices.push(new THREE.Vector3(-length * 3, 0, 0));
         vertices.push(new THREE.Vector3(length2, 0, 0));
-        /*if ( length > 0 ) {
-          vertices.push(new THREE.Vector3(-length * 3, 0, 0));
-        } else if ( length < 0 ) {
-          vertices.push(new THREE.Vector3( length * 3, 0, 0));
-        }*/
         break;
       case 'py':
         //vertices.push(new THREE.Vector3(0, -length * 3, 0));
         vertices.push(new THREE.Vector3(0, length2, 0));
-        /*if ( length > 0 ) {
-          vertices.push(new THREE.Vector3(0, -length * 3, 0));
-        } else if ( length < 0 ) {
-          vertices.push(new THREE.Vector3(0,  length * 3, 0));
-        }*/
         break;
       case 'pz':
         //vertices.push(new THREE.Vector3(0, 0, -length * 3));
         vertices.push(new THREE.Vector3(0, 0, length2));
-        /*if ( length > 0 ) {
-          vertices.push(new THREE.Vector3(0, 0, -length * 3));
-        } else if ( length < 0 ) {
-          vertices.push(new THREE.Vector3(0, 0,  length * 3));
-        }*/
         break;
     }
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
@@ -598,7 +583,7 @@ export class ThreeLoadService {
                                         localAxis,
                                         Data.P1,
                                         Data.p_one);
-          pos.push(p);
+          //pos.push(p);
           // マイナスあんら重なりを判定する軸を反転する
           if ( Math.sign(Data.P1) < 0) {
             myLocalAxis = {
@@ -624,7 +609,7 @@ export class ThreeLoadService {
                                         localAxis,
                                         Data.P2,
                                         Data.p_two);
-          pos.push(p);
+          //pos.push(p);
           // マイナスあんら重なりを判定する軸を反転する
           if ( Math.sign(Data.P2) < 0) {
             myLocalAxis = {
@@ -643,6 +628,14 @@ export class ThreeLoadService {
         }
         for (const a of arrowlist2) {
           groupe.add(a);
+        }
+
+        if (load.direction === "x") {
+          groupe.name = 'fx'; // この名前は memberLoadResize() で使っている
+        } else if (load.direction === "y"){
+          groupe.name = 'fy'; // この名前は memberLoadResize() で使っている
+        } else if (load.direction === "z"){
+          groupe.name = 'fz'; // この名前は memberLoadResize() で使っている
         }
         break;
 
@@ -735,9 +728,6 @@ export class ThreeLoadService {
           groupe['check_box']['p1'] = Data.p_one;
           groupe['check_box']['p2'] = Data.p_two;
           groupe.name = 'qr'; // この名前は memberLoadResize() で使っている
-          //groupe.up.x = localAxis.x.x;
-          //groupe.up.y = localAxis.x.y;
-          //groupe.up.z = localAxis.x.z;
 
         } else {
           return;
@@ -807,6 +797,9 @@ export class ThreeLoadService {
     group.add(cone);
 
     // groupの操作
+    group.up.x = localAxis.z.x;
+    group.up.y = localAxis.z.y;
+    group.up.z = localAxis.z.z;
     switch (arrow.direction) {
       case ('x'):
         group.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
@@ -814,14 +807,17 @@ export class ThreeLoadService {
           pos.x - localAxis.y.x * 0.1,
           pos.y - localAxis.y.y * 0.1,
           pos.z);
+          group.name = "x"; //デバック用
         break;
       case ('y'):
         group.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
         group.position.set(pos.x, pos.y, pos.z);
+        group.name = "y"; //デバック用
         break;
       case ('z'):
         group.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
         group.position.set(pos.x, pos.y, pos.z);
+        group.name = "z"; //デバック用
         break;
     }
     arrowlist.push(group);
@@ -923,8 +919,9 @@ export class ThreeLoadService {
     let mesh = new THREE.Line(geometry, material);
     groupX.add(mesh);
 
-    // geometryの初期化
+    // geometryとverticesの初期化
     geometry = new THREE.BufferGeometry();
+    vertices = [];
 
     // 矢印の棒
     vertices.push(new THREE.Vector3(0, 0, 0));
@@ -936,9 +933,14 @@ export class ThreeLoadService {
     mesh.computeLineDistances();
     groupX.add(mesh);
 
+    groupX.up.x = localAxis.z.x;
+    groupX.up.y = localAxis.z.y;
+    groupX.up.z = localAxis.z.z;
+
     groupX.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
     groupX.position.set(L_position.x1, L_position.y1, L_position.z1);
     groupX.name = "qx";
+
     arrowlist.push(groupX);
     return arrowlist;
   }
@@ -1362,7 +1364,6 @@ export class ThreeLoadService {
         //const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
         //const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);
         //const scaleZ: number = 1 + Math.abs(item.localAxis.z) * (this.memberLoadScale - 1);
-
         let scaleX: number = 1;
         let scaleY: number = 1;
         let scaleZ: number = 1;
@@ -1371,13 +1372,18 @@ export class ThreeLoadService {
           scaleX = this.memberLoadScale ;
           scaleY = 1 ;
           scaleZ = this.memberLoadScale ;
+        } else if (item.name === "fx" || item.name === "fy" || item.name === "fz") {
+          scaleX = this.memberLoadScale ;
+          scaleY = this.memberLoadScale ;
+          scaleZ = this.memberLoadScale ;
         } else {
           scaleX = this.memberLoadScale ;
           scaleY = this.memberLoadScale ;
           scaleZ = 1;
         }
-
-        item.children[0].scale.set(scaleX, scaleY, scaleZ);
+        for (const item2 of item.children){
+          item2.scale.set(scaleX, scaleY, scaleZ);
+        }
       }
     }
 
