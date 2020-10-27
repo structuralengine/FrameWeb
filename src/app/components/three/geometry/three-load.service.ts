@@ -130,7 +130,11 @@ export class ThreeLoadService {
 
     // 節点荷重データを入手
     const targetCase: string = index.toString();
-    const nodeLoadData = this.load.getNodeLoadJson(0, targetCase);
+    const nLoadData = this.load.getNodeLoadJson(0, targetCase);
+    let nodeLoadData = {};
+    if ( targetCase in nLoadData) {
+      nodeLoadData = nLoadData[targetCase];
+    }
     if (Object.keys(nodeLoadData).length <= 0) {
       this.ClearNodeLoad();
     } else {
@@ -146,7 +150,11 @@ export class ThreeLoadService {
     }
 
     // 要素荷重データを入手
-    const memberLoadData = this.load.getMemberLoadJson(0, targetCase);
+    const mLoadData = this.load.getMemberLoadJson(0, targetCase);
+    let memberLoadData = {};
+    if ( targetCase in mLoadData) {
+      memberLoadData = mLoadData[targetCase];
+    }
     if (Object.keys(memberLoadData).length <= 0) {
       this.ClearMemberLoad();
     } else {
