@@ -158,13 +158,6 @@ export class ThreeLoadService {
     if (this.isVisible[1] === true) {
       this.guiEnable();
     }
-    /*const end = performance.now();
-    const elapsed = (end - start);
-    const elapsedStr = elapsed.toPrecision(3);
-    const name = "load";
-    //console.log(`${name}: ${start}`);
-    //console.log(`${name}: ${end}`);
-    console.log(`${name}: ${elapsedStr}`);*/
   }
 
   // 節点荷重の矢印を描く
@@ -724,11 +717,7 @@ export class ThreeLoadService {
     }
 
     // meshを出力
-    //console.log('-----groupe-----');
-    //console.log(groupe);
     this.memberLoadList.push(groupe);
-    //console.log('-----memberLoadList-----');
-    //console.log(this.memberLoadList);
     this.scene.add(groupe);
   }
 
@@ -1113,9 +1102,9 @@ export class ThreeLoadService {
     geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertice2, 3) );
     groupZ.add(new THREE.Mesh(geometry2, material));
 
-    groupZ.up.x = localAxis.z.x;
-    groupZ.up.y = localAxis.z.y;
-    groupZ.up.z = localAxis.z.z;
+    groupZ.up.x = localAxis.z.x * (-1); //バグの応応急処置のためマイナスをかけた
+    groupZ.up.y = localAxis.z.y * (-1); //バグの応応急処置のためマイナスをかけた
+    groupZ.up.z = localAxis.z.z * (-1); //バグの応応急処置のためマイナスをかけた
 
     //groupの操作
     if (len_Lz !== 0) {
@@ -1331,10 +1320,6 @@ export class ThreeLoadService {
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
-      /*if (item.name === 'qr'){
-        console.log("-----item-----")
-        console.log(item)
-      }*/
       if( item.name === 'qx'){
         continue;
       }
@@ -1342,9 +1327,21 @@ export class ThreeLoadService {
         //const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
         //const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);
         //const scaleZ: number = 1 + Math.abs(item.localAxis.z) * (this.memberLoadScale - 1);
-        const scaleX: number = this.memberLoadScale ;
-        const scaleY: number = this.memberLoadScale ;
-        const scaleZ: number = 1;
+
+        let scaleX: number = 1;
+        let scaleY: number = 1;
+        let scaleZ: number = 1;
+
+        if (item.name === "qz"){
+          scaleX = this.memberLoadScale ;
+          scaleY = 1 ;
+          scaleZ = this.memberLoadScale ;
+        } else {
+          scaleX = this.memberLoadScale ;
+          scaleY = this.memberLoadScale ;
+          scaleZ = 1;
+        }
+
         item.children[0].scale.set(scaleX, scaleY, scaleZ);
       }
     }
