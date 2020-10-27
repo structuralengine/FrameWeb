@@ -471,7 +471,7 @@ export class ThreeLoadService {
     }
 
     // memberLoadData情報を書き換える可能性があるので、複製する
-    const targetMemberLoad = JSON.parse(
+    const targetMemberLoad: object = JSON.parse(
       JSON.stringify({
         temp: memberLoadData
       })
@@ -479,14 +479,16 @@ export class ThreeLoadService {
 
     // スケールを決定する 最大の荷重を 1とする
     let pMax = 0;
-    for (const load of targetMemberLoad) {
+    for (const key of Object.keys(targetMemberLoad)) {
+      const load = targetMemberLoad[key];
       pMax = Math.max(pMax, Math.abs(load.P1));
       pMax = Math.max(pMax, Math.abs(load.P2));
     }
 
     const maxLength: number = this.baseScale() * 0.5;
 
-    for (const load of targetMemberLoad) {
+    for (const key of Object.keys(targetMemberLoad)) {
+      const load = targetMemberLoad[key];
 
       // 節点データを集計する
       const m = memberData[load.m];
