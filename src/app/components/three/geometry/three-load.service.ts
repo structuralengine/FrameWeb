@@ -116,9 +116,7 @@ export class ThreeLoadService {
   }
 
   public chengeData(index: number): void {
-
-    // const start = performance.now();
-
+    
     // 一旦全排除
     this.ClearData();
 
@@ -733,6 +731,8 @@ export class ThreeLoadService {
           return;
         }
 
+
+
         for (const a of arrowlist1) {
           groupe.add(a);
         }
@@ -1037,6 +1037,7 @@ export class ThreeLoadService {
 
     // groupの操作
     groupY.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
+    groupY.position.set(L_position.x1, L_position.y1, L_position.z1);
     groupY.name = 'qy';
     arrowlist.push(groupY);
     return arrowlist;
@@ -1044,9 +1045,6 @@ export class ThreeLoadService {
 
   // 矢印（分布荷重Z）を描く
   public CreateArrow_Z(arrow, L_position, localAxis, Data): any[] {
-    // 正負が逆だったので応急処置
-    Data.P1 = Data.P1 * (-1);
-    Data.P2 = Data.P2 * (-1);
     const arrowlist = [];
     const groupZ = new THREE.Group();
 
@@ -1062,8 +1060,8 @@ export class ThreeLoadService {
     const d2: number = offset + Data.p_two * Math.sign(Data.P2);
 
     // 分布荷重をまとめる棒
-    const i = new THREE.Vector3(0, 0, d1);
-    const j = new THREE.Vector3(0, len_L, d2);
+    const i = new THREE.Vector3(0, d1, 0);
+    const j = new THREE.Vector3(0, d2, len_L);
 
     const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
     const len: number = v.length();
@@ -1108,26 +1106,26 @@ export class ThreeLoadService {
     let vertice2 = new Float32Array( [ ] );
     if (Data.P1 * Data.P2 >= 0){
       vertice1 = new Float32Array( [
-        0,     0,  0,
-        0,     0, d1,
-        0, len_L, d2
+        0,  0,     0,
+        0, d1,     0,
+        0, d2, len_L
       ] );
       vertice2 = new Float32Array( [
-        0,     0,  0,
-        0, len_L, d2,
-        0, len_L,  0
+        0,  0,     0, 
+        0, d2, len_L,
+        0,  0, len_L
       ] );
     } else if (Data.P1 * Data.P2 < 0){
       const zero = (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L;
       vertice1 = new Float32Array( [
-        0,    0,  0,
-        0,    0, d1,
-        0, zero,  0
+        0,  0,    0,
+        0, d1,    0,
+        0,  0, zero
       ] );
       vertice2 = new Float32Array( [
-        0, len_L, d2, 
-        0, len_L,  0,
-        0,  zero,  0
+        0, d2, len_L, 
+        0,  0, len_L,
+        0,  0,  zero
       ] );
     };
     //geometry.faces.push(face1);
@@ -1145,10 +1143,11 @@ export class ThreeLoadService {
 
     //groupの操作
     if (len_Lz !== 0) {
-      groupZ.lookAt(localAxis.z.x, localAxis.z.y, localAxis.z.z);
+      groupZ.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
     } else if (len_Lz === 0) {
       groupZ.rotation.z = Math.PI * 1.5 + Math.atan2(len_Ly, len_Lx);
     }
+    groupZ.position.set(L_position.x1, L_position.y1, L_position.z1);
     groupZ.name = 'qz';
 
     arrowlist.push(groupZ);
@@ -1369,9 +1368,9 @@ export class ThreeLoadService {
         let scaleZ: number = 1;
 
         if (item.name === "qz"){
-          scaleX = this.memberLoadScale ;
-          scaleY = 1 ;
-          scaleZ = this.memberLoadScale ;
+          scaleX = 1 ;
+          scaleY = this.memberLoadScale ;
+          scaleZ = 1 ;
         } else if (item.name === "fx" || item.name === "fy" || item.name === "fz") {
           scaleX = this.memberLoadScale ;
           scaleY = this.memberLoadScale ;
@@ -1513,9 +1512,12 @@ export class ThreeLoadService {
             }
           }
           // 位置を重ならない位置に修正する
-          const posX: number = p1.x + direction.x * distance;
-          const posY: number = p1.y + direction.y * distance;
-          const posZ: number = p1.z + direction.z * distance;
+          const posX: number = 0 + direction.x * distance;
+          //const posX: number = p1.x + direction.x * distance;
+          const posY: number = 0 + direction.y * distance;
+          //const posY: number = p1.y + direction.y * distance;
+          const posZ: number = 0 + direction.z * distance;
+          //const posZ: number = p1.z + direction.z * distance;
           item.position.set(posX, posY, posZ);
           this.scene.render();
           // 当たってはいけないオブジェクトとして登録
