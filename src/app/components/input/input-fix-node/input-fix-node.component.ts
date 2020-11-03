@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputFixNodeService } from './input-fix-node.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import { ThreeService } from '../../three/three.service';
@@ -10,7 +10,7 @@ import{ UserInfoService } from '../../../providers/user-info.service'
   styleUrls: ['./input-fix-node.component.scss','../../../app.component.scss']
 })
 
-export class InputFixNodeComponent implements OnInit {
+export class InputFixNodeComponent implements OnInit, AfterViewInit {
 
   static ROWS_COUNT = 20;
   dataset: any[];
@@ -40,23 +40,29 @@ export class InputFixNodeComponent implements OnInit {
           }
         },
         afterChange: (...x: any[]) => {
+          if (this.initialFlg===true){
+            return;
+          }
           this.three.chengeData('fix_nodes', this.page );
         }
       };
-
+  private initialFlg = true;
   constructor(private data: InputFixNodeService,
               private helper: DataHelperModule,
               private three: ThreeService,
-              private user : UserInfoService,) {
+              private user: UserInfoService) {
 
     this.dataset = new Array();
     this.page = 1;
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.loadPage(1);
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputLoadService } from './input-load.service';
 import { ThreeService } from '../../three/three.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
@@ -8,7 +8,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
   templateUrl: './input-load.component.html',
   styleUrls: ['./input-load.component.scss']
 })
-export class InputLoadComponent implements OnInit {
+export class InputLoadComponent implements OnInit, AfterViewInit {
 
   ROWS_COUNT = 600;
   collectionSize = 100;
@@ -47,6 +47,9 @@ export class InputLoadComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       this.three.chengeData('load_points', this.page);
     }
   };
@@ -101,10 +104,14 @@ export class InputLoadComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       this.three.chengeData('load_members', this.page);
     }
   };
 
+  private initialFlg = true;
   constructor(private data: InputLoadService,
               private three: ThreeService,
               private helper: DataHelperModule) {
@@ -112,12 +119,15 @@ export class InputLoadComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     let n: number = this.data.getLoadCaseCount();
     n += 5;
     this.collectionSize = n * 10;
     this.loadPage(1);
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {
       this.page = currentPage;

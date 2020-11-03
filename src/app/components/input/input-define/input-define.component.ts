@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputDefineService } from './input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { ResultDataService } from '../../../providers/result-data.service';
@@ -8,9 +8,9 @@ import{ UserInfoService } from '../../../providers/user-info.service'
 @Component({
   selector: 'app-input-define',
   templateUrl: './input-define.component.html',
-  styleUrls: ['./input-define.component.scss','../../../app.component.scss']
+  styleUrls: ['./input-define.component.scss', '../../../app.component.scss']
 })
-export class InputDefineComponent implements OnInit {
+export class InputDefineComponent implements OnInit, AfterViewInit {
 
   ROWS_COUNT = 20;
   COLUMNS_COUNT: number;
@@ -43,6 +43,9 @@ export class InputDefineComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
         if (Array.isArray(x[i])) {
@@ -56,6 +59,7 @@ export class InputDefineComponent implements OnInit {
     }
   };
 
+  private initialFlg = true;
   constructor(private input: InputDefineService,
               private load: InputLoadService,
               private result: ResultDataService,
@@ -69,6 +73,7 @@ export class InputDefineComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.COLUMNS_COUNT = this.load.getLoadCaseCount() * 2 + 1;
     if (this.COLUMNS_COUNT <= 5) {
       this.COLUMNS_COUNT = 5;
@@ -79,7 +84,9 @@ export class InputDefineComponent implements OnInit {
 
     this.loadPage(1);
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

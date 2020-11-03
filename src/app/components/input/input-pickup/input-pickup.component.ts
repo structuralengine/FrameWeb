@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputPickupService } from './input-pickup.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { InputCombineService } from '../input-combine/input-combine.service';
@@ -12,7 +12,7 @@ import{ UserInfoService } from '../../../providers/user-info.service'
   styleUrls: ['./input-pickup.component.scss','../../../app.component.scss']
 })
 
-export class InputPickupComponent implements OnInit {
+export class InputPickupComponent implements OnInit, AfterViewInit {
 
   ROWS_COUNT = 20;
   COLUMNS_COUNT: number;
@@ -52,6 +52,9 @@ export class InputPickupComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
         if (Array.isArray(x[i])) {
@@ -65,6 +68,7 @@ export class InputPickupComponent implements OnInit {
     }
   };
 
+  private initialFlg = true;
   constructor(private data: InputPickupService,
               private load: InputLoadService,
               private comb: InputCombineService,
@@ -80,6 +84,7 @@ export class InputPickupComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.COLUMNS_COUNT = this.comb.getCombineCaseCount();
     if (this.COLUMNS_COUNT <= 0) {
       this.COLUMNS_COUNT = this.load.getLoadCaseCount();
@@ -95,7 +100,9 @@ export class InputPickupComponent implements OnInit {
     this.pickupTitles.push('名称　　　　　　　　　　　　　　');
     this.loadPage(1);
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;

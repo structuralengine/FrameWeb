@@ -6,12 +6,6 @@
   </nav>
 </div>
 
-<div class="pager">
-  <div class="pager-title">ページ</div>
-  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
-  </ngb-pagination>
-</div>
-
 <div class="datasheet">
   <hot-table class="hot" 
   [data]="pickupData" 
@@ -23,4 +17,11 @@
   licenseKey="non-commercial-and-evaluation">
     <hot-column *ngFor="let c of pickupColums; index as i" [data]="c" [title]="pickupTitles[i]"></hot-column>
   </hot-table>
+
+  <div class="pager">
+    <div class="pager-title">ページ</div>
+    <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
+    </ngb-pagination>
+  </div>
+  
 </div>
