@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputMembersService } from './input-members.service';
 import { ThreeService } from '../../three/three.service';
 import{ UserInfoService } from '../../../providers/user-info.service'
@@ -9,7 +9,7 @@ import{ UserInfoService } from '../../../providers/user-info.service'
   styleUrls: ['./input-members.component.scss','../../../app.component.scss']
 })
 
-export class InputMembersComponent implements OnInit {
+export class InputMembersComponent implements OnInit, AfterViewInit {
 
   static ROWS_COUNT = 20;
   dataset: any[];
@@ -17,6 +17,9 @@ export class InputMembersComponent implements OnInit {
 
   hotTableSettings = {
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       let hotInstance: any;
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
@@ -60,6 +63,7 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
+  private initialFlg = true;
   constructor(private data: InputMembersService,
               private three: ThreeService,
               public user:UserInfoService) {
@@ -67,10 +71,13 @@ export class InputMembersComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.loadPage(1);
     this.three.ChengeMode('members');
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

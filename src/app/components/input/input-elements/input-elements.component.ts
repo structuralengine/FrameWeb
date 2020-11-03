@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputElementsService } from './input-elements.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import{ UserInfoService } from '../../../providers/user-info.service'
@@ -10,7 +10,7 @@ import { ThreeService } from '../../three/three.service';
   styleUrls: ['./input-elements.component.scss','../../../app.component.scss']
 })
 
-export class InputElementsComponent implements OnInit {
+export class InputElementsComponent implements OnInit, AfterViewInit {
 
   static ROWS_COUNT = 20;
   dataset: any[];
@@ -60,10 +60,14 @@ export class InputElementsComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       this.three.chengeData('elements', this.page );
     }
   };
 
+  private initialFlg = true;
   constructor(
     private data: InputElementsService,
     private helper: DataHelperModule,
@@ -74,9 +78,12 @@ export class InputElementsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.loadPage(1);
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')
