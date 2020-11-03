@@ -129,6 +129,19 @@ export class InputDataService {
     }
 
     if (empty === null) {
+      const define: {} = this.define.getDefineJson();
+      if (Object.keys(define).length > 0) {
+        jsonData['define'] = define;
+      }
+      const combine: {} = this.combine.getCombineJson();
+      if (Object.keys(combine).length > 0) {
+        jsonData['combine'] = combine;
+      }
+      const pickup: {} = this.pickup.getPickUpJson();
+      if (Object.keys(pickup).length > 0) {
+        jsonData['pickup'] = pickup;
+      }      
+
       jsonData['three'] = this.three.getSettingJson();
     }
 
