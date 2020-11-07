@@ -71,7 +71,7 @@ export class ResultDataService {
   }
 
 
-  // 計算結果を読み込む 
+  // 計算結果を読み込む
   public loadResultData(jsonData: object): boolean {
 
     try {
@@ -79,7 +79,6 @@ export class ResultDataService {
       this.disg.setDisgJson(jsonData);
       this.reac.setReacJson(jsonData);
       this.fsec.setFsecJson(jsonData);
-
 
     } catch (e) {
       return false;
@@ -89,7 +88,6 @@ export class ResultDataService {
 
 
   public CombinePickup(): void {
-
     if (this.isCombinePickupChenge === false) {
       return;
     }

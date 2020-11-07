@@ -53,3 +53,4 @@ Thumbs.db
 /unity-src/Assets/Resources/Test/*
 unity-src/.vs/
 .vs/
+*.log
