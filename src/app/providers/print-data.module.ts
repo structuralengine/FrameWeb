@@ -532,7 +532,7 @@ export class PrintDataModule {
     const pageHeight = doc.internal.pageSize.height; // 841.89
     const LineFeed = fontsize * 2;
 
-    doc.text(this.margine.left, currentY, mode + " 反力")
+    doc.text(this.margine.left, currentY, mode + ' 反力');
 
     for (let i = 0; i < KEYS.length; i++) {
       const key: string = KEYS[i];

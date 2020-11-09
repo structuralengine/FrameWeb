@@ -42,7 +42,7 @@ export class ResultCombineReacComponent implements OnInit {
     this.loadPage(1);
 
     // ピックアップデータがあればボタンを表示する
-    if (Object.keys(this.pic.reacPickup).length > 0) {
+    if (this.pic.isChenge === false) {
       this.btnPickup = 'btn btn-outline-primary';
     } else {
       this.btnPickup = 'btn btn-outline-primary disabled';
@@ -65,3 +65,4 @@ export class ResultCombineReacComponent implements OnInit {
     this.three.ChengeMode('comb_reac', currentPage);
   }
 }
+

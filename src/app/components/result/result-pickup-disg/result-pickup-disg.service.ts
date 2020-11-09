@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ResultCombineDisgService } from '../result-combine-disg/result-combine-disg.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +6,11 @@ import { ResultCombineDisgService } from '../result-combine-disg/result-combine-
 export class ResultPickupDisgService {
 
   public disgPickup: any;
+  public isChenge: boolean;
 
-  constructor(private disg: ResultCombineDisgService) { 
+  constructor() { 
     this.clear();
+    this.isChenge = true;
   }
 
   public clear(): void {
@@ -49,7 +50,29 @@ export class ResultPickupDisgService {
     return result;
   }
 
-  public setDisgPickupJson(pickList: any): void {
+  public setDisgPickupJson(pickList: any, disgCombine: any): void {
+
+    const postData = {
+      pickList,
+      disgCombine
+    };
+
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./result-pickup-disg.worker', { name: 'pickup-disg', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        this.disgPickup = data.disgPickup;
+        this.isChenge = false;
+        console.log('変位disg の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+    /*
     try {
       // pickupのループ
       for (const pickNo of Object.keys(pickList)) {
@@ -83,8 +106,10 @@ export class ResultPickupDisgService {
         }
         this.disgPickup[pickNo] = tmp;
       }
+      this.isChenge = false;
     } catch (e) {
       console.log(e);
     }
+    */
   }
 }

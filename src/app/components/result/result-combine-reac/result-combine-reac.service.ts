@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ResultReacService } from '../result-reac/result-reac.service';
+import { ResultPickupReacService } from '../result-pickup-reac/result-pickup-reac.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +8,12 @@ import { ResultReacService } from '../result-reac/result-reac.service';
 export class ResultCombineReacService {
 
   public reacCombine: any;
+  public isChenge: boolean;
 
-  constructor(private reac: ResultReacService) {
+  constructor(private reac: ResultReacService,
+              private pickreac: ResultPickupReacService) {
     this.clear();
+    this.isChenge = true;
   }
 
   public clear(): void {
@@ -49,8 +53,30 @@ export class ResultCombineReacService {
     return result;
   }
 
-  public setReacCombineJson(combList: any): void {
+  public setReacCombineJson(combList: any, pickList: any): void {
 
+    const postData = {
+      combList,
+      reac: this.reac.reac
+    };
+
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./result-combine-reac.worker', { name: 'combine-reac', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        this.reacCombine = data.reacCombine;
+        this.isChenge = false;
+        console.log('反力reac の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
+        this.pickreac.setReacPickupJson(pickList, this.reacCombine);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+    /*
     try {
 
       // combineのループ
@@ -137,9 +163,11 @@ export class ResultCombineReacService {
         }
         this.reacCombine[combNo] = resultReac;
       }
+      this.isChenge = false;
     } catch (e) {
       console.log(e);
     }
-  }
+    */
 
+  }
 }

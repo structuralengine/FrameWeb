@@ -41,7 +41,7 @@ export class ResultPickupFsecComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (Object.keys(this.comb.fsecCombine).length > 0) {
+    if (this.comb.isChenge === false) {
       this.btnCombine = 'btn btn-outline-primary';
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';
@@ -64,3 +64,4 @@ export class ResultPickupFsecComponent implements OnInit {
     this.three.ChengeMode('pik_fsec', currentPage);
   }
 }
+
