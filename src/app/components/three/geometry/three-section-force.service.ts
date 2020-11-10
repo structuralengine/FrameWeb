@@ -106,7 +106,7 @@ export class ThreeSectionForceService {
     this.targetData = {};
     this.targetIndex = '';
     this.modeName = '';
-    this.scale = 0.5;
+    this.scale = 1; //0.5;
   }
 
   private guiEnable(): void {
@@ -526,16 +526,49 @@ export class ThreeSectionForceService {
         }
         LineGeo.setPositions(LinePositions);
 
-        // 文字と面を削除する
-        while (line.children.length > 0) {
-          const object = line.children[0];
-          object.parent.remove(object);
+        //line.children[0]はテキストのGroup，line.children[1]はメッシュのGroup
+        for (let num = 0; num < line.children[0].children.length; num++){
+          line.children[0].children[num].position.x = LinePositions[3 * num + 3];
+          line.children[0].children[num].position.y = LinePositions[3 * num + 4];
+          line.children[0].children[num].position.z = LinePositions[3 * num + 5];
         }
+        line.children[1].scale.set(1, 1, this.scale);
+        let num2 = 1;
+        for (let num1 = 0; num1 < line.children[1].children.length; num1++){
+          line.children[1].children[num1].geometry.vertices[0].x = LinePositions[0];
+          line.children[1].children[num1].geometry.vertices[0].y = LinePositions[1];
+          line.children[1].children[num1].geometry.vertices[0].z = LinePositions[2];
+          line.children[1].children[num1].geometry.vertices[1].x = LinePositions[num2 * 3];
+          line.children[1].children[num1].geometry.vertices[1].y = LinePositions[num2 * 3 + 1];
+          line.children[1].children[num1].geometry.vertices[1].z = LinePositions[num2 * 3 + 2];
+          line.children[1].children[num1].geometry.vertices[2].x = LinePositions[num2 * 3 + 3];
+          line.children[1].children[num1].geometry.vertices[2].y = LinePositions[num2 * 3 + 4];
+          line.children[1].children[num1].geometry.vertices[2].z = LinePositions[num2 * 3 + 5];
+          //line.children[1].children[num1].geometry.vertices[0].set = (LinePositions[0], LinePositions[1], LinePositions[2]);
+          //line.children[1].children[num1].geometry.vertices[1].set = (LinePositions[num2 * 3 + 0], LinePositions[num2 * 3 + 1], LinePositions[num2 * 3 + 2]);
+          //line.children[1].children[num1].geometry.vertices[2].set = (LinePositions[num2 * 3 + 3], LinePositions[num2 * 3 + 4], LinePositions[num2 * 3 + 5]);
+          //if (num2 === 3){
+            //console.log("---------------------------------");
+            //console.log(line.children[1].children[num1]);
+            //console.log(positions[num2]);
+          //geometry.vertices.push(new THREE.Vector3(positions[i].x, positions[i].y, positions[i].z));
+          //geometry.vertices.push(new THREE.Vector3(positions[j].x, positions[j].y, positions[j].z));
+          //geometry.vertices.push(new THREE.Vector3(positions[j + 1].x, positions[j + 1].y, positions[j + 1].z));
+          //}
+          num2 += 1;
+        }
+        console.log(line);
+
+        // 文字と面を削除する   ---   このwhile文を削除したい
+        //while (line.children.length > 0) {
+          //const object = line.children[0];
+          //object.parent.remove(object);
+        //}
 
         // テキストを追加
-        this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
+        //this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
-        this.addPathGeometory(positions, line, color);
+        //this.addPathGeometory(positions, line, color);
 
       } else {
         // 線を生成する
@@ -584,6 +617,7 @@ export class ThreeSectionForceService {
   // テキストを追加
   private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[], localAxis: any): void {
     let j = 0;
+    const textGroup = new THREE.Group();
     for ( let i = 1; i < positions.length - 1; i++) {
       const p = positions[i];
       if ('note' in p) {
@@ -622,9 +656,12 @@ export class ThreeSectionForceService {
       // text.rotation.x = Math.PI / 2;
       // 数値を任意の位置に配置
       text.position.set(pos.x, pos.y, pos.z);
-      line.add(text);
+      text.name = "text"; //デバック用
+      //line.add(text);
+      textGroup.add(text);
       j++;
     }
+    line.add(textGroup);
   }
 
   // 面を追加する
@@ -638,6 +675,8 @@ export class ThreeSectionForceService {
     });
 
     let i = 0;
+    const meshGroup = new THREE.Group();
+    meshGroup.name = "mesh"; //デバック用
     for ( let j = 1; j < positions.length - 1; j++ ) {
       const geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(positions[i].x, positions[i].y, positions[i].z));
@@ -647,13 +686,14 @@ export class ThreeSectionForceService {
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
       const mesh = new THREE.Mesh(geometry, material);
-      line.add(mesh);
+      //line.add(mesh);
+      meshGroup.add(mesh);
       if ( 'note' in positions[j + 1]) {
         i = j + 1;
         j++;
       }
     }
-
+    line.add(meshGroup);
   }
 
   private getDistance(): number[] {
