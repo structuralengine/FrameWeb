@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ResultCombineFsecService } from '../result-combine-fsec/result-combine-fsec.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +6,11 @@ import { ResultCombineFsecService } from '../result-combine-fsec/result-combine-
 export class ResultPickupFsecService {
 
   public fsecPickup: any;
+  public isChenge: boolean;
 
-  constructor(private fsec: ResultCombineFsecService) { 
+  constructor() {
     this.clear();
+    this.isChenge = true;
   }
 
   public clear(): void {
@@ -52,7 +53,30 @@ export class ResultPickupFsecService {
     return result;
   }
 
-  public setFsecPickupJson(pickList: any): void {
+  public setFsecPickupJson(pickList: any, fsecCombine: any): void {
+
+    const postData = {
+      pickList,
+      fsecCombine
+    };
+
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./result-pickup-fsec.worker', { name: 'pickup-fsec', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        this.fsecPickup = data.fsecPickup;
+        this.isChenge = false;
+        console.log('断面力fsec の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+
+    /*
     try {
       // pickupのループ
 
@@ -88,9 +112,11 @@ export class ResultPickupFsecService {
         }
         this.fsecPickup[pickNo] = tmp;
       }
+      this.isChenge = false;
     } catch (e) {
       console.log(e);
     }
+    */
   }
 
   public getFsecJson(): object {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputNodesService } from './input-nodes.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import{ UserInfoService } from '../../../providers/user-info.service'
@@ -10,7 +10,7 @@ import { ThreeService } from '../../three/three.service';
   styleUrls: ['./input-nodes.component.scss','../../../app.component.scss']
 })
 
-export class InputNodesComponent implements OnInit {
+export class InputNodesComponent implements OnInit, AfterViewInit {
 
   public ROWS_COUNT: number = 20;
   public dataset = [[], []];
@@ -40,10 +40,14 @@ export class InputNodesComponent implements OnInit {
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       this.three.chengeData('nodes');
     }
   };
 
+  private initialFlg = true;
   constructor(private data: InputNodesService,
               private helper: DataHelperModule,
               private three: ThreeService,
@@ -52,10 +56,13 @@ export class InputNodesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.loadPage(1);
     this.three.ChengeMode('nodes');
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

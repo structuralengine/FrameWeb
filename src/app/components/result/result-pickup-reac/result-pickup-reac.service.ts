@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ResultCombineReacService } from '../result-combine-reac/result-combine-reac.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +6,11 @@ import { ResultCombineReacService } from '../result-combine-reac/result-combine-
 export class ResultPickupReacService {
 
   public reacPickup: any;
+  public isChenge: boolean;
 
-  constructor(private reac: ResultCombineReacService) { 
+  constructor() { 
     this.clear();
+    this.isChenge = true;
   }
 
   public clear(): void {
@@ -50,7 +51,30 @@ export class ResultPickupReacService {
     return result;
   }
 
-  public setReacPickupJson(pickList: any): void {
+  public setReacPickupJson(pickList: any, reacCombine: any): void {
+
+    const postData = {
+      pickList,
+      reacCombine
+    };
+
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./result-pickup-reac.worker', { name: 'pickup-reac', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        this.reacPickup = data.reacPickup;
+        this.isChenge = false;
+        console.log('反力reac の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+
+    /*
     try {
       // pickupのループ
       for (const pickNo of Object.keys(pickList)) {
@@ -87,9 +111,11 @@ export class ResultPickupReacService {
         }
         this.reacPickup[pickNo] = tmp;
       }
+      this.isChenge = false;
     } catch (e) {
       console.log(e);
     }
+    */
   }
 
 }

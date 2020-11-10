@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ResultDisgService } from '../result-disg/result-disg.service';
+import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-disg.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +8,12 @@ import { ResultDisgService } from '../result-disg/result-disg.service';
 export class ResultCombineDisgService {
 
   public disgCombine: any;
+  public isChenge: boolean;
 
-  constructor(private disg: ResultDisgService) {
+  constructor(private disg: ResultDisgService,
+              private pickdisg: ResultPickupDisgService) {
     this.clear();
+    this.isChenge = true;
   }
 
   public clear(): void {
@@ -50,8 +54,31 @@ export class ResultCombineDisgService {
     return result;
   }
 
-  public setDisgCombineJson(combList: any): void {
+  public setDisgCombineJson(combList: any, pickList: any): void {
 
+    const postData = {
+      combList,
+      disg: this.disg.disg
+    };
+
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./result-combine-disg.worker', { name: 'combine-disg', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        this.disgCombine = data.disgCombine;
+        this.isChenge = false;
+        console.log('変位disg の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
+        this.pickdisg.setDisgPickupJson(pickList, this.disgCombine);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+
+    /*
     try {
 
       // combineのループ
@@ -137,9 +164,12 @@ export class ResultCombineDisgService {
         }
         this.disgCombine[combNo] = resultDisg;
       }
+      this.isChenge = false;
     } catch (e) {
       console.log(e);
     }
+    */
+
   }
 
 }

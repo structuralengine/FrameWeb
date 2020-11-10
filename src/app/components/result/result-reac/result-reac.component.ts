@@ -3,6 +3,7 @@ import { ResultReacService } from './result-reac.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeService } from '../../three/three.service';
 
+import { ResultDataService } from '../../../providers/result-data.service';
 import { ResultCombineReacService } from '../result-combine-reac/result-combine-reac.service';
 import { ResultPickupReacService } from '../result-pickup-reac/result-pickup-reac.service';
 
@@ -23,6 +24,7 @@ export class ResultReacComponent implements OnInit {
   constructor(private data: ResultReacService,
               private load: InputLoadService,
               private three: ThreeService,
+              private result: ResultDataService,
               private comb: ResultCombineReacService,
               private pic: ResultPickupReacService) {
     this.dataset = new Array();
@@ -34,13 +36,13 @@ export class ResultReacComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (Object.keys(this.comb.reacCombine).length > 0) {
+    if (this.comb.isChenge === false) {
       this.btnCombine = 'btn btn-outline-primary';
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';
     }
     // ピックアップデータがあればボタンを表示する
-    if (Object.keys(this.pic.reacPickup).length > 0) {
+    if (this.pic.isChenge === false) {
       this.btnPickup = 'btn btn-outline-primary';
     } else {
       this.btnPickup = 'btn btn-outline-primary disabled';

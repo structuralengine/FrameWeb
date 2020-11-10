@@ -3,6 +3,7 @@ import { ResultDisgService } from './result-disg.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeService } from '../../three/three.service';
 
+import { ResultDataService } from '../../../providers/result-data.service';
 import { ResultCombineDisgService } from '../result-combine-disg/result-combine-disg.service';
 import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-disg.service';
 
@@ -23,6 +24,7 @@ export class ResultDisgComponent implements OnInit {
   constructor(private data: ResultDisgService,
               private load: InputLoadService,
               private three: ThreeService,
+              private result: ResultDataService,
               private comb: ResultCombineDisgService,
               private pic: ResultPickupDisgService) {
     this.dataset = new Array();
@@ -34,13 +36,13 @@ export class ResultDisgComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (Object.keys(this.comb.disgCombine).length > 0) {
+    if (this.comb.isChenge === false) {
       this.btnCombine = 'btn btn-outline-primary';
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';
     }
     // ピックアップデータがあればボタンを表示する
-    if (Object.keys(this.pic.disgPickup).length > 0) {
+    if (this.pic.isChenge === false) {
       this.btnPickup = 'btn btn-outline-primary';
     } else {
       this.btnPickup = 'btn btn-outline-primary disabled';

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import{ UserInfoService } from '../../../providers/user-info.service'
@@ -9,7 +9,7 @@ import { ThreeService } from '../../three/three.service';
   templateUrl: './input-joint.component.html',
   styleUrls: ['./input-joint.component.scss','../../../app.component.scss']
 })
-export class InputJointComponent implements OnInit {
+export class InputJointComponent implements OnInit, AfterViewInit {
 
   static ROWS_COUNT = 20;
   dataset: any[];
@@ -40,11 +40,14 @@ export class InputJointComponent implements OnInit {
       }      
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       this.three.chengeData('joints', this.page );
     }
   };
 
-
+  private initialFlg = true;
   constructor(private input: InputJointService,
               private helper: DataHelperModule,
               private three: ThreeService, 
@@ -54,9 +57,12 @@ export class InputJointComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.loadPage(1);
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

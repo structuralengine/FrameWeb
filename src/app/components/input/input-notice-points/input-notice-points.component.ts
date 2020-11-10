@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputMembersService } from '../input-members/input-members.service';
 import { InputNoticePointsService } from './input-notice-points.service';
 import { ThreeService } from '../../three/three.service';
@@ -11,7 +11,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
   styleUrls: ['./input-notice-points.component.scss','../../../app.component.scss']
 })
 
-export class InputNoticePointsComponent implements OnInit {
+export class InputNoticePointsComponent implements OnInit, AfterViewInit {
 
   static ROWS_COUNT = 20;
   dataset: any[];
@@ -51,6 +51,9 @@ export class InputNoticePointsComponent implements OnInit {
     },
 
     afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
+      }
       let hotInstance: any;
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
@@ -87,6 +90,7 @@ export class InputNoticePointsComponent implements OnInit {
     }
   };
 
+  private initialFlg = true;
   constructor(private data: InputNoticePointsService,
               private member: InputMembersService,
               private three: ThreeService,
@@ -104,10 +108,13 @@ export class InputNoticePointsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     this.loadPage(1);
     this.three.ChengeMode('notice_points');
   }
-
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
     console.log('aa')

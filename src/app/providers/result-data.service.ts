@@ -71,7 +71,7 @@ export class ResultDataService {
   }
 
 
-  // 計算結果を読み込む 
+  // 計算結果を読み込む
   public loadResultData(jsonData: object): boolean {
 
     try {
@@ -79,7 +79,6 @@ export class ResultDataService {
       this.disg.setDisgJson(jsonData);
       this.reac.setReacJson(jsonData);
       this.fsec.setFsecJson(jsonData);
-
 
     } catch (e) {
       return false;
@@ -89,7 +88,6 @@ export class ResultDataService {
 
 
   public CombinePickup(): void {
-
     if (this.isCombinePickupChenge === false) {
       return;
     }
@@ -197,12 +195,12 @@ export class ResultDataService {
       pickList[pickNo] = combines;
     }
 
-    this.combdisg.setDisgCombineJson(combList);
-    this.combreac.setReacCombineJson(combList);
-    this.combfsec.setFsecCombineJson(combList);
-    this.pickdisg.setDisgPickupJson(pickList);
-    this.pickreac.setReacPickupJson(pickList);
-    this.pickfsec.setFsecPickupJson(pickList);
+    this.combdisg.setDisgCombineJson(combList, pickList);
+    this.combreac.setReacCombineJson(combList, pickList);
+    this.combfsec.setFsecCombineJson(combList, pickList);
+    // this.pickdisg.setDisgPickupJson(pickList);
+    // this.pickreac.setReacPickupJson(pickList);
+    // this.pickfsec.setFsecPickupJson(pickList);
 
     this.isCombinePickupChenge = false;
   }

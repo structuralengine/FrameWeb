@@ -41,7 +41,7 @@ export class ResultPickupReacComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (Object.keys(this.comb.reacCombine).length > 0) {
+    if (this.comb.isChenge === false) {
       this.btnCombine = 'btn btn-outline-primary';
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';

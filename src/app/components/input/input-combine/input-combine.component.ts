@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputCombineService } from './input-combine.service';
 import { InputDefineService } from '../input-define/input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
-import{ UserInfoService } from '../../../providers/user-info.service'
+import { UserInfoService } from '../../../providers/user-info.service'
 
 @Component({
   selector: 'app-input-combine',
   templateUrl: './input-combine.component.html',
-  styleUrls: ['./input-combine.component.scss','../../../app.component.scss']
+  styleUrls: ['./input-combine.component.scss', '../../../app.component.scss']
 })
 
-export class InputCombineComponent implements OnInit {
+export class InputCombineComponent implements OnInit, AfterViewInit {
 
   ROWS_COUNT = 20;
   COLUMNS_COUNT: number;
@@ -35,23 +35,26 @@ export class InputCombineComponent implements OnInit {
         if (changes === undefined) { return; }
         for (let i = 0; i < changes.length; i++) {
           const value: number = this.helper.toNumber(changes[i][3]);
-            switch(changes[i][1]){
-              case "name":
-                break;
-              default:
-                if ( value !== null ) {
-                  changes[i][3] = value.toFixed(3);
-                  } else {
-                  changes[i][3] = null;
-                  }
-                break;
-            }
+          switch (changes[i][1]) {
+            case 'name':
+              break;
+            default:
+              if (value !== null) {
+                changes[i][3] = value.toFixed(3);
+              } else {
+                changes[i][3] = null;
+              }
+              break;
+          }
         }
       } catch (e) {
         console.log(e);
       }
     },
     afterChange: (...x: any[]) => {
+      if (this.initialFlg === true) {
+        return;
+      }
       let changes: any = undefined;
       for (let i = 0; i < x.length; i++) {
         if (Array.isArray(x[i])) {
@@ -65,12 +68,13 @@ export class InputCombineComponent implements OnInit {
     }
   };
 
+  private initialFlg = true;
   constructor(private data: InputCombineService,
-    private define: InputDefineService,
-    private load: InputLoadService,
-    private result: ResultDataService,
-    private helper: DataHelperModule, 
-    public user:UserInfoService,) {
+              private define: InputDefineService,
+              private load: InputLoadService,
+              private result: ResultDataService,
+              private helper: DataHelperModule,
+              public user: UserInfoService,) {
 
     this.page = 1;
     this.combineData = new Array();
@@ -81,6 +85,7 @@ export class InputCombineComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initialFlg = true;
     let head = 'D';
     this.COLUMNS_COUNT = this.define.getDefineCaseCount();
     if (this.COLUMNS_COUNT <= 0) {
@@ -99,9 +104,12 @@ export class InputCombineComponent implements OnInit {
     this.loadPage(1);
   }
 
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
+
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
-    console.log('aa')
   }
 
   loadPage(currentPage: number) {

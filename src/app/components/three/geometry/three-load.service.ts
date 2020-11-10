@@ -5,17 +5,12 @@ import { InputMembersService } from '../../input/input-members/input-members.ser
 import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeNodesService } from './three-nodes.service';
 
-import { OrbitControls } from '../libs/OrbitControls.js';
 import { Line2 } from '../libs/Line2.js';
 import { LineMaterial } from '../libs/LineMaterial.js';
 import { LineGeometry } from '../libs/LineGeometry.js';
-import { GeometryUtils } from '../libs/GeometryUtils.js';
 
 import * as THREE from 'three';
-import { ThreeService } from '../three.service';
 import { ThreeMembersService } from './three-members.service';
-import { Mesh, ReverseSubtractEquation } from 'three';
-import { zip } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,11 +28,11 @@ export class ThreeLoadService {
   private gui: any;
 
   constructor(private scene: SceneService,
-              private nodeThree: ThreeNodesService,
-              private node: InputNodesService,
-              private member: InputMembersService,
-              private load: InputLoadService,
-              private three_member: ThreeMembersService) {
+    private nodeThree: ThreeNodesService,
+    private node: InputNodesService,
+    private member: InputMembersService,
+    private load: InputLoadService,
+    private three_member: ThreeMembersService) {
 
     this.isVisible = [null, null];
     this.pointLoadList = new Array();
@@ -116,7 +111,7 @@ export class ThreeLoadService {
   }
 
   public chengeData(index: number): void {
-    
+
     // 一旦全排除
     this.ClearData();
 
@@ -130,7 +125,7 @@ export class ThreeLoadService {
     const targetCase: string = index.toString();
     const nLoadData = this.load.getNodeLoadJson(0, targetCase);
     let nodeLoadData = {};
-    if ( targetCase in nLoadData) {
+    if (targetCase in nLoadData) {
       nodeLoadData = nLoadData[targetCase];
     }
     if (Object.keys(nodeLoadData).length <= 0) {
@@ -150,7 +145,7 @@ export class ThreeLoadService {
     // 要素荷重データを入手
     const mLoadData = this.load.getMemberLoadJson(0, targetCase);
     let memberLoadData = {};
-    if ( targetCase in mLoadData) {
+    if (targetCase in mLoadData) {
       memberLoadData = mLoadData[targetCase];
     }
     if (Object.keys(memberLoadData).length <= 0) {
@@ -195,33 +190,14 @@ export class ThreeLoadService {
         continue;
       }
 
-      for ( const key of ['x', 'y', 'z']) {
+      for (const key of ['x', 'y', 'z']) {
         const Arrow: Line2 = this.setPointLoad(load['t' + key], pMax, node, 'p' + key);
         if (Arrow !== null) {
           this.pointLoadList.push(Arrow);
           this.scene.add(Arrow);
         }
       }
-      /*
-      // x方向の集中荷重
-      const xArrow: Line2 = this.setPointLoad(load.tx, pMax, node, 'px');
-      if (xArrow !== null) {
-        this.pointLoadList.push(xArrow);
-        this.scene.add(xArrow);
-      }
-      // y方向の集中荷重
-      const yArrow: Line2 = this.setPointLoad(load.ty, pMax, node, 'py');
-      if (yArrow !== null) {
-        this.pointLoadList.push(yArrow);
-        this.scene.add(yArrow);
-      }
-      // z方向の集中荷重
-      const zArrow: Line2 = this.setPointLoad(load.tz, pMax, node, 'pz');
-      if (zArrow !== null) {
-        this.pointLoadList.push(zArrow);
-        this.scene.add(zArrow);
-      }
-      */
+
       // x軸周りのモーメント
       const xMoment = this.setMomentLoad(load.rx, mMax, node, 0xFF0000, 'mx');
       if (xMoment !== null) {
@@ -298,10 +274,10 @@ export class ThreeLoadService {
   }
 
   // 節点荷重の矢印を作成する
-  private setPointLoad_memory(value: number, 
-                              pMax: number,
-                              node: any, 
-                              name: string): Line2 {
+  private setPointLoad_memory(value: number,
+    pMax: number,
+    node: any,
+    name: string): Line2 {
 
     if (value === 0) {
       return null;
@@ -378,10 +354,10 @@ export class ThreeLoadService {
   }
 
   // 節点荷重の矢印を作成する
-  private setPointLoad(value: number, 
-                       pMax: number,
-                       node: any, 
-                       name: string): Line2 {
+  private setPointLoad(value: number,
+    pMax: number,
+    node: any,
+    name: string): Line2 {
 
     if (value === 0) {
       return null;
@@ -395,7 +371,7 @@ export class ThreeLoadService {
     const maxLength: number = this.baseScale() * 0.5;
     const length: number = maxLength * value / pMax;
     let color: number;
-    
+
     switch (name) {
       case 'px':
         color = 0xFF0000;
@@ -412,22 +388,18 @@ export class ThreeLoadService {
     const cone_radius: number = 0.1 * cone_scale;
     const cone_height: number = 1 * cone_scale;
     const coneGeometry = new THREE.ConeBufferGeometry(cone_radius, cone_height, 3, 1, true);
-    //const coneGeometry = new THREE.ConeBufferGeometry(0.02, 0.2, 3, 1, true);
     const coneMaterial = new THREE.MeshBasicMaterial({ color: color });
     const cone: THREE.Mesh = new THREE.Mesh(coneGeometry, coneMaterial);
     switch (name) {
       case 'px':
         cone.position.set(-cone_height / 2, 0, 0);
-        //cone.position.set(-0.2 / 2, 0, 0);
         cone.rotation.z = Math.PI / 2 * 3;
         break;
       case 'py':
         cone.position.set(0, -cone_height / 2, 0);
-        //cone.position.set(0, -0.2 / 2, 0);
         break;
       case 'pz':
         cone.position.set(0, 0, -cone_height / 2);
-        //cone.position.set(0, 0, -0.2 / 2);
         cone.rotation.x = Math.PI / 2;
         break;
     }
@@ -441,37 +413,33 @@ export class ThreeLoadService {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     vertices.push(new THREE.Vector3(0, 0, 0));
-    let length2 : number = 0;
-    if (length > 0){
+    let length2: number = 0;
+    if (length > 0) {
       length2 = length * (-3);
-    } else if (length < 0){
+    } else if (length < 0) {
       length2 = length * 3;
     }
     switch (name) {
       case 'px':
-        //vertices.push(new THREE.Vector3(-length * 3, 0, 0));
         vertices.push(new THREE.Vector3(length2, 0, 0));
         break;
       case 'py':
-        //vertices.push(new THREE.Vector3(0, -length * 3, 0));
         vertices.push(new THREE.Vector3(0, length2, 0));
         break;
       case 'pz':
-        //vertices.push(new THREE.Vector3(0, 0, -length * 3));
         vertices.push(new THREE.Vector3(0, 0, length2));
         break;
     }
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
 
     const matLine = new THREE.LineBasicMaterial({ color: color });
-    
+
     const line = new THREE.Line(geometry, matLine);
     line.computeLineDistances();
     group.add(line);
 
     group.position.set(node.x, node.y, node.z);
     group.name = name;
-    //group.scale.set(1, 1, 1);
     group.scale.set(scale, scale, scale);
     group['baseScale'] = scale;
 
@@ -575,15 +543,14 @@ export class ThreeLoadService {
 
         if (Data.P1 !== 0) {
           Data.judge = '1';
-          const p = {x: L_position.x1, y: L_position.y1, z: L_position.z1};
+          const p = { x: L_position.x1, y: L_position.y1, z: L_position.z1 };
           arrowlist1 = this.CreateArrow(arrow,
-                                        p,
-                                        localAxis,
-                                        Data.P1,
-                                        Data.p_one);
-          //pos.push(p);
+            p,
+            localAxis,
+            Data.P1,
+            Data.p_one);
           // マイナスあんら重なりを判定する軸を反転する
-          if ( Math.sign(Data.P1) < 0) {
+          if (Math.sign(Data.P1) < 0) {
             myLocalAxis = {
               x: -localAxis[load.direction].x,
               y: -localAxis[load.direction].y,
@@ -592,7 +559,7 @@ export class ThreeLoadService {
           }
         }
 
-        if ( Data.P1 !== 0 && Data.P2 !== 0 && Math.sign(Data.P1) !== Math.sign(Data.P2)) {
+        if (Data.P1 !== 0 && Data.P2 !== 0 && Math.sign(Data.P1) !== Math.sign(Data.P2)) {
           // P1 と P2 の符号が逆だった場合 P2を別の荷重として扱う（重ならないようにずらす方向が違うため）
           const tmp: number = Data.P1;
           Data.P1 = 0;
@@ -601,15 +568,14 @@ export class ThreeLoadService {
 
         } else if (Data.P2 !== 0) {
           Data.judge = '2';
-          const p = {x: L_position.x2, y: L_position.y2, z: L_position.z2};
+          const p = { x: L_position.x2, y: L_position.y2, z: L_position.z2 };
           arrowlist2 = this.CreateArrow(arrow,
-                                        p,
-                                        localAxis,
-                                        Data.P2,
-                                        Data.p_two);
-          //pos.push(p);
+            p,
+            localAxis,
+            Data.P2,
+            Data.p_two);
           // マイナスあんら重なりを判定する軸を反転する
-          if ( Math.sign(Data.P2) < 0) {
+          if (Math.sign(Data.P2) < 0) {
             myLocalAxis = {
               x: -localAxis[load.direction].x,
               y: -localAxis[load.direction].y,
@@ -630,9 +596,9 @@ export class ThreeLoadService {
 
         if (load.direction === "x") {
           groupe.name = 'fx'; // この名前は memberLoadResize() で使っている
-        } else if (load.direction === "y"){
+        } else if (load.direction === "y") {
           groupe.name = 'fy'; // この名前は memberLoadResize() で使っている
-        } else if (load.direction === "z"){
+        } else if (load.direction === "z") {
           groupe.name = 'fz'; // この名前は memberLoadResize() で使っている
         }
         break;
@@ -689,7 +655,7 @@ export class ThreeLoadService {
         } else if (load.direction === 'y') {
           load.len_L = Data.len_L;
           arrowlist1 = this.CreateArrow_Y(arrow, L_position, localAxis, Data);
-          if (load.P1 <= 0 && load.P2 <= 0) { 
+          if (load.P1 <= 0 && load.P2 <= 0) {
             groupe['localAxis'] = {
               x: -1 * localAxis.y.x,
               y: -1 * localAxis.y.y,
@@ -755,15 +721,6 @@ export class ThreeLoadService {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
 
-    // 矢の棒を描く
-    /*geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    if (P > 0) {
-      geometry.vertices.push(new THREE.Vector3(0, 0, (-1) * p_));
-    } else if (P < 0) {
-      geometry.vertices.push(new THREE.Vector3(0, 0, p_));
-    } else {
-      return;
-    }*/
     vertices.push(new THREE.Vector3(0, 0, 0));
     if (P > 0) {
       vertices.push(new THREE.Vector3(0, 0, (-1) * p_));
@@ -772,7 +729,7 @@ export class ThreeLoadService {
     } else {
       return;
     }
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const line = new THREE.LineBasicMaterial({ color: arrow.color });
     const mesh = new THREE.Line(geometry, line);
     group.add(mesh);
@@ -807,7 +764,7 @@ export class ThreeLoadService {
           pos.x - localAxis.y.x * 0.1,
           pos.y - localAxis.y.y * 0.1,
           pos.z);
-          group.name = "x"; //デバック用
+        group.name = "x"; //デバック用
         break;
       case ('y'):
         group.lookAt(localAxis.y.x, localAxis.y.y, localAxis.y.z);
@@ -914,7 +871,7 @@ export class ThreeLoadService {
     vertices.push(new THREE.Vector3(arrow.size * 0.3, 0, len_L - arrow.size * 0.6));
     vertices.push(new THREE.Vector3(0, 0, len_L));
     vertices.push(new THREE.Vector3(arrow.size * -0.3, 0, len_L - arrow.size * 0.6));
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     let material = new THREE.LineBasicMaterial({ color: arrow.color });
     let mesh = new THREE.Line(geometry, material);
     groupX.add(mesh);
@@ -927,7 +884,7 @@ export class ThreeLoadService {
     vertices.push(new THREE.Vector3(0, 0, 0));
     vertices.push(new THREE.Vector3(0, 0, len_L));
 
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     material = new THREE.LineDashedMaterial({ color: arrow.color, dashSize: 0.1, gapSize: 0.1 });
     mesh = new THREE.Line(geometry, material);
     mesh.computeLineDistances();
@@ -950,7 +907,6 @@ export class ThreeLoadService {
     const arrowlist = [];
     const groupY = new THREE.Group();
 
-    //let geometry = new THREE.Geometry(); // geometryの初期化
     let geometry1 = new THREE.BufferGeometry(); // geometry1の初期化
     let geometry2 = new THREE.BufferGeometry(); // geometry2の初期化
     const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
@@ -969,7 +925,7 @@ export class ThreeLoadService {
     const y: number = (i.y + j.y) / 2;
     const z: number = (i.z + j.z) / 2;
     let thickness: number = this.baseScale() / 2000;
-    if (thickness <= 0.00005){
+    if (thickness <= 0.00005) {
       thickness = 0.0001;
     } //thickness <= 0.00005だと表示不可
     const cGeometry = new THREE.CylinderBufferGeometry(thickness, thickness, len, 12);
@@ -987,53 +943,39 @@ export class ThreeLoadService {
       side: THREE.DoubleSide,
       color: 0x00cc00,
       opacity: 0.3
-      //opacity: 0.5
     });
-    /*geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(d1, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(d2, 0, Data.len_L));
-    geometry.vertices.push(new THREE.Vector3(0, 0, Data.len_L));
+    let vertices1 = new Float32Array([]);
+    let vertices2 = new Float32Array([]);
     if (Data.P1 * Data.P2 >= 0) {
-      geometry.faces.push(new THREE.Face3(0, 1, 2));
-      geometry.faces.push(new THREE.Face3(0, 2, 3));
-    } else if (Data.P1 * Data.P2 < 0) {
-      geometry.vertices.push(new THREE.Vector3(0, 0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L));
-      geometry.faces.push(new THREE.Face3(0, 1, 4));
-      geometry.faces.push(new THREE.Face3(2, 3, 4));
-    }*/
-    let vertices1 = new Float32Array( [ ] );
-    let vertices2 = new Float32Array( [ ] );
-    if (Data.P1 * Data.P2 >= 0){
-      vertices1 = new Float32Array( [
-        0,  0, 0,
+      vertices1 = new Float32Array([
+        0, 0, 0,
         d1, 0, 0,
         d2, 0, Data.len_L
-      ] );
-      vertices2 = new Float32Array( [
-        0,  0, 0,
+      ]);
+      vertices2 = new Float32Array([
+        0, 0, 0,
         d2, 0, Data.len_L,
-        0,  0, Data.len_L
-      ] );
-    } else if (Data.P1 * Data.P2 < 0){
-      vertices1 = new Float32Array( [
-        0,  0, 0,
+        0, 0, Data.len_L
+      ]);
+    } else if (Data.P1 * Data.P2 < 0) {
+      const zero = (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L
+      vertices1 = new Float32Array([
+        0, 0, 0,
         d1, 0, 0,
-        0,  0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L
-      ] );
-      vertices2 = new Float32Array( [
+        0, 0, zero
+      ]);
+      vertices2 = new Float32Array([
         d2, 0, Data.len_L,
-        0,  0, Data.len_L,
-        0,  0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L
-      ] );
+        0, 0, Data.len_L,
+        0, 0, zero
+      ]);
     };
-    geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertices1, 3) );
+    geometry1.setAttribute('position', new THREE.BufferAttribute(vertices1, 3));
     groupY.add(new THREE.Mesh(geometry1, material));
-    geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertices2, 3) );
+    geometry2.setAttribute('position', new THREE.BufferAttribute(vertices2, 3));
     groupY.add(new THREE.Mesh(geometry2, material));
 
-    groupY.up.x = localAxis.z.x;
-    groupY.up.y = localAxis.z.y;
-    groupY.up.z = localAxis.z.z;
+    groupY.up.set( localAxis.z.x, localAxis.z.y, localAxis.z.z);
 
     // groupの操作
     groupY.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
@@ -1048,20 +990,15 @@ export class ThreeLoadService {
     const arrowlist = [];
     const groupZ = new THREE.Group();
 
-    //let geometry = new THREE.Geometry();
     let geometry1 = new THREE.BufferGeometry(); // geometry1の初期化
     let geometry2 = new THREE.BufferGeometry(); // geometry2の初期化
-    const len_Lx = L_position.x2 - L_position.x1;
-    const len_Ly = L_position.y2 - L_position.y1;
-    const len_Lz = L_position.z2 - L_position.z1;
-    const len_L: number = new THREE.Vector3(len_Lx, len_Ly, len_Lz).length();
-    const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
-    const d1: number = offset + Data.p_one * Math.sign(Data.P1);
-    const d2: number = offset + Data.p_two * Math.sign(Data.P2);
+     const offset: number = Math.max(-Data.p_one, -Data.p_two, 0);
+    const d1: number = offset + Data.p_one * Math.sign(Data.P1) * (-1);
+    const d2: number = offset + Data.p_two * Math.sign(Data.P2) * (-1);
 
     // 分布荷重をまとめる棒
     const i = new THREE.Vector3(0, d1, 0);
-    const j = new THREE.Vector3(0, d2, len_L);
+    const j = new THREE.Vector3(0, d2, Data.len_L);
 
     const v = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z);
     const len: number = v.length();
@@ -1070,7 +1007,7 @@ export class ThreeLoadService {
     const y: number = (i.y + j.y) / 2;
     const z: number = (i.z + j.z) / 2;
     let thickness: number = this.baseScale() / 2000;
-    if (thickness <= 0.00005){
+    if (thickness <= 0.00005) {
       thickness = 0.0001;
     } //thickness <= 0.00005だと表示不可
     const cGeometry = new THREE.CylinderBufferGeometry(thickness, thickness, len, 12);
@@ -1087,69 +1024,45 @@ export class ThreeLoadService {
       transparent: true,
       side: THREE.DoubleSide,
       color: 0x00cc00,
-      //opacity: 0.3
       opacity: 0.5
     });
-    /*geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(0, 0, d1));
-    geometry.vertices.push(new THREE.Vector3(0, len_L, d2));
-    geometry.vertices.push(new THREE.Vector3(0, len_L, 0));
+    let vertice1 = new Float32Array([]);
+    let vertice2 = new Float32Array([]);
     if (Data.P1 * Data.P2 >= 0) {
-      var face1 = new THREE.Face3(0, 1, 2);
-      var face2 = new THREE.Face3(0, 2, 3);
+      vertice1 = new Float32Array([
+        0, 0, 0,
+        0, d1, 0,
+        0, d2, Data.len_L
+      ]);
+      vertice2 = new Float32Array([
+        0, 0, 0,
+        0, d2, Data.len_L,
+        0, 0, Data.len_L
+      ]);
     } else if (Data.P1 * Data.P2 < 0) {
-      geometry.vertices.push(new THREE.Vector3(0, (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * len_L, 0));
-      var face1 = new THREE.Face3(0, 1, 4);
-      var face2 = new THREE.Face3(2, 3, 4);
-    }*/
-    let vertice1 = new Float32Array( [ ] );
-    let vertice2 = new Float32Array( [ ] );
-    if (Data.P1 * Data.P2 >= 0){
-      vertice1 = new Float32Array( [
-        0,  0,     0,
-        0, d1,     0,
-        0, d2, len_L
-      ] );
-      vertice2 = new Float32Array( [
-        0,  0,     0, 
-        0, d2, len_L,
-        0,  0, len_L
-      ] );
-    } else if (Data.P1 * Data.P2 < 0){
       const zero = (Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2))) * Data.len_L;
-      vertice1 = new Float32Array( [
-        0,  0,    0,
-        0, d1,    0,
-        0,  0, zero
-      ] );
-      vertice2 = new Float32Array( [
-        0, d2, len_L, 
-        0,  0, len_L,
-        0,  0,  zero
-      ] );
+      vertice1 = new Float32Array([
+        0, 0, 0,
+        0, d1, 0,
+        0, 0, zero
+      ]);
+      vertice2 = new Float32Array([
+        0, d2, Data.len_L,
+        0, 0, Data.len_L,
+        0, 0, zero
+      ]);
     };
-    //geometry.faces.push(face1);
-    //geometry.faces.push(face2);
-    //geometry.computeFaceNormals();
-    //geometry.computeVertexNormals();
-    geometry1.setAttribute( 'position', new THREE.BufferAttribute( vertice1, 3) );
+    geometry1.setAttribute('position', new THREE.BufferAttribute(vertice1, 3));
     groupZ.add(new THREE.Mesh(geometry1, material));
-    geometry2.setAttribute( 'position', new THREE.BufferAttribute( vertice2, 3) );
+    geometry2.setAttribute('position', new THREE.BufferAttribute(vertice2, 3));
     groupZ.add(new THREE.Mesh(geometry2, material));
 
-    groupZ.up.x = localAxis.z.x * (-1); //バグの応応急処置のためマイナスをかけた
-    groupZ.up.y = localAxis.z.y * (-1); //バグの応応急処置のためマイナスをかけた
-    groupZ.up.z = localAxis.z.z * (-1); //バグの応応急処置のためマイナスをかけた
+    groupZ.up.set( localAxis.z.x, localAxis.z.y, localAxis.z.z); 
 
     //groupの操作
-    if (len_Lz !== 0) {
-      groupZ.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
-    } else if (len_Lz === 0) {
-      groupZ.rotation.z = Math.PI * 1.5 + Math.atan2(len_Ly, len_Lx);
-    }
+    groupZ.lookAt(localAxis.x.x, localAxis.x.y, localAxis.x.z);
     groupZ.position.set(L_position.x1, L_position.y1, L_position.z1);
     groupZ.name = 'qz';
-
     arrowlist.push(groupZ);
     return arrowlist
   }
@@ -1157,15 +1070,11 @@ export class ThreeLoadService {
   // 部材ねじりモーメント(分布モーメント)荷重
   public CreateArrow_R(arrow, L_position, localAxis, Data) {
 
-    //let scale: number = value / pMax;
-    //scale /= 8;
-
     Data.p_one = Data.p_one * 0.2;
     Data.p_two = Data.p_two * 0.2;
     const arrowlist = [];
     const groupR = new THREE.Group();
 
-    //const interval = 0.7;
     const len_Lx = L_position.x2 - L_position.x1;
     const len_Ly = L_position.y2 - L_position.y1;
     const len_Lz = L_position.z2 - L_position.z1;
@@ -1195,7 +1104,6 @@ export class ThreeLoadService {
 
     } else if (Data.P1 * Data.P2 < 0) {
 
-      // untilZeo = Math.abs(Data.P1) / (Math.abs(Data.P1) + Math.abs(Data.P2)) * len_L;
       // i端側のコーン
       let geometry = new THREE.CylinderBufferGeometry(
         Data.p_one * Math.sign(Data.P1), 0, // radiusTop, radiusBottom
@@ -1220,60 +1128,6 @@ export class ThreeLoadService {
       groupR.add(mesh);
     }
 
-    /*for (let i = 0; i <= count_L; i++) {
-      // lineの制御
-      x = 0;
-      y = 0;
-      z = len_L * i / count_L - len_L / 2;
-      const CorrectionAngle = - Math.PI * 13 / 24;
-      const curve = new THREE.EllipseCurve(
-        0, 0,                 // ax,          aY
-        Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L,   // xRadius,
-        Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L,   // yRadius
-        CorrectionAngle + 0 * Math.PI, CorrectionAngle + 3 / 2 * Math.PI, // aStartAngle, aEndAngle
-        false, 0                  // aClockwise, aRotation
-      );
-      const points = curve.getPoints(50);
-      const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-      const lineMaterial = new THREE.LineBasicMaterial({ color: arrow.color, linewidth: 5 });
-      const line = new THREE.Line(lineGeometry, lineMaterial);
-      line.rotation.y = Math.PI;
-      line.position.set(x, y, z);
-
-      if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0) {
-        groupR.add(line);
-      }
-      // コーンの制御
-      const cone_radius: number = 0.1 * arrow.size;
-      const cone_height: number = 1 * arrow.size;
-      const arrowGeometry = new THREE.ConeGeometry(cone_radius, cone_height, 3, 1, true);
-      const arrowMaterial = new THREE.MeshBasicMaterial({ color: arrow.color });
-      const cone = new THREE.Mesh(arrowGeometry, arrowMaterial);
-
-      if (Data.P1 * Data.P2 >= 0) {
-        if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L > 0) {  //pが正の方
-          cone.rotation.z = -Math.PI / 2;
-          y = -Data.p_one * Math.sign(Data.P1) - difference_P * i / count_L;
-          cone.position.set(x, y, z);
-        } else if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L < 0) {  //pが負の方
-          x = Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
-          cone.position.set(x, y, z);
-        }
-      } else if (Data.P1 * Data.P2 < 0) {
-        if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L > 0) {  //pが負の方
-          cone.rotation.z = -Math.PI / 2;
-          y = -Data.p_one * Math.sign(Data.P1) - difference_P * i / count_L;
-          cone.position.set(x, y, z);
-        } else if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L < 0) {  //pが正の方
-          x = Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L;
-          cone.position.set(x, y, z);
-        }
-      }
-
-      if (Data.p_one * Math.sign(Data.P1) + difference_P * i / count_L !== 0) {
-        groupR.add(cone);
-      }
-    }*/
     x = (L_position.x2 + L_position.x1) / 2;
     y = (L_position.y2 + L_position.y1) / 2;
     z = (L_position.z2 + L_position.z1) / 2;
@@ -1332,22 +1186,9 @@ export class ThreeLoadService {
   private pointLoadResize(): void {
     // 節点荷重のスケールを変更する
     for (const item of this.pointLoadList) {
-      switch (item.name) {
-        /*case 'px':
-          item.scale.set(this.pointLoadScale, 1, 1);
-          break;
-        case 'py':
-          item.scale.set(1, this.pointLoadScale, 1);
-          break;
-        case 'pz':
-          item.scale.set(1, 1, this.pointLoadScale);
-          break;*/
-        default:
-          if ('baseScale' in item) {
-            const scale: number = item.baseScale * this.pointLoadScale;
-            item.scale.set(scale, scale, scale);
-          }
-          break;
+      if ('baseScale' in item) {
+        const scale: number = item.baseScale * this.pointLoadScale;
+        item.scale.set(scale, scale, scale);
       }
     }
   }
@@ -1356,31 +1197,28 @@ export class ThreeLoadService {
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
-      if( item.name === 'qx'){
+      if (item.name === 'qx') {
         continue;
       }
       if ('localAxis' in item) {
-        //const scaleX: number = 1 + Math.abs(item.localAxis.x) * (this.memberLoadScale - 1);
-        //const scaleY: number = 1 + Math.abs(item.localAxis.y) * (this.memberLoadScale - 1);
-        //const scaleZ: number = 1 + Math.abs(item.localAxis.z) * (this.memberLoadScale - 1);
         let scaleX: number = 1;
         let scaleY: number = 1;
         let scaleZ: number = 1;
 
-        if (item.name === "qz"){
-          scaleX = 1 ;
-          scaleY = this.memberLoadScale ;
-          scaleZ = 1 ;
+        if (item.name === "qz") {
+          scaleX = 1;
+          scaleY = this.memberLoadScale;
+          scaleZ = 1;
         } else if (item.name === "fx" || item.name === "fy" || item.name === "fz") {
-          scaleX = this.memberLoadScale ;
-          scaleY = this.memberLoadScale ;
-          scaleZ = this.memberLoadScale ;
+          scaleX = this.memberLoadScale;
+          scaleY = this.memberLoadScale;
+          scaleZ = this.memberLoadScale;
         } else {
-          scaleX = this.memberLoadScale ;
-          scaleY = this.memberLoadScale ;
+          scaleX = this.memberLoadScale;
+          scaleY = this.memberLoadScale;
           scaleZ = 1;
         }
-        for (const item2 of item.children){
+        for (const item2 of item.children) {
           item2.scale.set(scaleX, scaleY, scaleZ);
         }
       }
@@ -1493,7 +1331,6 @@ export class ThreeLoadService {
             const l1 = p1.distanceTo(pos);
             const l2 = p2.distanceTo(pos);
             if (l1 <= l0 && l2 <= l0) {
-              // const origin  = new THREE.Vector3(pos.x, pos.y, pos.z);
               const raycaster = new THREE.Raycaster(pos, direction);
               // 登録したすべての荷重に対して距離を調べる
               for (const cb of check_box[m].check_load) {
@@ -1512,12 +1349,9 @@ export class ThreeLoadService {
             }
           }
           // 位置を重ならない位置に修正する
-          const posX: number = 0 + direction.x * distance;
-          //const posX: number = p1.x + direction.x * distance;
-          const posY: number = 0 + direction.y * distance;
-          //const posY: number = p1.y + direction.y * distance;
-          const posZ: number = 0 + direction.z * distance;
-          //const posZ: number = p1.z + direction.z * distance;
+          const posX: number = direction.x * distance;
+          const posY: number = direction.y * distance;
+          const posZ: number = direction.z * distance;
           item.position.set(posX, posY, posZ);
           this.scene.render();
           // 当たってはいけないオブジェクトとして登録

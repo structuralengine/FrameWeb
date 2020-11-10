@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ResultFsecService } from '../result-fsec/result-fsec.service';
+import { ResultPickupFsecService } from '../result-pickup-fsec/result-pickup-fsec.service';
+
 import { InputMembersService } from '../../input/input-members/input-members.service';
 import { InputNoticePointsService } from '../../input/input-notice-points/input-notice-points.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
@@ -10,12 +12,15 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 export class ResultCombineFsecService {
 
   public fsecCombine: any;
+  public isChenge: boolean;
 
   constructor(private fsec: ResultFsecService,
+              private pickfsec: ResultPickupFsecService,
               private member: InputMembersService,
               private notice: InputNoticePointsService,
               private helper: DataHelperModule) {
     this.clear();
+    this.isChenge = true;
   }
 
   public clear(): void {
@@ -59,7 +64,7 @@ export class ResultCombineFsecService {
 
   }
 
-  public setFsecCombineJson(combList: any): void {
+  public setFsecCombineJson(combList: any, pickList: any): void {
 
     // 全ケースで共通する着目点のみ対象とする
     const noticePoints = {};
@@ -83,6 +88,31 @@ export class ResultCombineFsecService {
       noticePoints[key] = points;
     }
 
+
+    const postData = {
+      combList,
+      fsec: this.fsec.fsec,
+      noticePoints
+    };
+
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./result-combine-fsec.worker', { name: 'combine-fsec', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        this.fsecCombine = data.fsecCombine;
+        this.isChenge = false;
+        console.log('断面fsec の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
+        this.pickfsec.setFsecPickupJson(pickList, this.fsecCombine);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+
+    /*
     // combineのループ
     for (const combNo of Object.keys(combList)) {
       const resultFsec = {
@@ -194,7 +224,8 @@ export class ResultCombineFsecService {
       }
       this.fsecCombine[combNo] = resultFsec;
     }
-
+    this.isChenge = false;
+    */
   }
 
   public getFsecJson(): object {
