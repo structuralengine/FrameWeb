@@ -14,15 +14,27 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<div class="datasheet">
-  <hot-table class="hot" [data]="dataset" [colHeaders]="true" [rowHeaders]="false" [width]="1000" [height]="500"
-  licenseKey="non-commercial-and-evaluation">
-    <hot-column data="id" title="節点No" [readOnly]="true"></hot-column>
-    <hot-column data="tx" title="x方向の移動拘束力" [readOnly]="true"></hot-column>
-    <hot-column data="ty" title="y方向の移動拘束力" [readOnly]="true"></hot-column>
-    <hot-column data="tz" title="z方向の移動拘束力" [readOnly]="true"></hot-column>
-    <hot-column data="mx" title="x軸回りの回転拘束力" [readOnly]="true"></hot-column>
-    <hot-column data="my" title="y軸回りの回転拘束力" [readOnly]="true"></hot-column>
-    <hot-column data="mz" title="z軸回りの回転拘束力" [readOnly]="true"></hot-column>
-  </hot-table>
+<div class="result_table">
+  <table>
+    <tr>
+      <th>節点No</th>
+      <th>x方向の支点反力</th>
+      <th>y方向の支点反力</th>
+      <th>z方向の支点反力</th>
+      <th>x軸回りの回転反力</th>
+      <th>y軸回りの回転反力</th>
+      <th>z軸回りの回転反力</th>
+      <th>組み合わせ</th>
+    </tr>
+    <tr *ngFor="let resultData of dataset; index as i">
+      <td>{{resultData.id}}</td>
+      <td>{{resultData.tx}}</td>
+      <td>{{resultData.ty}} </td>
+      <td>{{resultData.tz}} </td>
+      <td>{{resultData.mx}} </td>
+      <td>{{resultData.my}} </td>
+      <td>{{resultData.mz}} </td>
+      <td>{{resultData.case}} </td>
+    </tr>
+  </table>
 </div>

@@ -10,7 +10,7 @@ import { ResultCombineReacService } from '../result-combine-reac/result-combine-
 @Component({
   selector: 'app-result-pickup-reac',
   templateUrl: './result-pickup-reac.component.html',
-  styleUrls: ['./result-pickup-reac.component.scss']
+  styleUrls: ['./result-pickup-reac.component.scss','../../../app.component.scss','../../../floater.component.scss']
 })
 export class ResultPickupReacComponent implements OnInit {
 

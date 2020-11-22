@@ -1,7 +1,8 @@
 <div class="btn-group">
   <nav>
     <a routerLink="/result-disg" routerLinkActive="selected-item" class="btn btn-outline-primary">基本ケース</a>
-    <a routesrLink="/result-comb_disg" routerLinkActive="selected-item" class="btn btn-outline-primary active">COMBINE</a>
+    <a routesrLink="/result-comb_disg" routerLinkActive="selected-item"
+      class="btn btn-outline-primary active">COMBINE</a>
     <a routerLink="/result-pic_disg" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
@@ -14,19 +15,30 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<div *ngFor="let r of KEYS; index as i" >
+<div *ngFor="let r of KEYS; index as i">
   <div class="conbine-title">{{TITLES[i]}}</div>
-  <div class="datasheet" >
-    <hot-table class="hot" [data]="dataset[i]" [colHeaders]="true" [rowHeaders]="true"  [width]="960" [height]="tableHeight"
-    licenseKey="non-commercial-and-evaluation">
-      <hot-column data="id" [readOnly]="true" title="No"></hot-column>
-      <hot-column data="dx" title="x方向の移動量" [readOnly]="true"></hot-column>
-      <hot-column data="dy" title="y方向の移動量" [readOnly]="true"></hot-column>
-      <hot-column data="dz" title="z方向の移動量" [readOnly]="true"></hot-column>
-      <hot-column data="rx" title="x軸回りの回転量" [readOnly]="true"></hot-column>
-      <hot-column data="ry" title="y軸回りの回転量" [readOnly]="true"></hot-column>
-      <hot-column data="rz" title="z軸回りの回転量" [readOnly]="true"></hot-column>
-      <hot-column data="case" title="組み合わせ" [readOnly]="true"></hot-column>
-    </hot-table>
+  <div class="result_table">
+    <table>
+      <tr>
+        <th>No</th>
+        <th>x方向の移動量</th>
+        <th>y方向の移動量</th>
+        <th>z方向の移動量</th>
+        <th>x軸回りの回転量</th>
+        <th>y軸回りの回転量</th>
+        <th>z軸回りの回転量</th>
+        <th>組み合わせ</th>
+      </tr>
+      <tr *ngFor="let resultData of dataset[i]; index as i">
+        <td>{{resultData.id}}</td>
+        <td>{{resultData.dx}}</td>
+        <td>{{resultData.dy}} </td>
+        <td>{{resultData.dz}} </td>
+        <td>{{resultData.rx}} </td>
+        <td>{{resultData.ry}} </td>
+        <td>{{resultData.rz}} </td>
+        <td>{{resultData.case}} </td>
+      </tr>
+    </table>
   </div>
 </div>
