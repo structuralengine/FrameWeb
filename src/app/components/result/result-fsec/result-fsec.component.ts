@@ -10,7 +10,7 @@ import { ResultPickupFsecService } from '../result-pickup-fsec/result-pickup-fse
 @Component({
   selector: 'app-result-fsec',
   templateUrl: './result-fsec.component.html',
-  styleUrls: ['./result-fsec.component.scss']
+  styleUrls: ['./result-fsec.component.scss','../../../app.component.scss','../../../floater.component.scss']
 })
 export class ResultFsecComponent implements OnInit {
 
