@@ -17,28 +17,32 @@
 
 <div *ngFor="let r of KEYS; index as i">
   <div class="conbine-title">{{TITLES[i]}}</div>
-  <div class="result_table">
+  <div class="result_table disg">
     <table>
+      <thead>
       <tr>
-        <th>No</th>
-        <th>x方向の移動量</th>
-        <th>y方向の移動量</th>
-        <th>z方向の移動量</th>
-        <th>x軸回りの回転量</th>
-        <th>y軸回りの回転量</th>
-        <th>z軸回りの回転量</th>
-        <th>組み合わせ</th>
+        <th class="id">No</th>
+        <th class="dx">x方向の移動量</th>
+        <th class="dy">y方向の移動量</th>
+        <th class="dz">z方向の移動量</th>
+        <th  class="rx">x軸回りの回転量</th>
+        <th class="ry">y軸回りの回転量</th>
+        <th class="rz">z軸回りの回転量</th>
+        <th  class="case">組み合わせ</th>
       </tr>
+      </thead>
+      <tbody>
       <tr *ngFor="let resultData of dataset[i]; index as i">
-        <td>{{resultData.id}}</td>
-        <td>{{resultData.dx}}</td>
-        <td>{{resultData.dy}} </td>
-        <td>{{resultData.dz}} </td>
-        <td>{{resultData.rx}} </td>
-        <td>{{resultData.ry}} </td>
-        <td>{{resultData.rz}} </td>
-        <td>{{resultData.case}} </td>
+        <td class="id">{{resultData.id}}</td>
+        <td class="dx">{{resultData.dx}}</td>
+        <td class="dy">{{resultData.dy}} </td>
+        <td class="dz">{{resultData.dz}} </td>
+        <td class="rx">{{resultData.rx}} </td>
+        <td class="ry" >{{resultData.ry}} </td>
+        <td class="rz">{{resultData.rz}} </td>
+        <td class="case">{{resultData.case}} </td>
       </tr>
+      </tbody>
     </table>
   </div>
 </div>
