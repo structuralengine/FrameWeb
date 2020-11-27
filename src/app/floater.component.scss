@@ -76,7 +76,7 @@
     box-sizing: border-box;
     display: block;
     font-family: "Font Awesome 5 Free";
-    height: 52px;
+    height: 50px;
     padding: 10px 20px;
     position: absolute;
     right: 0;
@@ -93,7 +93,7 @@
 }
 
 .acd-check:checked + .acd-label + .acd-content{
-    height: 50px;
+    height: 500px;
     opacity: 1;
     padding: 10px;
     visibility: visible;
