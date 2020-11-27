@@ -1,11 +1,20 @@
 .conbine-title {
     margin-top: 32px;
+    &.acd{
+        margin:0;
+        padding:8px 0;
+    }
+
 }
 
 .result_table {
     table {
         width: 100%;
         margin-top: 32px;
+
+        &.acd{
+            margin:0
+        }
 
         thead,
         tbody {
@@ -83,7 +92,7 @@
     top: 0px;
 }
 .acd-content{
-    border: 1px solid #333;
+    border:0 1px solid #333;
     display: block;
     height: 0;
     opacity: 0;
@@ -93,8 +102,14 @@
 }
 
 .acd-check:checked + .acd-label + .acd-content{
-    height: 500px;
+   height: auto;
     opacity: 1;
-    padding: 10px;
+    padding: 16px;
     visibility: visible;
+}
+
+.fa-sort-down{
+  float: right;
+    
+    font-size: 20px;
 }
