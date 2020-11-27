@@ -10,7 +10,7 @@ import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-dis
 @Component({
   selector: 'app-result-combine-disg',
   templateUrl: './result-combine-disg.component.html',
-  styleUrls: ['./result-combine-disg.component.scss']
+  styleUrls: ['./result-combine-disg.component.scss','../../../app.component.scss','../../../floater.component.scss']
 })
 export class ResultCombineDisgComponent implements OnInit {
 
