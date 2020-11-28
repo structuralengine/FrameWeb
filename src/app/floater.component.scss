@@ -1,10 +1,8 @@
 .conbine-title {
     margin-top: 32px;
-    &.acd{
-        margin:0;
-        padding:8px 0;
+    &.acd {
+        margin: 0;
     }
-
 }
 
 .result_table {
@@ -12,8 +10,8 @@
         width: 100%;
         margin-top: 32px;
 
-        &.acd{
-            margin:0
+        &.acd {
+            margin: 0;
         }
 
         thead,
@@ -41,6 +39,9 @@
             border: 0.5px solid #333333;
             color: #ffffff;
             background-color: #888888;
+            &.mx,&.my,&.mz{
+                font-size: 11px;
+            }
         }
 
         .result_detail {
@@ -52,36 +53,82 @@
         }
     }
 
-    .id {
-        width: 62px;
-        min-width: 62px;
+    &.disg {
+        .id {
+            width: 62px;
+            min-width: 62px;
+        }
+
+        .dx,
+        .dy,
+        .dz,
+        .rx,
+        .ry,
+        .rz,
+        .case {
+            width: 100px;
+            min-width: 100px;
+        }
     }
 
-    .dx,
-    .dy,
-    .dz,
-    .rx,
-    .ry,
-    .rz,
-    .case {
-        width: 100px;
-        min-width: 100px;
+    &.reac {
+        .id {
+            width: 62px;
+            min-width: 62px;
+        }
+
+        .tx,
+        .ty,
+        .tz,
+        .mx,
+        .my,
+        .mz,
+        .case {
+            width: 100px;
+            min-width: 100px;
+        }
+
+ 
+    }
+
+    &.fsec {
+        .m ,.n{
+            width: 62px;
+            min-width: 62px;
+        }
+
+        
+        .l,
+        .fx,
+        .fy,
+        .fz,
+        .mx,
+        .my,
+        .mz,
+        .case {
+            width: 100px;
+            min-width: 100px;
+        }
     }
 }
 
-.acd-check{
+.acd-check {
     display: none;
 }
-.acd-label{
-    background: #0068b7;
+.acd-label {
+    background: #808080;
     color: #fff;
     display: block;
     margin-bottom: 1px;
     padding: 10px;
     position: relative;
+    :hover {
+        cursor: pointer;
+        opacity: 0.7;
+    }
 }
-.acd-label:after{
-    background: #00479d;
+.acd-label:after {
+    background: #808080;
     box-sizing: border-box;
     display: block;
     font-family: "Font Awesome 5 Free";
@@ -91,25 +138,24 @@
     right: 0;
     top: 0px;
 }
-.acd-content{
-    border:0 1px solid #333;
+.acd-content {
+    border: 0 1px solid #333;
     display: block;
     height: 0;
     opacity: 0;
     padding: 0 10px;
-    transition: .5s;
+    transition: 0.5s;
     visibility: hidden;
 }
 
-.acd-check:checked + .acd-label + .acd-content{
-   height: auto;
+.acd-check:checked + .acd-label + .acd-content {
+    height: auto;
     opacity: 1;
-    padding: 16px;
+    padding: 16px 8px;
     visibility: visible;
 }
 
-.fa-sort-down{
-  float: right;
-    
+.fa-sort-down {
+    float: right;
     font-size: 20px;
 }
