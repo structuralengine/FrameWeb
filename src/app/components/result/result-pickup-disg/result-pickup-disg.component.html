@@ -14,34 +14,39 @@
   <div class="load-name">{{load_name}}</div>
 </div>
 
-<div *ngFor="let r of KEYS; index as i">
-  <div class="conbine-title">{{TITLES[i]}}</div>
-  <div class="result_table disg">
-    <table>
-      <thead>
-      <tr>
-        <th class="id">No</th>
-        <th class="dx"> x方向の移動量</th>
-        <th class="dy">y方向の移動量</th>
-        <th class="dz">z方向の移動量</th>
-        <th  class="rx">x軸回りの回転量</th>
-        <th class="ry">y軸回りの回転量</th>
-        <th class="rz">z軸回りの回転量</th>
-        <th class="case">組み合わせ</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let resultData of dataset[i]; index as i">
-        <td class="id">{{resultData.id}}</td>
-        <td class="dx">{{resultData.dx}}</td>
-        <td class="dy">{{resultData.dy}} </td>
-        <td class="dz">{{resultData.dz}} </td>
-        <td  class="rx">{{resultData.rx}} </td>
-        <td class="ry" >{{resultData.ry}} </td>
-        <td class="rz">{{resultData.rz}} </td>
-        <td class="case">{{resultData.case}} </td>
-      </tr>
-      </tbody>
-    </table>
+<div *ngFor="let r of KEYS ; index as i">
+  <input id="{{TITLES[i]}}" class="acd-check" type="checkbox">
+  <label class="acd-label" for="{{TITLES[i]}}">
+    <div class="conbine-title acd">{{TITLES[i]}}<i class="fas fa-sort-down"></i></div>
+  </label>
+  <div class="acd-content">
+    <div class="result_table disg">
+      <table class="acd">
+        <thead>
+          <tr>
+            <th class="id">No</th>
+            <th class="dx"> x方向の移動量</th>
+            <th class="dy">y方向の移動量</th>
+            <th class="dz">z方向の移動量</th>
+            <th class="rx">x軸回りの回転量</th>
+            <th class="ry">y軸回りの回転量</th>
+            <th class="rz">z軸回りの回転量</th>
+            <th class="case">組み合わせ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let resultData of dataset[i]; index as i">
+            <td class="id">{{resultData.id}}</td>
+            <td class="dx">{{resultData.dx}}</td>
+            <td class="dy">{{resultData.dy}} </td>
+            <td class="dz">{{resultData.dz}} </td>
+            <td class="rx">{{resultData.rx}} </td>
+            <td class="ry">{{resultData.ry}} </td>
+            <td class="rz">{{resultData.rz}} </td>
+            <td class="case">{{resultData.case}} </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

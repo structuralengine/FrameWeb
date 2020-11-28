@@ -17,24 +17,24 @@
 <div class="result_table">
   <table>
     <tr>
-      <th>節点No</th>
-      <th>x方向の支点反力</th>
-      <th>y方向の支点反力</th>
-      <th>z方向の支点反力</th>
-      <th>x軸回りの回転反力</th>
-      <th>y軸回りの回転反力</th>
-      <th>z軸回りの回転反力</th>
-      <th>組み合わせ</th>
+      <th class="id">節点No</th>
+      <th class="tx">x方向の支点反力</th>
+      <th class="ty">y方向の支点反力</th>
+      <th class="tz">z方向の支点反力</th>
+      <th class="mx">x軸回りの回転反力</th>
+      <th class="my">y軸回りの回転反力</th>
+      <th class="mz">z軸回りの回転反力</th>
+      <th class="case">組み合わせ</th>
     </tr>
     <tr *ngFor="let resultData of dataset; index as i">
-      <td>{{resultData.id}}</td>
-      <td>{{resultData.tx}}</td>
-      <td>{{resultData.ty}} </td>
-      <td>{{resultData.tz}} </td>
-      <td>{{resultData.mx}} </td>
-      <td>{{resultData.my}} </td>
-      <td>{{resultData.mz}} </td>
-      <td>{{resultData.case}} </td>
+      <td class="id">{{resultData.id}}</td>
+      <td class="tx">{{resultData.tx}}</td>
+      <td class="ty">{{resultData.ty}} </td>
+      <td class="tz">{{resultData.tz}} </td>
+      <td class="mx">{{resultData.mx}} </td>
+      <td class="my">{{resultData.my}} </td>
+      <td class="mz">{{resultData.mz}} </td>
+      <td class="case">{{resultData.case}} </td>
     </tr>
   </table>
 </div>
