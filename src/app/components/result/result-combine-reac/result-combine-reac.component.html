@@ -16,7 +16,7 @@
 </div>
 
 <div *ngFor="let r of KEYS; index as i">
-  <input id="{{TITLES[i]}}" class="acd-check" type="checkbox">
+  <input id="{{TITLES[i]}}" class="acd-check" type="checkbox" [checked]="i==0">
   <label class="acd-label" for="{{TITLES[i]}}">
     <div class="conbine-title acd">{{TITLES[i]}}<i class="fas fa-sort-down"></i></div>
   </label>
