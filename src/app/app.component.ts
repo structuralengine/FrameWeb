@@ -34,7 +34,8 @@ export class AppComponent implements OnInit {
     this.deactiveButtons();
 
     document.getElementById(id).classList.add('active');
-    
+  
+
     this.user.isContentsDailogShow = true;
     this.setDialogHeight();
 

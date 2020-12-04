@@ -93,6 +93,24 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     this.rowHeaders = new Array();
   }
 
+  public pagenationShow(id): void {
+    this.deactiveButtons();
+    console.log(id);
+    document.getElementById(id).classList.add('active');
+  }
+
+  deactiveButtons() {
+    for (let i = 101; i <= 105; i++) {
+      const data = document.getElementById(i + '');
+      if (data != null) {
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
+        }
+      }
+    }
+  }
+
+
   ngOnInit() {
     this.initialFlg = true;
     this.COLUMNS_COUNT = this.load.getLoadCaseCount() * 2 + 1;
@@ -104,7 +122,9 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
 
     this.loadPage(1);
-
+    this.pagenationShow(101);
+    
+  
     this.message = 'please select button.';
     this.myControl = new FormGroup({
       number2: new FormControl(),
@@ -113,15 +133,9 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
 
   }
 
-  click() {
-    const value: number = this.helper.toNumber(this.myControl.value.number2);
-    if (value !== null) {
-      this.loadPage(value);
-    }
-  }
-
 
   ngAfterViewInit() {
+    
     this.initialFlg = false;
   }
   public dialogClose(): void {
@@ -139,16 +153,27 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
         this.page_2 = currentPage - 2;
         this.page11 = currentPage + 1;
         this.page12 = currentPage + 2;
-      } else {
+        this.pagenationShow(103);
+
+      } else if( currentPage == 2){
         this.page0 = 3;
         this.page_1 = 2;
         this.page_2 = 1;
         this.page11 = 4;
         this.page12 = 5;
+        this.pagenationShow(102);
+      }
+    
+      else {
+        this.page0 = 3;
+        this.page_1 = 2;
+        this.page_2 = 1;
+        this.page11 = 4;
+        this.page12 = 5;
+        this.pagenationShow(101);
       }
     }
-
-
+    
     this.defineData = new Array();
     this.rowHeaders = new Array();
 
@@ -161,4 +186,26 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
       this.rowHeaders.push(i);
     }
   }
+
+  click() {
+    const value: number = this.helper.toNumber(this.myControl.value.number2);
+     
+    if (value !== null ) {
+      this.loadPage(value);
+      
+      if(this.page > 2){
+      this.pagenationShow(103);
+      }else if(this.page  == 2){
+        this.pagenationShow(102);
+      }else{
+        this.pagenationShow(101);
+      }
+    }
+  }
+
+
+  
+
+  
+
 }

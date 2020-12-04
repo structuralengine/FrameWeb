@@ -14,23 +14,20 @@
 </div>
 
 <div style="width:900px;">
-  <div class="pager">
-    <div class="pager-title">ページ</div>
-    <ngb-pagination [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
-    </ngb-pagination>
+  <div class="pager">  
     <form [formGroup]="myControl">
-      <ul class="pagenationManual">
+      <ul class="pagenation">
         <li>《</li>
-        <li id="1"><a href="/">{{page_2}}</a></li>
-        <li id="2"><a href="/">{{page_1}}</a></li>
-        <li id="3"><a href="/">{{page0}}</a></li>
-        <li id="4"><a href="/">{{page11}}</a></li>
-        <li id="5"><a href="/">{{page12}}</a></li>
+        <li id="101" (click)="pagenationShow(111)" class="list"><a href="/" id="111">{{page_2}}</a></li>
+        <li id="102" (click)="pagenationShow(211)" class="list"><a href="/" id="211" >{{page_1}}</a></li>
+        <li id="103" (click)="pagenationShow(311)" class="list"><a href="/" id="311" >{{page0}}</a></li>
+        <li id="104" (click)="pagenationShow(411)" class="list"><a href="/" id="411" >{{page11}}</a></li>
+        <li id="105" (click)="pagenationShow(511)" class="list"><a href="/" id="511" >{{page12}}</a></li>
         <li>》</li>
       </ul>
-      <div class="pageNum">
+      <div>
         <mat-form-field>
-          <input type="number" matInput matType="number" formControlName="number2">
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
         </mat-form-field>
       </div>
       <button mat-raised-button (click)="click()">click</button>
