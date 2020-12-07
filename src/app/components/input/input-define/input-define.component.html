@@ -18,11 +18,11 @@
     <form [formGroup]="myControl">
       <ul class="pagenation">
         <li><a id="prev" (click)="moveToNextPage(-1)" class="list" aria-label="Previous">《</a></li>
-        <li><a  id="101" (click)="moveToNextPage(-2) " class="list">{{page_2}}</a></li>
-        <li><a  id="102" (click)="moveToNextPage(-1)" class="list">{{page_1}}</a></li>
-        <li><a  id="103" class="list">{{page0}}</a></li>
-        <li><a  id="104" (click)="moveToNextPage(1)" class="list">{{page11}}</a></li>
-        <li><a  id="105" (click)="moveToNextPage(2)" class="list">{{page12}}</a></li>
+        <li><a link="moveToNextPage(-2)" (click)="moveToNextPage(-2)"  id="101"  class="list">{{page_2}}</a></li>
+        <li><a link="moveToNextPage(-1)" (click)="moveToNextPage(-1)" id="102" class="list">{{page_1}}</a></li>
+        <li><a link="" (click)="moveToNextPage(-1)" id="103" class="list">{{page0}}</a></li>
+        <li><a link="moveToNextPage(1)" (click)="moveToNextPage(1)" id="104"  class="list">{{page11}}</a></li>
+        <li><a link="moveToNextPage(2)" (click)="moveToNextPage(2)" id="105"  class="list">{{page12}}</a></li>
         <li><a id="next" (click)="moveToNextPage(1)" class="list" aria-label="Next">》</a></li>
       </ul>
       <div>

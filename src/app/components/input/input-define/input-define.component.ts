@@ -131,13 +131,14 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
   }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
-    console.log('aa')
+  
   }
 
 
   loadPage(currentPage: number) {
     this.deactiveButtons();
     if (currentPage !== this.page) {
+      
       this.page = currentPage;
       
       if (currentPage > 2) {
@@ -185,22 +186,10 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public moveToPreviousPage(count:number): void {
-    let Prev: number;
-    Prev = this.page - count;
-    if( Prev > 0){
-    this.loadPage(Prev);
-    }else{
-      this.loadPage(1);
-      this.pagenationShow(101);
-      document.getElementById('101').classList.add('active');
-    }
-  }
 
   public moveToNextPage(count:number): void {
     let Next: number;
     Next = this.page + count;
-    this.loadPage(Next);
     if( Next > 0){
       this.loadPage(Next);
       }else{
@@ -208,6 +197,7 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
         this.pagenationShow(101);
         document.getElementById('101').classList.add('active');
       }
+      
   }
 
 
@@ -220,17 +210,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
       value = this.helper.toNumber(id);
     }
 
-    if (value !== null) {
-      this.loadPage(value);
-
-      if (this.page > 2) {
-        this.pagenationShow(103);
-      } else if (this.page == 2) {
-        this.pagenationShow(102);
-      } else {
-        this.pagenationShow(101);
-      }
-    }
     if (value !== null) {
       this.loadPage(value);
       if (this.page > 2) {
