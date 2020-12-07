@@ -1,3 +1,4 @@
+
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputDefineService } from './input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
@@ -29,11 +30,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
   defineData: any[];
   defineColums: any[];
   rowHeaders: any[];
-  key = "";
-
-  show(e: any) {
-    this.key = e.key;
-  }
 
   hotTableSettings = {
     beforeChange: (...x: any[]) => {
@@ -93,10 +89,11 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     this.rowHeaders = new Array();
   }
 
-  public pagenationShow(id): void {
+  pagenationShow(id): void {
     this.deactiveButtons();
     console.log(id);
     document.getElementById(id).classList.add('active');
+    
   }
 
   deactiveButtons() {
@@ -110,7 +107,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   ngOnInit() {
     this.initialFlg = true;
     this.COLUMNS_COUNT = this.load.getLoadCaseCount() * 2 + 1;
@@ -123,19 +119,14 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
 
     this.loadPage(1);
     this.pagenationShow(101);
-    
-  
+
     this.message = 'please select button.';
     this.myControl = new FormGroup({
       number2: new FormControl(),
     });
-
-
   }
 
-
   ngAfterViewInit() {
-    
     this.initialFlg = false;
   }
   public dialogClose(): void {
@@ -145,8 +136,10 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
 
 
   loadPage(currentPage: number) {
+    this.deactiveButtons();
     if (currentPage !== this.page) {
       this.page = currentPage;
+      
       if (currentPage > 2) {
         this.page0 = currentPage;
         this.page_1 = currentPage - 1;
@@ -154,16 +147,19 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
         this.page11 = currentPage + 1;
         this.page12 = currentPage + 2;
         this.pagenationShow(103);
+        document.getElementById('103').classList.add('active');
+      
 
-      } else if( currentPage == 2){
+      } else if (currentPage == 2) {
         this.page0 = 3;
         this.page_1 = 2;
         this.page_2 = 1;
         this.page11 = 4;
         this.page12 = 5;
         this.pagenationShow(102);
+        document.getElementById('102').classList.add('active');
       }
-    
+
       else {
         this.page0 = 3;
         this.page_1 = 2;
@@ -171,9 +167,11 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
         this.page11 = 4;
         this.page12 = 5;
         this.pagenationShow(101);
+        document.getElementById('101').classList.add('active');
+
       }
     }
-    
+
     this.defineData = new Array();
     this.rowHeaders = new Array();
 
@@ -187,25 +185,61 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   }
 
-  click() {
-    const value: number = this.helper.toNumber(this.myControl.value.number2);
-     
-    if (value !== null ) {
-      this.loadPage(value);
-      
-      if(this.page > 2){
-      this.pagenationShow(103);
-      }else if(this.page  == 2){
-        this.pagenationShow(102);
+  public moveToPreviousPage(count:number): void {
+    let Prev: number;
+    Prev = this.page - count;
+    if( Prev > 0){
+    this.loadPage(Prev);
+    }else{
+      this.loadPage(1);
+      this.pagenationShow(101);
+      document.getElementById('101').classList.add('active');
+    }
+  }
+
+  public moveToNextPage(count:number): void {
+    let Next: number;
+    Next = this.page + count;
+    this.loadPage(Next);
+    if( Next > 0){
+      this.loadPage(Next);
       }else{
+        this.loadPage(1);
+        this.pagenationShow(101);
+        document.getElementById('101').classList.add('active');
+      }
+  }
+
+
+  click(id = null) {
+    let value: number;
+    
+    if (id === null) {
+      value = this.helper.toNumber(this.myControl.value.number2);
+    } else {
+      value = this.helper.toNumber(id);
+    }
+
+    if (value !== null) {
+      this.loadPage(value);
+
+      if (this.page > 2) {
+        this.pagenationShow(103);
+      } else if (this.page == 2) {
+        this.pagenationShow(102);
+      } else {
+        this.pagenationShow(101);
+      }
+    }
+    if (value !== null) {
+      this.loadPage(value);
+      if (this.page > 2) {
+        this.pagenationShow(103);
+      } else if (this.page == 2) {
+        this.pagenationShow(102);
+      } else {
         this.pagenationShow(101);
       }
     }
   }
-
-
-  
-
-  
-
 }
