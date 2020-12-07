@@ -18,7 +18,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
   message: string;
   myControl: FormGroup;
   number2: string;
-
   ROWS_COUNT = 20;
   COLUMNS_COUNT: number;
   page: number;
@@ -71,6 +70,7 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   };
 
+
   private initialFlg = true;
   constructor(private input: InputDefineService,
     private load: InputLoadService,
@@ -78,6 +78,8 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     private helper: DataHelperModule,
     public user: UserInfoService,) {
 
+
+    // pagenationのhtml側表示の定義
     this.page0 = 3;
     this.page11 = 4;
     this.page12 = 5;
@@ -87,24 +89,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     this.defineData = new Array();
     this.defineColums = new Array();
     this.rowHeaders = new Array();
-  }
-
-  pagenationShow(id): void {
-    this.deactiveButtons();
-    console.log(id);
-    document.getElementById(id).classList.add('active');
-    
-  }
-
-  deactiveButtons() {
-    for (let i = 101; i <= 105; i++) {
-      const data = document.getElementById(i + '');
-      if (data != null) {
-        if (data.classList.contains('active')) {
-          data.classList.remove('active');
-        }
-      }
-    }
   }
 
   ngOnInit() {
@@ -117,8 +101,8 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
       this.defineColums.push('C' + i.toString());
     }
 
+    // pagenationの初期設定で1ページ目呼び込み
     this.loadPage(1);
-    this.pagenationShow(101);
 
     this.message = 'please select button.';
     this.myControl = new FormGroup({
@@ -131,46 +115,63 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
   }
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
-  
+
   }
 
+  // active属性を外す
+  deactiveButtons() {
+    for (let i = 101; i <= 105; i++) {
+      const data = document.getElementById(i + '');
+      if (data != null) {
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
+        }
+      }
+    }
+  }
 
+  // ページを読み込む、this.pageは現在のページ数
   loadPage(currentPage: number) {
+
+    if (currentPage === this.page) {
+      return; // 何もしな
+    }
+
     this.deactiveButtons();
-    if (currentPage !== this.page) {
-      
-      this.page = currentPage;
-      
-      if (currentPage > 2) {
-        this.page0 = currentPage;
-        this.page_1 = currentPage - 1;
-        this.page_2 = currentPage - 2;
-        this.page11 = currentPage + 1;
-        this.page12 = currentPage + 2;
-        this.pagenationShow(103);
-        document.getElementById('103').classList.add('active');
-      
 
-      } else if (currentPage == 2) {
-        this.page0 = 3;
-        this.page_1 = 2;
-        this.page_2 = 1;
-        this.page11 = 4;
-        this.page12 = 5;
-        this.pagenationShow(102);
-        document.getElementById('102').classList.add('active');
-      }
+    this.page = currentPage;
 
-      else {
-        this.page0 = 3;
-        this.page_1 = 2;
-        this.page_2 = 1;
-        this.page11 = 4;
-        this.page12 = 5;
-        this.pagenationShow(101);
-        document.getElementById('101').classList.add('active');
+    if (currentPage > 2) {
+      this.page0 = currentPage;
+      this.page_1 = currentPage - 1;
+      this.page_2 = currentPage - 2;
+      this.page11 = currentPage + 1;
+      this.page12 = currentPage + 2;
+      document.getElementById('103').classList.add('active');
 
-      }
+      console.log('currentPage > 2 なので、103をアクティブにします', currentPage)
+    } else if (currentPage == 2) {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+      document.getElementById('102').classList.add('active');
+
+      console.log('currentPage == 2 なので、102をアクティブにします', currentPage)
+
+    }
+
+    else {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+
+      document.getElementById('101').classList.add('active');
+
+      console.log('101をアクティブにします', currentPage)
     }
 
     this.defineData = new Array();
@@ -186,24 +187,65 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  public moveToNextPage(count:number): void {
+  // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺
+  public moveToNextPage(count: number, id: number): void {
+    console.log(count, id, 'moveToNextPageが呼ばれました！！！！')
     let Next: number;
-    Next = this.page + count;
-    if( Next > 0){
-      this.loadPage(Next);
-      }else{
-        this.loadPage(1);
-        this.pagenationShow(101);
-        document.getElementById('101').classList.add('active');
-      }
-      
+    let additional: number;
+    let minus: number;
+    var plus: number;
+
+   // 1、2ページ目だけイレギュラーな動きをする
+    if (this.page === 1) {
+      additional = 2;
+      minus = -2;
+      plus = -1;
+      console.log("minus", minus);
+      console.log("plus", plus);
+
+    } else if (this.page === 2) {
+      additional = 1;
+      minus = -1;
+      plus = 0;
+      console.log("minus", minus);
+      console.log("plus", plus);
+
+
+    } else {
+      additional = 0;
+      minus = -1;
+      plus = 1;
+      console.log("minus", minus);
+      console.log("plus", plus);
+    }
+
+    console.log("additional", additional);
+    console.log("count", count);
+    console.log("this.page", this.page);
+
+    Next = this.page + count + additional;
+    if(Next < 1){
+      Next = 1;
+    }
+
+
+    console.log('Next: ', Next, 'ページを表示します')
+
+    this.loadPage(Next);
+
+
+    // if (this.page > 1) {
+    //   this.loadPage(1);
+    //   document.getElementById('101').classList.add('active');
+    // }else  {
+    //   this.loadPage(Next);
+    // }
   }
 
 
   click(id = null) {
     let value: number;
-    
+
     if (id === null) {
       value = this.helper.toNumber(this.myControl.value.number2);
     } else {
@@ -212,13 +254,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
 
     if (value !== null) {
       this.loadPage(value);
-      if (this.page > 2) {
-        this.pagenationShow(103);
-      } else if (this.page == 2) {
-        this.pagenationShow(102);
-      } else {
-        this.pagenationShow(101);
-      }
     }
   }
 }
