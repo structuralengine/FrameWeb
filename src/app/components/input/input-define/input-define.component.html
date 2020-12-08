@@ -13,17 +13,17 @@
   </hot-table>
 </div>
 
-<div style="width:900px;">
-  <div class="pager">  
+<div style="width:900px;" class="pagerArea">
+  <div class="pager">
     <form [formGroup]="myControl">
       <ul class="pagenation">
-        <li>《</li>
-        <li id="101" (click)="pagenationShow(111)" class="list"><a href="/" id="111">{{page_2}}</a></li>
-        <li id="102" (click)="pagenationShow(211)" class="list"><a href="/" id="211" >{{page_1}}</a></li>
-        <li id="103" (click)="pagenationShow(311)" class="list"><a href="/" id="311" >{{page0}}</a></li>
-        <li id="104" (click)="pagenationShow(411)" class="list"><a href="/" id="411" >{{page11}}</a></li>
-        <li id="105" (click)="pagenationShow(511)" class="list"><a href="/" id="511" >{{page12}}</a></li>
-        <li>》</li>
+        <li><a id="prev" link="100"  (click)="moveToNextPage(-5, 100)" class="list" aria-label="Previous">《</a></li>
+        <li><a link="101" (click)="moveToNextPage(-2,101)" id="101" class="list">{{page_2}}</a></li>
+        <li><a link="102" (click)="moveToNextPage(-1,102)" id="102" class="list">{{page_1}}</a></li>
+        <li><a link="103" (click)="moveToNextPage(0,103)" id="103" class="list">{{page0}}</a></li>
+        <li><a link="104" (click)="moveToNextPage(1,104)" id="104" class="list">{{page11}}</a></li>
+        <li><a link="105" (click)="moveToNextPage(2,105)" id="105" class="list">{{page12}}</a></li>
+        <li><a id="next" link="106"  (click)="moveToNextPage(5, 106)" class="list" aria-label="Next">》</a></li>
       </ul>
       <div>
         <mat-form-field>

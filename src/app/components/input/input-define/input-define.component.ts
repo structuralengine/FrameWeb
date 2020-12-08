@@ -1,3 +1,4 @@
+
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputDefineService } from './input-define.service';
 import { InputLoadService } from '../input-load/input-load.service';
@@ -17,7 +18,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
   message: string;
   myControl: FormGroup;
   number2: string;
-
   ROWS_COUNT = 20;
   COLUMNS_COUNT: number;
   page: number;
@@ -29,11 +29,6 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
   defineData: any[];
   defineColums: any[];
   rowHeaders: any[];
-  key = "";
-
-  show(e: any) {
-    this.key = e.key;
-  }
 
   hotTableSettings = {
     beforeChange: (...x: any[]) => {
@@ -75,6 +70,7 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   };
 
+
   private initialFlg = true;
   constructor(private input: InputDefineService,
     private load: InputLoadService,
@@ -82,6 +78,8 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     private helper: DataHelperModule,
     public user: UserInfoService,) {
 
+
+    // pagenationのhtml側表示の定義
     this.page0 = 3;
     this.page11 = 4;
     this.page12 = 5;
@@ -93,12 +91,34 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     this.rowHeaders = new Array();
   }
 
-  public pagenationShow(id): void {
-    this.deactiveButtons();
-    console.log(id);
-    document.getElementById(id).classList.add('active');
+  ngOnInit() {
+    this.initialFlg = true;
+    this.COLUMNS_COUNT = this.load.getLoadCaseCount() * 2 + 1;
+    if (this.COLUMNS_COUNT <= 5) {
+      this.COLUMNS_COUNT = 5;
+    }
+    for (let i = 1; i <= this.COLUMNS_COUNT; i++) {
+      this.defineColums.push('C' + i.toString());
+    }
+
+    // pagenationの初期設定で1ページ目呼び込み
+    this.loadPage(1);
+
+    this.message = 'please select button.';
+    this.myControl = new FormGroup({
+      number2: new FormControl(),
+    });
   }
 
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+
+  }
+
+  // active属性を外す
   deactiveButtons() {
     for (let i = 101; i <= 105; i++) {
       const data = document.getElementById(i + '');
@@ -110,70 +130,50 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  ngOnInit() {
-    this.initialFlg = true;
-    this.COLUMNS_COUNT = this.load.getLoadCaseCount() * 2 + 1;
-    if (this.COLUMNS_COUNT <= 5) {
-      this.COLUMNS_COUNT = 5;
-    }
-    for (let i = 1; i <= this.COLUMNS_COUNT; i++) {
-      this.defineColums.push('C' + i.toString());
-    }
-
-    this.loadPage(1);
-    this.pagenationShow(101);
-    
-  
-    this.message = 'please select button.';
-    this.myControl = new FormGroup({
-      number2: new FormControl(),
-    });
-
-
-  }
-
-
-  ngAfterViewInit() {
-    
-    this.initialFlg = false;
-  }
-  public dialogClose(): void {
-    this.user.isContentsDailogShow = false;
-    console.log('aa')
-  }
-
-
+  // ページを読み込む、this.pageは現在のページ数
   loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
-      this.page = currentPage;
-      if (currentPage > 2) {
-        this.page0 = currentPage;
-        this.page_1 = currentPage - 1;
-        this.page_2 = currentPage - 2;
-        this.page11 = currentPage + 1;
-        this.page12 = currentPage + 2;
-        this.pagenationShow(103);
 
-      } else if( currentPage == 2){
-        this.page0 = 3;
-        this.page_1 = 2;
-        this.page_2 = 1;
-        this.page11 = 4;
-        this.page12 = 5;
-        this.pagenationShow(102);
-      }
-    
-      else {
-        this.page0 = 3;
-        this.page_1 = 2;
-        this.page_2 = 1;
-        this.page11 = 4;
-        this.page12 = 5;
-        this.pagenationShow(101);
-      }
+    if (currentPage === this.page) {
+      return; // 何もしな
     }
-    
+
+    this.deactiveButtons();
+
+    this.page = currentPage;
+
+    if (currentPage > 2) {
+      this.page0 = currentPage;
+      this.page_1 = currentPage - 1;
+      this.page_2 = currentPage - 2;
+      this.page11 = currentPage + 1;
+      this.page12 = currentPage + 2;
+      document.getElementById('103').classList.add('active');
+
+      console.log('currentPage > 2 なので、103をアクティブにします', currentPage)
+    } else if (currentPage == 2) {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+      document.getElementById('102').classList.add('active');
+
+      console.log('currentPage == 2 なので、102をアクティブにします', currentPage)
+
+    }
+
+    else {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+
+      document.getElementById('101').classList.add('active');
+
+      console.log('101をアクティブにします', currentPage)
+    }
+
     this.defineData = new Array();
     this.rowHeaders = new Array();
 
@@ -187,25 +187,73 @@ export class InputDefineComponent implements OnInit, AfterViewInit {
     }
   }
 
-  click() {
-    const value: number = this.helper.toNumber(this.myControl.value.number2);
-     
-    if (value !== null ) {
-      this.loadPage(value);
-      
-      if(this.page > 2){
-      this.pagenationShow(103);
-      }else if(this.page  == 2){
-        this.pagenationShow(102);
-      }else{
-        this.pagenationShow(101);
-      }
+  // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺
+  public moveToNextPage(count: number, id: number): void {
+    console.log(count, id, 'moveToNextPageが呼ばれました！！！！')
+    let Next: number;
+    let additional: number;
+    let minus: number;
+    var plus: number;
+
+   // 1、2ページ目だけイレギュラーな動きをする
+    if (this.page === 1) {
+      additional = 2;
+      minus = -2;
+      plus = -1;
+      console.log("minus", minus);
+      console.log("plus", plus);
+
+    } else if (this.page === 2) {
+      additional = 1;
+      minus = -1;
+      plus = 0;
+      console.log("minus", minus);
+      console.log("plus", plus);
+
+
+    } else {
+      additional = 0;
+      minus = -1;
+      plus = 1;
+      console.log("minus", minus);
+      console.log("plus", plus);
     }
+
+    console.log("additional", additional);
+    console.log("count", count);
+    console.log("this.page", this.page);
+
+    Next = this.page + count + additional;
+    if(Next < 1){
+      Next = 1;
+    }
+
+
+    console.log('Next: ', Next, 'ページを表示します')
+
+    this.loadPage(Next);
+
+
+    // if (this.page > 1) {
+    //   this.loadPage(1);
+    //   document.getElementById('101').classList.add('active');
+    // }else  {
+    //   this.loadPage(Next);
+    // }
   }
 
 
-  
+  click(id = null) {
+    let value: number;
 
-  
+    if (id === null) {
+      value = this.helper.toNumber(this.myControl.value.number2);
+    } else {
+      value = this.helper.toNumber(id);
+    }
 
+    if (value !== null) {
+      this.loadPage(value);
+    }
+  }
 }
