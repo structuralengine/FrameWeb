@@ -30,11 +30,11 @@ export class ResultDisgService {
     const item = target[index];
 
     const dx = (item.dx === null) ? 0 : Math.round(10000 * item.dx) / 10000;
-    const dy = (item.dx === null) ? 0 : Math.round(10000 * item.dy) / 10000;
-    const dz = (item.dx === null) ? 0 : Math.round(10000 * item.dz) / 10000;
-    const rx = (item.dx === null) ? 0 : Math.round(10000 * item.rx) / 10000;
-    const ry = (item.dx === null) ? 0 : Math.round(10000 * item.ry) / 10000;
-    const rz = (item.dx === null) ? 0 : Math.round(10000 * item.rz) / 10000;
+    const dy = (item.dy === null) ? 0 : Math.round(10000 * item.dy) / 10000;
+    const dz = (item.dz === null) ? 0 : Math.round(10000 * item.dz) / 10000;
+    const rx = (item.rx === null) ? 0 : Math.round(10000 * item.rx) / 10000;
+    const ry = (item.ry === null) ? 0 : Math.round(10000 * item.ry) / 10000;
+    const rz = (item.rz === null) ? 0 : Math.round(10000 * item.rz) / 10000;
 
     const result = {
       id: item.id,
