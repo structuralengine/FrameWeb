@@ -9,15 +9,55 @@
     left:0px;
 }
 
-.pager {
-    margin-top:  10px;
+.pagerArea {
+  .pager {
+    margin-top: 10px;
     margin-left: 0.5px;
     margin-right: 0.5px;
-    .pager-title{
-        float:left;
+
+    button {
+      display: none;
     }
 
     display: inline-block;
+
+    .pagenation {
+      display: flex;
+
+      color: #333333;
+      padding: 0;
+      list-style: none;
+      li {
+        a {
+          display: block;
+          min-width: 40px;
+          padding: 8px;
+          color: #333333;
+          margin: 0 8px;
+          &:hover {
+            cursor: pointer;
+            opacity: 0.7;
+            color: #333333;
+            background-color: #f5f5f5;
+          }
+          &:active {
+            background-color: #113800;
+          }
+          &:not(:disabled):not(.disabled).active {
+            color: #ffffff;
+            background-color: #113800;
+          }
+        }
+      }
+    }
+  }
+}
+
+.pageNum {
+  padding: 8px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  text-align: center;
 }
 
 .datasheet{

@@ -5,10 +5,28 @@
   </nav>
 </div>
 
-<div class="pager">
-  <div class="pager-title">ページ</div>
-  <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
-  </ngb-pagination>
+
+<div style="width:900px;" class="pagerArea">
+  <div class="pager">
+    <form [formGroup]="myControl">
+      <ul class="pagenation">
+        <li><a id="prev" link="120"  (click)="moveToNextPage(-5, 120)" class="list" aria-label="Previous">《</a></li>
+        <li><a link="121" (click)="moveToNextPage(-2,101)" id="121" class="list">{{page_2}}</a></li>
+        <li><a link="122" (click)="moveToNextPage(-1,102)" id="122" class="list">{{page_1}}</a></li>
+        <li><a link="123" (click)="moveToNextPage(0,103)" id="123" class="list">{{page0}}</a></li>
+        <li><a link="124" (click)="moveToNextPage(1,104)" id="124" class="list">{{page11}}</a></li>
+        <li><a link="125" (click)="moveToNextPage(2,105)" id="125" class="list">{{page12}}</a></li>
+        <li><a id="next" link="126"  (click)="moveToNextPage(5, 126)" class="list" aria-label="Next">》</a></li>
+      </ul>
+      <div>
+        <mat-form-field>
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button (click)="click()">click</button>
+    </form>
+    <!-- <p class="message">{{message}}</p> -->
+  </div>
 </div>
 
 <div class="datasheet">
