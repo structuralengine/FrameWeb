@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
 
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
-    this.deactiveButtons();
+  
   }
 
   public contentsDailogShow(id): void {
