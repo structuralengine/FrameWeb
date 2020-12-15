@@ -518,7 +518,6 @@ export class ThreeSectionForceService {
         colors.push(color.r, color.g, color.b);
         danmenryoku.push(f);
       }
-      //console.log(positions);
       // j端の座標を登録
       positions.push({
         x: memberInfo.jPosition.x,
@@ -526,7 +525,6 @@ export class ThreeSectionForceService {
         z: memberInfo.jPosition.z
       });
       colors.push(color.r, color.g, color.b);
-      //console.log(positions);
 
       if (tmplineList.length > i) {
         // 既にオブジェクトが生成されていた場合
@@ -579,15 +577,15 @@ export class ThreeSectionForceService {
           if (positions[j + 2 + split_count].note === "split"){
             split_count += 1;
           }
-          point2[0] = memberInfo.localPosition[j + 1 + 1];
+          point2[0] = memberInfo.localPosition[j + 2];
           if (positions[j + 1 + split_count].note === "split"){
-            point2[1] = positions[j + 1 + 1 + split_count].f;
+            point2[1] = positions[j + 2 + split_count].f;
             point3[0] = positions[j + 1 + split_count].v;
             point3[1] = positions[j + 1 + split_count].f;
           } else {
-            point2[1] = positions[j + 1 + 1 + split_count].f;
-            point3[0] = memberInfo.localPosition[j + 1 + 1];
-            point3[1] = positions[j + 1 + 1 + split_count].f;
+            point2[1] = positions[j + 2 + split_count].f;
+            point3[0] = memberInfo.localPosition[j + 2];
+            point3[1] = positions[j + 2 + split_count].f;
           }
 
           if (point1[1] * point2[1] > 0) {
@@ -629,6 +627,7 @@ export class ThreeSectionForceService {
 
         }
 
+        //keyの変更後のmeshの向きを指定する
         const lookatX = memberInfo.localAxisX.x + positions[0].x;
         const lookatY = memberInfo.localAxisX.y + positions[0].y;
         const lookatZ = memberInfo.localAxisX.z + positions[0].z;
@@ -650,6 +649,13 @@ export class ThreeSectionForceService {
           }
         //shearForceZのとき
         } else if (key === 'shearForceZ'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        //torsionalMomentのとき
+        } else if (key === 'torsionalMoment'){
           line.children[1].lookAt(lookatX, lookatY, lookatZ);
           line.children[1].rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
@@ -771,7 +777,7 @@ export class ThreeSectionForceService {
 
     //meshで台形を作成して代用するchildren[1]
     const mesh = new THREE.Group();
-    mesh.name = "mesh_mesh";
+    mesh.name = "mesh";
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -795,7 +801,6 @@ export class ThreeSectionForceService {
         split_count += 1;
         continue;
       }
-
       point1[0] = memberInfo.localPosition[i - split_count];
       point1[1] = positions[i].f;
       point2[0] = memberInfo.localPosition[i - split_count + 1];
