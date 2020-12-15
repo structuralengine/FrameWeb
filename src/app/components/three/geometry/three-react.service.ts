@@ -80,7 +80,20 @@ export class ThreeReactService {
     private createReact(reacData: any, nodeData: object): void {
 
       // 新しい入力を適用する
-      const targetReact = reacData;
+      const targetReact = JSON.parse(
+        JSON.stringify({
+          temp: reacData
+        })
+      ).temp;
+      // 文字列を数値型に変換する  
+      for (const reac of targetReact) {
+        reac.tx = this.helper.toNumber(reac.tx);
+        reac.ty = this.helper.toNumber(reac.ty);
+        reac.tz = this.helper.toNumber(reac.tz);
+        reac.mx = this.helper.toNumber(reac.mx);
+        reac.my = this.helper.toNumber(reac.my);
+        reac.mz = this.helper.toNumber(reac.mz);
+      }
       // スケールを決定する 最大の荷重を 1とする
       let pMax = 0;
       let mMax = 0;
@@ -134,7 +147,7 @@ export class ThreeReactService {
         }
 
         // z軸周りのモーメント
-        const zMoment = this.setMomentReact(reac.mz, mMax, node, 0x0000FF, 'mz');
+        const zMoment = this.setMomentReact(reac.mz, mMax, node, 0x0000FF, 'mz'); 
         if (zMoment !== null) {
           this.pointLoadList.push(zMoment);
           this.scene.add(zMoment);
@@ -146,7 +159,7 @@ export class ThreeReactService {
     // 節点荷重の矢印を作成する
     private setMomentReact(value: number, mMax: number, node: any, color: number, name: string): THREE.Line {
 
-      if (value === 0) {
+      if (value === 0) { 
         return null;
       }
 
@@ -163,7 +176,7 @@ export class ThreeReactService {
       const lineMaterial = new THREE.LineBasicMaterial( { color, linewidth: 5 } );
       const ellipse = new THREE.Line( lineGeometry, lineMaterial );
 
-      const arrowGeometry = new THREE.ConeGeometry( 0.1, 1, 3, 1, true );
+      const arrowGeometry = new THREE.ConeGeometry( 0.3, 3, 3, 1, true );
       const arrowMaterial = new THREE.MeshBasicMaterial( {color} );
       const cone = new THREE.Mesh( arrowGeometry, arrowMaterial );
       cone.rotateX(Math.PI);
@@ -204,7 +217,7 @@ export class ThreeReactService {
       const maxLength: number = this.maxLength() * 0.7;
       const length: number = maxLength * value / pMax;
 
-      const linewidth: number = this.nodeThree.baseScale / 50;
+      const linewidth: number = this.nodeThree.baseScale / 50 * 2;
 
       let color: number;
       const positions = [];
@@ -225,7 +238,7 @@ export class ThreeReactService {
           color = 0x0000FF;
           break;
       }
-      const cone_scale: number = length * 0.1;
+      const cone_scale: number = length * 0.3;
       const cone_radius: number = 0.1 * cone_scale;
       const cone_height: number = 1 * cone_scale;
       const arrowGeometry: THREE.ConeGeometry = new THREE.ConeGeometry( cone_radius, cone_height, 3, 1, true );
