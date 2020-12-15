@@ -4,13 +4,13 @@ import { ResultReacService } from '../result-reac/result-reac.service';
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { ResultDataService } from '../../../providers/result-data.service';
 import { ThreeService } from '../../three/three.service';
-
+import { trigger, style, animate, transition } from '@angular/animations';
 import { ResultPickupReacService } from '../result-pickup-reac/result-pickup-reac.service';
 
 @Component({
   selector: 'app-result-combine-reac',
   templateUrl: './result-combine-reac.component.html',
-  styleUrls: ['./result-combine-reac.component.scss']
+  styleUrls: ['./result-combine-reac.component.scss','../../../app.component.scss','../../../floater.component.scss'],
 })
 export class ResultCombineReacComponent implements OnInit {
 
@@ -24,7 +24,7 @@ export class ResultCombineReacComponent implements OnInit {
   collectionSize: number;
   btnPickup: string;
   tableHeight: number;
-
+  public showDetail: boolean;
   constructor(private data: ResultCombineReacService,
               private fsec: ResultReacService,
               private comb: InputCombineService,
@@ -33,6 +33,10 @@ export class ResultCombineReacComponent implements OnInit {
               private pic: ResultPickupReacService) {
 
     this.dataset = new Array();
+  }
+
+  onAccordion($event) {
+    this.showDetail = !this.showDetail;
   }
 
   ngOnInit() {

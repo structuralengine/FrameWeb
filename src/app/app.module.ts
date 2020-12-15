@@ -9,6 +9,7 @@ import { HotTableModule } from '@handsontable/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { MatInputModule} from '@angular/material/input';
 
 import { InputDataService } from './providers/input-data.service';
 import { DataHelperModule } from './providers/data-helper.module';
@@ -79,7 +80,8 @@ import { InputPanelComponent } from './components/input/input-panel/input-panel.
     NgbModule,
     HotTableModule,
     DataHelperModule,
-    PrintDataModule
+    PrintDataModule,
+    MatInputModule,
   ],
   declarations: [
     AppComponent,
