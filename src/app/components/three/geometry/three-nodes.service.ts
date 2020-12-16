@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { SceneService } from '../scene.service';
 import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
 import * as THREE from 'three';
-import { NumberValueAccessor } from '@angular/forms';
-import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
+import { CSS2DObject } from '../libs/CSS2DRenderer.js';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +10,8 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 export class ThreeNodesService {
 
   private geometry: THREE.SphereBufferGeometry;
-  private isVisible: boolean[]; // [0]:点の表示/非表示, [1]:文字の表示/非表示
 
-  public baseScale: number;   // 最近点から求めるスケール
+  public baseScale: number;   // 最近点から求める基準のスケール
 
   public maxDistance: number;
   public minDistance: number;
@@ -26,6 +24,9 @@ export class ThreeNodesService {
   private scale: number;
   private params: any;          // GUIの表示制御
   private gui: any;
+
+  private objVisible: boolean;
+  private txtVisible: boolean;
  
   constructor(private scene: SceneService,
               private node: InputNodesService) {
@@ -33,19 +34,35 @@ export class ThreeNodesService {
     this.geometry = new THREE.SphereBufferGeometry(1);
     this.nodeList = new THREE.Object3D();
     this.ClearData();
-    this.isVisible = [null, null];
-
     this.scene.add(this.nodeList);
 
+    this.objVisible = true;
+    this.txtVisible = false;
+
     // gui
-    this.scale = 1;
+    this.scale = 50;
     this.params = {
+      nodeNo: this.txtVisible,
       nodeScale: this.scale
     };
     this.gui = null;
 
   }
 
+  // 初期化
+  public OnInit(): void { 
+    // 節点番号の表示を制御する gui を登録する
+    this.scene.gui.add( this.params, 'nodeNo' ).onChange( ( value ) => {
+      for (const mesh of this.nodeList.children) {
+        mesh.getObjectByName('font').visible = value;
+      }
+      this.txtVisible = value;
+      this.scene.render();
+    });
+
+  }
+
+  // データが変更された時の処理
   public chengeData(): void {
 
     // 入力データを入手
@@ -83,7 +100,7 @@ export class ThreeNodesService {
         item.position.y = jsonData[key].y;
         item.position.z = jsonData[key].z;
       } else {
-        // 要素をシーンに追加
+        // ジオメトリを生成してシーンに追加
         const mesh = new THREE.Mesh(this.geometry,
           new THREE.MeshBasicMaterial({ color: 0x000000 }));
         mesh.name = 'node' + key;
@@ -102,13 +119,13 @@ export class ThreeNodesService {
         const label = new CSS2DObject(div);
         label.position.set(0, 0.27, 0);
         label.name = 'font';
+        label.visible = this.txtVisible;
         mesh.add(label);
       }
     }
     // サイズを調整する
     this.setBaseScale();
     this.onResize();
-
   }
 
   // データをクリアする
@@ -161,13 +178,14 @@ export class ThreeNodesService {
     // # region baseScale を決定する
     this.baseScale = 1;
     if (this.minDistance !== Number.MAX_VALUE) {
-      // baseScale は最近点の 1/20 とする
-      this.baseScale = this.minDistance / 80;
+      // baseScale は最遠点の 1/500 以下
+      // baseScale は最近点の 1/50 以上とする
+      this.baseScale = Math.max(this.maxDistance / 500, this.minDistance / 50);
     }
 
     // 重心位置を計算する
     let counter: number = 0;
-    this.center = { x: 0, y: 0, z: 0 };
+    this.center = new THREE.Vector3();
     for (const key of jsonKeys) {
       const p = jsonData[key];
       this.center.x += p.x;
@@ -185,10 +203,14 @@ export class ThreeNodesService {
 
   // スケールを反映する
   private onResize(): void {
+
+    let sc = this.scale / 50; // this.scale は 50 が基準値なので、50 のとき 1 となるように変換する
+    sc = Math.max(sc, 0.001); // ゼロは許容しない
+
     for (const item of this.nodeList.children) {
-      item.scale.x = this.baseScale * this.scale;
-      item.scale.y = this.baseScale * this.scale;
-      item.scale.z = this.baseScale * this.scale;
+      item.scale.x = this.baseScale * sc;
+      item.scale.y = this.baseScale * sc;
+      item.scale.z = this.baseScale * sc;
     }
   }
 
@@ -196,19 +218,9 @@ export class ThreeNodesService {
   public visible(flag: boolean, text: boolean, gui: boolean): void {
 
     // 表示設定
-    if (this.isVisible[0] !== flag) {
-      for (const mesh of this.nodeList.children) {
-        mesh.visible = flag;
-      }
-      this.isVisible[0] = flag;
-    }
-
-    // 文字の表示設定
-    if (this.isVisible[1] !== text) {
-      for (const mesh of this.nodeList.children) {
-        mesh.getObjectByName('font').visible = text;
-      }
-      this.isVisible[1] = text;
+    if (this.objVisible !== flag) {
+      this.nodeList.visible = flag;
+      this.objVisible = flag;
     }
 
     // guiの表示設定
@@ -225,9 +237,7 @@ export class ThreeNodesService {
     if (this.gui !== null) {
       return;
     }
-
-    const gui_step: number = 80 * 0.001;
-    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 80).step(gui_step).onChange((value) => {
+    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 100).step(1).onChange((value) => {
       this.scale = value;
       this.onResize();
       this.scene.render();
