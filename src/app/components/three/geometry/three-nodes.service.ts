@@ -11,15 +11,15 @@ import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 export class ThreeNodesService {
 
   private geometry: THREE.SphereBufferGeometry;
-  private isVisible: boolean[];
+  private isVisible: boolean[]; // [0]:点の表示/非表示, [1]:文字の表示/非表示
 
   public baseScale: number;   // 最近点から求めるスケール
 
   public maxDistance: number;
   public minDistance: number;
 
-  private nodeList: THREE.Mesh[];
-  private selectionItem: THREE.Mesh;     // 選択中のアイテム
+  private nodeList: THREE.Object3D;
+  private selectionItem: THREE.Object3D;     // 選択中のアイテム
   public center: any; // すべての点の重心位置
 
   // 大きさを調整するためのスケール
@@ -31,9 +31,11 @@ export class ThreeNodesService {
               private node: InputNodesService) {
 
     this.geometry = new THREE.SphereBufferGeometry(1);
-    this.nodeList = new Array();
+    this.nodeList = new THREE.Object3D();
     this.ClearData();
     this.isVisible = [null, null];
+
+    this.scene.add(this.nodeList);
 
     // gui
     this.scale = 1;
@@ -55,24 +57,24 @@ export class ThreeNodesService {
     }
 
     // 入力データに無い要素を排除する
-    for (let i = this.nodeList.length - 1; i >= 0; i--) {
+    for (let i = this.nodeList.children.length - 1; i >= 0; i--) {
       const item = jsonKeys.find((key) => {
-        return key === this.nodeList[i].name;
+        return key === this.nodeList.children[i].name;
       });
       if (item === undefined) {
-        while (this.nodeList[i].children.length > 0) {
-          const object = this.nodeList[i].children[0];
+        const target = this.nodeList.children[i];
+        while (target.children.length > 0) {
+          const object = target.children[0];
           object.parent.remove(object);
         }
-        this.scene.remove(this.nodeList[i]);
-        this.nodeList.splice(i, 1);
+        this.nodeList.children.splice(i, 1);
       }
     }
 
     // 新しい入力を適用する
     for (const key of jsonKeys) {
       // 既に存在しているか確認する
-      const item = this.nodeList.find((target) => {
+      const item = this.nodeList.children.find((target) => {
         return (target.name === key);
       });
       if (item !== undefined) {
@@ -89,8 +91,8 @@ export class ThreeNodesService {
         mesh.position.y = jsonData[key].y;
         mesh.position.z = jsonData[key].z;
 
-        this.nodeList.push(mesh);
-        this.scene.add(mesh);
+        this.nodeList.children.push(mesh);
+        // this.scene.add(mesh);
 
         // 文字をシーンに追加
         const div = document.createElement('div');
@@ -111,16 +113,16 @@ export class ThreeNodesService {
 
   // データをクリアする
   public ClearData(): void {
-    for (const mesh of this.nodeList) {
+    for (const mesh of this.nodeList.children) {
       // 文字を削除する
       while (mesh.children.length > 0) {
         const object = mesh.children[0];
         object.parent.remove(object);
       }
-      // オブジェクトを削除する
-      this.scene.remove(mesh);
     }
-    this.nodeList = new Array();
+    // オブジェクトを削除する
+    this.nodeList.children= new Array();
+    // this.nodeList = new Array();
     this.baseScale = 1;
     this.maxDistance = 0;
     this.minDistance = 0;
@@ -183,7 +185,7 @@ export class ThreeNodesService {
 
   // スケールを反映する
   private onResize(): void {
-    for (const item of this.nodeList) {
+    for (const item of this.nodeList.children) {
       item.scale.x = this.baseScale * this.scale;
       item.scale.y = this.baseScale * this.scale;
       item.scale.z = this.baseScale * this.scale;
@@ -195,7 +197,7 @@ export class ThreeNodesService {
 
     // 表示設定
     if (this.isVisible[0] !== flag) {
-      for (const mesh of this.nodeList) {
+      for (const mesh of this.nodeList.children) {
         mesh.visible = flag;
       }
       this.isVisible[0] = flag;
@@ -203,7 +205,7 @@ export class ThreeNodesService {
 
     // 文字の表示設定
     if (this.isVisible[1] !== text) {
-      for (const mesh of this.nodeList) {
+      for (const mesh of this.nodeList.children) {
         mesh.getObjectByName('font').visible = text;
       }
       this.isVisible[1] = text;
@@ -244,54 +246,57 @@ export class ThreeNodesService {
   // マウス位置とぶつかったオブジェクトを検出する
   public detectObject(raycaster: THREE.Raycaster, action: string): void {
 
-    if (this.nodeList.length === 0) {
+    if (this.nodeList.children.length === 0) {
       return; // 対象がなければ何もしない
     }
 
     // 交差しているオブジェクトを取得
-    const intersects = raycaster.intersectObjects(this.nodeList);
+    const intersects = raycaster.intersectObjects(this.nodeList.children);
 
     switch (action) {
       case 'click':
-        this.nodeList.map(item => {
+        this.nodeList.children.map(item => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 1.00;
+            const material = item['material'];
+            material['color'].setHex(0xff0000);
+            material['opacity'] = 1.00;
           }
         });
         break;
 
       case 'select':
         this.selectionItem = null;
-        this.nodeList.map(item => {
+        this.nodeList.children.map(item => {
+          const material = item['material'];
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 1.00;
+            material['color'].setHex(0xff0000);
+            material['opacity'] = 1.00;
             this.selectionItem = item;
           } else {
             // それ以外は元の色にする
-            item.material['color'].setHex(0x000000);
-            item.material['opacity'] = 1.00;
+            material['color'].setHex(0x000000);
+            material['opacity'] = 1.00;
           }
         });
         break;
 
       case 'hover':
-        this.nodeList.map(item => {
+        this.nodeList.children.map(item => {
+          const material = item['material'];
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
-            item.material['color'].setHex(0xff0000);
-            item.material['opacity'] = 0.25;
+            material['color'].setHex(0xff0000);
+            material['opacity'] = 0.25;
           } else {
             if (item === this.selectionItem) {
-              item.material['color'].setHex(0xff0000);
-              item.material['opacity'] = 1.00;
+              material['color'].setHex(0xff0000);
+              material['opacity'] = 1.00;
             } else {
               // それ以外は元の色にする
-              item.material['color'].setHex(0x000000);
-              item.material['opacity'] = 1.00;
+              material['color'].setHex(0x000000);
+              material['opacity'] = 1.00;
             }
           }
         });
