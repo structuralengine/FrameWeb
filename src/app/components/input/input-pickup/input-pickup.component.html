@@ -7,21 +7,31 @@
 </div>
 
 <div class="datasheet">
-  <hot-table class="hot" 
-  [data]="pickupData" 
-  [colHeaders]="true" 
-  [rowHeaders]="rowHeaders" 
-  [height]="500"
-  [width]="900"
-  [settings]="hotTableSettings"
-  licenseKey="non-commercial-and-evaluation">
+  <hot-table class="hot" [data]="pickupData" [colHeaders]="true" [rowHeaders]="rowHeaders" [height]="500" [width]="900"
+    [settings]="hotTableSettings" licenseKey="non-commercial-and-evaluation">
     <hot-column *ngFor="let c of pickupColums; index as i" [data]="c" [title]="pickupTitles[i]"></hot-column>
   </hot-table>
+</div>
 
+<div style="width:900px;" class="pagerArea">
   <div class="pager">
-    <div class="pager-title">ページ</div>
-    <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination" (pageChange)="loadPage($event)">
-    </ngb-pagination>
+    <form [formGroup]="myControl">
+      <ul class="pagenation">
+        <li><a id="prev" link="160" (click)="moveToNextPage(-5, 160)" class="list" aria-label="Previous">《</a></li>
+        <li><a link="161" (click)="moveToNextPage(-2,161)" id="161" class="list">{{page_2}}</a></li>
+        <li><a link="162" (click)="moveToNextPage(-1,162)" id="162" class="list">{{page_1}}</a></li>
+        <li><a link="163" (click)="moveToNextPage(0,163)" id="163" class="list">{{page0}}</a></li>
+        <li><a link="164" (click)="moveToNextPage(1,164)" id="164" class="list">{{page11}}</a></li>
+        <li><a link="165" (click)="moveToNextPage(2,165)" id="165" class="list">{{page12}}</a></li>
+        <li><a id="next" link="166" (click)="moveToNextPage(5, 166)" class="list" aria-label="Next">》</a></li>
+      </ul>
+      <div>
+        <mat-form-field>
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button (click)="click()">click</button>
+    </form>
+    <!-- <p class="message">{{message}}</p> -->
   </div>
-  
 </div>
