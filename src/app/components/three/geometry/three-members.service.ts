@@ -43,7 +43,7 @@ export class ThreeMembersService {
     this.txtVisible = false;
 
     // gui
-    this.scale = 50;
+    this.scale = 100;
     this.params = {
       memberNo: this.txtVisible,
       memberScale: this.scale,
@@ -197,7 +197,7 @@ export class ThreeMembersService {
   // スケールを反映する
   private onResize(): void {
 
-    let sc = this.scale / 50; // this.scale は 50 が基準値なので、50 のとき 1 となるように変換する
+    let sc = this.scale / 100; // this.scale は 100 が基準値なので、100 のとき 1 となるように変換する
     sc = Math.max(sc, 0.001); // ゼロは許容しない
 
     const scale: number = this.baseScale() * sc;
@@ -255,7 +255,7 @@ export class ThreeMembersService {
     }
 
     this.gui = this.scene.gui
-      .add(this.params, "memberScale", 0, 100)
+      .add(this.params, "memberScale", 0, 1000)
       .step(1)
       .onChange((value) => {
         this.scale = value;

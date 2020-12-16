@@ -40,7 +40,7 @@ export class ThreeNodesService {
     this.txtVisible = false;
 
     // gui
-    this.scale = 50;
+    this.scale = 100;
     this.params = {
       nodeNo: this.txtVisible,
       nodeScale: this.scale
@@ -204,7 +204,7 @@ export class ThreeNodesService {
   // スケールを反映する
   private onResize(): void {
 
-    let sc = this.scale / 50; // this.scale は 50 が基準値なので、50 のとき 1 となるように変換する
+    let sc = this.scale / 100; // this.scale は 100 が基準値なので、100 のとき 1 となるように変換する
     sc = Math.max(sc, 0.001); // ゼロは許容しない
 
     for (const item of this.nodeList.children) {
@@ -237,7 +237,7 @@ export class ThreeNodesService {
     if (this.gui !== null) {
       return;
     }
-    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 100).step(1).onChange((value) => {
+    this.gui = this.scene.gui.add(this.params, 'nodeScale', 0, 1000).step(1).onChange((value) => {
       this.scale = value;
       this.onResize();
       this.scene.render();
