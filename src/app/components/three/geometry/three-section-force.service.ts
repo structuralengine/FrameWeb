@@ -18,6 +18,7 @@ import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-
 
 import { ThreeMembersService } from './three-members.service';
 import { ThreeNodesService } from './three-nodes.service.js';
+import { Mesh } from 'three';
 
 
 @Injectable({
@@ -64,6 +65,7 @@ export class ThreeSectionForceService {
       this.params[key] = false;
     }
     this.params.momentY = true; // 初期値
+    //this.params.shearForceZ = true; // 初期値
     this.gui = null;
     this.gui_max_scale = 1;
 
@@ -386,8 +388,8 @@ export class ThreeSectionForceService {
     };
 
     return {
-      worldPosition,
-      localPosition,
+      worldPosition, // x, y, x
+      localPosition, // 長さ
       axialForce,
       shearForceY,
       shearForceZ,
@@ -459,6 +461,13 @@ export class ThreeSectionForceService {
       const positions = [];
       const colors = [];
       const danmenryoku = [];
+      
+      //memberInfoに着目点を追加
+      const localPosition_list = [0] ;
+      for (let j = 1; j < target.length; j++){
+        localPosition_list.push(target[j].localPosition);
+      }
+      memberInfo["localPosition"] = localPosition_list;
 
       // i端の座標を登録
       positions.push({
@@ -474,8 +483,11 @@ export class ThreeSectionForceService {
         let x2: number = force2.worldPosition.x;
         let y2: number = force2.worldPosition.y;
         let z2: number = force2.worldPosition.z;
+        let v2: number = force2.localPosition;
         const f = force2[key];
         if ( f === 0 ) {
+          positions.push({x: x2, y: y2, z: z2, v: v2, f: f * scale});
+          danmenryoku.push(f);
           continue;
         }
 
@@ -488,10 +500,13 @@ export class ThreeSectionForceService {
           const x1: number = force1.worldPosition.x;
           const y1: number = force1.worldPosition.y;
           const z1: number = force1.worldPosition.z;
+          const v1: number = force1.localPosition;
           const x0: number = x1 + (((x2 - x1) / (f1 + f2)) * f1);
           const y0: number = y1 + (((y2 - y1) / (f1 + f2)) * f1);
           const z0: number = z1 + (((z2 - z1) / (f1 + f2)) * f1);
-          positions.push({x: x0, y: y0, z: z0, note: 'split'});
+          //positions.push({x: x0, y: y0, z: z0, f: 0, note: 'split'});
+          const v: number = v1 + (((v2 - v1) / (f1 + f2)) * f1);
+          positions.push({x: x0, y: y0, z: z0, v: v, f: 0, note: 'split'});
           colors.push(color.r, color.g, color.b);
         }
         sgn = sg;
@@ -499,7 +514,7 @@ export class ThreeSectionForceService {
         x2 -= f * memberInfo[axis].x * scale;
         y2 -= f * memberInfo[axis].y * scale;
         z2 -= f * memberInfo[axis].z * scale;
-        positions.push({x: x2, y: y2, z: z2});
+        positions.push({x: x2, y: y2, z: z2, f: (-1) * f * scale});
         colors.push(color.r, color.g, color.b);
         danmenryoku.push(f);
       }
@@ -532,32 +547,6 @@ export class ThreeSectionForceService {
           line.children[0].children[num].position.y = LinePositions[3 * num + 4];
           line.children[0].children[num].position.z = LinePositions[3 * num + 5];
         }
-        line.children[1].scale.set(1, 1, this.scale);
-        let num2 = 1;
-        for (let num1 = 0; num1 < line.children[1].children.length; num1++){
-          line.children[1].children[num1].geometry.vertices[0].x = LinePositions[0];
-          line.children[1].children[num1].geometry.vertices[0].y = LinePositions[1];
-          line.children[1].children[num1].geometry.vertices[0].z = LinePositions[2];
-          line.children[1].children[num1].geometry.vertices[1].x = LinePositions[num2 * 3];
-          line.children[1].children[num1].geometry.vertices[1].y = LinePositions[num2 * 3 + 1];
-          line.children[1].children[num1].geometry.vertices[1].z = LinePositions[num2 * 3 + 2];
-          line.children[1].children[num1].geometry.vertices[2].x = LinePositions[num2 * 3 + 3];
-          line.children[1].children[num1].geometry.vertices[2].y = LinePositions[num2 * 3 + 4];
-          line.children[1].children[num1].geometry.vertices[2].z = LinePositions[num2 * 3 + 5];
-          //line.children[1].children[num1].geometry.vertices[0].set = (LinePositions[0], LinePositions[1], LinePositions[2]);
-          //line.children[1].children[num1].geometry.vertices[1].set = (LinePositions[num2 * 3 + 0], LinePositions[num2 * 3 + 1], LinePositions[num2 * 3 + 2]);
-          //line.children[1].children[num1].geometry.vertices[2].set = (LinePositions[num2 * 3 + 3], LinePositions[num2 * 3 + 4], LinePositions[num2 * 3 + 5]);
-          //if (num2 === 3){
-            //console.log("---------------------------------");
-            //console.log(line.children[1].children[num1]);
-            //console.log(positions[num2]);
-          //geometry.vertices.push(new THREE.Vector3(positions[i].x, positions[i].y, positions[i].z));
-          //geometry.vertices.push(new THREE.Vector3(positions[j].x, positions[j].y, positions[j].z));
-          //geometry.vertices.push(new THREE.Vector3(positions[j + 1].x, positions[j + 1].y, positions[j + 1].z));
-          //}
-          num2 += 1;
-        }
-        console.log(line);
 
         // 文字と面を削除する   ---   このwhile文を削除したい
         //while (line.children.length > 0) {
@@ -569,6 +558,125 @@ export class ThreeSectionForceService {
         //this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
         //this.addPathGeometory(positions, line, color);
+    
+        //新しいpositionを配置
+
+        ////メッシュを複数のメッシュで表現
+        let vertice1 = new Float32Array(9);
+        let vertice2 = new Float32Array(9);
+        let point1 = new Float32Array(2);
+        let point2 = new Float32Array(2);
+        let point3 = new Float32Array(2);
+        let split_count = 0;
+
+        for (let j = 0; j < line.children[1].children.length - 0; j++){
+
+          //頂点座標の整理
+          point1[0] = memberInfo.localPosition[j + 1];
+          point1[1] = positions[j + 1 + split_count].f;
+          if (positions[j + 2 + split_count].note === "split"){
+            split_count += 1;
+          }
+          point2[0] = memberInfo.localPosition[j + 2];
+          if (positions[j + 1 + split_count].note === "split"){
+            point2[1] = positions[j + 2 + split_count].f;
+            point3[0] = positions[j + 1 + split_count].v;
+            point3[1] = positions[j + 1 + split_count].f;
+          } else {
+            point2[1] = positions[j + 2 + split_count].f;
+            point3[0] = memberInfo.localPosition[j + 2];
+            point3[1] = positions[j + 2 + split_count].f;
+          }
+
+          if (point1[1] * point2[1] > 0) {
+            vertice1 = new Float32Array([
+              point1[0],         0, 0,
+              point1[0], point1[1], 0,
+              point2[0],         0, 0
+            ]);
+            vertice2 = new Float32Array([
+              point1[0], point1[1], 0,
+              point2[0],         0, 0,
+              point2[0], point2[1], 0
+            ]);
+          } else if (point1[1] * point2[1] <= 0) {
+            vertice1 = new Float32Array([
+              point1[0],         0, 0,
+              point1[0], point1[1], 0,
+              point3[0],         0, 0
+            ]);
+            vertice2 = new Float32Array([
+              point3[0], point3[1], 0,
+              point2[0],         0, 0,
+              point2[0], point2[1], 0
+            ]);
+          }
+          line.children[1].children[j].children[0].geometry.attributes.position.array = vertice1;
+          line.children[1].children[j].children[1].geometry.attributes.position.array = vertice2;
+          line.children[1].children[j].children[0].geometry.attributes.position.needsUpdate = true;
+          line.children[1].children[j].children[1].geometry.attributes.position.needsUpdate = true;
+
+          line.children[1].children[j].children[0].visible = true;
+          line.children[1].children[j].children[1].visible = true;
+          if(point1[1] === 0){
+            line.children[1].children[j].children[0].visible = false;
+          }
+          if(point2[1] === 0){
+            line.children[1].children[j].children[1].visible = false;
+          }
+
+        }
+
+        //keyの変更後のmeshの向きを指定する
+        const lookatX = memberInfo.localAxisX.x + positions[0].x;
+        const lookatY = memberInfo.localAxisX.y + positions[0].y;
+        const lookatZ = memberInfo.localAxisX.z + positions[0].z;
+        //axialForceのとき
+        if (key === 'axialForce'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateZ(Math.PI * 3 / 2);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        //shearForceZのとき
+        } else if (key === 'shearForceY'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateZ(Math.PI * 3 / 2);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        //shearForceZのとき
+        } else if (key === 'shearForceZ'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        //torsionalMomentのとき
+        } else if (key === 'torsionalMoment'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        //momentYのとき
+        } else if (key === 'momentY'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        //momentZのとき
+        } else if (key === 'momentZ'){
+          line.children[1].lookAt(lookatX, lookatY, lookatZ);
+          line.children[1].rotateZ(Math.PI * 3 / 2);
+          line.children[1].rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            line.children[1].rotateX(Math.PI * 3 / 2);
+          }
+        }
 
       } else {
         // 線を生成する
@@ -583,7 +691,7 @@ export class ThreeSectionForceService {
         // テキストを追加
         this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
-        this.addPathGeometory(positions, line, colors);
+        this.addPathGeometory(positions, line, colors, memberInfo);
         // シーンに追加する
         tmplineList.push(line);
         this.scene.add(line);
@@ -665,8 +773,11 @@ export class ThreeSectionForceService {
   }
 
   // 面を追加する
-  private addPathGeometory(positions: any[], line: THREE.Line, color: any): void {
+  private addPathGeometory(positions: any[], line: THREE.Line, color: any, memberInfo: any): void {
 
+    //meshで台形を作成して代用するchildren[1]
+    const mesh = new THREE.Group();
+    mesh.name = "mesh";
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -674,26 +785,79 @@ export class ThreeSectionForceService {
       opacity: 0.2
     });
 
-    let i = 0;
-    const meshGroup = new THREE.Group();
-    meshGroup.name = "mesh"; //デバック用
-    for ( let j = 1; j < positions.length - 1; j++ ) {
-      const geometry = new THREE.Geometry();
-      geometry.vertices.push(new THREE.Vector3(positions[i].x, positions[i].y, positions[i].z));
-      geometry.vertices.push(new THREE.Vector3(positions[j].x, positions[j].y, positions[j].z));
-      geometry.vertices.push(new THREE.Vector3(positions[j + 1].x, positions[j + 1].y, positions[j + 1].z));
-      geometry.faces.push(new THREE.Face3(0, 1, 2));
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-      const mesh = new THREE.Mesh(geometry, material);
-      //line.add(mesh);
-      meshGroup.add(mesh);
-      if ( 'note' in positions[j + 1]) {
-        i = j + 1;
-        j++;
+    let vertice1 = new Float32Array(9);
+    let vertice2 = new Float32Array(9);
+    let point1 = new Float32Array(2);
+    let point2 = new Float32Array(2);
+    let point3 = new Float32Array(2);
+    let split_count = 0;
+    for (let i = 1; i < positions.length - 2; i++){
+      const mesh_child = new THREE.Group();
+      let meshgeometry1 = new THREE.BufferGeometry();
+      let meshgeometry2 = new THREE.BufferGeometry();
+
+      //頂点座標の整理
+      if (positions[i].note === "split"){
+        split_count += 1;
+        continue;
       }
+      point1[0] = memberInfo.localPosition[i - split_count];
+      point1[1] = positions[i].f;
+      point2[0] = memberInfo.localPosition[i - split_count + 1];
+      if (positions[i + 1].note === "split"){
+        point2[1] = positions[i + 2].f;
+        point3[0] = positions[i + 1].v;
+        point3[1] = positions[i + 1].f;
+      } else {
+        point2[1] = positions[i + 1].f;
+        //point2[1] = 0のとき使用する点はpoint3になっている
+        point3[0] = memberInfo.localPosition[i - split_count + 1];
+        point3[1] = positions[i + 1].f;
+      }
+      //頂点座標を入力
+      if (point1[1] * point2[1] > 0) {
+        vertice1 = new Float32Array([
+          point1[0],         0, 0,
+          point1[0], point1[1], 0,
+          point2[0],         0, 0
+        ]);
+        vertice2 = new Float32Array([
+          point1[0], point1[1], 0,
+          point2[0],         0, 0,
+          point2[0], point2[1], 0
+        ]);
+      } if (point1[1] * point2[1] <= 0) {
+        vertice1 = new Float32Array([
+          point1[0],         0, 0,
+          point1[0], point1[1], 0,
+          point3[0],         0, 0
+        ]);
+        vertice2 = new Float32Array([
+          point3[0], point3[1], 0,
+          point2[0],         0, 0,
+          point2[0], point2[1], 0
+        ]);
+      }
+      meshgeometry1.setAttribute('position', new THREE.BufferAttribute(vertice1, 3));
+      mesh_child.add(new THREE.Mesh(meshgeometry1, material));
+      meshgeometry2.setAttribute('position', new THREE.BufferAttribute(vertice2, 3));
+      mesh_child.add(new THREE.Mesh(meshgeometry2, material));
+
+      if (point1[1] === 0) {
+        mesh_child.children[0].visible = false;
+      }
+      if (point2[1] === 0) {
+        mesh_child.children[1].visible = false;
+      }
+
+      mesh.add(mesh_child);
     }
-    line.add(meshGroup);
+
+    mesh.lookAt(memberInfo.localAxisX.x, memberInfo.localAxisX.y, memberInfo.localAxisX.z); 
+    mesh.rotateY(Math.PI/ 2 * 3); //ワールド座標で回転=ワールド座標におけるこの要素の向きが必要
+    mesh.position.set(positions[0].x, positions[0].y, positions[0].z);
+    line.add(mesh);
+
   }
 
   private getDistance(): number[] {
