@@ -29,8 +29,6 @@ export class SceneService {
   // gui
   public gui: GUI;
   private params: any;          // GridHelperの表示制御
-  cone1: any;
-  cone2: any;
 
   // 初期化
   public constructor(private helper: DataHelperModule) {
@@ -84,7 +82,7 @@ export class SceneService {
     this.axisHelper = new THREE.AxesHelper(200);
     this.scene.add(this.axisHelper);
 
-    this.GridHelper = new THREE.GridHelper(200, 400);
+    this.GridHelper = new THREE.GridHelper(200, 20);
     this.GridHelper.geometry.rotateX(Math.PI / 2);
     this.GridHelper.material['opacity'] = 0.2;
     this.GridHelper.material['transparent'] = true;

@@ -59,7 +59,7 @@ export class ThreeComponent implements  AfterViewInit {
                       devicePixelRatio,
                       window.innerWidth,
                       window.innerHeight - 120);
-
+    this.three.OnInit();                  
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.labelRendererDomElement();
     const div = document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
