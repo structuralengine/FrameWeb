@@ -200,14 +200,15 @@ export class ThreeMembersService {
     let sc = this.scale / 100; // this.scale は 100 が基準値なので、100 のとき 1 となるように変換する
     sc = Math.max(sc, 0.001); // ゼロは許容しない
 
-    const scale: number = this.baseScale() * sc;
+    let scale: number = this.baseScale() * sc;
   
     for (const item of this.memberList.children) {
       item.scale.set(scale, 1, scale);
     }
+    scale *= 50 ;
     for (const arrows of this.axisList) {
       for (const item of arrows.children) {
-        item.scale.set(this.scale, this.scale, this.scale);
+        item.scale.set(scale, scale, scale);
       }
     }
   }
@@ -402,6 +403,9 @@ export class ThreeMembersService {
 
     // 交差しているオブジェクトを取得
     const intersects = raycaster.intersectObjects(this.memberList.children);
+    if ( intersects.length <= 0 ){
+      return;
+    }
 
     switch (action) {
       case "click":
@@ -468,5 +472,7 @@ export class ThreeMembersService {
       default:
         return;
     }
+    this.scene.render();
   }
+
 }

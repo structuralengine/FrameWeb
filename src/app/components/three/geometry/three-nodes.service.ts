@@ -262,6 +262,9 @@ export class ThreeNodesService {
 
     // 交差しているオブジェクトを取得
     const intersects = raycaster.intersectObjects(this.nodeList.children);
+    if ( intersects.length <= 0 ){
+      return;
+    }
 
     switch (action) {
       case 'click':
@@ -315,6 +318,7 @@ export class ThreeNodesService {
       default:
         return;
     }
+    this.scene.render();
   }
 
 }

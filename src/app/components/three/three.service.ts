@@ -413,6 +413,6 @@ export class ThreeService {
         break;
     }
     // 再描画
-    this.scene.render();
+    //this.scene.render();
   }
 }
