@@ -37,6 +37,14 @@ export class ThreeService {
   }
 
   //////////////////////////////////////////////////////
+  // 初期化
+  //////////////////////////////////////////////////////
+  public OnInit(): void {
+    this.node.OnInit();
+    this.member.OnInit();
+  }
+
+  //////////////////////////////////////////////////////
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
   public chengeData(mode: string = '', index: number = 0): void {
@@ -405,6 +413,6 @@ export class ThreeService {
         break;
     }
     // 再描画
-    this.scene.render();
+    //this.scene.render();
   }
 }

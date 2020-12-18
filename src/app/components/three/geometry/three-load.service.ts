@@ -1179,7 +1179,6 @@ export class ThreeLoadService {
 
   // スケールを反映する
   private onResize(): void {
-    return;
     this.pointLoadResize();
     this.memberLoadResize();
   }
