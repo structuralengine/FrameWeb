@@ -178,6 +178,10 @@ export class ThreeJointService {
 
     // 交差しているオブジェクトを取得
     const intersects = raycaster.intersectObjects(this.jointList);
+    if ( intersects.length <= 0 ){
+      return;
+    }
+
     switch (action) {
       case 'click':
         this.jointList.map(item => {
@@ -263,6 +267,7 @@ export class ThreeJointService {
       default:
         return;
     }
+    this.scene.render();
   }
 
 }
