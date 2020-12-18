@@ -15,6 +15,8 @@ export class ThreeNodesService {
 
   private particles: THREE.Points;
   private sprite: THREE.Texture;
+  private material: THREE.ShaderMaterial;
+  private color: THREE.Color;
 
   private selectionItem: THREE.Object3D; // 選択中のアイテム
   public center: any; // すべての点の重心位置
@@ -30,6 +32,37 @@ export class ThreeNodesService {
   constructor(private scene: SceneService, private node: InputNodesService) {
     this.particles = null;
     this.sprite = new THREE.TextureLoader().load("/assets/img/disc.png");
+    this.material = new THREE.ShaderMaterial({
+      uniforms: {
+        color: { value: new THREE.Color( 0xffffff ) },
+        pointTexture: { value: this.sprite }
+      },
+      vertexShader: [
+        "attribute float size;",
+        "attribute vec3 customColor;",
+        "varying vec3 vColor;",
+        "void main() {",
+        "  vColor = customColor;",
+        "  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+        "  gl_PointSize = size * ( 300.0 / -mvPosition.z );",
+        "  gl_Position = projectionMatrix * mvPosition;",
+        "}"
+      ].join( "\n" ),
+      fragmentShader: [
+        "uniform vec3 color;",
+        "uniform sampler2D pointTexture;",
+        "varying vec3 vColor;",
+        "void main() {",
+        "  gl_FragColor = vec4( color * vColor, 1.0 );",
+        "  gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );",
+        "  if ( gl_FragColor.a < ALPHATEST ) discard;",
+        "}"
+      ].join( "\n" ),
+      alphaTest: 0.9
+    });
+    this.color = new THREE.Color();
+    this.color.setHSL( 0, 1.0, 0.5 );
+
     this.ClearData();
 
     this.objVisible = true;
@@ -69,28 +102,31 @@ export class ThreeNodesService {
     this.ClearData();
 
     // 新しい入力を適用する
-    const geometry = new THREE.Geometry();
+
+     // パーティクルを作成
+    const geometry = new THREE.BufferGeometry();
+    const colors = new Float32Array( jsonKeys.length * 3 );
+    const positions = new Float32Array( jsonKeys.length * 3 );
+    const sizes = new Float32Array( jsonKeys.length );
+
+    let i = 0;
     for (const key of jsonKeys) {
       const pos = new THREE.Vector3(
         jsonData[key].x,
         jsonData[key].y,
         jsonData[key].z
       );
-      geometry.vertices.push(pos);
+      pos.toArray( positions, i * 3 );
+      this.color.toArray( colors, i * 3 );
+      sizes[ i ] = 1;
+      i++;
     }
 
-    // パーティクルのマテリアルを作成
-    const material = new THREE.PointsMaterial({
-      size: 1.334,
-      sizeAttenuation: true, //false:カメラからの距離にかかわらずパーティクルが同じ大きさになる
-      map: this.sprite,
-      alphaTest: 0.5,
-      transparent: true,
-    });
-    material.color.setHSL(0, 0, 0);
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+    geometry.setAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+    geometry.setAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
 
-    // パーティクルを作成
-    this.particles = new THREE.Points(geometry, material);
+    this.particles = new THREE.Points(geometry, this.material);
 
     // 文字をシーンに追加
     for (const key of jsonKeys) {
@@ -167,8 +203,8 @@ export class ThreeNodesService {
     this.baseScale = 1;
     if (this.minDistance !== Number.MAX_VALUE) {
       // baseScale は最遠点の 1/500 以下
-      // baseScale は最近点の 1/50 以上とする
-      this.baseScale = Math.max(this.maxDistance / 500, this.minDistance / 50);
+      // baseScale は最近点の 1/20 以上とする
+      this.baseScale = Math.max(this.maxDistance / 500, this.minDistance / 20);
     }
 
     // 重心位置を計算する
@@ -238,16 +274,21 @@ export class ThreeNodesService {
   }
 
   // マウス位置とぶつかったオブジェクトを検出する
-  public detectObject(raycaster: THREE.Raycaster, action: string): void {
-    if (this.particles.children.length === 0) {
-      return; // 対象がなければ何もしない
+  public detectObject(raycaster: any, action: string): boolean {
+    return;
+    if (this.particles === null) {
+      return false; // 対象がなければ何もしない
     }
 
     // 交差しているオブジェクトを取得
     const intersects = raycaster.intersectObjects(this.particles);
+    if ( intersects.length <= 0 ){
+      return false; // 対象がなければ何もしない
+    }
 
     switch (action) {
       case "click":
+        /*
         this.particles.children.map((item) => {
           if (intersects.length > 0 && item === intersects[0].object) {
             // 色を赤くする
@@ -256,9 +297,11 @@ export class ThreeNodesService {
             material["opacity"] = 1.0;
           }
         });
+        */
         break;
 
       case "select":
+        /*
         this.selectionItem = null;
         this.particles.children.map((item) => {
           const material = item["material"];
@@ -273,9 +316,11 @@ export class ThreeNodesService {
             material["opacity"] = 1.0;
           }
         });
+        */
         break;
 
       case "hover":
+        /*
         this.particles.children.map((item) => {
           const material = item["material"];
           if (intersects.length > 0 && item === intersects[0].object) {
@@ -293,6 +338,7 @@ export class ThreeNodesService {
             }
           }
         });
+        */
         break;
 
       default:
