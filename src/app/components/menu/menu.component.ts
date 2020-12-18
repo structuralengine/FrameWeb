@@ -46,6 +46,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.fileName = "立体骨組構造解析ソフトver1.0.15"
   }
 
 
@@ -56,6 +57,7 @@ export class MenuComponent implements OnInit {
     this.ResultData.clear();
     this.app.isCalculated = false;
     this.three.ClearData();
+    this.fileName = "立体骨組構造解析ソフトver1.0.15"
   }
 
   // ファイルを開く
