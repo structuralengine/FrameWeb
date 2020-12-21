@@ -1181,7 +1181,7 @@ export class ThreeLoadService {
   private onResize(): void {
     this.pointLoadResize();
     this.memberLoadResize();
-  }
+ }
 
   private pointLoadResize(): void {
     // 節点荷重のスケールを変更する
@@ -1194,6 +1194,29 @@ export class ThreeLoadService {
   }
 
   private memberLoadResize(): void {
+    const postData = {
+      scene: this.scene,
+      memberLoadList: this.memberLoadList,
+      memberLoadScale: this.memberLoadScale,
+      intersectObjects: this.intersectObjects,
+      THREE: THREE
+    };
+
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./three-load.worker', { name: 'three-load', type: 'module' });
+      worker.onmessage = ({ data }) => {
+        console.log('要素荷重のリサイズが終わりました', data.status);
+      };
+      worker.postMessage(postData);
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+
+  }
+
+  private memberLoadResize_org(): void {
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
