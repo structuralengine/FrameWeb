@@ -9,11 +9,13 @@ export class ResultCombineDisgService {
 
   public disgCombine: any;
   public isChenge: boolean;
+  private worker: Worker;
 
   constructor(private disg: ResultDisgService,
               private pickdisg: ResultPickupDisgService) {
     this.clear();
     this.isChenge = true;
+    this.worker = new Worker('./result-combine-disg.worker', { name: 'combine-disg', type: 'module' });
   }
 
   public clear(): void {
@@ -64,14 +66,13 @@ export class ResultCombineDisgService {
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      const worker = new Worker('./result-combine-disg.worker', { name: 'combine-disg', type: 'module' });
-      worker.onmessage = ({ data }) => {
+      this.worker.onmessage = ({ data }) => {
         this.disgCombine = data.disgCombine;
         this.isChenge = false;
         console.log('変位disg の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
         this.pickdisg.setDisgPickupJson(pickList, this.disgCombine);
       };
-      worker.postMessage(postData);
+      this.worker.postMessage(postData);
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.

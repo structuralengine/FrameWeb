@@ -13,6 +13,7 @@ export class ResultCombineFsecService {
 
   public fsecCombine: any;
   public isChenge: boolean;
+  private worker: Worker;
 
   constructor(private fsec: ResultFsecService,
               private pickfsec: ResultPickupFsecService,
@@ -21,6 +22,7 @@ export class ResultCombineFsecService {
               private helper: DataHelperModule) {
     this.clear();
     this.isChenge = true;
+    this.worker = new Worker('./result-combine-fsec.worker', { name: 'combine-fsec', type: 'module' });
   }
 
   public clear(): void {
@@ -98,14 +100,13 @@ export class ResultCombineFsecService {
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      const worker = new Worker('./result-combine-fsec.worker', { name: 'combine-fsec', type: 'module' });
-      worker.onmessage = ({ data }) => {
+      this.worker.onmessage = ({ data }) => {
         this.fsecCombine = data.fsecCombine;
         this.isChenge = false;
         console.log('断面fsec の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
         this.pickfsec.setFsecPickupJson(pickList, this.fsecCombine);
       };
-      worker.postMessage(postData);
+      this.worker.postMessage(postData);
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
