@@ -7,10 +7,12 @@ export class ResultPickupDisgService {
 
   public disgPickup: any;
   public isChenge: boolean;
+  private worker: Worker;
 
   constructor() { 
     this.clear();
     this.isChenge = true;
+    this.worker = new Worker('./result-pickup-disg.worker', { name: 'pickup-disg', type: 'module' });
   }
 
   public clear(): void {
@@ -60,13 +62,12 @@ export class ResultPickupDisgService {
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      const worker = new Worker('./result-pickup-disg.worker', { name: 'pickup-disg', type: 'module' });
-      worker.onmessage = ({ data }) => {
+      this.worker.onmessage = ({ data }) => {
         this.disgPickup = data.disgPickup;
         this.isChenge = false;
         console.log('変位disg の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
       };
-      worker.postMessage(postData);
+      this.worker.postMessage(postData);
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.

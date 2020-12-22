@@ -7,10 +7,12 @@ export class ResultPickupFsecService {
 
   public fsecPickup: any;
   public isChenge: boolean;
+  private worker: Worker;
 
   constructor() {
     this.clear();
     this.isChenge = true;
+    this.worker = new Worker('./result-pickup-fsec.worker', { name: 'pickup-fsec', type: 'module' });
   }
 
   public clear(): void {
@@ -63,13 +65,12 @@ export class ResultPickupFsecService {
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      const worker = new Worker('./result-pickup-fsec.worker', { name: 'pickup-fsec', type: 'module' });
-      worker.onmessage = ({ data }) => {
+      this.worker.onmessage = ({ data }) => {
         this.fsecPickup = data.fsecPickup;
         this.isChenge = false;
         console.log('断面力fsec の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
       };
-      worker.postMessage(postData);
+      this.worker.postMessage(postData);
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
