@@ -27,12 +27,13 @@ export class ThreeLoadService {
   private params: any;          // GUIの表示制御
   private gui: any;
 
+
   constructor(private scene: SceneService,
-    private nodeThree: ThreeNodesService,
-    private node: InputNodesService,
-    private member: InputMembersService,
-    private load: InputLoadService,
-    private three_member: ThreeMembersService) {
+              private nodeThree: ThreeNodesService,
+              private node: InputNodesService,
+              private member: InputMembersService,
+              private load: InputLoadService,
+              private three_member: ThreeMembersService) {
 
     this.isVisible = [null, null];
     this.pointLoadList = new Array();
@@ -76,7 +77,7 @@ export class ThreeLoadService {
 
     if (!('pointLoadScale' in this.gui)) {
       if (this.pointLoadList.length > 0) {
-        const gui_step: number = 80 * 0.001;
+        const gui_step: number = 1;
         this.gui['pointLoadScale'] = this.scene.gui.add(this.params, 'pointLoadScale', 0, 80).step(gui_step).onChange((value) => {
           this.pointLoadScale = value;
           this.pointLoadResize();
@@ -87,7 +88,7 @@ export class ThreeLoadService {
 
     if (!('memberLoadScale' in this.gui)) {
       if (this.memberLoadList.length > 0) {
-        const gui_step: number = 80 * 0.001;
+        const gui_step: number = 1;
         this.gui['memberLoadScale'] = this.scene.gui.add(this.params, 'memberLoadScale', 0, 80).step(gui_step).onChange((value) => {
           this.memberLoadScale = value;
           this.memberLoadResize();
@@ -712,7 +713,6 @@ export class ThreeLoadService {
     this.scene.add(groupe);
   }
 
-
   // 矢印（集中荷重）を描く
   public CreateArrow(arrow, pos: any, localAxis, P: number, p_: number) {
     const arrowlist = [];
@@ -1194,6 +1194,10 @@ export class ThreeLoadService {
   }
 
   private memberLoadResize(): void {
+
+    if (this.memberLoadList.length === 0) {
+      return;
+    }
 
     // 要素荷重のスケールを変更する
     for (const item of this.memberLoadList) {
