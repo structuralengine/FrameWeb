@@ -28,7 +28,7 @@ import { InputPrintComponent } from './components/input/input-print/input-print.
 import { PrintLayoutComponent } from './components/input/input-print/print-layout/print-layout.component';
 import { InvoiceComponent } from './components/input/input-print/invoice/invoice.component';
 
-/*
+
 const routes: Routes = [
   { path: 'input-nodes', component: InputNodesComponent },
   { path: 'input-members', component: InputMembersComponent },
@@ -59,10 +59,6 @@ const routes: Routes = [
   { path: 'result-pic_disg', component: ResultPickupDisgComponent },
   { path: 'result-pic_reac', component: ResultPickupReacComponent },
   { path: 'result-pic_fsec', component: ResultPickupFsecComponent },
-];
-#sasa-print */
-
-const routes: Routes = [
 
   { path: 'print',
     outlet: 'print',
