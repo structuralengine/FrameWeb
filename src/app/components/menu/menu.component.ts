@@ -208,13 +208,15 @@ export class MenuComponent implements OnInit {
     FileSaver.saveAs(blob, filename);
   }
 
+  /*
   // 印刷
   print(): void {
     const doc = this.printData.printData(this.router.url.replace('/', ''));
     // 印刷実行
     doc.output('dataurlnewwindow');
   }
-
+  */
+ 
   // ログイン関係 
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {

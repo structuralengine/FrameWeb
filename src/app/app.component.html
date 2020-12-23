@@ -1,7 +1,18 @@
+<div [class.isPrinting]="printService.isPrinting">
+  <div style="text-align:center">
+    <h1>
+      Welcome to {{ title }}!
+    </h1>
+    <button (click)="onPrintInvoice()">PRINT INVOICE</button>
+  </div>
+  <!-- <router-outlet></router-outlet> -->
+  <router-outlet name="print"></router-outlet>
+</div>
+
+<!--
 <div class="header">
   <div class="container">
     <div class="liner">
-      <!--            <img src="./assets/img/logo.png" />-->
       <app-menu></app-menu>
 
     </div>
@@ -74,6 +85,15 @@
         </div>
         <p>荷重</p>
       </a>
+
+      <a routerLink="./input-load-name" (click)="onPrintInvoice()" routerLinkActive="selected-item"
+      id="13" class="btn-md btn-blue">
+     <div class="icon-img ppt">
+     <img src="./assets/img/force.png" width="60" height="40" style="margin-right: -3px">
+     </div>
+     <p>印刷</p>
+   </a>
+
       <a routerLink="./input-define" (click)="contentsDailogShow(9)" routerLinkActive="selected-item"
          id="9"  class="btn-md btn-blue">
         <div class="icon-img ppt">
@@ -116,7 +136,6 @@
 </div>
 
 <div cdkDrag *ngIf="user.isContentsDailogShow" class="contents-dailog" id="contents-dialog-id">
-  <!-- ドラッグハンドルをテーブルの後ろに敷いて、テーブル領域以外がドラッグされたらcontetns-dialogを移動するイメージ -->
   <div class="dialog-header">
     <div cdkDragHandle class="dialog-drag-handle">
     </div>
@@ -124,5 +143,6 @@
       <button (click)="dialogClose()" class="dialog-close-button"><span>×</span></button>
     </div>
   </div>
-  <router-outlet></router-outlet>
+ <router-outlet></router-outlet> 
 </div>
+#sasa-print-->
