@@ -1,53 +1,61 @@
 $border-color: #428bca;
 
-.welcome-message{
+.welcome-message {
   display: flex;
 }
 
-.margin{
+.margin {
   margin-left: 5px;
   margin-right: 5px;
 }
 
 .title-and-menu {
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 4px;
+  padding: 8px;
   flex: 1 0 auto;
   font-weight: lighter;
-  .icon-area{
+  .icon-area {
+  
     display: flex;
-    div:hover{
+    div:hover {
       cursor: pointer;
     }
-
+     font-size: 24px;
   }
-  .icon{
+  .icon {
     color: #fff;
   }
-  .login-area{
-    font-size: 12px;
-    :hover{
+  .login-area {
+    font-size: 20px;
+
+    :hover {
       cursor: pointer;
     }
   }
 }
 
-i.fa{
+
+
+// @media screen and (max-width:767px){
+  
+
+// }
+
+i.fas {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.title h1
-{
+.title h1 {
   margin: 0;
-  font-size:12px;
+  font-size: 20px;
   font-weight: lighter;
 }
 
-.login-item{
+.login-item {
   color: #fff;
 }
 
@@ -64,28 +72,28 @@ i.fa{
   z-index: 1;
 }
 
-.fukidashi.file{
+.fukidashi.file {
   width: 70px;
   top: 40px;
   left: -20px;
 }
 
-.fukidashi.calculator{
+.fukidashi.calculator {
   width: 45px;
   top: 45px;
-  left: 47px;
+  left: 65px;
 }
 
-.fukidashi.print{
+.fukidashi.print {
   width: 45px;
   top: 45px;
-  left: 72px;
+  left: 100px;
 }
 
-.fukidashi.help{
+.fukidashi.help {
   width: 60px;
   top: 45px;
-  left: 90px;
+  left: 125px;
 }
 
 .fukidashi:before {
@@ -108,26 +116,30 @@ i.fa{
   z-index: 1;
 }
 
-.fukidashi.file:before,.fukidashi.file:after{
-  left:45%;
+.fukidashi.file:before,
+.fukidashi.file:after {
+  left: 45%;
 }
 
-.fukidashi.calculator:before,.fukidashi.calculator:after{
-  left:50%;
+.fukidashi.calculator:before,
+.fukidashi.calculator:after {
+  left: 50%;
 }
 
-.fukidashi.print:before,.fukidashi.print:after{
-  left:50%;
+.fukidashi.print:before,
+.fukidashi.print:after {
+  left: 50%;
 }
 
-.fukidashi.help:before,.fukidashi.help:after{
-  left:50%;
+.fukidashi.help:before,
+.fukidashi.help:after {
+  left: 50%;
 }
 
-.icon-area a:hover + .fukidashi{
+.icon-area a:hover + .fukidashi {
   display: block;
 }
 
-.icon-area a.file:checked + .fukidashi{
+.icon-area a.file:checked + .fukidashi {
   display: none;
 }
