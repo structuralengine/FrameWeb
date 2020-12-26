@@ -156,4 +156,14 @@ $border-color: #428bca; // ボーダーライン
   width: 100% !important;
 }
 
+@media print{
+  .title-and-menu{
+    display: none;
+  }
 
+  #contents-dialog-id{
+    display:none;
+  }
+
+  
+}

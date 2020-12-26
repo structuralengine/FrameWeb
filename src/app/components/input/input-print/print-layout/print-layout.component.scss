@@ -7,4 +7,18 @@
   :host {
     display: none;
   }
+
+  .header{
+    display: none;
+  }
+
+  .invoiceTable{
+    font-size:30px;
+  }
+}
+
+.content{
+  display:flex;
+  justify-content: center;
+  padding:20px;
 }

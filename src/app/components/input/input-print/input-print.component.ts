@@ -4,7 +4,7 @@ import { PrintService } from './print.service';
 @Component({
   selector: 'app-input-print',
   templateUrl: './input-print.component.html',
-  styleUrls: ['./input-print.component.scss']
+  styleUrls: ['./input-print.component.scss','../../../app.component.scss']
 })
 export class InputPrintComponent implements OnInit {
 
@@ -14,7 +14,7 @@ export class InputPrintComponent implements OnInit {
   }
 
   public onPrintInvoice() {
-    const invoiceIds = ['101', '102'];
+    const invoiceIds = ['101'];
     this.printService
       .printDocument('invoice', invoiceIds);
   }
