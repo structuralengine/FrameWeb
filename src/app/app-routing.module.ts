@@ -24,10 +24,12 @@ import { ResultCombineFsecComponent } from './components/result/result-combine-f
 import { ResultPickupDisgComponent } from './components/result/result-pickup-disg/result-pickup-disg.component';
 import { ResultPickupReacComponent } from './components/result/result-pickup-reac/result-pickup-reac.component';
 import { ResultPickupFsecComponent } from './components/result/result-pickup-fsec/result-pickup-fsec.component';
+import { InputPrintComponent } from './components/input/input-print/input-print.component';
+import { PrintLayoutComponent } from './components/input/input-print/print-layout/print-layout.component';
+import { InvoiceComponent } from './components/input/input-print/invoice/invoice.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/input-nodes', pathMatch: 'full' },
   { path: 'input-nodes', component: InputNodesComponent },
   { path: 'input-members', component: InputMembersComponent },
   { path: 'input-fix_nodes', component: InputFixNodeComponent },
@@ -44,6 +46,8 @@ const routes: Routes = [
   { path: 'input-combine', component: InputCombineComponent },
   { path: 'input-pickup', component: InputPickupComponent },
 
+  { path: 'input-print', component: InputPrintComponent },
+
   { path: 'result-disg', component: ResultDisgComponent },
   { path: 'result-reac', component: ResultReacComponent },
   { path: 'result-fsec', component: ResultFsecComponent },
@@ -54,7 +58,15 @@ const routes: Routes = [
 
   { path: 'result-pic_disg', component: ResultPickupDisgComponent },
   { path: 'result-pic_reac', component: ResultPickupReacComponent },
-  { path: 'result-pic_fsec', component: ResultPickupFsecComponent }
+  { path: 'result-pic_fsec', component: ResultPickupFsecComponent },
+
+  { path: 'print',
+    outlet: 'print',
+    component: PrintLayoutComponent,
+    children: [
+      { path: 'invoice/:invoiceIds', component: InvoiceComponent }
+    ]
+  }
 
 ];
 

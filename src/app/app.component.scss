@@ -32,7 +32,6 @@ $border-color: #428bca; // ボーダーライン
   font-size: 8px;
   text-align: center;
   font-weight: 550;
-
 }
 
 
@@ -157,4 +156,14 @@ $border-color: #428bca; // ボーダーライン
   width: 100% !important;
 }
 
+@media print{
+  .title-and-menu{
+    display: none;
+  }
 
+  #contents-dialog-id{
+    display:none;
+  }
+
+  
+}
