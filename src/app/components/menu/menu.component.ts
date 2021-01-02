@@ -19,6 +19,7 @@ import { ThreeService } from '../three/three.service';
 import { PrintDataModule } from '../../providers/print-data.module';
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import * as pako from 'pako';
 
 @Component({
   selector: 'app-menu',
@@ -132,10 +133,56 @@ export class MenuComponent implements OnInit {
 
     this.ResultData.clear(); // 解析結果情報をクリア
 
+    const compressed = pako.gzip(JSON.stringify(inputJson));
+    console.log(compressed);
+    this.post_gzip(compressed, modalRef);
+
     const Keys = Object.keys(jsonData['load']);
     this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
 
   }
+
+  private post_gzip(gzipData: object, modalRef: NgbModalRef) {
+
+    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
+
+    this.http.post(url, gzipData, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/octet-stream',
+        'Content-Encoding': 'gzip'
+      })
+    }).subscribe(
+      response => {
+        // 通信成功時の処理（成功コールバック）
+        console.log('通信成功!!');
+        // サーバーのレスポンスを集計する
+        if (!this.ResultData.loadResultData(response)) {
+          alert('解析結果の集計に失敗しました');
+        } else {
+          console.log(response);
+          // ユーザーポイントの更新
+          this.loadResultData(response);
+          // 全ての解析ケースを計算し終えたら
+          this.ResultData.CombinePickup(); // 組み合わせケースを集計する
+          this.three.chengeData();
+          modalRef.close(); // モーダルダイアログを消す
+        }
+      },
+      error => {
+        // 通信失敗時の処理（失敗コールバック）
+        this.app.isCalculated = false;
+
+        let messege: string = '通信 ' + error.statusText;
+        if ('_body' in error){
+          messege += '\n' + error._body;
+        }
+        alert(messege);
+      }
+    );
+  }
+
+
+
 
   private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
 
@@ -153,6 +200,9 @@ export class MenuComponent implements OnInit {
     const inputJson = JSON.stringify(jsonData);
     console.log('荷重ケース ' + key);
     console.log(inputJson);
+
+    const compressed = pako.gzip(inputJson);
+    console.log(compressed);
 
     // const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
     const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';

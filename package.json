@@ -43,6 +43,7 @@
     "handsontable": "^8.0.0",
     "jspdf": "^1.5.3",
     "jspdf-autotable": "^3.5.6",
+    "pako": "^2.0.2",
     "rxjs": "~6.6.2",
     "rxjs-compat": "^6.5.3",
     "three": "^0.120.1",
