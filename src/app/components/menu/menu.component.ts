@@ -135,16 +135,20 @@ export class MenuComponent implements OnInit {
 
     const compressed = pako.gzip(JSON.stringify(inputJson));
     console.log(compressed);
-    this.post_gzip(compressed, modalRef);
+    
+    // this.post_gzip(compressed, modalRef);
 
     const Keys = Object.keys(jsonData['load']);
     this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
+
+    //this.get(modalRef);
 
   }
 
   private post_gzip(gzipData: object, modalRef: NgbModalRef) {
 
-    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
+    //const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
+    const url = 'http://127.0.0.1';
 
     this.http.post(url, gzipData, {
       headers: new HttpHeaders({
@@ -177,12 +181,10 @@ export class MenuComponent implements OnInit {
           messege += '\n' + error._body;
         }
         alert(messege);
+        modalRef.close();
       }
     );
   }
-
-
-
 
   private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
 
@@ -230,14 +232,37 @@ export class MenuComponent implements OnInit {
         // 通信失敗時の処理（失敗コールバック）
         this.app.isCalculated = false;
 
-        let messege: string = '通信 ' + error.statusText;
+        let messege: string =  '通信 ' + error.statusText;
         if ('_body' in error){
           messege += '\n' + error._body;
         }
         alert(messege);
+        modalRef.close();
       }
     );
   }
+
+  /*
+  private get( modalRef: NgbModalRef) {
+
+    const url = 'http://127.0.0.1:80';
+
+    this.http.get(url).subscribe(
+      response => {
+        console.log('通信成功!!', response);
+        modalRef.close();
+      },
+      error => {
+        let messege: string = '通信 ' + error.statusText;
+        if ('_body' in error) {
+          messege += '\n' + error._body;
+        }
+        alert(messege);
+        modalRef.close();
+      }
+    );
+  }
+  */
 
   private loadResultData(jsonData: object): void {
     this.user.loadResultData(jsonData);
