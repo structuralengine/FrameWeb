@@ -6,7 +6,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 @Component({
   selector: 'app-input-load',
   templateUrl: './input-load.component.html',
-  styleUrls: ['./input-load.component.scss']
+  styleUrls: ['./input-load.component.scss', '../../../app.component.scss']
 })
 export class InputLoadComponent implements OnInit, AfterViewInit {
 
