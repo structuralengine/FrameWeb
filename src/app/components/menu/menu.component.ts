@@ -133,15 +133,14 @@ export class MenuComponent implements OnInit {
 
     this.ResultData.clear(); // 解析結果情報をクリア
 
-    const compressed = pako.gzip(JSON.stringify(inputJson));
-    console.log(compressed);
-    
+    // const compressed = pako.gzip(JSON.stringify(inputJson));
+    // console.log(compressed);
     // this.post_gzip(compressed, modalRef);
 
     const Keys = Object.keys(jsonData['load']);
     this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
 
-    //this.get(modalRef);
+    // this.get(modalRef);
 
   }
 
@@ -207,11 +206,12 @@ export class MenuComponent implements OnInit {
     console.log(compressed);
 
     // const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
-    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
+    //const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
+    const url = 'http://127.0.0.1:5000';
 
     this.http.post(url, inputJson, {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       })
     }).subscribe(
       response => {
@@ -242,10 +242,10 @@ export class MenuComponent implements OnInit {
     );
   }
 
-  /*
+  
   private get( modalRef: NgbModalRef) {
 
-    const url = 'http://127.0.0.1:80';
+    const url = 'http://127.0.0.1:5000';
 
     this.http.get(url).subscribe(
       response => {
@@ -259,10 +259,11 @@ export class MenuComponent implements OnInit {
         }
         alert(messege);
         modalRef.close();
+        return;
       }
     );
   }
-  */
+  
 
   private loadResultData(jsonData: object): void {
     this.user.loadResultData(jsonData);
