@@ -67,6 +67,10 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
 import { ThreeComponent } from './components/three/three.component';
 import { SceneService } from './components/three/scene.service';
 import { InputPanelComponent } from './components/input/input-panel/input-panel.component';
+import { InputPrintComponent } from './components/input/input-print/input-print.component';
+import { PrintService } from './components/input/input-print/print.service';
+import { PrintLayoutComponent } from './components/input/input-print/print-layout/print-layout.component';
+import { InvoiceComponent } from './components/input/input-print/invoice/invoice.component';
 
 @NgModule({
   imports: [
@@ -112,7 +116,10 @@ import { InputPanelComponent } from './components/input/input-panel/input-panel.
     ResultPickupFsecComponent,
     ResultCombineFsecComponent,
     ThreeComponent,
-    InputPanelComponent
+    InputPanelComponent,
+    InputPrintComponent,
+    PrintLayoutComponent,
+    InvoiceComponent
   ],
   entryComponents: [
     LoginDialogComponent,
@@ -131,6 +138,7 @@ import { InputPanelComponent } from './components/input/input-panel/input-panel.
     InputDefineService,
     InputCombineService,
     InputPickupService,
+    PrintService,
 
     ResultDataService,
     ResultDisgService,

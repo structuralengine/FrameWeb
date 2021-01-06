@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import{ UserInfoService } from './providers/user-info.service'
 import { ResultDataService } from './providers/result-data.service';
+import { PrintService } from './components/input/input-print/print.service';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,8 @@ export class AppComponent implements OnInit {
 
   constructor(private _router: Router,
               private ResultData: ResultDataService,
-              public user:UserInfoService) { 
+              public user:UserInfoService,
+              public printService: PrintService) { 
   }
 
   ngOnInit() {
@@ -81,4 +83,13 @@ export class AppComponent implements OnInit {
     }, 100);
 
   }
+
+
+  public onPrintInvoice() {
+    const invoiceIds = ['101', '102'];
+    this.printService
+      .printDocument('invoice', invoiceIds);
+  }
+
+
 }
