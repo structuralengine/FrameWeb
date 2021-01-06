@@ -1,128 +1,135 @@
-<div class="header">
-  <div class="container">
-    <div class="liner">
-      <!--            <img src="./assets/img/logo.png" />-->
-      <app-menu></app-menu>
+<div [class.isPrinting]="printService.isPrinting">
 
-    </div>
-  </div>
-</div>
-<div class="body-container">
-  <div class="btn-group">
-    <nav>
-      <div class="input-area">
-      <a routerLink="./input-nodes" (click)="contentsDailogShow(0)" routerLinkActive="selected-item"
-         id="0" class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/setten.png" width="60" height="40">
-        </div>
-        <p>節点</p>
-      </a>
-      <a routerLink="./input-fix_nodes" (click)="contentsDailogShow(1)" routerLinkActive="selected-item"
-         id="1" class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/shiten.png" width="60" height="40">
-        </div>
-        <p>支点</p>
-      </a>
-      <a routerLink="./input-members" (click)="contentsDailogShow(2)" routerLinkActive="selected-item"
-         id="2" class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/buzai.png" width="60" height="40">
-        </div>
-        <p>部材</p>
-      </a>
-      <a routerLink="./input-elements" (click)="contentsDailogShow(3)" routerLinkActive="selected-item"
-         id="3" class="btn-md btn-blue">
-        <div class="icon-img">
-        <img src="./assets/img/zairyo.png" width="50" height="50">
-        </div>
-        <p>材料</p>
-      </a>
-      <a routerLink="./input-joints" (click)="contentsDailogShow(4)" routerLinkActive="selected-item"
-         id="4"  class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/panel.png" width="60" height="40">
-        </div>
-        <p>パネル</p>
-      </a>
-      <a routerLink="./input-joints" (click)="contentsDailogShow(5)" routerLinkActive="selected-item"
-         id="5"  class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/ketsugo.png" width="60" height="40">
-        </div>
-        <p>結合</p>
-      </a>
-      <a routerLink="./input-notice_points" (click)="contentsDailogShow(6)" routerLinkActive="selected-item"
-         id="6"  class="btn-md btn-blue">
-        <div class="icon-img">
-        <img src="./assets/img/eye.png" width="50" height="50">
-        </div>
-        <p>着目点</p>
-      </a>
-      <a routerLink="./input-fix_members" (click)="contentsDailogShow(7)" routerLinkActive="selected-item"
-         id="7"  class="btn-md btn-blue">
-        <div class="icon-img ppt" style="margin-left: -7px">
-        <img src="./assets/img/bane.png" width="60" height="40">
-        </div>
-        <p>バネ</p>
-      </a>
-      <a routerLink="./input-load-name" (click)="contentsDailogShow(8)" routerLinkActive="selected-item"
-         id="8" class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/force.png" width="60" height="40" style="margin-right: -3px">
-        </div>
-        <p>荷重</p>
-      </a>
-      <a routerLink="./input-define" (click)="contentsDailogShow(9)" routerLinkActive="selected-item"
-         id="9"  class="btn-md btn-blue">
-        <div class="icon-img ppt">
-        <img src="./assets/img/comb.png" width="60" height="40">
-        </div>
-        <p>組合せ</p></a>
-        <p class="guide" *ngIf="isCalculated">入力</p>
-      </div>
-      <div class="output-area" *ngIf="isCalculated" >
-      <a routerLink="./result-disg" *ngIf="isCalculated"  (click)="contentsDailogShow(10)"
-         id="10"  class="btn-md btn-blue ">
-        <div class="icon-img ppt">
-          <img src="./assets/img/heni.png" width="50" height="40">
-        </div>
-        <p>変位</p>
-      </a>
-      <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(11)"
-         id="11"  class="btn-md btn-blue">
-        <div class="icon-img ppt">
-          <img src="./assets/img/shitenhanryoku.png" width="60" height="40">
-        </div>
-        <p>支点反力</p>
-        </a>
-      <a routerLink="./result-fsec" *ngIf="isCalculated"
-         (click)="contentsDailogShow(12)" routerLinkActive="selected-item" id="12" class="btn-md btn-blue">
-        <div class="icon-img ppt">
-          <img src="./assets/img/danmen.png" width="60" height="40">
-        </div>
-        <p>荷重断面力</p>
-      </a>
-        <p class="guide">出力</p>
-      </div>
-    </nav>
-  </div>
-</div>
-<div class="boy-container"  id="body-container-id">
-  <div class="three-container" id="three-container-id">
-    <app-three></app-three>
-  </div>
-</div>
+  <div class="header">
+    <div class="container">
+      <div class="liner">
+        <!--            <img src="./assets/img/logo.png" />-->
+        <app-menu></app-menu>
 
-<div cdkDrag *ngIf="user.isContentsDailogShow" class="contents-dailog" id="contents-dialog-id">
-  <!-- ドラッグハンドルをテーブルの後ろに敷いて、テーブル領域以外がドラッグされたらcontetns-dialogを移動するイメージ -->
-  <div class="dialog-header">
-    <div cdkDragHandle class="dialog-drag-handle">
-    </div>
-    <div class="button-area">
-      <button (click)="dialogClose()" class="dialog-close-button"><span>×</span></button>
+      </div>
     </div>
   </div>
-  <router-outlet></router-outlet>
+  <div class="body-container">
+    <div class="btn-group">
+      <nav>
+        <div class="input-area">
+          <a routerLink="./input-nodes" (click)="contentsDailogShow(0)" routerLinkActive="selected-item" id="0"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/setten.png" width="60" height="40">
+            </div>
+            <p>節点</p>
+          </a>
+          <a routerLink="./input-fix_nodes" (click)="contentsDailogShow(1)" routerLinkActive="selected-item" id="1"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/shiten.png" width="60" height="40">
+            </div>
+            <p>支点</p>
+          </a>
+          <a routerLink="./input-members" (click)="contentsDailogShow(2)" routerLinkActive="selected-item" id="2"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/buzai.png" width="60" height="40">
+            </div>
+            <p>部材</p>
+          </a>
+          <a routerLink="./input-elements" (click)="contentsDailogShow(3)" routerLinkActive="selected-item" id="3"
+            class="btn-md btn-blue">
+            <div class="icon-img">
+              <img src="./assets/img/zairyo.png" width="50" height="50">
+            </div>
+            <p>材料</p>
+          </a>
+          <a routerLink="./input-joints" (click)="contentsDailogShow(4)" routerLinkActive="selected-item" id="4"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/panel.png" width="60" height="40">
+            </div>
+            <p>パネル</p>
+          </a>
+          <a routerLink="./input-joints" (click)="contentsDailogShow(5)" routerLinkActive="selected-item" id="5"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/ketsugo.png" width="60" height="40">
+            </div>
+            <p>結合</p>
+          </a>
+          <a routerLink="./input-notice_points" (click)="contentsDailogShow(6)" routerLinkActive="selected-item" id="6"
+            class="btn-md btn-blue">
+            <div class="icon-img">
+              <img src="./assets/img/eye.png" width="50" height="50">
+            </div>
+            <p>着目点</p>
+          </a>
+          <a routerLink="./input-fix_members" (click)="contentsDailogShow(7)" routerLinkActive="selected-item" id="7"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt" style="margin-left: -7px">
+              <img src="./assets/img/bane.png" width="60" height="40">
+            </div>
+            <p>バネ</p>
+          </a>
+          <a routerLink="./input-load-name" (click)="contentsDailogShow(8)" routerLinkActive="selected-item" id="8"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/force.png" width="60" height="40" style="margin-right: -3px">
+            </div>
+            <p>荷重</p>
+          </a>
+          <a routerLink="./input-define" (click)="contentsDailogShow(9)" routerLinkActive="selected-item" id="9"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/comb.png" width="60" height="40">
+            </div>
+            <p>組合せ</p>
+          </a>
+          <p class="guide" *ngIf="isCalculated">入力</p>
+        </div>
+        <div class="output-area" *ngIf="isCalculated">
+          <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow(10)" id="10"
+            class="btn-md btn-blue ">
+            <div class="icon-img ppt">
+              <img src="./assets/img/heni.png" width="50" height="40">
+            </div>
+            <p>変位</p>
+          </a>
+          <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(11)" id="11"
+            class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/shitenhanryoku.png" width="60" height="40">
+            </div>
+            <p>支点反力</p>
+          </a>
+          <a routerLink="./result-fsec" *ngIf="isCalculated" (click)="contentsDailogShow(12)"
+            routerLinkActive="selected-item" id="12" class="btn-md btn-blue">
+            <div class="icon-img ppt">
+              <img src="./assets/img/danmen.png" width="60" height="40">
+            </div>
+            <p>荷重断面力</p>
+          </a>
+          <p class="guide">出力</p>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <div class="boy-container" id="body-container-id">
+    <div class="three-container" id="three-container-id">
+      <app-three></app-three>
+    </div>
+  </div>
+
+  <div cdkDrag *ngIf="user.isContentsDailogShow" class="contents-dailog" id="contents-dialog-id">
+    <!-- ドラッグハンドルをテーブルの後ろに敷いて、テーブル領域以外がドラッグされたらcontetns-dialogを移動するイメージ -->
+    <div class="dialog-header">
+      <div cdkDragHandle class="dialog-drag-handle">
+      </div>
+      <div class="button-area">
+        <button (click)="dialogClose()" class="dialog-close-button"><span>×</span></button>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
+
+
+  <router-outlet name="print"></router-outlet>
 </div>
