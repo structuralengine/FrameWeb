@@ -11,7 +11,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class InputLoadComponent implements OnInit, AfterViewInit {
   myControl: FormGroup;
-  static ROWS_COUNT = 600;
+  ROWS_COUNT = 600;
   collectionSize = 100;
   dataset: any[];
   page: number;
@@ -168,7 +168,7 @@ export class InputLoadComponent implements OnInit, AfterViewInit {
 
     this.deactiveButtons();
   
-    this.page = currentPage;
+   // this.page = currentPage;
   
     if (currentPage > 2) {
       this.page0 = currentPage;
@@ -196,30 +196,30 @@ export class InputLoadComponent implements OnInit, AfterViewInit {
       document.getElementById('171').classList.add('active');
   
     }
+
+
     this.dataset = new Array();
-    this.rowHeaders = new Array();
+    //this.rowHeaders = new Array();
   
-    const a1: number = (currentPage - 1) * InputLoadComponent.ROWS_COUNT + 1;
-    const a2: number = a1 + InputLoadComponent.ROWS_COUNT - 1;
+    // const a1: number = (currentPage - 1) * InputLoadComponent.ROWS_COUNT + 1;
+    // const a2: number = a1 + InputLoadComponent.ROWS_COUNT - 1;
   
-    for (let i = a1; i <= a2; i++) {
-      const loadColumn = this.data.getLoadNameColumns(i);
+    // for (let i = a1; i <= a2; i++) {
+    //   const loadColumn = this.data.getLoadNameColumns(i);
+    //   this.dataset.push(loadColumn);
+    //   this.rowHeaders.push(i);
+    // }
+    // this.three.ChengeMode('loadColumn');
+  
+   for (let i = 1; i <= this.ROWS_COUNT; i++) {
+      const loadColumn = this.data.getLoadColumns(this.page, i);
       this.dataset.push(loadColumn);
-      this.rowHeaders.push(i);
     }
-    this.three.ChengeMode('loadColumn');
+    const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
+    this.load_name = currentLoad['name'];
+
+    this.three.ChengeMode('load_points', currentPage);
   }
-
-
-  //  for (let i = 1; i <= this.ROWS_COUNT; i++) {
-  //     const loadColumn = this.data.getLoadColumns(this.page, i);
-  //     this.dataset.push(loadColumn);
-  //   }
-  //   const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
-  //   this.load_name = currentLoad['name'];
-
-  //   this.three.ChengeMode('load_points', currentPage);
-  // }
 
   public loadPointsActive(): void {
     this.three.ChengeMode('load_points');
