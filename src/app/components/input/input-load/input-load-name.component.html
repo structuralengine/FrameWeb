@@ -20,21 +20,13 @@
           <li><a id="next" link="126" (click)="moveToNextPage(5, 126)" class="list" aria-label="Next">》</a></li>
         </ul>
         <div>
-          <!-- <mat-form-field>
-            
-            <mat-label></mat-label>
-            <input placeholder="ページ" type="number" matInput matType="number" formControlName="number2" class="pageNum">
-          </mat-form-field> -->
-          <mat-form-field appearance="legacy">
-            <mat-label>Legacy form field</mat-label>
-            <input matInput placeholder="Placeholder">
-            <mat-hint>Hint</mat-hint>
-          </mat-form-field>
-        
-        </div>
-        <button mat-raised-button (click)="click()">click</button>
-      </form>
-      <!-- <p class="message">{{message}}</p> -->
+           <mat-form-field>
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button (click)="click()">click</button>
+    </form>
+    <!-- <p class="message">{{message}}</p> -->            
     </div>
   </div>
 
