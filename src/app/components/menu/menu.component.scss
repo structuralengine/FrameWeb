@@ -23,7 +23,7 @@ $border-color: #428bca;
     div:hover {
       cursor: pointer;
     }
-     font-size: 24px;
+     font-size: 20px;
   }
   .icon {
     color: #fff;
@@ -51,7 +51,7 @@ i.fas {
 
 .title h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: lighter;
 }
 
@@ -81,19 +81,19 @@ i.fas {
 .fukidashi.calculator {
   width: 45px;
   top: 45px;
-  left: 65px;
+  left: 60px;
 }
 
 .fukidashi.print {
   width: 45px;
   top: 45px;
-  left: 100px;
+  left: 90px;
 }
 
 .fukidashi.help {
   width: 60px;
   top: 45px;
-  left: 125px;
+  left: 110px;
 }
 
 .fukidashi:before {
