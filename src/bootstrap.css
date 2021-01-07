@@ -3405,6 +3405,7 @@ input[type="button"].btn-block {
 
 .dropdown-menu.show {
   display: block;
+  font-size: 14px;
 }
 
 .dropdown-header {
