@@ -1,7 +1,31 @@
-<div class="pager">
+<!-- <div class="pager">
   <div class="pager-title">タイプ</div>
   <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Default pagination"(pageChange)="loadPage($event)"></ngb-pagination>
+</div> -->
+
+<div style="width:900px;" class="pagerArea">
+  <div class="pager">
+    <form [formGroup]="myControl">
+      <ul class="pagenation">
+        <li><a id="prev" link="190" (click)="moveToNextPage(-5, 190)" class="list" aria-label="Previous">《</a></li>
+        <li><a link="191" (click)="moveToNextPage(-2,101)" id="191" class="list">{{page_2}}</a></li>
+        <li><a link="192" (click)="moveToNextPage(-1,102)" id="192" class="list">{{page_1}}</a></li>
+        <li><a link="193" (click)="moveToNextPage(0,103)" id="193" class="list">{{page0}}</a></li>
+        <li><a link="194" (click)="moveToNextPage(1,104)" id="194" class="list">{{page11}}</a></li>
+        <li><a link="195" (click)="moveToNextPage(2,105)" id="195" class="list">{{page12}}</a></li>
+        <li><a id="next" link="196" (click)="moveToNextPage(5, 196)" class="list" aria-label="Next">》</a></li>
+      </ul>
+      <div>
+        <mat-form-field>
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button (click)="click()">click</button>
+    </form>
+    <!-- <p class="message">{{message}}</p> -->
+  </div>
 </div>
+
 
 <div class="datasheet">
   <hot-table class="hot" 
