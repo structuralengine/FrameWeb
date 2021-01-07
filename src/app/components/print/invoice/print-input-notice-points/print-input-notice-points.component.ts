@@ -5,7 +5,7 @@ import { AfterViewInit } from '@angular/core';
 @Component({
   selector: 'app-print-input-notice-points',
   templateUrl: './print-input-notice-points.component.html',
-  styleUrls: ['./print-input-notice-points.component.scss', '../../../../app.component.scss']
+  styleUrls: ['./print-input-notice-points.component.scss', '../../../../app.component.scss','../invoice.component.scss','../invoice.component.scss']
 })
 export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
   page: number;

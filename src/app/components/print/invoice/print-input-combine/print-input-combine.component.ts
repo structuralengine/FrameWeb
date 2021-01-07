@@ -5,7 +5,7 @@ import { AfterViewInit } from '@angular/core';
 @Component({
   selector: 'app-print-input-combine',
   templateUrl: './print-input-combine.component.html',
-  styleUrls: ['./print-input-combine.component.scss','../../../../app.component.scss']
+  styleUrls: ['./print-input-combine.component.scss','../../../../app.component.scss','../invoice.component.scss']
 })
 export class PrintInputCombineComponent implements OnInit , AfterViewInit{
   page: number;

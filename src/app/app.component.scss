@@ -1,4 +1,13 @@
 $border-color: #428bca; // ボーダーライン
+@media print{
+  .title-and-menu{
+    display: none;
+  }
+
+  #contents-dialog-id{
+    display:none;
+  }
+}
 
 .header {
   display: flex;
@@ -154,35 +163,4 @@ $border-color: #428bca; // ボーダーライン
 
 #myCanvas {
   width: 100% !important;
-}
-
-@media print{
-  .title-and-menu{
-    display: none;
-  }
-
-  #contents-dialog-id{
-    display:none;
-  }
-
-  .invoicetTable{
-    margin:8px 0;
-    h2{
-      font-size: 24px;
-    }
-
-    h3{
-      font-size: 20px;
-    }
-    table{
-      th{
-        padding:4px 8px;
-        font-weight: 400;
-      }
-
-      td{
-        padding:4px 8px;
-      }
-    }
-  }
 }

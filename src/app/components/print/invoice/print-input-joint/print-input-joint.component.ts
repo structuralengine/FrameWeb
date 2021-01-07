@@ -5,7 +5,7 @@ import { AfterViewInit } from '@angular/core';
 @Component({
   selector: 'app-print-input-joint',
   templateUrl: './print-input-joint.component.html',
-  styleUrls: ['./print-input-joint.component.scss']
+  styleUrls: ['./print-input-joint.component.scss', '../../../../app.component.scss','../invoice.component.scss']
 })
 export class PrintInputJointComponent implements OnInit, AfterViewInit {
   page: number;

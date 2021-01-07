@@ -5,7 +5,7 @@ import { AfterViewInit } from '@angular/core';
 @Component({
   selector: 'app-print-input-pickup',
   templateUrl: './print-input-pickup.component.html',
-  styleUrls: ['./print-input-pickup.component.scss', '../../../../app.component.scss']
+  styleUrls: ['./print-input-pickup.component.scss', '../../../../app.component.scss','../invoice.component.scss']
 })
 export class PrintInputPickupComponent implements OnInit,AfterViewInit {
   page: number;

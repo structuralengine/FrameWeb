@@ -6,7 +6,7 @@ import { AfterViewInit } from '@angular/core';
 @Component({
   selector: 'app-print-input-nodes',
   templateUrl: './print-input-nodes.component.html',
-  styleUrls: ['./print-input-nodes.component.scss', '../../../../app.component.scss']
+  styleUrls: ['./print-input-nodes.component.scss', '../../../../app.component.scss','../invoice.component.scss']
 })
 export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   page: number;
