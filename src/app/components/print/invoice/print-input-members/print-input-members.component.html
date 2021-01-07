@@ -1,0 +1,21 @@
+<div class="invoicetTable member">
+    <h2>部材データ</h2>
+    <table>
+      <tr>
+        <th class="id">No</th>
+        <th class="I-TAN">I-TAN</th>
+        <th class="J-TAN">J-TAN</th>
+        <th class="L">L(m)</th>
+        <th class="number">材料番号</th>
+        <th class="code">コードアングル</th>
+      </tr>
+      <tr *ngFor="let data of member_dataset">
+        <td class="id">{{data[0]}}</td>
+        <td class="I-TAN">{{data[1]}}</td>
+        <td class="J-TAN">{{data[2]}}</td>
+        <td class="L">{{data[3]}}</td>
+        <td class="number">{{data[4]}}</td>
+        <td class="code">{{data[5]}}</td>
+      </tr>
+    </table>
+  </div>
