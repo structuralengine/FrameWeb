@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import{ UserInfoService } from './providers/user-info.service'
+import { UserInfoService } from './providers/user-info.service'
 import { ResultDataService } from './providers/result-data.service';
-import { PrintService } from './components/input/input-print/print.service';
+import { PrintService } from './components/print/print.service';
 
 @Component({
   selector: 'app-root',
