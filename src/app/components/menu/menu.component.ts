@@ -23,7 +23,7 @@ import 'jspdf-autotable';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss','../../app.component.scss']
+  styleUrls: ['./menu.component.scss', '../../app.component.scss']
 })
 export class MenuComponent implements OnInit {
 
@@ -33,14 +33,14 @@ export class MenuComponent implements OnInit {
   fileName: string;
 
   constructor(private modalService: NgbModal,
-              private app: AppComponent,
-              private router: Router,
-              private user: UserInfoService,
-              private InputData: InputDataService,
-              private ResultData: ResultDataService,
-              private http: HttpClient,
-              private three: ThreeService,
-              private printData: PrintDataModule) {
+    private app: AppComponent,
+    private router: Router,
+    private user: UserInfoService,
+    private InputData: InputDataService,
+    private ResultData: ResultDataService,
+    private http: HttpClient,
+    private three: ThreeService,
+    private printData: PrintDataModule) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -116,15 +116,15 @@ export class MenuComponent implements OnInit {
     const jsonData: {} = this.InputData.getInputJson(0);
     // console.log(JSON.stringify(jsonData));
 
-    if ( 'error' in jsonData ){
-        alert(jsonData['error']);
-        modalRef.close(); // モーダルダイアログを消す
-        return;
+    if ('error' in jsonData) {
+      alert(jsonData['error']);
+      modalRef.close(); // モーダルダイアログを消す
+      return;
     }
 
     const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
     for (const key of Object.keys(jsonData)) {
-      if ( 'load' === key ){
+      if ('load' === key) {
         continue;
       }
       inputJson[key] = jsonData[key];
@@ -181,7 +181,7 @@ export class MenuComponent implements OnInit {
         this.app.isCalculated = false;
 
         let messege: string = '通信 ' + error.statusText;
-        if ('_body' in error){
+        if ('_body' in error) {
           messege += '\n' + error._body;
         }
         alert(messege);
@@ -216,7 +216,7 @@ export class MenuComponent implements OnInit {
     doc.output('dataurlnewwindow');
   }
   */
- 
+
   // ログイン関係 
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
