@@ -67,10 +67,24 @@ import { ResultCombineFsecService } from './components/result/result-combine-fse
 import { ThreeComponent } from './components/three/three.component';
 import { SceneService } from './components/three/scene.service';
 import { InputPanelComponent } from './components/input/input-panel/input-panel.component';
-import { InputPrintComponent } from './components/input/input-print/input-print.component';
-import { PrintService } from './components/input/input-print/print.service';
-import { PrintLayoutComponent } from './components/input/input-print/print-layout/print-layout.component';
-import { InvoiceComponent } from './components/input/input-print/invoice/invoice.component';
+
+import { PrintComponent } from './components/print/print.component';
+import { PrintService } from './components/print/print.service';
+import { PrintLayoutComponent } from './components/print/print-layout/print-layout.component';
+import { InvoiceComponent } from './components/print/invoice/invoice.component';
+import { PrintInputCombineComponent } from './components/print/invoice/print-input-combine/print-input-combine.component';
+import { PrintInputDefineComponent } from './components/print/invoice/print-input-define/print-input-define.component';
+import { PrintInputElementsComponent } from './components/print/invoice/print-input-elements/print-input-elements.component';
+import { PrintInputFixMemberComponent } from './components/print/invoice/print-input-fix-member/print-input-fix-member.component';
+import { PrintInputFixNodeComponent } from './components/print/invoice/print-input-fix-node/print-input-fix-node.component';
+import { PrintInputJointComponent } from './components/print/invoice/print-input-joint/print-input-joint.component';
+import { PrintInputLoadComponent } from './components/print/invoice/print-input-load/print-input-load.component';
+import { PrintInputMembersComponent } from './components/print/invoice/print-input-members/print-input-members.component';
+import { PrintInputNodesComponent } from './components/print/invoice/print-input-nodes/print-input-nodes.component';
+import { PrintInputNoticePointsComponent } from './components/print/invoice/print-input-notice-points/print-input-notice-points.component';
+import { PrintInputPanelComponent } from './components/print/invoice/print-input-panel/print-input-panel.component';
+import { PrintInputPickupComponent } from './components/print/invoice/print-input-pickup/print-input-pickup.component';
+
 
 @NgModule({
   imports: [
@@ -117,9 +131,22 @@ import { InvoiceComponent } from './components/input/input-print/invoice/invoice
     ResultCombineFsecComponent,
     ThreeComponent,
     InputPanelComponent,
-    InputPrintComponent,
+
+    PrintComponent,
     PrintLayoutComponent,
-    InvoiceComponent
+    InvoiceComponent,
+    PrintInputCombineComponent,
+    PrintInputDefineComponent,
+    PrintInputElementsComponent,
+    PrintInputFixMemberComponent,
+    PrintInputFixNodeComponent,
+    PrintInputJointComponent,
+    PrintInputLoadComponent,
+    PrintInputMembersComponent,
+    PrintInputNodesComponent,
+    PrintInputNoticePointsComponent,
+    PrintInputPanelComponent,
+    PrintInputPickupComponent
   ],
   entryComponents: [
     LoginDialogComponent,
@@ -138,6 +165,7 @@ import { InvoiceComponent } from './components/input/input-print/invoice/invoice
     InputDefineService,
     InputCombineService,
     InputPickupService,
+    
     PrintService,
 
     ResultDataService,
