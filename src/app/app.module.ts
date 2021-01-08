@@ -89,9 +89,6 @@ import { PrintResultCombineFsecComponent } from './components/print/invoice/prin
 import { PrintResultCombineReacComponent } from './components/print/invoice/print-result-combine-reac/print-result-combine-reac.component';
 import { PrintResultDisgComponent } from './components/print/invoice/print-result-disg/print-result-disg.component';
 import { PrintResultFsecComponent } from './components/print/invoice/print-result-fsec/print-result-fsec.component';
-import { PrintResultPickupDisgComponent } from './components/print/invoice/print-result-pickup-disg/print-result-pickup-disg.component';
-import { PrintResultPickupFsecComponent } from './components/print/invoice/print-result-pickup-fsec/print-result-pickup-fsec.component';
-import { PrintResultPickupReacComponent } from './components/print/invoice/print-result-pickup-reac/print-result-pickup-reac.component';
 import { PrintResultReacComponent } from './components/print/invoice/print-result-reac/print-result-reac.component';
 
 
@@ -161,9 +158,6 @@ import { PrintResultReacComponent } from './components/print/invoice/print-resul
     PrintResultCombineReacComponent,
     PrintResultDisgComponent,
     PrintResultFsecComponent,
-    PrintResultPickupDisgComponent,
-    PrintResultPickupFsecComponent,
-    PrintResultPickupReacComponent,
     PrintResultReacComponent,
   ],
   entryComponents: [

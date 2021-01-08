@@ -1,15 +1,36 @@
 import { Component, OnInit } from '@angular/core';
+import { InputDataService } from '../../../../providers/input-data.service';
+import { AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'app-print-result-reac',
   templateUrl: './print-result-reac.component.html',
-  styleUrls: ['./print-result-reac.component.scss']
+  styleUrls: ['../../../../app.component.scss', '../invoice.component.scss', '../invoice.component.scss']
 })
 export class PrintResultReacComponent implements OnInit {
+  page: number;
+  load_name: string;
+  collectionSize: number;
+  btnPickup: string;
+  tableHeight: number;
+  invoiceIds: string[];
+  invoiceDetails: Promise<any>[];
 
-  constructor() { }
+  public reac_dataset = [];
+
+  constructor(private InputData: InputDataService) {
+  }
 
   ngOnInit(): void {
   }
 
+  ngAfterViewInit() {
+
+    const inputJson: any = this.InputData.getInputJson(0);
+
+  }
+
 }
+
+
+
