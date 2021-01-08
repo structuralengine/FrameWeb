@@ -9,7 +9,7 @@ import { HotTableModule } from '@handsontable/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MatInputModule} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 
 import { InputDataService } from './providers/input-data.service';
 import { DataHelperModule } from './providers/data-helper.module';
@@ -84,6 +84,15 @@ import { PrintInputNodesComponent } from './components/print/invoice/print-input
 import { PrintInputNoticePointsComponent } from './components/print/invoice/print-input-notice-points/print-input-notice-points.component';
 import { PrintInputPanelComponent } from './components/print/invoice/print-input-panel/print-input-panel.component';
 import { PrintInputPickupComponent } from './components/print/invoice/print-input-pickup/print-input-pickup.component';
+import { PrintResultCombineDisgComponent } from './components/print/invoice/print-result-combine-disg/print-result-combine-disg.component';
+import { PrintResultCombineFsecComponent } from './components/print/invoice/print-result-combine-fsec/print-result-combine-fsec.component';
+import { PrintResultCombineReacComponent } from './components/print/invoice/print-result-combine-reac/print-result-combine-reac.component';
+import { PrintResultDisgComponent } from './components/print/invoice/print-result-disg/print-result-disg.component';
+import { PrintResultFsecComponent } from './components/print/invoice/print-result-fsec/print-result-fsec.component';
+import { PrintResultPickupDisgComponent } from './components/print/invoice/print-result-pickup-disg/print-result-pickup-disg.component';
+import { PrintResultPickupFsecComponent } from './components/print/invoice/print-result-pickup-fsec/print-result-pickup-fsec.component';
+import { PrintResultPickupReacComponent } from './components/print/invoice/print-result-pickup-reac/print-result-pickup-reac.component';
+import { PrintResultReacComponent } from './components/print/invoice/print-result-reac/print-result-reac.component';
 
 
 @NgModule({
@@ -146,7 +155,16 @@ import { PrintInputPickupComponent } from './components/print/invoice/print-inpu
     PrintInputNodesComponent,
     PrintInputNoticePointsComponent,
     PrintInputPanelComponent,
-    PrintInputPickupComponent
+    PrintInputPickupComponent,
+    PrintResultCombineDisgComponent,
+    PrintResultCombineFsecComponent,
+    PrintResultCombineReacComponent,
+    PrintResultDisgComponent,
+    PrintResultFsecComponent,
+    PrintResultPickupDisgComponent,
+    PrintResultPickupFsecComponent,
+    PrintResultPickupReacComponent,
+    PrintResultReacComponent,
   ],
   entryComponents: [
     LoginDialogComponent,
@@ -165,7 +183,7 @@ import { PrintInputPickupComponent } from './components/print/invoice/print-inpu
     InputDefineService,
     InputCombineService,
     InputPickupService,
-    
+
     PrintService,
 
     ResultDataService,
