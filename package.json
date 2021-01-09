@@ -40,6 +40,7 @@
     "angular-cli-ghpages": "^0.6.0",
     "bootstrap": "^4.4.0",
     "file-saver": "^2.0.2",
+    "fontisto": "^3.0.4",
     "handsontable": "^8.0.0",
     "jspdf": "^1.5.3",
     "jspdf-autotable": "^3.5.6",
