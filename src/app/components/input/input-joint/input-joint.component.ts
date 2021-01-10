@@ -1,3 +1,4 @@
+import { FormControl, FormGroup } from '@angular/forms';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
@@ -11,9 +12,16 @@ import { ThreeService } from '../../three/three.service';
 })
 export class InputJointComponent implements OnInit, AfterViewInit {
 
+  myControl: FormGroup;
   static ROWS_COUNT = 20;
   dataset: any[];
   page: number;
+  page_1: number;
+  page_2: number;
+  page11: number;
+  page12: number;
+  page0: number;
+  rowHeaders: any[];
 
 
   hotTableSettings = {
@@ -54,11 +62,21 @@ export class InputJointComponent implements OnInit, AfterViewInit {
               public user:UserInfoService) {
     this.dataset = new Array();
     this.page = 1;
+
+    // pagenationのhtml側表示の定義
+    this.page0 = 3;
+    this.page11 = 4;
+    this.page12 = 5;
+    this.page_1 = 2;
+    this.page_2 = 1;
   }
 
   ngOnInit() {
     this.initialFlg = true;
     this.loadPage(1);
+    this.myControl = new FormGroup({
+      number2: new FormControl(),
+    });
   }
   ngAfterViewInit() {
     this.initialFlg = false;
@@ -68,16 +86,103 @@ export class InputJointComponent implements OnInit, AfterViewInit {
     console.log('aa')
   }
 
+  // active属性を外す
+  deactiveButtons() {
+    for (let i = 201; i <= 205; i++) {
+      const data = document.getElementById(i + '');
+      if (data != null) {
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
+        }
+      }
+    }
+  }
+
+
   loadPage(currentPage: number) {
     if (currentPage !== this.page) {
       this.page = currentPage;
     }
     this.dataset = new Array();
 
+    this.deactiveButtons();
+
+    if (currentPage > 2) {
+      this.page0 = currentPage;
+      this.page_1 = currentPage - 1;
+      this.page_2 = currentPage - 2;
+      this.page11 = currentPage + 1;
+      this.page12 = currentPage + 2;
+      document.getElementById('203').classList.add('active');
+    } else if (currentPage == 2) {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+      document.getElementById('202').classList.add('active');
+    }
+
+    else {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+
+      document.getElementById('201').classList.add('active');
+
+    }
+
     for (let i = 1; i <= InputJointComponent.ROWS_COUNT; i++) {
       const joint = this.input.getJointColumns(this.page, i);
       this.dataset.push(joint);
     }
     this.three.ChengeMode('joints', currentPage);
+  }
+
+   // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り
+   public moveToNextPage(count: number, id: number): void {
+    let Next: number;
+    let additional: number;
+    let minus: number;
+    var plus: number;
+
+    // 1、2ページ目だけイレギュラーな動きをする
+    if (this.page === 1) {
+      additional = 2;
+      minus = -2;
+      plus = -1;
+    } else if (this.page === 2) {
+      additional = 1;
+      minus = -1;
+      plus = 0;
+    } else {
+      additional = 0;
+      minus = -1;
+      plus = 1;
+    }
+
+    Next = this.page + count + additional;
+    if (Next < 1) {
+      Next = 1;
+    }
+
+    this.loadPage(Next);
+  }
+
+  // 見えないところにボタンを配置してある。ボタンを押すのとEnterを押すのは同じとしているのでこれが発火点となる
+  click(id = null) {
+    let value: number;
+
+    if (id === null) {
+      value = this.helper.toNumber(this.myControl.value.number2);
+    } else {
+      value = this.helper.toNumber(id);
+    }
+
+    if (value !== null) {
+      this.loadPage(value);
+    }
   }
 }

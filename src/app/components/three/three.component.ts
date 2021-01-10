@@ -13,7 +13,7 @@ import { SafeHtml } from '@angular/platform-browser';
 @Component({
   selector: 'app-three',
   templateUrl: './three.component.html',
-  styleUrls: ['./three.component.scss']
+  styleUrls: ['./three.component.scss'],
 })
 export class ThreeComponent implements  AfterViewInit {
 
