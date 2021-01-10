@@ -1,8 +1,8 @@
-<div class="invoicetTable combDisg">
-  <h2>combDisg</h2>
-  <div *ngFor="let title of combDisg_title; let i = index">
+<div class="invoicetTable combPickup">
+  <h2>combPickup</h2>
+  <div *ngFor="let title of pickDisg_title; let i = index">
     <p>{{title[0]}}</p>
-    <div *ngFor="let type of combDisg_type[i]; let k = index">
+    <div *ngFor="let type of pickDisg_type[i]; let k = index">
       <p>{{type}}</p>
       <table>
         <tr>
@@ -26,7 +26,7 @@
           <th></th>
         </tr>
 
-        <tr *ngFor="let data of combDisg_dataset[i][k]">
+        <tr *ngFor="let data of pickDisg_dataset[i][k]">
           <td>{{data[0]}}</td>
           <td>{{data[1]}}</td>
           <td>{{data[2]}}</td>

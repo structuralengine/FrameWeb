@@ -1,1 +1,35 @@
-<p>print-result-disg works!</p>
+<div class="invoicetTable disg">
+    <h2>変位量</h2>
+    <div *ngFor="let title of disg_typeNum; let i = index">
+      <p>{{title[0]}}</p>
+      <table>
+        <tr>
+            <th>節点</th>
+            <th>X-Disp</th>
+            <th>Y-Disp</th>
+            <th>Z-disp</th>
+            <th>X-Rotation</th>
+            <th>Y-Rotation</th>
+            <th>Z-Rotation</th>
+        </tr>
+        <tr>
+          <th>No.</th>
+          <th>(mm)</th>
+          <th>(mm)</th>
+          <th>(mm)</th>
+          <th>(mmrad)</th>
+          <th>(mmrad)</th>
+          <th>(mmrad)</th>
+        </tr>
+        <tr *ngFor="let data of disg_dataset[i]">
+          <td>{{data[0]}}</td>
+          <td>{{data[1]}}</td>
+          <td>{{data[2]}}</td>
+          <td>{{data[3]}}</td>
+          <td>{{data[4]}}</td>
+          <td>{{data[5]}}</td>
+          <td>{{data[6]}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>

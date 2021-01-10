@@ -4,12 +4,13 @@ import { ResultDataService } from '../../../../providers/result-data.service';
 import { AfterViewInit } from '@angular/core';
 import { JsonpClientBackend } from '@angular/common/http';
 
+
 @Component({
-  selector: 'app-print-result-combine-disg',
-  templateUrl: './print-result-combine-disg.component.html',
-  styleUrls: ['../../../../app.component.scss', '../invoice.component.scss', '../invoice.component.scss']
+  selector: 'app-print-result-pickup-disg',
+  templateUrl: './print-result-pickup-disg.component.html',
+  styleUrls: ['./print-result-pickup-disg.component.scss','../../../../app.component.scss', '../invoice.component.scss',]
 })
-export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
+export class PrintResultPickupDisgComponent implements OnInit,AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
@@ -18,29 +19,28 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public combDisg_dataset = [];
-  public combDisg_title = [];
-  public combDisg_type = [];
+  public pickDisg_dataset = [];
+  public pickDisg_title = [];
+  public pickDisg_type = [];
 
   constructor(private InputData: InputDataService,
-    private ResultData: ResultDataService) {
-  }
+    private ResultData: ResultDataService) { }
 
   ngOnInit(): void {
   }
 
-  ngAfterViewInit() {
+   ngAfterViewInit() {
 
     // const json: {} = this.ResultData.disg.getDisgJson();
-    const resultjson: any = this.ResultData.combdisg.disgCombine;
-    const tables = this.printCombDisg(resultjson);
-    this.combDisg_dataset = tables.body;
-    this.combDisg_title = tables.titleSum;
-    this.combDisg_type = tables.typeSum;
+    const resultjson: any = this.ResultData.pickdisg.disgPickup;
+    const tables = this.printPickDisg(resultjson);
+    this.pickDisg_dataset = tables.body;
+    this.pickDisg_title = tables.titleSum;
+    this.pickDisg_type = tables.typeSum;
   }
 
-  // 変位量データを印刷する
-  private printCombDisg(json): any {
+   // 変位量データを印刷する
+  private printPickDisg(json): any {
     const titleSum: any = [];
     const body: any[] = new Array();
     const typeSum : any = [];
@@ -70,7 +70,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
         const title: any = [];
         let loadName: string = '';
         //const l: any = this.InputData.load.getLoadNameJson(null, index);
-      const combineJson: any = this.InputData.combine.getCombineJson();
+      const combineJson: any =  this.InputData.pickup.getPickUpJson();
         if (index in combineJson) {
           if ('name' in combineJson[index]) {
             loadName = combineJson[index].name;
@@ -146,6 +146,5 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
     }
     return { titleSum, body ,typeSum };
   } 
-
 
 }

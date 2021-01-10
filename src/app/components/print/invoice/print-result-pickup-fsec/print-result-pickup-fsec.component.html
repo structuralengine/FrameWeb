@@ -1,8 +1,8 @@
-<div class="invoicetTable fsecComb">
-    <h2>fsecComb</h2>
-    <div *ngFor="let title of combFsec_title; let i = index">
+<div class="invoicetTable fsecPickup">
+    <h2>fsecPickup</h2>
+    <div *ngFor="let title of pickFsec_title; let i = index">
       <p>{{title[0]}}</p>
-      <div *ngFor="let type of combFsec_type[i]; let k = index">
+      <div *ngFor="let type of pickFsec_type[i]; let k = index">
         <p>{{type}}</p>
         <table>
           <tr>
@@ -29,7 +29,7 @@
             <th></th>
           </tr>
   
-          <tr *ngFor="let data of combFsec_dataset[i][k]">
+          <tr *ngFor="let data of pickFsec_dataset[i][k]">
             <td>{{data[0]}}</td>
             <td>{{data[1]}}</td>
             <td>{{data[2]}}</td>

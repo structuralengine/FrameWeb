@@ -1,8 +1,8 @@
-<div class="invoicetTable reacCombine">
-    <h2>reacCombine</h2>
-    <div *ngFor="let title of combReac_title; let i = index">
+<div class="invoicetTable reacPickup">
+    <h2>reacPickup</h2>
+    <div *ngFor="let title of pickReac_title; let i = index">
       <p>{{title[0]}}</p>
-      <div *ngFor="let type of combReac_type[i]; let k = index">
+      <div *ngFor="let type of pickReac_type[i]; let k = index">
         <p>{{type}}</p>
         <table>
           <tr>
@@ -18,7 +18,7 @@
             <th>comb</th>
           </tr>
        
-          <tr *ngFor="let data of combReac_dataset[i][k]">
+          <tr *ngFor="let data of pickReac_dataset[i][k]">
             <td>{{data[0]}}</td>
             <td>{{data[1]}}</td>
             <td>{{data[2]}}</td>

@@ -5,11 +5,11 @@ import { AfterViewInit } from '@angular/core';
 import { JsonpClientBackend } from '@angular/common/http';
 
 @Component({
-  selector: 'app-print-result-combine-fsec',
-  templateUrl: './print-result-combine-fsec.component.html',
-  styleUrls: ['../../../../app.component.scss','../invoice.component.scss']
+  selector: 'app-print-result-pickup-fsec',
+  templateUrl: './print-result-pickup-fsec.component.html',
+  styleUrls: ['./print-result-pickup-fsec.component.scss','../../../../app.component.scss', '../invoice.component.scss',]
 })
-export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
+export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
@@ -18,9 +18,9 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public combFsec_dataset = [];
-  public combFsec_title = [];
-  public combFsec_type = [];
+  public pickFsec_dataset = [];
+  public pickFsec_title = [];
+  public pickFsec_type = [];
 
   constructor(private InputData: InputDataService,
     private ResultData: ResultDataService) { }
@@ -31,11 +31,11 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     // const json: {} = this.ResultData.disg.getDisgJson();
-    const resultjson: any = this.ResultData.combfsec.fsecCombine;
+    const resultjson: any = this.ResultData.pickfsec.fsecPickup;
     const tables = this.printPickForce(resultjson);
-    this.combFsec_dataset = tables.body;
-    this.combFsec_title = tables.titleSum;
-    this.combFsec_type = tables.typeSum;
+    this.pickFsec_dataset = tables.body;
+    this.pickFsec_title = tables.titleSum;
+    this.pickFsec_type = tables.typeSum;
   }
 
   private printPickForce(json):any {
@@ -54,7 +54,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
         const title: any = [];
         let loadName: string = '';
         //const l: any = this.InputData.load.getLoadNameJson(null, index);
-      const combineJson: any =  this.InputData.combine.getCombineJson();
+      const combineJson: any =  this.InputData.pickup.getPickUpJson();
         if (index in combineJson) {
           if ('name' in combineJson[index]) {
             loadName = combineJson[index].name;
