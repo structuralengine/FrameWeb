@@ -5,8 +5,7 @@ $border-color: #428bca;
 }
 
 .margin {
-  margin-left: 5px;
-  margin-right: 5px;
+  margin: 0 5;
 }
 
 .title-and-menu {
@@ -14,33 +13,38 @@ $border-color: #428bca;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 8px;
-  flex: 1 0 auto;
+  padding: 8px 0;
+  //flex: 1 0 auto;
   font-weight: lighter;
-  .icon-area {
+  ul {
+    li {
+      list-style: none;
+      display: inline-block;
+      margin-right: 4px;
+    }
+  }
+
   
-    display: flex;
-    div:hover {
+
+  .icon-area {
+    // display: flex;
+    :hover {
       cursor: pointer;
     }
-     font-size: 24px;
+    font-size: 20px;
   }
   .icon {
     color: #fff;
   }
   .login-area {
-    font-size: 20px;
-
+    font-size: 16px;
     :hover {
       cursor: pointer;
     }
   }
 }
 
-
-
 // @media screen and (max-width:767px){
-  
 
 // }
 
@@ -51,7 +55,7 @@ i.fas {
 
 .title h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: lighter;
 }
 
@@ -78,23 +82,23 @@ i.fas {
   left: -20px;
 }
 
-.fukidashi.calculator {
-  width: 45px;
-  top: 45px;
-  left: 65px;
-}
+// .fukidashi.calculator {
+//   width: 45px;
+//   top: 45px;
+//   left: 60px;
+// }
 
-.fukidashi.print {
-  width: 45px;
-  top: 45px;
-  left: 100px;
-}
+// .fukidashi.print {
+//   width: 45px;
+//   top: 45px;
+//   left: 90px;
+// }
 
-.fukidashi.help {
-  width: 60px;
-  top: 45px;
-  left: 125px;
-}
+// .fukidashi.help {
+//   width: 60px;
+//   top: 45px;
+//   left: 110px;
+// }
 
 .fukidashi:before {
   content: "";

@@ -130,7 +130,7 @@ export class MenuComponent implements OnInit {
     /* // 旧式：Json データをそのままポストする場合
     const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
     for (const key of Object.keys(jsonData)) {
-      if ( 'load' === key ){
+      if ('load' === key) {
         continue;
       }
       inputJson[key] = jsonData[key];
@@ -258,8 +258,13 @@ export class MenuComponent implements OnInit {
         // 通信失敗時の処理（失敗コールバック）
         this.app.isCalculated = false;
 
+<<<<<<< HEAD
         let messege: string =  '通信 ' + error.statusText;
         if ('_body' in error){
+=======
+        let messege: string = '通信 ' + error.statusText;
+        if ('_body' in error) {
+>>>>>>> develop
           messege += '\n' + error._body;
         }
         alert(messege);
