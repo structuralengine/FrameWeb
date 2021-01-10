@@ -24,7 +24,7 @@ import * as pako from 'pako';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss','../../app.component.scss']
+  styleUrls: ['./menu.component.scss', '../../app.component.scss']
 })
 export class MenuComponent implements OnInit {
 
@@ -34,14 +34,14 @@ export class MenuComponent implements OnInit {
   fileName: string;
 
   constructor(private modalService: NgbModal,
-              private app: AppComponent,
-              private router: Router,
-              private user: UserInfoService,
-              private InputData: InputDataService,
-              private ResultData: ResultDataService,
-              private http: HttpClient,
-              private three: ThreeService,
-              private printData: PrintDataModule) {
+    private app: AppComponent,
+    private router: Router,
+    private user: UserInfoService,
+    private InputData: InputDataService,
+    private ResultData: ResultDataService,
+    private http: HttpClient,
+    private three: ThreeService,
+    private printData: PrintDataModule) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -115,21 +115,18 @@ export class MenuComponent implements OnInit {
 
 
     const modalRef = this.modalService.open(WaitDialogComponent);
-    modalRef.close();
-    this.post_compress({"aaa": 111, "fds": "asd"}, modalRef);
-    return;
- 
 
     const jsonData: {} = this.InputData.getInputJson(0);
 
-    if ( 'error' in jsonData ){
-        alert(jsonData['error']);
-        modalRef.close(); // モーダルダイアログを消す
-        return;
+    if ('error' in jsonData) {
+      alert(jsonData['error']);
+      modalRef.close(); // モーダルダイアログを消す
+      return;
     }
 
     this.ResultData.clear(); // 解析結果情報をクリア
 
+    this.post_compress(jsonData, modalRef);
     /* // 旧式：Json データをそのままポストする場合
     const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
     for (const key of Object.keys(jsonData)) {
@@ -142,10 +139,6 @@ export class MenuComponent implements OnInit {
     this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
     */
 
-    this.post_compress(jsonData, modalRef);
-
-
-
   }
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
@@ -153,35 +146,45 @@ export class MenuComponent implements OnInit {
     const json = JSON.stringify(jsonData, null, 0);   // json string にする
     const compressed = pako.gzip(json); // pako を使ってgzip圧縮する
     const base64Encoded = btoa(compressed); //btoa() を使ってBase64エンコードする
-    //const base64Encoded: string = btoa(json); //btoa() を使ってBase64エンコードする
-    const inputJson = { compressed: base64Encoded }; //文字列としてリクエストする
 
     //const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
     const url = 'http://127.0.0.1:5000';
 
-    // this.http.post(url, inputJson, {
-    this.http.post(url, inputJson, {
+    this.http.post(url, base64Encoded, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Content-Encoding': 'gzip,base64'
-      })
+      }),
+      responseType: 'text'
     }).subscribe(
       response => {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
-        const base64Encoded: string = response['compressed']
-        const json = atob(base64Encoded);
-        const jsonData = JSON.parse(json);
-        // サーバーのレスポンスを集計する
-        if (!this.ResultData.loadResultData(jsonData)) {
-          alert('解析結果の集計に失敗しました');
-        } else {
-          console.log(jsonData);
-          // ユーザーポイントの更新
-          this.loadResultData(jsonData);
-          // 全ての解析ケースを計算し終えたら
-          this.ResultData.CombinePickup(); // 組み合わせケースを集計する
-          this.three.chengeData();
+        try {
+          // Decode base64 (convert ascii to binary)
+          const strData = atob(response);
+          // Convert binary string to character-number array
+          const charData = strData.split('').map(function (x) { return x.charCodeAt(0); });
+          // Turn number array into byte-array
+          const binData = new Uint8Array(charData);
+          // Pako magic
+          const json = pako.ungzip(binData,{to: 'string'} );
+
+          const jsonData = JSON.parse(json);
+          // サーバーのレスポンスを集計する
+          if (!this.ResultData.loadResultData(jsonData)) {
+            throw '解析結果の集計に失敗しました';
+          } else {
+            console.log(jsonData);
+            // ユーザーポイントの更新
+            this.loadResultData(jsonData);
+            // 全ての解析ケースを計算し終えたら
+            this.ResultData.CombinePickup(); // 組み合わせケースを集計する
+            this.three.chengeData();
+          }
+        } catch (e) {
+          alert(e);
+        } finally {
           modalRef.close(); // モーダルダイアログを消す
         }
       },
@@ -190,13 +193,21 @@ export class MenuComponent implements OnInit {
         this.app.isCalculated = false;
 
         let messege: string = '通信 ' + error.statusText;
-        if ('_body' in error){
+        if ('_body' in error) {
           messege += '\n' + error._body;
         }
         alert(messege);
         modalRef.close();
       }
     );
+  }
+
+  private bytes(url: string): Array<number> {
+    const data: number[] = new Array();
+    for (let i = 0; i < url.length; i++) {
+      data.push(url.charCodeAt(i));
+    }
+    return data;
   }
 
   /* // 旧式：Json データをそのままポストする場合
@@ -257,7 +268,7 @@ export class MenuComponent implements OnInit {
     );
   }
   */
- 
+
   private loadResultData(jsonData: object): void {
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
@@ -285,7 +296,7 @@ export class MenuComponent implements OnInit {
     doc.output('dataurlnewwindow');
   }
   */
- 
+
   // ログイン関係 
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
