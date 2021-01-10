@@ -112,10 +112,15 @@ export class MenuComponent implements OnInit {
           return;
         }
     */
+
+
     const modalRef = this.modalService.open(WaitDialogComponent);
+    modalRef.close();
+    this.post_compress({"aaa": 111, "fds": "asd"}, modalRef);
+    return;
+ 
 
     const jsonData: {} = this.InputData.getInputJson(0);
-    // console.log(JSON.stringify(jsonData));
 
     if ( 'error' in jsonData ){
         alert(jsonData['error']);
@@ -123,6 +128,9 @@ export class MenuComponent implements OnInit {
         return;
     }
 
+    this.ResultData.clear(); // 解析結果情報をクリア
+
+    /* // 旧式：Json データをそのままポストする場合
     const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
     for (const key of Object.keys(jsonData)) {
       if ( 'load' === key ){
@@ -130,41 +138,47 @@ export class MenuComponent implements OnInit {
       }
       inputJson[key] = jsonData[key];
     }
-
-    this.ResultData.clear(); // 解析結果情報をクリア
-
-    // const compressed = pako.gzip(JSON.stringify(inputJson));
-    // console.log(compressed);
-    // this.post_gzip(compressed, modalRef);
-
     const Keys = Object.keys(jsonData['load']);
     this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
+    */
 
-    // this.get(modalRef);
+    this.post_compress(jsonData, modalRef);
+
+
 
   }
 
-  private post_gzip(gzipData: object, modalRef: NgbModalRef) {
+  private post_compress(jsonData: {}, modalRef: NgbModalRef) {
+
+    const json = JSON.stringify(jsonData, null, 0);   // json string にする
+    const compressed = pako.gzip(json); // pako を使ってgzip圧縮する
+    const base64Encoded = btoa(compressed); //btoa() を使ってBase64エンコードする
+    //const base64Encoded: string = btoa(json); //btoa() を使ってBase64エンコードする
+    const inputJson = { compressed: base64Encoded }; //文字列としてリクエストする
 
     //const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    const url = 'http://127.0.0.1';
+    const url = 'http://127.0.0.1:5000';
 
-    this.http.post(url, gzipData, {
+    // this.http.post(url, inputJson, {
+    this.http.post(url, inputJson, {
       headers: new HttpHeaders({
-        'Content-Type': 'application/octet-stream',
-        'Content-Encoding': 'gzip'
+        'Content-Type': 'application/json',
+        'Content-Encoding': 'gzip,base64'
       })
     }).subscribe(
       response => {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
+        const base64Encoded: string = response['compressed']
+        const json = atob(base64Encoded);
+        const jsonData = JSON.parse(json);
         // サーバーのレスポンスを集計する
-        if (!this.ResultData.loadResultData(response)) {
+        if (!this.ResultData.loadResultData(jsonData)) {
           alert('解析結果の集計に失敗しました');
         } else {
-          console.log(response);
+          console.log(jsonData);
           // ユーザーポイントの更新
-          this.loadResultData(response);
+          this.loadResultData(jsonData);
           // 全ての解析ケースを計算し終えたら
           this.ResultData.CombinePickup(); // 組み合わせケースを集計する
           this.three.chengeData();
@@ -185,6 +199,7 @@ export class MenuComponent implements OnInit {
     );
   }
 
+  /* // 旧式：Json データをそのままポストする場合
   private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
 
     if (Keys.length <= index) {
@@ -241,30 +256,8 @@ export class MenuComponent implements OnInit {
       }
     );
   }
-
-  
-  private get( modalRef: NgbModalRef) {
-
-    const url = 'http://127.0.0.1:5000';
-
-    this.http.get(url).subscribe(
-      response => {
-        console.log('通信成功!!', response);
-        modalRef.close();
-      },
-      error => {
-        let messege: string = '通信 ' + error.statusText;
-        if ('_body' in error) {
-          messege += '\n' + error._body;
-        }
-        alert(messege);
-        modalRef.close();
-        return;
-      }
-    );
-  }
-  
-
+  */
+ 
   private loadResultData(jsonData: object): void {
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
