@@ -143,12 +143,15 @@ export class MenuComponent implements OnInit {
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
 
-    const json = JSON.stringify(jsonData, null, 0);   // json string にする
-    const compressed = pako.gzip(json); // pako を使ってgzip圧縮する
-    const base64Encoded = btoa(compressed); //btoa() を使ってBase64エンコードする
+    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
+    //const url = 'http://127.0.0.1:5000';
 
-    //const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    const url = 'http://127.0.0.1:5000';
+    // json string にする
+    const json = JSON.stringify(jsonData, null, 0);
+    // pako を使ってgzip圧縮する
+    const compressed = pako.gzip(json);
+    //btoa() を使ってBase64エンコードする
+    const base64Encoded = btoa(compressed);
 
     this.http.post(url, base64Encoded, {
       headers: new HttpHeaders({
@@ -197,18 +200,12 @@ export class MenuComponent implements OnInit {
           messege += '\n' + error._body;
         }
         alert(messege);
+        console.error(error);
         modalRef.close();
       }
     );
   }
 
-  private bytes(url: string): Array<number> {
-    const data: number[] = new Array();
-    for (let i = 0; i < url.length; i++) {
-      data.push(url.charCodeAt(i));
-    }
-    return data;
-  }
 
   /* // 旧式：Json データをそのままポストする場合
   private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
@@ -258,13 +255,8 @@ export class MenuComponent implements OnInit {
         // 通信失敗時の処理（失敗コールバック）
         this.app.isCalculated = false;
 
-<<<<<<< HEAD
         let messege: string =  '通信 ' + error.statusText;
         if ('_body' in error){
-=======
-        let messege: string = '通信 ' + error.statusText;
-        if ('_body' in error) {
->>>>>>> develop
           messege += '\n' + error._body;
         }
         alert(messege);
@@ -302,7 +294,7 @@ export class MenuComponent implements OnInit {
   }
   */
 
-  // ログイン関係 
+  // ログイン関係
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
