@@ -126,37 +126,10 @@ export class MenuComponent implements OnInit {
 
     this.ResultData.clear(); // 解析結果情報をクリア
 
-    /* // 旧式：Json データを圧縮してポストする場合
     this.post_compress(jsonData, modalRef);
-    */
-    const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
-    for (const key of Object.keys(jsonData)) {
-      if ('load' === key) {
-        continue;
-      }
-      inputJson[key] = jsonData[key];
-    }
-    const load: object = jsonData['load'];
 
-    const promiseArray = [];
-    for (const key of Object.keys(load)){
-      const l = {}
-      l[key] = load[key];
-      inputJson['load'] = l;
-      promiseArray.push(this.post(inputJson));
-    }
-
-    Promise.all(promiseArray)
-    .then((resultArray) => {
-      console.log('終わる判定')
-      // 全ての解析ケースを計算し終えたら
-      this.ResultData.CombinePickup(); // 組み合わせケースを集計する
-      this.three.chengeData();
-      modalRef.close(); // モーダルダイアログを消す
-    });
   }
 
-  /* // 旧式：Json データを圧縮してポストする場合
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
 
     const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
@@ -221,42 +194,7 @@ export class MenuComponent implements OnInit {
       }
     );
   }
-  */
-
-  private post(jsonData: object) {
-
-    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    // const url = 'http://127.0.0.1:5000';
-
-    this.http.post(url, jsonData, {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    }).subscribe(
-      response => {
-        // 通信成功時の処理（成功コールバック）
-        console.log('通信成功!!');
-        // サーバーのレスポンスを集計する
-        if (!this.ResultData.loadResultData(response)) {
-          alert('解析結果の集計に失敗しました');
-        } else {
-          console.log(response);
-          // ユーザーポイントの更新
-          this.loadResultData(response);
-        }
-      },
-      error => {
-        // 通信失敗時の処理（失敗コールバック）
-        this.app.isCalculated = false;
-        let messege: string =  '通信 ' + error.statusText;
-        if ('_body' in error){
-          messege += '\n' + error._body;
-        }
-        alert(messege);
-      }
-    );
-  }
-
+  
   private loadResultData(jsonData: object): void {
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
