@@ -5,13 +5,16 @@ import { InputMembersService } from "../../../components/input/input-members/inp
 import { ThreeNodesService } from "./three-nodes.service";
 import * as THREE from "three";
 import { CSS2DObject } from "../libs/CSS2DRenderer.js";
+import { Line2 } from '../libs/Line2.js';
+import { LineMaterial } from '../libs/LineMaterial.js';
+import { LineGeometry,  } from '../libs/LineGeometry.js';
 
 @Injectable({
   providedIn: "root",
 })
 export class ThreeMembersService {
 
-  private geometry: THREE.CylinderBufferGeometry;
+  private material: LineMaterial;
 
   public maxDistance: number;
   public minDistance: number;
@@ -33,7 +36,14 @@ export class ThreeMembersService {
               private node: InputNodesService,
               private member: InputMembersService) {
 
-    this.geometry = new THREE.CylinderBufferGeometry();
+    this.material = new LineMaterial({
+      color: 0x000000,
+      linewidth: 0.001,
+      vertexColors: THREE.VertexColors,
+      dashed: false
+    });
+
+
     this.memberList = new THREE.Object3D();
     this.axisList = new Array();
     this.ClearData();
@@ -114,20 +124,17 @@ export class ThreeMembersService {
       const y: number = (i.y + j.y) / 2;
       const z: number = (i.z + j.z) / 2;
       // 要素をシーンに追加
-      const geometry = new THREE.CylinderBufferGeometry(1, 1, len, 12);
-
+      const geometry = new LineGeometry();
+      geometry.setPositions([i.x,i.y,i.z,j.x,j.y,j.z]);
+      
       // 要素をシーンに追加
-      const mesh = new THREE.Mesh(
-        geometry,
-        new THREE.MeshBasicMaterial({ color: 0x000000 })
-      );
-      mesh.name = "member" + key;
-      mesh.rotation.z = Math.acos(v.y / len);
-      mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
-      mesh.position.set(x, y, z);
+      const line: Line2 = new Line2(geometry, this.material);
+      line.computeLineDistances();
+      line.scale.set(1, 1, 1);
+      line.name = "member" + key;
 
-      this.memberList.children.push(mesh);
-      this.scene.add(mesh);
+      this.memberList.children.push(line);
+      //this.scene.add(line);
 
       // 文字をシーンに追加
       const div = document.createElement("div");
@@ -139,7 +146,7 @@ export class ThreeMembersService {
       label.position.set(0, 0, 0);
       label.name = "font";
       label.visible = this.txtVisible;
-      mesh.add(label);
+      line.add(label);
 
       // ローカル座標を示す線を追加
       const group = new THREE.Group();
@@ -163,7 +170,7 @@ export class ThreeMembersService {
       zline.name = "z";
       group.add(zline);
 
-      group.name = mesh.name + "axis";
+      group.name = line.name + "axis";
       group.visible = false;
       this.axisList.push(group);
       this.scene.add(group);
@@ -203,8 +210,9 @@ export class ThreeMembersService {
     let scale: number = this.baseScale() * sc;
   
     for (const item of this.memberList.children) {
-      item.scale.set(scale, 1, scale);
-    }
+      const material: LineMaterial = item['material'];
+      material.linewidth(scale);
+ }
     scale *= 50 ;
     for (const arrows of this.axisList) {
       for (const item of arrows.children) {
