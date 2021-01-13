@@ -27,7 +27,8 @@ export class ThreeNodesService {
   private objVisible: boolean;
   private txtVisible: boolean;
 
-  constructor(private scene: SceneService, private node: InputNodesService) {
+  constructor(private scene: SceneService,
+              private node: InputNodesService) {
     this.particles = null;
     this.sprite = new THREE.TextureLoader().load("/assets/img/disc.png");
     this.ClearData();
@@ -165,10 +166,13 @@ export class ThreeNodesService {
 
     // baseScale を決定する
     this.baseScale = 1;
-    if (this.minDistance !== Number.MAX_VALUE) {
-      // baseScale は最遠点の 1/500 以下
+    if (this.maxDistance !== 0) {
+      /* baseScale は最遠点の 1/500 以下
       // baseScale は最近点の 1/50 以上とする
       this.baseScale = Math.max(this.maxDistance / 500, this.minDistance / 50);
+      */
+      // baseScale は最遠点の 1/100
+      this.baseScale = this.maxDistance / 100;
     }
 
     // 重心位置を計算する
@@ -190,7 +194,7 @@ export class ThreeNodesService {
 
   // スケールを反映する
   private onResize(): void {
-    let sc = this.scale / 100; // this.scale は 100 が基準値なので、100 のとき 1 となるように変換する
+    let sc = this.scale / 100; // this.scale は 50 が基準値なので、100 のとき 1 となるように変換する
     sc = Math.max(sc, 0.001); // ゼロは許容しない
 
     const material: any = this.particles.material;
@@ -219,7 +223,7 @@ export class ThreeNodesService {
       return;
     }
     this.gui = this.scene.gui
-      .add(this.params, "nodeScale", 0, 1000)
+      .add(this.params, "nodeScale", 0, 200)
       .step(1)
       .onChange((value) => {
         this.scale = value;
