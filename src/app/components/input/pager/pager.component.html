@@ -1,0 +1,22 @@
+<div class="pagerArea" *ngIf="liNumber">
+    <div class="pager">
+      <form [formGroup]="myControl">
+        <ul class="pagenation" *ngIf="!Editing">
+          <li><a id="prev" link="140" (click)="moveToNextPage(-5)" aria-label="Previous">《</a></li>
+          <li><a id="141"  link="141" (click)="moveToNextPage(-2)" [class.active]="liActive[0]" >{{liNumber[0]}}</a></li>
+          <li><a id="142"  link="142" (click)="moveToNextPage(-1)" [class.active]="liActive[1]" >{{liNumber[1]}}</a></li>
+          <li><a id="143"  link="143" (click)="moveToNextPage( 0)" [class.active]="liActive[2]" >{{liNumber[2]}}</a></li>
+          <li><a id="144"  link="144" (click)="moveToNextPage( 1)" [class.active]="liActive[3]" >{{liNumber[3]}}</a></li>
+          <li><a id="145"  link="145" (click)="moveToNextPage( 2)" [class.active]="liActive[4]" >{{liNumber[4]}}</a></li>
+          <li><a id="next" link="146" (click)="moveToNextPage( 5)" aria-label="Next">》</a></li>
+        </ul>
+        <div *ngIf="Editing">
+          <mat-form-field>
+            <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+          </mat-form-field>
+        </div>
+        <button mat-raised-button (click)="click()">click</button>
+      </form>
+      <!-- <p class="message">{{message}}</p> -->
+    </div>
+  </div>

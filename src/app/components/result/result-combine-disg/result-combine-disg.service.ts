@@ -8,13 +8,13 @@ import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-dis
 export class ResultCombineDisgService {
 
   public disgCombine: any;
-  public isChenge: boolean;
+  public isChange: boolean;
   private worker: Worker;
 
   constructor(private disg: ResultDisgService,
               private pickdisg: ResultPickupDisgService) {
     this.clear();
-    this.isChenge = true;
+    this.isChange = true;
     this.worker = new Worker('./result-combine-disg.worker', { name: 'combine-disg', type: 'module' });
   }
 
@@ -68,7 +68,7 @@ export class ResultCombineDisgService {
       // Create a new
       this.worker.onmessage = ({ data }) => {
         this.disgCombine = data.disgCombine;
-        this.isChenge = false;
+        this.isChange = false;
         console.log('変位disg の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
         this.pickdisg.setDisgPickupJson(pickList, this.disgCombine);
       };
@@ -165,7 +165,7 @@ export class ResultCombineDisgService {
         }
         this.disgCombine[combNo] = resultDisg;
       }
-      this.isChenge = false;
+      this.isChange = false;
     } catch (e) {
       console.log(e);
     }

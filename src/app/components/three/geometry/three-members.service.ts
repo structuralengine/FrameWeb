@@ -71,7 +71,7 @@ export class ThreeMembersService {
   }
 
   // データが変更された時の処理
-  public chengeData(): void {
+  public changeData(): void {
     
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
@@ -127,7 +127,6 @@ export class ThreeMembersService {
       mesh.position.set(x, y, z);
 
       this.memberList.children.push(mesh);
-      this.scene.add(mesh);
 
       // 文字をシーンに追加
       const div = document.createElement("div");
