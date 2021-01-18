@@ -16,9 +16,6 @@ import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
 
-import { PrintDataModule } from '../../providers/print-data.module';
-import * as jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import * as pako from 'pako';
 
 @Component({
