@@ -41,7 +41,7 @@ export class ResultCombineDisgComponent implements OnInit {
     this.loadPage(1);
 
     // ピックアップデータがあればボタンを表示する
-    if (this.pic.isChenge === false) {
+    if (this.pic.isChange === false) {
       this.btnPickup = 'btn btn-outline-primary';
     } else {
       this.btnPickup = 'btn btn-outline-primary disabled';
@@ -61,7 +61,7 @@ export class ResultCombineDisgComponent implements OnInit {
     }
     this.load_name = this.comb.getCombineName(currentPage);
 
-    this.three.ChengeMode('comb_disg', currentPage);
+    this.three.ChangeMode('comb_disg', currentPage);
   }
 }
 

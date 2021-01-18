@@ -5,7 +5,6 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { HotTableModule } from '@handsontable/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -84,6 +83,8 @@ import { PrintInputNodesComponent } from './components/print/invoice/print-input
 import { PrintInputNoticePointsComponent } from './components/print/invoice/print-input-notice-points/print-input-notice-points.component';
 import { PrintInputPanelComponent } from './components/print/invoice/print-input-panel/print-input-panel.component';
 import { PrintInputPickupComponent } from './components/print/invoice/print-input-pickup/print-input-pickup.component';
+import { PagerComponent } from './components/input/pager/pager.component';
+import { SheetComponent } from './components/input/sheet/sheet.component';
 
 
 @NgModule({
@@ -96,7 +97,6 @@ import { PrintInputPickupComponent } from './components/print/invoice/print-inpu
     DragDropModule,
     BrowserAnimationsModule,
     NgbModule,
-    HotTableModule,
     DataHelperModule,
     PrintDataModule,
     MatInputModule,
@@ -146,7 +146,9 @@ import { PrintInputPickupComponent } from './components/print/invoice/print-inpu
     PrintInputNodesComponent,
     PrintInputNoticePointsComponent,
     PrintInputPanelComponent,
-    PrintInputPickupComponent
+    PrintInputPickupComponent,
+    PagerComponent,
+    SheetComponent
   ],
   entryComponents: [
     LoginDialogComponent,
