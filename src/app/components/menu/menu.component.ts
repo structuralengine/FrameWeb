@@ -37,8 +37,7 @@ export class MenuComponent implements OnInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private http: HttpClient,
-    private three: ThreeService,
-    private printData: PrintDataModule) {
+    private three: ThreeService) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
