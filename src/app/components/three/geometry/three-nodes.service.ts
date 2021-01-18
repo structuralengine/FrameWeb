@@ -63,7 +63,7 @@ export class ThreeNodesService {
   }
 
   // データが変更された時の処理
-  public chengeData(): void {
+  public changeData(): void {
 
     // 入力データを入手
     const jsonData = this.node.getNodeJson(0);

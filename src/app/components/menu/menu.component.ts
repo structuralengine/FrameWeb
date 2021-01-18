@@ -71,7 +71,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
-        this.three.chengeData('fileLoad');
+        this.three.changeData('fileLoad');
       })
       .catch(err => {
         console.log(err);
@@ -172,7 +172,7 @@ export class MenuComponent implements OnInit {
             this.loadResultData(jsonData);
             // 全ての解析ケースを計算し終えたら
             this.ResultData.CombinePickup(); // 組み合わせケースを集計する
-            this.three.chengeData();
+            this.three.changeData();
           }
         } catch (e) {
           alert(e);

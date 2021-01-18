@@ -8,13 +8,13 @@ import { ResultPickupReacService } from '../result-pickup-reac/result-pickup-rea
 export class ResultCombineReacService {
 
   public reacCombine: any;
-  public isChenge: boolean;
+  public isChange: boolean;
   private worker: Worker;
 
   constructor(private reac: ResultReacService,
               private pickreac: ResultPickupReacService) {
     this.clear();
-    this.isChenge = true;
+    this.isChange = true;
     this.worker = new Worker('./result-combine-reac.worker', { name: 'combine-reac', type: 'module' });
   }
 
@@ -67,7 +67,7 @@ export class ResultCombineReacService {
       // Create a new
       this.worker.onmessage = ({ data }) => {
         this.reacCombine = data.reacCombine;
-        this.isChenge = false;
+        this.isChange = false;
         console.log('反力reac の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
         this.pickreac.setReacPickupJson(pickList, this.reacCombine);
       };
@@ -164,7 +164,7 @@ export class ResultCombineReacService {
         }
         this.reacCombine[combNo] = resultReac;
       }
-      this.isChenge = false;
+      this.isChange = false;
     } catch (e) {
       console.log(e);
     }

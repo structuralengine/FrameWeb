@@ -157,7 +157,7 @@ export class ThreeSectionForceService {
 
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
-  public chengeData(index: number, ModeName: string): void {
+  public changeData(index: number, ModeName: string): void {
 
     if (this.modeName === ModeName ){
       if (this.targetIndex === index.toString()) {
