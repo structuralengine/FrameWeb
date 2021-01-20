@@ -21,7 +21,7 @@ export class ThreeLoadService {
   private font: THREE.Font;
 
   // 節点荷重を格納する変数
-  private pointLoadList = {};
+  private pointLoadList: any;
   /*key: "節点番号",
   value: {
     tx: [], // 軸方向荷重のリスト
@@ -30,7 +30,7 @@ export class ThreeLoadService {
     tr: []  // ねじり方向荷重のリスト
   }*/
   // 要素荷重を格納する変数
-  private memberLoadList = {};
+  private memberLoadList: any;
   /*key: "要素番号",
   value: {
     localAxcis: 部材のローカル座標
@@ -47,6 +47,12 @@ export class ThreeLoadService {
   private mTemperaturebase: THREE.Group; // 温度荷重のテンプレート
   private pLoadbase: THREE.Group; // 節点荷重のテンプレート
   private pMomentbase: THREE.Group; // 節点モーメントのテンプレート
+
+  // 大きさを調整するためのスケール
+  private LoadScale: number;
+  private params: any;          // GUIの表示制御
+  private gui: any;
+
 
   constructor(
     private scene: SceneService,
@@ -68,21 +74,67 @@ export class ThreeLoadService {
       this.pLoadbase = this.createConcentratedLoad(); // 節点荷重のテンプレート
       this.pMomentbase = this.createMomentLoad(); // 節点モーメントのテンプレート
     });
+
+    this.pointLoadList = {};
+    this.memberLoadList = {};
+
+    // gui
+    this.LoadScale = 100;
+    this.params = {
+      LoadScale: this.LoadScale
+    };
+    this.gui = {};
+
     this.ClearData();
   }
 
   public visible(flag: boolean, gui: boolean): void {
-    console.log("three load!", "visible");
+    console.log("three load!", "visible", "pass");
+
+    // 非表示にする
+    if (flag === false) {
+      this.ClearData();
+      this.guiDisable();
+      return;
+    }
+
+    // gui の表示を切り替える
+    if (gui === true) {
+      this.guiEnable();
+    } else {
+      this.guiDisable();
+    }
+    this.isVisible.gui = gui;
+
+    // 
+    if (this.isVisible.object !== flag) {
+      return
+    }
+
   }
 
   // guiを表示する
   private guiEnable(): void {
     console.log("three load!", "guiEnable");
+
+    if (!('LoadScale' in this.gui)) {
+      const gui_step: number = 1;
+      this.gui['LoadScale'] = this.scene.gui.add(this.params, 'LoadScale', 0, 200).step(gui_step).onChange((value) => {
+        this.LoadScale = value;
+        this.onResize();
+        this.scene.render();
+      });
+    }
+
   }
 
   // guiを非表示にする
   private guiDisable(): void {
     console.log("three load!", "guiDisable");
+    for (const key of Object.keys(this.gui)) {
+      this.scene.gui.remove(this.gui[key]);
+    }
+    this.gui = {};
   }
 
   public baseScale(): number {
@@ -94,6 +146,7 @@ export class ThreeLoadService {
   // #region 荷重の変更を反映する
 
   public changeData(index: number): void {
+    console.log('three load!', 'changeData');
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
     if (Object.keys(nodeData).length <= 0) {
@@ -136,9 +189,7 @@ export class ThreeLoadService {
 
     this.onResize();
 
-    if (this.isVisible.gui === true) {
-      this.guiEnable();
-    }
+    this.guiEnable();
   }
 
   // 節点荷重の矢印を描く
@@ -146,6 +197,7 @@ export class ThreeLoadService {
     if (targetNodeLoad === undefined) {
       return;
     }
+
     // スケールを決定する 最大の荷重を 1とする
     let pMax = 0;
     let mMax = 0;
@@ -163,25 +215,32 @@ export class ThreeLoadService {
         Math.abs(load.rz)
       );
     }
+    const maxLength = this.baseScale() * 2; // 最も大きい集中荷重矢印の長さは baseScale * 2 とする
+    const maxRadius = this.baseScale() * 2; // 最も大きいモーメント矢印の径は baseScale * 2 とする
+
 
     // 集中荷重の矢印をシーンに追加する
     for (const load of targetNodeLoad) {
+      const n = '41';//load.n;
+
       // 節点座標 を 取得する
-      const node = nodeData[load.n];
+      const node = nodeData[n];
       if (node === undefined) {
         continue;
       }
 
       // 集中荷重
       for (const key of ["tx", "ty", "tz"]) {
-        if (load[key] === 0) {
+
+        let value = load[key];
+        if (value === 0) {
           continue;
         }
-
+        value = 16.1;
         // リストに登録する
         let target = { tx: [], ty: [], tz: [], tr: [] };
-        if (load.n in this.pointLoadList) {
-          target = this.pointLoadList[load.n];
+        if (n in this.pointLoadList) {
+          target = this.pointLoadList[n];
         }
 
         // 非表示になっている余った荷重を見つける
@@ -202,36 +261,58 @@ export class ThreeLoadService {
           arrow = this.pLoadbase.clone();
         }
 
+        // 配置位置（その他の荷重とぶつからない位置）を決定する
+        const offset = new THREE.Vector2(0, 0);
+        for (const a of target[key]) {
+          if (a.visible === false) {
+            continue;
+          }
+          const child: any = a.getObjectByName("child");
+          const direction: boolean = (Math.round(child.rotation.x) < 0)
+          if (value < 0 && direction === true) {
+            // マイナス
+            offset.x += child.scale.x;
+          } if (value > 0 && direction === false) {
+            // プラスの荷重
+            offset.x -= child.scale.x;
+          }
+        }
         // 荷重を編集する
-        this.changeConcentratedLoad(arrow, node, load[key], pMax, key);
+        // 長さを決める
+        // scale = 1 の時 長さlength = maxLengthとなる
+        const scale = Math.abs(value / pMax);
+        const length: number = maxLength * scale;
+        this.changeConcentratedLoad(arrow, node, offset, value, length, key);
 
         // リストに登録する
         if (already === false) {
           target[key].push(arrow);
           this.scene.add(arrow);
         }
-        this.pointLoadList[load.n] = target;
-        
+        this.pointLoadList[n] = target;
+
       }
 
       // 曲げモーメント荷重
     }
   }
 
-  // 節点荷重を編集する
+  /// 節点荷重を編集する
+  // target: 編集対象の荷重,
+  // node: 基準点,
+  // offset: 配置位置（その他の荷重とぶつからない位置）
+  // value: 荷重値,
+  // length: 表示上の長さ,
+  // direction: 荷重の向き(tx, ty, tz)
   private changeConcentratedLoad(
     target: THREE.Group,
     node: any,
+    offset: THREE.Vector2,
     value: number,
-    max: number,
+    length: number,
     direction: string
   ): void {
 
-    // 長さを決める
-    // scale = 1 の時 長さlength = maxLengthとなる
-    const maxLength: number = this.baseScale();
-    const scale = Math.abs(value / max);
-    const length: number = maxLength * scale;
 
     //線の色を決める
     let line_color = 0xff0000;
@@ -241,37 +322,43 @@ export class ThreeLoadService {
       line_color = 0x0000ff;
     }
 
-    // 長さを修正する
     const child: any = target.getObjectByName("child");
-    if( value < 0 ){
-      child.rotateY(Math.PI);
-    }
-    child.scale.set(length, length, length);
 
     // 色を変更する
     const arrow: any = child.getObjectByName("arrow");
     arrow.line.material.color.set(line_color);
     arrow.cone.material.color.set(line_color);
 
+    // 長さを修正する
+    if (value < 0) {
+      child.rotateY(Math.PI);
+    }
+    child.scale.set(length, length, length);
+
     // 文字を追加する
     const oldText = child.getObjectByName("text");
-    if(oldText !== undefined){
+    if (oldText !== undefined) {
       child.remove(oldText);
     }
     const textStr: string = value.toFixed(2);
-    const vartical: string ='bottom';
+    const size: number = 0.2;
+    const vartical: string = 'bottom';
     let horizontal: string;
     let pos: THREE.Vector2;
-    if( value < 0 ){
+    if (value < 0) {
       horizontal = 'right';
-      pos = new THREE.Vector2(length, 0);
+      pos = new THREE.Vector2(length + offset.x, 0);
     } else {
       horizontal = 'left';
-      pos = new THREE.Vector2(-length, 0);
+      pos = new THREE.Vector2(-length + offset.x, 0);
     }
-    const text = this.createText(textStr, pos, horizontal, vartical);
+    const text = this.createText(textStr, pos, size, horizontal, vartical);
     text.name = "text";
     target.add(text);
+
+    child.position.x = offset.x;
+    child.position.y = offset.y;
+
 
     // 向きを変更する
     if (direction === "ty") {
@@ -290,13 +377,25 @@ export class ThreeLoadService {
     memberLoadData: any,
     nodeData: object,
     memberData: object
-  ): void {}
+  ): void { }
 
   // #endregion
 
   // #region スケールを反映する
   private onResize(): void {
     console.log("three load!", "onResize");
+    // 節点荷重のスケールを変更する
+    for (const n of Object.keys(this.pointLoadList)) {
+      const dict = this.pointLoadList[n];
+      for (let direction of Object.keys(dict)) {
+        for (const item of dict[direction]) {
+          if (item.visible == true) {
+            const scale: number = this.LoadScale / 100;
+            item.scale.set(scale, scale, scale);
+          }
+        }
+      }
+    }
   }
 
   // #endregion
@@ -345,7 +444,7 @@ export class ThreeLoadService {
     const horizontal: string = 'center';
     const vartical: string = (pos1.y > pos0.y) ? 'bottom' : 'top';
 
-    const text = this.createText(textStr, new THREE.Vector2(x, y), horizontal, vartical);
+    const text = this.createText(textStr, new THREE.Vector2(x, y), 0.1, horizontal, vartical);
     text.name = "text";
 
     target.add(text);
@@ -364,12 +463,11 @@ export class ThreeLoadService {
 
   // 節点荷重を非表示にする
   private ClearNodeLoad(): void {
-    for (const key of Object.keys(this.pointLoadList)) {
-      for (const dict of this.pointLoadList[key]) {
-        for (let key of ["px", "py", "pz", "pr"]) {
-          for (const load of dict[key]) {
-            load.visible = false;
-          }
+    for (const n of Object.keys(this.pointLoadList)) {
+      const dict = this.pointLoadList[n];
+      for (let direction of Object.keys(dict)) {
+        for (const load of dict[direction]) {
+          load.visible = false;
         }
       }
     }
@@ -377,12 +475,11 @@ export class ThreeLoadService {
 
   // 要素荷重を非表示にする
   private ClearMemberLoad(): void {
-    for (const key of Object.keys(this.memberLoadList)) {
-      for (const dict of this.memberLoadList[key]) {
-        for (let key of ["wx", "wy", "wz", "wr"]) {
-          for (const load of dict[key]) {
-            load.visible = false;
-          }
+    for (const m of Object.keys(this.memberLoadList)) {
+      const dict = this.memberLoadList[m];
+      for (let key of ["wx", "wy", "wz", "wr"]) {
+        for (const load of dict[key]) {
+          load.visible = false;
         }
       }
     }
@@ -393,14 +490,15 @@ export class ThreeLoadService {
 
   // 文字を描く
   private createText(
-    textString: string, 
-    position: THREE.Vector2, 
-    horizontal = 'center', 
-    vartical = 'bottom'): THREE.Mesh{
+    textString: string,
+    position: THREE.Vector2,
+    size: number,
+    horizontal = 'center',
+    vartical = 'bottom'): THREE.Mesh {
 
     const text_geo = new THREE.TextGeometry(textString, {
       font: this.font,
-      size: 0.1,
+      size: size,
       height: 0.001,
       curveSegments: 4,
       bevelEnabled: false,
@@ -758,7 +856,7 @@ export class ThreeLoadService {
     const child = new THREE.Group();
     child.add(arrow);
     child.name = "child";
-    
+
     ///////////////////////////////////////////
     // 文字は、後で変更が効かないので、後で書く //
     ///////////////////////////////////////////
