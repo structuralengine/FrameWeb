@@ -38,7 +38,7 @@ export class ThreeReactService {
       this.selectionItem = null;
     }
 
-    public visible(flag: boolean): void {
+    public visibleChange(flag: boolean): void {
       if ( this.isVisible === flag) {
         return;
       }
