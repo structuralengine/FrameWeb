@@ -12,13 +12,18 @@ import { LineGeometry } from "../libs/LineGeometry.js";
 import * as THREE from "three";
 import { ThreeMembersService } from "./three-members.service";
 
+import { ThreeLoadText }  from "./three-load-text";
+import { ThreeLoadDimension } from "./three-load-dimension";
+import { ThreeLoadPoint } from "./three-load-point";
+import { ThreeLoadDistribute } from "./three-load-distribute";
+
 @Injectable({
   providedIn: "root",
 })
 export class ThreeLoadService {
   private isVisible = { object: false, gui: false };
   private targetCase: string;
-  private font: THREE.Font;
+  //private font: THREE.Font;
 
   // 節点荷重を格納する変数
   private pointLoadList: any;
@@ -43,11 +48,11 @@ export class ThreeLoadService {
   }*/
 
   // 荷重のテンプレート
-  private mDistribase: THREE.Group; // 分布荷重のテンプレート
+  private Distribute: ThreeLoadDistribute; // 分布荷重のテンプレート
   private mAxialbase: THREE.Group; // 軸方向荷重のテンプレート
   private mMomentbase: THREE.Group; // ねじり分布荷重のテンプレート
   private mTemperaturebase: THREE.Group; // 温度荷重のテンプレート
-  private pLoadbase: THREE.Group; // 節点荷重のテンプレート
+  private pointLoad: ThreeLoadPoint; // 節点荷重のテンプレート
   private pMomentbase: THREE.Group; // 節点モーメントのテンプレート
 
   // 大きさを調整するためのスケール
@@ -67,13 +72,16 @@ export class ThreeLoadService {
     // フォントをロード
     const loader = new THREE.FontLoader();
     loader.load("./assets/fonts/helvetiker_regular.typeface.json", (font) => {
-      this.font = font;
+      
+      const text = new ThreeLoadText(font);
+      const dim = new ThreeLoadDimension(text); //寸法戦を扱うモジュール
+
       // 荷重の雛形をあらかじめ生成する
-      this.mDistribase = this.createDistributedLoad(); // 分布荷重のテンプレート
+      this.Distribute = new ThreeLoadDistribute(text, dim); // 分布荷重のテンプレート
       this.mAxialbase = this.createAxialbase(); // 軸方向荷重のテンプレート
       this.mMomentbase = this.createDistributedMomentLoad(); // ねじり分布荷重のテンプレート
       this.mTemperaturebase = this.createTemperatureLoad(); // 温度荷重のテンプレート
-      this.pLoadbase = this.createPointLoad(); // 節点荷重のテンプレート
+      this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
       this.pMomentbase = this.createMomentLoad(); // 節点モーメントのテンプレート
     });
 
@@ -252,24 +260,11 @@ export class ThreeLoadService {
             already = true;
             break arrow_loop;
           }
-          /*
-          let i = 0;
-          for (const a of target[k]) {
-            if (a.visible === false) {
-              a.visible = true;
-              arrow = a;
-              target[k].splice(i, 1); // 一旦削除
-              already = true;
-              break arrow_loop;
-            }
-            i++;
-          }
-          */
         }
 
         // 非表示になっている余った荷重がなければ新しいのを準備する
         if (already === false) {
-          arrow = this.pLoadbase.clone();
+          arrow = this.pointLoad.clone();
         }
 
         // 配置位置（その他の荷重とぶつからない位置）を決定する
@@ -293,7 +288,7 @@ export class ThreeLoadService {
         // scale = 1 の時 長さlength = maxLengthとなる
         const scale = Math.abs(value / pMax);
         const length: number = maxLength * scale;
-        this.changePointLoad(arrow, node, offset, value, length, key);
+        this.pointLoad.changeLoad(arrow, node, offset, value, length, key);
 
         // リストに登録する
         target[key].push(arrow);
@@ -442,7 +437,7 @@ export class ThreeLoadService {
 
   }
 
-  /// 節点荷重を編集する
+  /* 節点荷重を編集する
   // target: 編集対象の荷重,
   // node: 基準点,
   // offset: 配置位置（その他の荷重とぶつからない位置）
@@ -516,6 +511,7 @@ export class ThreeLoadService {
     target.position.set(node.x, node.y, node.z);
 
   }
+  */
 
   // 要素荷重の矢印を描く
   private createMemberLoad(
@@ -547,53 +543,7 @@ export class ThreeLoadService {
 
   // #region 荷重を編集する
 
-  // 寸法線を編集する
-  private changeDimension(
-    target: THREE.Group,
-    points: THREE.Vector2[],
-    textStr: string
-  ): void {
-    const pos0: THREE.Vector2 = points[0];
-    const pos1: THREE.Vector2 = points[1];
-    const pos2: THREE.Vector2 = points[2];
-    const pos3: THREE.Vector2 = points[3];
 
-    // 線の位置を更新する
-    const line: any = target.getObjectByName("line");
-    const line_geo = line.geometry;
-    const array = new Float32Array(points.length * 3);
-    for (let i = 0; i < points.length; i++) {
-      const j = i * 3;
-      const p = points[i];
-      array[j + 0] = p.x;
-      array[j + 1] = p.y;
-      array[j + 2] = 0;
-    }
-    line_geo.attributes.position.array = array;
-    line_geo.attributes.position.needsUpdate = true;
-
-    // 矢印の位置を更新する
-    const arrow1: any = target.getObjectByName("arrow1");
-    arrow1.position.set(pos1.x + 0.5, pos1.y, 0);
-
-    const arrow2: any = target.getObjectByName("arrow2");
-    arrow2.position.set(pos2.x - 0.5, pos2.y, 0);
-
-    // 文字を描く
-    const oldText: any = target.getObjectByName("text");
-    if (oldText !== undefined) {
-      target.remove(oldText);
-    }
-    const x = pos1.x + (pos2.x - pos1.x) / 2;
-    const y = pos1.y + (pos2.y - pos1.y) / 2;
-    const horizontal: string = 'center';
-    const vartical: string = (pos1.y > pos0.y) ? 'bottom' : 'top';
-
-    const text = this.createText(textStr, new THREE.Vector2(x, y), 0.1, horizontal, vartical);
-    text.name = "text";
-
-    target.add(text);
-  }
   // #endregion
 
   // #region データをクリアする
@@ -633,7 +583,7 @@ export class ThreeLoadService {
 
   // #region 荷重の雛形をあらかじめ生成する
 
-  // 文字を描く
+  /* 文字を描く
   private createText(
     textString: string,
     position: THREE.Vector2,
@@ -682,6 +632,9 @@ export class ThreeLoadService {
 
     return text;
   }
+  */
+
+
   // 温度荷重の雛形を X軸に生成する
   private createTemperatureLoad(): THREE.Group {
     const group = new THREE.Group();
@@ -823,123 +776,7 @@ export class ThreeLoadService {
     return group;
   }
 
-  // 等分布荷重の雛形をX-Y平面上に生成する
-  private createDistributedLoad(): THREE.Group {
-    const group = new THREE.Group();
 
-    const points = [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 1, 0),
-      new THREE.Vector3(0.5, 1, 0),
-      new THREE.Vector3(1, 1, 0),
-      new THREE.Vector3(1, 0, 0),
-    ];
-
-    const line_color = 0x0000ff;
-    const face_color = 0x00cc00;
-
-    // 面を作成する
-    const face_mat = new THREE.MeshBasicMaterial({
-      transparent: true,
-      side: THREE.DoubleSide,
-      color: face_color,
-      opacity: 0.3,
-    });
-    const face_geo = new THREE.Geometry();
-    face_geo.vertices = points;
-    face_geo.faces.push(new THREE.Face3(0, 1, 2));
-    face_geo.faces.push(new THREE.Face3(2, 3, 4));
-    face_geo.faces.push(new THREE.Face3(0, 2, 4));
-    const mesh = new THREE.Mesh(face_geo, face_mat);
-    mesh.name = "face";
-    group.add(mesh);
-
-    // 面の周りの枠線を描く
-    const line_mat = new THREE.LineBasicMaterial({ color: line_color });
-    const line_geo = new THREE.BufferGeometry().setFromPoints([
-      points[1],
-      points[2],
-      points[3],
-    ]);
-    const line = new THREE.Line(line_geo, line_mat);
-    line.name = "line";
-    group.add(line);
-
-    // 矢印を描く
-    const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
-    const length = 1; // 長さ
-
-    const origin1 = new THREE.Vector3(0, 1, 0);
-    const arrow1 = new THREE.ArrowHelper(dir, origin1, length, line_color);
-    arrow1.name = "arrow1";
-    group.add(arrow1);
-
-    const origin2 = new THREE.Vector3(1, 1, 0);
-    const arrow2 = new THREE.ArrowHelper(dir, origin2, length, line_color);
-    arrow2.name = "arrow2";
-    group.add(arrow2);
-
-    // 寸法線を描く
-    const dim1 = this.createDimension();
-    dim1.name = "Dimension1";
-    group.add(dim1);
-
-    const dim2 = this.createDimension();
-    dim2.name = "Dimension2";
-    group.add(dim2);
-
-    const dim3 = this.createDimension();
-    dim3.name = "Dimension3";
-    group.add(dim3);
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    group.name = "DistributedLoad";
-    return group;
-  }
-
-  // 寸法線を作成する
-  private createDimension(): THREE.Group {
-    const group = new THREE.Group();
-
-    const points = [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 1, 0),
-      new THREE.Vector3(1, 1, 0),
-      new THREE.Vector3(1, 0, 0),
-    ];
-
-    const line_color = 0x000000;
-
-    // 面の周りの枠線を描く
-    const line_mat = new THREE.LineBasicMaterial({ color: line_color });
-    const line_geo = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(line_geo, line_mat);
-    line.name = "line";
-    group.add(line);
-
-    // 矢印を描く
-    const length = 0.5; // 長さ
-    const origin = new THREE.Vector3(length, 1, 0);
-
-    const dir1 = new THREE.Vector3(-1, 0, 0); // 矢印の方向（単位ベクトル）
-    const arrow1 = new THREE.ArrowHelper(dir1, origin, length, line_color);
-    arrow1.name = "arrow1";
-    group.add(arrow1);
-
-    const dir2 = new THREE.Vector3(1, 0, 0); // 矢印の方向（単位ベクトル）
-    const arrow2 = new THREE.ArrowHelper(dir2, origin, length, line_color);
-    arrow2.name = "arrow2";
-    group.add(arrow2);
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    return group;
-  }
 
   // 節点モーメントの矢印を作成する
   private createMomentLoad(): THREE.Group {
@@ -985,7 +822,7 @@ export class ThreeLoadService {
     return group;
   }
 
-  // 節点荷重の矢印を作成する
+  /* 節点荷重の矢印を作成する
   private createPointLoad(): THREE.Group {
     const group = new THREE.Group();
     const line_color = 0x0000ff;
@@ -1009,5 +846,6 @@ export class ThreeLoadService {
     group.name = "PointLoad";
     return group;
   }
+  */
   // #endregion
 }
