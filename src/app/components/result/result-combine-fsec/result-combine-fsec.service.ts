@@ -12,7 +12,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 export class ResultCombineFsecService {
 
   public fsecCombine: any;
-  public isChange: boolean;
+  public isChenge: boolean;
   private worker: Worker;
 
   constructor(private fsec: ResultFsecService,
@@ -21,7 +21,7 @@ export class ResultCombineFsecService {
               private notice: InputNoticePointsService,
               private helper: DataHelperModule) {
     this.clear();
-    this.isChange = true;
+    this.isChenge = true;
     this.worker = new Worker('./result-combine-fsec.worker', { name: 'combine-fsec', type: 'module' });
   }
 
@@ -102,7 +102,7 @@ export class ResultCombineFsecService {
       // Create a new
       this.worker.onmessage = ({ data }) => {
         this.fsecCombine = data.fsecCombine;
-        this.isChange = false;
+        this.isChenge = false;
         console.log('断面fsec の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
         this.pickfsec.setFsecPickupJson(pickList, this.fsecCombine);
       };
@@ -225,7 +225,7 @@ export class ResultCombineFsecService {
       }
       this.fsecCombine[combNo] = resultFsec;
     }
-    this.isChange = false;
+    this.isChenge = false;
     */
   }
 

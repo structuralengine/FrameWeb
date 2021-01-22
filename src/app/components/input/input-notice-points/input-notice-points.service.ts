@@ -6,7 +6,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 })
 export class InputNoticePointsService {
 
-  public NOTICE_POINTS_COUNT = 20;
+  static NOTICE_POINTS_COUNT = 20;
   public notice_points: any[];
 
   constructor(private helper: DataHelperModule) {
@@ -31,13 +31,13 @@ export class InputNoticePointsService {
     // 対象データが無かった時に処理
     if (result == null) {
       result = { row, m: '', len: '' };
-      for (let i = 1; i <= this.NOTICE_POINTS_COUNT; i++) {
+      for (let i = 1; i <= InputNoticePointsService.NOTICE_POINTS_COUNT; i++) {
         result['L' + i] = '';
       }
       this.notice_points.push(result);
     } else {
       // データの不足を補う
-      for (let i = 1; i <= this.NOTICE_POINTS_COUNT; i++) {
+      for (let i = 1; i <= InputNoticePointsService.NOTICE_POINTS_COUNT; i++) {
         if (!(('L' + i) in result)) {
           result['L' + i] = '';
         }
@@ -74,7 +74,7 @@ export class InputNoticePointsService {
 
       const r = row['row'];
       const points = new Array();
-      for (let j = 1; j < this.NOTICE_POINTS_COUNT + 1; j++) {
+      for (let j = 1; j < InputNoticePointsService.NOTICE_POINTS_COUNT + 1; j++) {
         const key = 'L' + j;
         if (key in row) {
           const pos: number = this.helper.toNumber(row[key]);

@@ -93,7 +93,7 @@ export class ThreeFixMemberService {
     this.gui = null;
   }
 
-  public changeData(index: number): void {
+  public chengeData(index: number): void {
 
     this.ClearData();
 

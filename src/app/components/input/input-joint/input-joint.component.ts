@@ -1,111 +1,188 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { FormControl, FormGroup } from '@angular/forms';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { InputJointService } from './input-joint.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
+import{ UserInfoService } from '../../../providers/user-info.service'
 import { ThreeService } from '../../three/three.service';
-import { SheetComponent } from '../sheet/sheet.component';
-import pq from "pqgrid";
-import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'app-input-joint',
   templateUrl: './input-joint.component.html',
   styleUrls: ['./input-joint.component.scss','../../../app.component.scss']
 })
-export class InputJointComponent implements OnInit {
+export class InputJointComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('grid') grid: SheetComponent;
+  myControl: FormGroup;
+  static ROWS_COUNT = 20;
+  dataset: any[];
+  page: number;
+  page_1: number;
+  page_2: number;
+  page11: number;
+  page12: number;
+  page0: number;
+  rowHeaders: any[];
 
-  private dataset = [];
-  private columnHeaders =[
-    { title: "部材No", dataType: "string", dataIndx: "m", sortable: false },
-    { title: "xi", dataType: "integer", dataIndx: "xi", sortable: false },
-    { title: "yi", dataType: "integer", dataIndx: "yi", sortable: false },
-    { title: "zi", dataType: "integer", dataIndx: "zi", sortable: false },
-    { title: "xj", dataType: "integer", dataIndx: "xj", sortable: false },
-    { title: "yj", dataType: "integer", dataIndx: "yj", sortable: false },
-    { title: "zj", dataType: "integer", dataIndx: "zj", sortable: false }
-  ];
 
-  private ROWS_COUNT = 15;
-  private page = 1;
-
-  constructor(
-    private data: InputJointService,
-    private helper: DataHelperModule,
-    private app: AppComponent,
-    private three: ThreeService) {}
-
-    ngOnInit() {
-      this.ROWS_COUNT = this.rowsCount();
-      this.loadPage(1, this.ROWS_COUNT);
-      this.three.ChangeMode("joints", 1);
-    }
-
-    //　pager.component からの通知を受け取る
-    onReceiveEventFromChild(eventData: number) {
-      this.dataset.splice(0);
-      this.loadPage(eventData, this.ROWS_COUNT);
-      this.grid.refreshDataAndView();
-      this.three.ChangeMode("joints", eventData);
-    }
-
-    loadPage(currentPage: number, row: number) {
-
-      for (let i = this.dataset.length + 1; i <= row; i++) {
-        const fix_node = this.data.getJointColumns(currentPage, i);
-        this.dataset.push(fix_node);
+  hotTableSettings = {
+    beforeChange: (...x: any[]) => {
+      try {
+        let changes: any = undefined;
+        for (let i = 0; i < x.length; i++) {
+          if (Array.isArray(x[i])) {
+            changes = x[i];
+            break;
+          }
+        }
+        if (changes === undefined) { return; }
+        for (let i = 0; i < changes.length; i++) {
+          const value: number = this.helper.toNumber(changes[i][3]);
+          if( value !== null ) {
+            changes[i][3] = value.toFixed(0);
+          } else {
+            changes[i][3] = null;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }      
+    },
+    afterChange: (...x: any[]) => {
+      if (this.initialFlg===true){
+        return;
       }
+      this.three.chengeData('joints', this.page );
+    }
+  };
 
+  private initialFlg = true;
+  constructor(private input: InputJointService,
+              private helper: DataHelperModule,
+              private three: ThreeService, 
+              public user:UserInfoService) {
+    this.dataset = new Array();
+    this.page = 1;
+
+    // pagenationのhtml側表示の定義
+    this.page0 = 3;
+    this.page11 = 4;
+    this.page12 = 5;
+    this.page_1 = 2;
+    this.page_2 = 1;
+  }
+
+  ngOnInit() {
+    this.initialFlg = true;
+    this.loadPage(1);
+    this.myControl = new FormGroup({
+      number2: new FormControl(),
+    });
+  }
+  ngAfterViewInit() {
+    this.initialFlg = false;
+  }
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+    console.log('aa')
+  }
+
+  // active属性を外す
+  deactiveButtons() {
+    for (let i = 201; i <= 205; i++) {
+      const data = document.getElementById(i + '');
+      if (data != null) {
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
+        }
+      }
+    }
+  }
+
+
+  loadPage(currentPage: number) {
+    if (currentPage !== this.page) {
       this.page = currentPage;
     }
+    this.dataset = new Array();
 
+    this.deactiveButtons();
 
-    // 表の高さを計算する
-    private tableHeight(): string {
-      const containerHeight = this.app.getDialogHeight() - 70;// pagerの分減じる
-      return containerHeight.toString();
+    if (currentPage > 2) {
+      this.page0 = currentPage;
+      this.page_1 = currentPage - 1;
+      this.page_2 = currentPage - 2;
+      this.page11 = currentPage + 1;
+      this.page12 = currentPage + 2;
+      document.getElementById('203').classList.add('active');
+    } else if (currentPage == 2) {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+      document.getElementById('202').classList.add('active');
     }
-    // 表高さに合わせた行数を計算する
-    private rowsCount(): number {
-      const containerHeight = this.app.getDialogHeight();
-      return Math.round(containerHeight / 30);
+
+    else {
+      this.page0 = 3;
+      this.page_1 = 2;
+      this.page_2 = 1;
+      this.page11 = 4;
+      this.page12 = 5;
+
+      document.getElementById('201').classList.add('active');
+
     }
 
-    // グリッドの設定
-    options: pq.gridT.options = {
-      showTop: false,
-      reactive: true,
-      sortable: false,
-      locale: "jp",
-      height: this.tableHeight(),
-      numberCell: {
-        show: false // 行番号
-      },
-      colModel: this.columnHeaders,
-      animModel: {
-        on: true
-      },
-      dataModel: {
-        data: this.dataset
-      },
-      beforeTableView: (evt, ui) => {
-        const finalV = ui.finalV;
-        const dataV = this.dataset.length;
-        if (ui.initV == null) {
-            return;
-        }
-        if (finalV >= dataV - 1) {
-          this.loadPage(this.page, dataV + this.ROWS_COUNT);
-          this.grid.refreshDataAndView();
-        }
-      },
-      selectEnd: (evt, ui) => {
-        const range = ui.selection.iCells.ranges;
-        const row = range[0].r1 + 1;
-        this.three.selectChange('joints', row);
-      },
-      change: (evt, ui) => {
-        this.three.changeData('joints', this.page);
-      }
-    };
+    for (let i = 1; i <= InputJointComponent.ROWS_COUNT; i++) {
+      const joint = this.input.getJointColumns(this.page, i);
+      this.dataset.push(joint);
+    }
+    this.three.ChengeMode('joints', currentPage);
+  }
+
+   // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り
+   public moveToNextPage(count: number, id: number): void {
+    let Next: number;
+    let additional: number;
+    let minus: number;
+    var plus: number;
+
+    // 1、2ページ目だけイレギュラーな動きをする
+    if (this.page === 1) {
+      additional = 2;
+      minus = -2;
+      plus = -1;
+    } else if (this.page === 2) {
+      additional = 1;
+      minus = -1;
+      plus = 0;
+    } else {
+      additional = 0;
+      minus = -1;
+      plus = 1;
+    }
+
+    Next = this.page + count + additional;
+    if (Next < 1) {
+      Next = 1;
+    }
+
+    this.loadPage(Next);
+  }
+
+  // 見えないところにボタンを配置してある。ボタンを押すのとEnterを押すのは同じとしているのでこれが発火点となる
+  click(id = null) {
+    let value: number;
+
+    if (id === null) {
+      value = this.helper.toNumber(this.myControl.value.number2);
+    } else {
+      value = this.helper.toNumber(id);
+    }
+
+    if (value !== null) {
+      this.loadPage(value);
+    }
+  }
 }

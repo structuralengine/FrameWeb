@@ -39,7 +39,7 @@ export class ThreeJointService {
     this.isVisible = flag;
   }
 
-  public changeData(index: number): void {
+  public chengeData(index: number): void {
 
     this.ClearData();
 

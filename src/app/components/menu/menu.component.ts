@@ -16,7 +16,9 @@ import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
 
-import * as pako from 'pako';
+import { PrintDataModule } from '../../providers/print-data.module';
+import * as jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-menu',
@@ -37,7 +39,8 @@ export class MenuComponent implements OnInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private http: HttpClient,
-    private three: ThreeService) {
+    private three: ThreeService,
+    private printData: PrintDataModule) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -67,7 +70,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
-        this.three.changeData('fileLoad');
+        this.three.chengeData('fileLoad');
       })
       .catch(err => {
         console.log(err);
@@ -108,11 +111,10 @@ export class MenuComponent implements OnInit {
           return;
         }
     */
-
-
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const jsonData: {} = this.InputData.getInputJson(0);
+    // console.log(JSON.stringify(jsonData));
 
     if ('error' in jsonData) {
       alert(jsonData['error']);
@@ -120,61 +122,59 @@ export class MenuComponent implements OnInit {
       return;
     }
 
+    const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
+    for (const key of Object.keys(jsonData)) {
+      if ('load' === key) {
+        continue;
+      }
+      inputJson[key] = jsonData[key];
+    }
+
     this.ResultData.clear(); // 解析結果情報をクリア
 
-    this.post_compress(jsonData, modalRef);
+    const Keys = Object.keys(jsonData['load']);
+    this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
 
   }
 
-  private post_compress(jsonData: {}, modalRef: NgbModalRef) {
+  private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
 
-    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    // const url = 'http://127.0.0.1:5000';
+    if (Keys.length <= index) {
+      // 全ての解析ケースを計算し終えたら
+      this.ResultData.CombinePickup(); // 組み合わせケースを集計する
+      this.three.chengeData();
+      modalRef.close(); // モーダルダイアログを消す
+      return;
+    }
+    const key: string = Keys[index];
+    const current = {};
+    current[key] = load[key];
+    jsonData['load'] = current;
+    const inputJson = JSON.stringify(jsonData);
+    console.log('荷重ケース ' + key);
+    console.log(inputJson);
 
-    // json string にする
-    const json = JSON.stringify(jsonData, null, 0);
-    // pako を使ってgzip圧縮する
-    const compressed = pako.gzip(json);
-    //btoa() を使ってBase64エンコードする
-    const base64Encoded = btoa(compressed);
+    // const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
+    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
 
-    this.http.post(url, base64Encoded, {
+    this.http.post(url, inputJson, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Content-Encoding': 'gzip,base64'
-      }),
-      responseType: 'text'
+      })
     }).subscribe(
       response => {
         // 通信成功時の処理（成功コールバック）
-        console.log('通信成功!!');
-        try {
-          // Decode base64 (convert ascii to binary)
-          const strData = atob(response);
-          // Convert binary string to character-number array
-          const charData = strData.split('').map(function (x) { return x.charCodeAt(0); });
-          // Turn number array into byte-array
-          const binData = new Uint8Array(charData);
-          // Pako magic
-          const json = pako.ungzip(binData,{to: 'string'} );
+        console.log('通信成功!! 解析ケース' + index.toString());
 
-          const jsonData = JSON.parse(json);
-          // サーバーのレスポンスを集計する
-          if (!this.ResultData.loadResultData(jsonData)) {
-            throw '解析結果の集計に失敗しました';
-          } else {
-            console.log(jsonData);
-            // ユーザーポイントの更新
-            this.loadResultData(jsonData);
-            // 全ての解析ケースを計算し終えたら
-            this.ResultData.CombinePickup(); // 組み合わせケースを集計する
-            this.three.changeData();
-          }
-        } catch (e) {
-          alert(e);
-        } finally {
-          modalRef.close(); // モーダルダイアログを消す
+        // サーバーのレスポンスを集計する
+        if (!this.ResultData.loadResultData(response)) {
+          alert('解析結果の集計に失敗しました');
+        } else {
+          console.log(response);
+          // ユーザーポイントの更新
+          this.loadResultData(response);
         }
+        this.post(jsonData, load, Keys, index + 1, modalRef);
       },
       error => {
         // 通信失敗時の処理（失敗コールバック）
@@ -185,12 +185,10 @@ export class MenuComponent implements OnInit {
           messege += '\n' + error._body;
         }
         alert(messege);
-        console.error(error);
-        modalRef.close();
       }
     );
   }
-  
+
   private loadResultData(jsonData: object): void {
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
@@ -219,7 +217,7 @@ export class MenuComponent implements OnInit {
   }
   */
 
-  // ログイン関係
+  // ログイン関係 
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;

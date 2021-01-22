@@ -11,7 +11,7 @@ export class InputLoadService {
   public load: any[];
 
   constructor(private member: InputMembersService,
-              private helper: DataHelperModule) {
+    private helper: DataHelperModule) {
     this.clear();
   }
 

@@ -32,7 +32,7 @@ export class InputDefineService {
     if (result == null) {
       result = { row: row };
       for (let i = 1; i <= col; i++) {
-        result['C' + i] = '';
+        result['D' + i] = '';
       }
       this.define.push(result);
     }
@@ -49,14 +49,6 @@ export class InputDefineService {
         continue;
       }
       const result: {} = json[index];
-      for (const key of Object.keys(result)) {
-        const value = this.helper.toNumber(result[key]);
-        if(value === 0){
-          result[key] = null;
-        } else { 
-          result[key] = value;
-        }
-      }
       this.define.push(result);
     }
   }
@@ -72,7 +64,7 @@ export class InputDefineService {
       for (let key in row) {
         if (key === 'row' || key === 'name') {
           data[key] = row[key];
-        } else if (key.charAt(0) === 'C'){
+        } else {
           const value = row[key];
           if (this.helper.toNumber(value) != null) {
             flg = true;

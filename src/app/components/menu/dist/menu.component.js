@@ -48,7 +48,7 @@ var MenuComponent = /** @class */ (function () {
             _this.app.dialogClose(); // 現在表示中の画面を閉じる
             _this.InputData.loadInputData(text); // データを読み込む
             _this.app.isCalculated = false;
-            _this.three.changeData('fileLoad');
+            _this.three.chengeData('fileLoad');
         })["catch"](function (err) {
             console.log(err);
         });
@@ -109,7 +109,7 @@ var MenuComponent = /** @class */ (function () {
         if (Keys.length <= index) {
             // 全ての解析ケースを計算し終えたら
             this.ResultData.CombinePickup(); // 組み合わせケースを集計する
-            this.three.changeData();
+            this.three.chengeData();
             modalRef.close(); // モーダルダイアログを消す
             return;
         }

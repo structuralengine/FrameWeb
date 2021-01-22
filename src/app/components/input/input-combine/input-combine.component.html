@@ -1,13 +1,44 @@
-<div class="datasheet_inner">
+<div class="btn-group">
+  <nav>
+    <a routerLink="/input-define" routerLinkActive="selected-item" class="btn btn-outline-primary">DEFINE</a>
+    <a routerLink="/input-combine" routerLinkActive="selected-item" class="btn btn-outline-primary active">COMBINE</a>
+    <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary">PICKUP</a>
+  </nav>
+</div>
 
-  <div class="btn-group">
-    <nav>
-      <a routerLink="/input-define" routerLinkActive="selected-item" class="btn btn-outline-primary">DEFINE</a>
-      <a routerLink="/input-combine" routerLinkActive="selected-item" class="btn btn-outline-primary active">COMBINE</a>
-      <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary">PICKUP</a>
-      </nav>
+<div class="datasheet">
+  <hot-table class="hot" 
+  [data]="combineData" 
+  [colHeaders]="true" 
+  [rowHeaders]="rowHeaders" 
+  [height]="500"
+  [width]="900"
+  [settings]="hotTableSettings"
+  licenseKey="non-commercial-and-evaluation">
+    <hot-column *ngFor="let c of combineColums; index as i" [data]="c" [title]="combineTitles[i]"></hot-column>
+  </hot-table>
+
+ 
+<div style="width:900px;" class="pagerArea">
+  <div class="pager">
+    <form [formGroup]="myControl">
+      <ul class="pagenation">
+        <li><a id="prev" link="100"  (click)="moveToNextPage(-5, 100)" class="list" aria-label="Previous">《</a></li>
+        <li><a link="101" (click)="moveToNextPage(-2,101)" id="101" class="list">{{page_2}}</a></li>
+        <li><a link="102" (click)="moveToNextPage(-1,102)" id="102" class="list">{{page_1}}</a></li>
+        <li><a link="103" (click)="moveToNextPage(0,103)" id="103" class="list">{{page0}}</a></li>
+        <li><a link="104" (click)="moveToNextPage(1,104)" id="104" class="list">{{page11}}</a></li>
+        <li><a link="105" (click)="moveToNextPage(2,105)" id="105" class="list">{{page12}}</a></li>
+        <li><a id="next" link="106"  (click)="moveToNextPage(5, 106)" class="list" aria-label="Next">》</a></li>
+      </ul>
+      <div>
+        <mat-form-field>
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button (click)="click()">click</button>
+    </form>
+    <!-- <p class="message">{{message}}</p> -->
   </div>
-
-  <app-sheet #grid [options]="options"></app-sheet>
 
 </div>

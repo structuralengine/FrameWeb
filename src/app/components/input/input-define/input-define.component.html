@@ -1,13 +1,37 @@
-<div class="datasheet_inner">
+<div class="btn-group">
+  <nav>
+    <a routerLink="/input-define" routerLinkActive="selected-item" class="btn btn-outline-primary active">DEFINE</a>
+    <a routerLink="/input-combine" routerLinkActive="selected-item" class="btn btn-outline-primary">COMBINE</a>
+    <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary">PICKUP</a>
+  </nav>
+</div>
 
-  <div class="btn-group">
-    <nav>
-      <a routerLink="/input-define" routerLinkActive="selected-item" class="btn btn-outline-primary active">DEFINE</a>
-      <a routerLink="/input-combine" routerLinkActive="selected-item" class="btn btn-outline-primary">COMBINE</a>
-      <a routerLink="/input-pickup" routerLinkActive="selected-item" class="btn btn-outline-primary">PICKUP</a>
-    </nav>
+<div class="datasheet">
+  <hot-table class="hot" [data]="defineData" [colHeaders]="true" [rowHeaders]="rowHeaders" [height]="500" [width]="300"
+    [settings]="hotTableSettings" licenseKey="non-commercial-and-evaluation">
+    <hot-column *ngFor="let c of defineColums;" [data]="c" [title]="c"></hot-column>
+  </hot-table>
+</div>
+
+<div style="width:900px;" class="pagerArea">
+  <div class="pager">
+    <form [formGroup]="myControl">
+      <ul class="pagenation">
+        <li><a id="prev" link="110"  (click)="moveToNextPage(-5, 110)" class="list" aria-label="Previous">《</a></li>
+        <li><a link="111" (click)="moveToNextPage(-2,101)" id="111" class="list">{{page_2}}</a></li>
+        <li><a link="112" (click)="moveToNextPage(-1,102)" id="112" class="list">{{page_1}}</a></li>
+        <li><a link="113" (click)="moveToNextPage(0,103)" id="113" class="list">{{page0}}</a></li>
+        <li><a link="114" (click)="moveToNextPage(1,104)" id="114" class="list">{{page11}}</a></li>
+        <li><a link="115" (click)="moveToNextPage(2,105)" id="115" class="list">{{page12}}</a></li>
+        <li><a id="next" link="116"  (click)="moveToNextPage(5, 116)" class="list" aria-label="Next">》</a></li>
+      </ul>
+      <div>
+        <mat-form-field>
+          <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button (click)="click()">click</button>
+    </form>
+    <!-- <p class="message">{{message}}</p> -->
   </div>
-
-  <app-sheet #grid [options]="options"></app-sheet>
-
 </div>
