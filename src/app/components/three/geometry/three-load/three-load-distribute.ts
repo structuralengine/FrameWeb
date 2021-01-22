@@ -12,16 +12,20 @@ export class ThreeLoadDistribute {
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
 
-  private mDistribase: THREE.Group;
+  private TEMPLATE: THREE.Group;
 
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
-    this.mDistribase = this.createDistributedLoad();
+    this.TEMPLATE = this.create();
+  }
+
+  public clone(): THREE.Group {
+    return this.TEMPLATE.clone();
   }
 
   // 等分布荷重の雛形をX-Y平面上に生成する
-  private createDistributedLoad(): THREE.Group {
+  private create(): THREE.Group {
     const group = new THREE.Group();
 
     const points = [
@@ -77,15 +81,15 @@ export class ThreeLoadDistribute {
     group.add(arrow2);
 
     // 寸法線を描く
-    const dim1 = this.dim.createDimension();
+    const dim1 = this.dim.clone();
     dim1.name = "Dimension1";
     group.add(dim1);
 
-    const dim2 = this.dim.createDimension();
+    const dim2 = this.dim.clone();
     dim2.name = "Dimension2";
     group.add(dim2);
 
-    const dim3 = this.dim.createDimension();
+    const dim3 = this.dim.clone();
     dim3.name = "Dimension3";
     group.add(dim3);
 

@@ -10,13 +10,19 @@ export class ThreeLoadDimension {
 
   private text: ThreeLoadText;
 
+  private TEMPLATE: THREE.Group;
+
   constructor(text: ThreeLoadText) {
     this.text = text;
+    this.TEMPLATE = this.create();
   }
 
+  public clone(): THREE.Group {
+    return this.TEMPLATE.clone();
+  }
 
   // 寸法線を作成する
-  public createDimension(): THREE.Group {
+  private create(): THREE.Group {
     const group = new THREE.Group();
 
     const points = [
@@ -58,7 +64,7 @@ export class ThreeLoadDimension {
 
 
   // 寸法線を編集する
-  public changeDimension(
+  public change(
     target: THREE.Group,
     points: THREE.Vector2[],
     textStr: string
@@ -99,7 +105,7 @@ export class ThreeLoadDimension {
     const horizontal: string = 'center';
     const vartical: string = (pos1.y > pos0.y) ? 'bottom' : 'top';
 
-    const text = this.text.createText(textStr, new THREE.Vector2(x, y), 0.1, horizontal, vartical);
+    const text = this.text.create(textStr, new THREE.Vector2(x, y), 0.1, horizontal, vartical);
     text.name = "text";
 
     target.add(text);
