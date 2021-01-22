@@ -30,6 +30,8 @@ import { ResultPickupReacService } from '../../result/result-pickup-reac/result-
 import { ResultReacService } from '../../result/result-reac/result-reac.service';
 import { AppComponent } from 'src/app/app.component';
 
+import { PrintComponent } from '../print.component';
+
 
 @Component({
   selector: 'app-invoice',
@@ -73,6 +75,7 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
   public fesc_dataset = [];
   public reac_dataset = [];
 
+  myContentEditable : boolean[];
 
 
   constructor(route: ActivatedRoute,
@@ -113,7 +116,7 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-
+    this.myContentEditable = this.printService.contentEditable1;
     this.invoiceDetails = this.invoiceIds
       .map(id => this.getInvoiceDetails(id));
     Promise.all(this.invoiceDetails)
