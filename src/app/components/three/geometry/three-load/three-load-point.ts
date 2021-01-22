@@ -8,17 +8,20 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadPoint {
 
-  private pLoadbase: THREE.Group; // 節点荷重のテンプレート
+  private TEMPLATE: THREE.Group; // 節点荷重のテンプレート
   private text: ThreeLoadText;
 
   constructor(text: ThreeLoadText) {
-    this.pLoadbase = this.createLoad(); // 節点荷重のテンプレート
     this.text = text;
+    this.TEMPLATE = this.create(); // 節点荷重のテンプレート
   }
 
+  public clone(): THREE.Group {
+    return this.TEMPLATE.clone();
+  }
 
   // 節点荷重の矢印を作成する
-  private createLoad(): THREE.Group {
+  private create(): THREE.Group {
     const group = new THREE.Group();
     const line_color = 0x0000ff;
 
@@ -37,13 +40,10 @@ export class ThreeLoadPoint {
     ///////////////////////////////////////////
     // 文字は、後で変更が効かないので、後で書く //
     ///////////////////////////////////////////
+
     group.add(child);
     group.name = "PointLoad";
     return group;
-  }
-
-  public clone(): THREE.Group{
-    return this.pLoadbase.clone();
   }
 
   /// 節点荷重を編集する
@@ -53,7 +53,7 @@ export class ThreeLoadPoint {
   // value: 荷重値,
   // length: 表示上の長さ,
   // direction: 荷重の向き(tx, ty, tz)
-  public changeLoad(
+  public change(
     target: THREE.Group,
     node: any,
     offset: THREE.Vector2,
@@ -101,7 +101,7 @@ export class ThreeLoadPoint {
       horizontal = 'left';
       pos = new THREE.Vector2(-length + offset.x, 0);
     }
-    const text = this.text.createText(textStr, pos, size, horizontal, vartical);
+    const text = this.text.create(textStr, pos, size, horizontal, vartical);
     text.name = "text";
     target.add(text);
 

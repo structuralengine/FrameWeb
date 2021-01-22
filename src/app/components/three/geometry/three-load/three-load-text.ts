@@ -12,9 +12,8 @@ export class ThreeLoadText {
     this.font = font;
   }
 
-
   // 文字を描く
-  public createText(
+  public create(
     textString: string,
     position: THREE.Vector2,
     size: number,
