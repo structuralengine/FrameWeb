@@ -9,24 +9,36 @@ import { ThreeLoadDimension } from "./three-load-dimension";
 })
 export class ThreeLoadTemperature { 
 
+  private line: THREE.Line;
+
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
-
-  private TEMPLATE: THREE.Group;
 
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
-    this.TEMPLATE = this.create(); // 温度荷重のテンプレート
+    this.create();
   }
 
   public clone(): THREE.Group {
-    return this.TEMPLATE.clone();
+    
+    const line = this.line.clone();
+    const line_mat: any = this.line.material;
+    line.material = line_mat.clone();
+
+    const child = new THREE.Group();
+    child.add(line);
+    child.name = "child";
+
+    const group = new THREE.Group();
+    group.add(child);
+
+    group.name = "mTemp";
+    return group;
   }
 
   // 温度荷重の雛形を X軸に生成する
-  private create(): THREE.Group {
-    const group = new THREE.Group();
+  private create(): void {
 
     const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0)];
 
@@ -40,16 +52,8 @@ export class ThreeLoadTemperature {
       linewidth: 1,
     });
     const line_geo = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(line_geo, line_mat);
-    line.name = "line";
-    group.add(line);
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    group.name = "mTemp";
-    return group;
+    this.line = new THREE.Line(line_geo, line_mat);
+    this.line.name = "line";
   }
 
 }
