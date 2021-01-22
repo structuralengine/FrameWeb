@@ -422,6 +422,7 @@ export class PrintDataModule {
       body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 7 }]);
 
       for (const item of elist) {
+        
         // 印刷する1行分のリストを作る
         const line: string[] = new Array();
         line.push(item.id.toString());

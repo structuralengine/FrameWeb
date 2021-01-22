@@ -1,13 +1,11 @@
 <div class="invoicetTable reacCombine">
-    <h2>reacCombine</h2>
+    <h2>COMBINE 反力</h2>
     <div *ngFor="let title of combReac_title; let i = index">
       <p>{{title[0]}}</p>
       <div *ngFor="let type of combReac_type[i]; let k = index">
         <p>{{type}}</p>
         <table>
           <tr>
-            <th></th>
-            <th></th>
             <th>SUPPORT</th>
             <th>TX</th>
             <th>TY</th>
@@ -27,8 +25,6 @@
             <td>{{data[5]}}</td>
             <td>{{data[6]}}</td>
             <td>{{data[7]}}</td>
-            <td>{{data[8]}}</td>
-            <td>{{data[9]}}</td>
           </tr>
         </table>
       </div>
