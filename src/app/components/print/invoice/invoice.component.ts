@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PrintService } from '../print.service';
 
 import { InputDataService } from '../../../providers/input-data.service';
+import { ResultDataService } from '../../../providers/result-data.service';
 
 import { InputCombineService } from '../../input/input-combine/input-combine.service';
 import { InputDefineService } from '../../input/input-define/input-define.service';
@@ -18,7 +19,18 @@ import { InputJointService } from '../../input/input-joint/input-joint.service';
 import { InputLoadService } from '../../input/input-load/input-load.service';
 import { InputNoticePointsService } from '../../input/input-notice-points/input-notice-points.service';
 import { InputPickupService } from '../../input/input-pickup/input-pickup.service';
+import { ResultCombineDisgService } from '../../result/result-combine-disg/result-combine-disg.service';
+import { ResultCombineFsecService } from '../../result/result-combine-fsec/result-combine-fsec.service';
+import { ResultCombineReacService } from '../../result/result-combine-reac/result-combine-reac.service';
+import { ResultDisgService } from '../../result/result-disg/result-disg.service';
+import { ResultFsecService } from '../../result/result-fsec/result-fsec.service';
+import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-pickup-disg.service';
+import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-pickup-fsec.service';
+import { ResultPickupReacService } from '../../result/result-pickup-reac/result-pickup-reac.service';
+import { ResultReacService } from '../../result/result-reac/result-reac.service';
+import { AppComponent } from 'src/app/app.component';
 
+import { PrintComponent } from '../print.component';
 
 
 @Component({
@@ -55,10 +67,22 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
   public elements_dataset = [];
   public elements_typeNum = [];
 
+  public combDisg_dataset = [];
+  public combFesc_dataset = [];
+  public combReac_dataset = [];
+  public disg_dataset = [];
+  public disg_title = [];
+  public fesc_dataset = [];
+  public reac_dataset = [];
+
+  myContentEditable : boolean[];
+
 
   constructor(route: ActivatedRoute,
+    public app : AppComponent,
     private printService: PrintService,
     private InputData: InputDataService,
+    private ResultData: ResultDataService,
     private comb: InputCombineService,
     private nodes: InputNodesService,
     private member: InputMembersService,
@@ -71,6 +95,17 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
     // private panel: InputPanelService,
     private pickup: InputPickupService,
     private elements: InputElementsService,
+
+    private combDisg : ResultCombineDisgService,
+    private combFsec : ResultCombineFsecService,
+    private combReac : ResultCombineReacService,
+    private disg : ResultDisgService,
+    private fsec : ResultFsecService,
+    private reac : ResultReacService,
+    private pickDisg : ResultPickupDisgService,
+    private pickFsec : ResultPickupFsecService,
+    private pickReac : ResultPickupReacService,
+
     private three: ThreeService,
     private scene: SceneService,
 
@@ -81,7 +116,7 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-
+    this.myContentEditable = this.printService.contentEditable1;
     this.invoiceDetails = this.invoiceIds
       .map(id => this.getInvoiceDetails(id));
     Promise.all(this.invoiceDetails)
@@ -98,13 +133,54 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit() {
-
-    const inputJson: any = this.InputData.getInputJson(0);
-
-
-
-
   }
+
+  // public printData(mode: string): any {
+  //  switch (mode) {
+
+  //     case 'result-disg':
+  //       this.printDisg(doc);
+  //       break;
+  //     case 'result-comb_disg':
+  //       this.printCombDisg(doc);
+  //       break;
+  //     case 'result-pic_disg':
+  //       this.printCombDisg(doc, 'PICKUP');
+  //       break;
+  //     case 'result-reac':
+  //       this.printReact(doc);
+  //       break;
+  //     case 'result-comb_reac':
+  //       this.printCombReact(doc);
+  //       break;
+  //     case 'result-pic_reac':
+  //       this.printCombReact(doc, 'PICKUP');
+  //       break;
+
+  //     case 'result-fsec':
+  //       this.printForce(doc);
+  //       break;
+  //     case 'result-comb_fsec':
+  //       this.printCombForce(doc);
+  //       break;
+  //     case 'result-pic_fsec':
+  //       this.printCombForce(doc, 'PICKUP');
+  //       break;
+
+  //     /*
+  //     case 'input-loads':
+  //       // 荷重図を描画する
+  //       break;
+  //     */
+
+  //     default:
+  //       this.printInputData(doc);
+  //       break;
+  //   }
+
+  //   return doc;
+  // }
+  
 
 
 }
