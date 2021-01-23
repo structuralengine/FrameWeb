@@ -8,21 +8,39 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadAxial {
 
-  private TEMPLATE: THREE.Group; // 軸方向荷重のテンプレート
+  private line: THREE.Line;
+  private arrow: THREE.Mesh;
   private text: ThreeLoadText;
 
   constructor(text: ThreeLoadText) {
     this.text = text;
-    this.TEMPLATE = this.create(); // 軸方向荷重のテンプレート
+    this.create();
   }
 
   public clone(): THREE.Group {
-    return this.TEMPLATE.clone();
+
+    const line = this.line.clone();
+    const line_mat: any = this.line.material;
+    line.material = line_mat.clone();
+
+    const arrow = this.arrow.clone();
+    const arrow_mat: any = this.arrow.material;
+    arrow.material = arrow_mat.clone();
+
+    const child = new THREE.Group();
+    child.add(line);
+    child.add(arrow);
+    child.name = "child";
+
+    const group = new THREE.Group();
+    group.add(child);
+
+    group.name = "mAxial";
+    return group;
   }
 
   // 軸方向荷重の雛形を X軸に生成する
-  private create(): THREE.Group {
-    const group = new THREE.Group();
+  private create(): void {
 
     const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0)];
 
@@ -36,26 +54,16 @@ export class ThreeLoadAxial {
       linewidth: 1,
     });
     const line_geo = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(line_geo, line_mat);
-    line.name = "line";
-    group.add(line);
+    this.line = new THREE.Line(line_geo, line_mat);
+    this.line.name = "line";
 
     // 矢印を描く
     const arrow_geo = new THREE.ConeBufferGeometry(0.05, 0.25, 3, 1, false);
     const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
-    const arrow = new THREE.Mesh(arrow_geo, arrow_mat);
-    arrow.rotation.z = -Math.PI / 2;
-    arrow.position.set(1, 0, 0);
-    arrow.name = "arrow";
-    group.add(arrow);
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    group.name = "mAxial";
-    return group;
+    this.arrow = new THREE.Mesh(arrow_geo, arrow_mat);
+    this.arrow.rotation.z = -Math.PI / 2;
+    this.arrow.position.set(1, 0, 0);
+    this.arrow.name = "arrow";
   }
-
 
 }

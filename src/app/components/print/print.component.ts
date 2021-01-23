@@ -8,8 +8,7 @@ import { PrintService } from './print.service';
 })
 export class PrintComponent implements OnInit {
 
-  constructor(public printService: PrintService) {
-   }
+  constructor(public printService: PrintService) { }
 
   ngOnInit(): void {
   }
@@ -19,15 +18,5 @@ export class PrintComponent implements OnInit {
     this.printService
       .printDocument('invoice', invoiceIds);
   }
-
-  toggleEditable(event,id) {
-    if (event.target.checked) {
-      this.printService.contentEditable1[id] = true;
-    }else{
-      this.printService.contentEditable1[id] = false;
-    }
-
-  console.log(this.printService.contentEditable1);
- }
 
 }

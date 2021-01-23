@@ -8,42 +8,44 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadPoint {
 
-  private TEMPLATE: THREE.Group; // 節点荷重のテンプレート
   private text: ThreeLoadText;
+  private arrow: THREE.ArrowHelper;
 
   constructor(text: ThreeLoadText) {
     this.text = text;
-    this.TEMPLATE = this.create(); // 節点荷重のテンプレート
+    this.create();
   }
 
   public clone(): THREE.Group {
-    return this.TEMPLATE.clone();
+
+    const arrow = this.arrow.clone();
+    const line_mat: any = this.arrow.line.material;
+    const cone_mat: any = this.arrow.cone.material;
+    arrow.line.material = line_mat.clone();
+    arrow.cone.material = cone_mat.clone();
+
+    const child = new THREE.Group();
+    child.add(arrow);
+    child.name = "child";
+
+    const group = new THREE.Group();
+    group.add(child);
+    group.name = "PointLoad";
+    
+    return group;
   }
 
   // 節点荷重の矢印を作成する
-  private create(): THREE.Group {
-    const group = new THREE.Group();
+  private create(): void {
+
     const line_color = 0x0000ff;
 
     const length = 1; // 長さ
     const origin = new THREE.Vector3(-1, 0, 0);
 
     const dir = new THREE.Vector3(1, 0, 0); // 矢印の方向（単位ベクトル）
-    const arrow = new THREE.ArrowHelper(dir, origin, length, line_color);
-    arrow.name = "arrow";
-
-    // 矢印の原点を先端に変更する
-    const child = new THREE.Group();
-    child.add(arrow);
-    child.name = "child";
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    group.add(child);
-    group.name = "PointLoad";
-    return group;
+    this.arrow = new THREE.ArrowHelper(dir, origin, length, line_color);
+    this.arrow.name = "arrow";
   }
 
   /// 節点荷重を編集する

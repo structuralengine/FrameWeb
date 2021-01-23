@@ -6,11 +6,8 @@ import {Router} from '@angular/router';
 })
 export class PrintService {
   isPrinting = false;
-  contentEditable1 : boolean[];
 
-  constructor(private router: Router) {
-    this.contentEditable1 = [false, false, false, false, false, false, false, false, false];
-   }
+  constructor(private router: Router) { }
 
   printDocument(documentName: string, documentData: string[]) {
     this.isPrinting = true;

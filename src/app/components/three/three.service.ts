@@ -93,11 +93,7 @@ export class ThreeService {
         break;
 
       case 'load_names':
-        // nothisng
-        break;
-
-      case 'load_points':
-      case 'load_members':
+      case 'load_values':
         this.load.changeData(index);
         break;
 
@@ -113,6 +109,12 @@ export class ThreeService {
 
   }
 
+  //////////////////////////////////////////////////////
+  // データの選択を処理する
+  //////////////////////////////////////////////////////
+  public selectChange(mode: string, index: number): void {
+    console.log("selectChange", mode, index);
+  }
 
   //////////////////////////////////////////////////////
   // データをクリアする
@@ -246,7 +248,7 @@ export class ThreeService {
         this.fsec.visibleChange(false);
         break;
 
-      case 'load_points':
+      case 'load_values':
         if (this.currentIndex !== currentPage) {
           this.load.changeData(currentPage);
         }
@@ -371,11 +373,7 @@ export class ThreeService {
         this.member.detectObject(raycaster, action);
         break;
 
-      case 'load_points':
-
-        break;
-
-      case 'load_members':
+      case 'load_values':
         this.member.detectObject(raycaster, action);
         break;
 

@@ -74,6 +74,10 @@ export class ResultDataService {
   // 計算結果を読み込む
   public loadResultData(jsonData: object): boolean {
 
+    if ( 'error' in jsonData){
+      return false;
+    }
+
     try {
       // 基本ケース
       this.disg.setDisgJson(jsonData);

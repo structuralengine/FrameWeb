@@ -8,23 +8,39 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadMoment {
 
-  private TEMPLATE: THREE.Group; // 節点モーメントのテンプレート
+  private ellipse: THREE.Line;
+  private arrow: THREE.Mesh;
   private text: ThreeLoadText;
 
   constructor(text: ThreeLoadText) {
     this.text = text;
-    this.TEMPLATE = this.create(); // 節点モーメントのテンプレート
+    this.create(); // 節点モーメントのテンプレート
   }
 
   public clone(): THREE.Group{
-    return this.TEMPLATE.clone();
-  }
 
-  // 節点モーメントの矢印を作成する
-  private create(): THREE.Group {
-    const group = new THREE.Group();
+    const ellipse = this.ellipse.clone();
+    const line_mat: any = this.ellipse.material;
+    ellipse.material = line_mat.clone();
+
+    const arrow = this.arrow.clone();
+    const arrow_mat: any = this.arrow.material;
+    arrow.material = arrow_mat.clone();
 
     const child = new THREE.Group();
+    child.add(ellipse);
+    child.add(arrow);
+    child.name = "child";
+
+    const group = new THREE.Group();
+    group.add(child);
+    group.name = "MomentLoad";
+
+    return group;
+}
+
+  // 節点モーメントの矢印を作成する
+  private create(): void {
 
     const line_color = 0x0000ff;
 
@@ -40,32 +56,19 @@ export class ThreeLoadMoment {
     );
 
     const points = curve.getPoints(12);
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-    const lineMaterial = new THREE.LineBasicMaterial({ color: line_color });
-    const ellipse = new THREE.Line(lineGeometry, lineMaterial);
-    ellipse.rotation.y = Math.PI / 2;
-    ellipse.name = "line";
-    child.add(ellipse);
+    const line_geo = new THREE.BufferGeometry().setFromPoints(points);
+    const line_mat = new THREE.LineBasicMaterial({ color: line_color });
+    this.ellipse = new THREE.Line(line_geo, line_mat);
+    this.ellipse.name = "line";
 
     // 矢印を描く
     const arrow_geo = new THREE.ConeBufferGeometry(0.05, 0.25, 3, 1, false);
     const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
-    const arrow = new THREE.Mesh(arrow_geo, arrow_mat);
-    arrow.rotation.z = -Math.PI / 2;
-    arrow.rotation.x = Math.PI / 6;
-    arrow.position.set(-0.125, -1, 0);
-    arrow.name = "arrow";
-    child.add(arrow);
-    child.name = "child";
+    this.arrow = new THREE.Mesh(arrow_geo, arrow_mat);
+    this.arrow.rotation.x = Math.PI;
 
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    group.add(child);
-    group.name = "MomentLoad";
-    return group;
+    this.arrow.position.set(1, 0, 0);
+    this.arrow.name = "arrow";
   }
   
   /// 節点モーメント荷重を編集する
@@ -78,13 +81,12 @@ export class ThreeLoadMoment {
   public change(
     target: THREE.Group,
     node: any,
-    offset: THREE.Vector2,
+    offset: number,
     value: number,
     radius: number,
     direction: string
   ): void {
 
-/*
     //線の色を決める
     let line_color = 0xff0000;
     if (direction === "ry") {
@@ -103,7 +105,7 @@ export class ThreeLoadMoment {
 
     // 長さを修正する
     if (value < 0) {
-      child.rotation.set(-Math.PI, -Math.PI, 0);
+      child.rotation.set(-Math.PI, 0, -Math.PI);
     }
     child.scale.set(radius, radius, radius);
 
@@ -119,26 +121,24 @@ export class ThreeLoadMoment {
     let pos: THREE.Vector2;
     if (value < 0) {
       horizontal = 'right';
-      pos = new THREE.Vector2(radius + offset.x, 0);
+      pos = new THREE.Vector2(-radius, 0);
     } else {
       horizontal = 'left';
-      pos = new THREE.Vector2(-radius + offset.x, 0);
+      pos = new THREE.Vector2(radius, 0);
     }
     const text = this.text.create(textStr, pos, size, horizontal, vartical);
     text.name = "text";
     target.add(text);
 
-    child.position.x = offset.x;
-    child.position.y = offset.y;
-
+    child.position.z = offset;
 
     // 向きを変更する
-    if (direction === "ry") {
-      target.rotation.set(Math.PI / 2, Math.PI / 2, 0);
-    } else if (direction === "rz") {
-      target.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+    if (direction === "rx") {
+      target.rotation.x = Math.PI / 2;
+      target.rotation.y = -Math.PI / 2;
+    } else  if (direction === "ry") {
+      target.rotation.x = Math.PI / 2;
     }
-*/
 
     // 位置を修正する
     target.position.set(node.x, node.y, node.z);

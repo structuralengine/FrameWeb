@@ -12,21 +12,55 @@ export class ThreeLoadDistribute {
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
 
-  private TEMPLATE: THREE.Group;
+  private mesh: THREE.Mesh;
+  private line: THREE.Line;
+  private arrow1: THREE.ArrowHelper;
+  private arrow2: THREE.ArrowHelper;
+  private dim1: THREE.Group;
+  private dim2: THREE.Group;
+  private dim3: THREE.Group;
 
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
-    this.TEMPLATE = this.create();
+    this.create();
   }
 
   public clone(): THREE.Group {
-    return this.TEMPLATE.clone();
+
+    const child = new THREE.Group();
+
+    for (const target of [this.mesh, this.line]) {
+      const mesh = target.clone();
+      const mesh_mat: any = target.material;
+      mesh.material = mesh_mat.clone();
+      child.add(mesh);
+    }
+
+    for (const target of [this.arrow1, this.arrow2]) {
+      const arrow = target.clone();
+      const line_mat: any = target.line.material;
+      const cone_mat: any = target.cone.material;
+      arrow.line.material = line_mat.clone();
+      arrow.cone.material = cone_mat.clone();
+      child.add(arrow);
+    }
+
+    for (const target of [this.dim1, this.dim2, this.dim3]) {
+      child.add(target.clone());
+    }
+
+    child.name = "child";
+
+    const group = new THREE.Group();
+    group.add(child);
+    group.name = "DistributeLoad";
+
+    return group;
   }
 
   // 等分布荷重の雛形をX-Y平面上に生成する
-  private create(): THREE.Group {
-    const group = new THREE.Group();
+  private create(): void {
 
     const points = [
       new THREE.Vector3(0, 0, 0),
@@ -51,9 +85,8 @@ export class ThreeLoadDistribute {
     face_geo.faces.push(new THREE.Face3(0, 1, 2));
     face_geo.faces.push(new THREE.Face3(2, 3, 4));
     face_geo.faces.push(new THREE.Face3(0, 2, 4));
-    const mesh = new THREE.Mesh(face_geo, face_mat);
-    mesh.name = "face";
-    group.add(mesh);
+    this.mesh = new THREE.Mesh(face_geo, face_mat);
+    this.mesh.name = "face";
 
     // 面の周りの枠線を描く
     const line_mat = new THREE.LineBasicMaterial({ color: line_color });
@@ -62,43 +95,31 @@ export class ThreeLoadDistribute {
       points[2],
       points[3],
     ]);
-    const line = new THREE.Line(line_geo, line_mat);
-    line.name = "line";
-    group.add(line);
+    this.line = new THREE.Line(line_geo, line_mat);
+    this.line.name = "line";
 
     // 矢印を描く
     const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
     const length = 1; // 長さ
 
     const origin1 = new THREE.Vector3(0, 1, 0);
-    const arrow1 = new THREE.ArrowHelper(dir, origin1, length, line_color);
-    arrow1.name = "arrow1";
-    group.add(arrow1);
+    this.arrow1 = new THREE.ArrowHelper(dir, origin1, length, line_color);
+    this.arrow1.name = "arrow1";
 
     const origin2 = new THREE.Vector3(1, 1, 0);
-    const arrow2 = new THREE.ArrowHelper(dir, origin2, length, line_color);
-    arrow2.name = "arrow2";
-    group.add(arrow2);
+    this.arrow2 = new THREE.ArrowHelper(dir, origin2, length, line_color);
+    this.arrow2.name = "arrow2";
 
     // 寸法線を描く
-    const dim1 = this.dim.clone();
-    dim1.name = "Dimension1";
-    group.add(dim1);
+    this.dim1 = this.dim.clone();
+    this.dim1.name = "Dimension1";
 
-    const dim2 = this.dim.clone();
-    dim2.name = "Dimension2";
-    group.add(dim2);
+    this.dim2 = this.dim.clone();
+    this.dim2.name = "Dimension2";
 
-    const dim3 = this.dim.clone();
-    dim3.name = "Dimension3";
-    group.add(dim3);
-
-    ///////////////////////////////////////////
-    // 文字は、後で変更が効かないので、後で書く //
-    ///////////////////////////////////////////
-
-    group.name = "DistributedLoad";
-    return group;
+    this.dim3 = this.dim.clone();
+    this.dim3.name = "Dimension3";
+   
   }
 
 
