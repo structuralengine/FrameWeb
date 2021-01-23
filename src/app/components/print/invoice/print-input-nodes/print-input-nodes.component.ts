@@ -40,12 +40,10 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
     const minCount: number = 5; // これ以上なら２行書きとする
-
-
+    const body: any = [];
     const json: {} = inputJson['node']; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
 
-    const body: any = [];
     let head: string[];
 
     if (keys.length < minCount) {
