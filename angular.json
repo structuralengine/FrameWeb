@@ -29,9 +29,9 @@
             ],
             "styles": [
               "src/styles.scss",
+              "src/handsontable.full.css",
               "src/bootstrap.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
-              "node_modules/fontisto/css/fontisto/fontisto.min.css"
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
             "scripts": [
               "node_modules/@fortawesome/fontawesome-free/js/all.min.js"
@@ -99,11 +99,10 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
-              "node_modules/fontisto/css/fontisto/fontisto.min.css"
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
             "scripts": [
-              "node_modules/@fortawesome/some-free/js/all.min.js"
+              "node_modules/@fortawesome/fontawesome-free/js/all.min.js"
             ]
           }
         },

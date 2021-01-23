@@ -47,7 +47,7 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
-  public changeData(mode: string = '', index: number = 0): void {
+  public chengeData(mode: string = '', index: number = 0): void {
 
     switch (mode) {
 
@@ -65,12 +65,12 @@ export class ThreeService {
         break;
 
       case 'nodes':
-        this.node.changeData();
-        this.member.changeData();
+        this.node.chengeData();
+        this.member.chengeData();
         break;
 
       case 'members':
-        this.member.changeData();
+        this.member.chengeData();
         break;
 
       case 'elements':
@@ -81,20 +81,24 @@ export class ThreeService {
         break;
 
       case 'joints':
-        this.joint.changeData(index);
+        this.joint.chengeData(index);
         break;
 
       case 'fix_nodes':
-        this.fixNode.changeData(index);
+        this.fixNode.chengeData(index);
         break;
 
       case 'fix_member':
-        this.fixMember.changeData(index);
+        this.fixMember.chengeData(index);
         break;
 
       case 'load_names':
-      case 'load_values':
-        this.load.changeData(index);
+        // nothisng
+        break;
+
+      case 'load_points':
+      case 'load_members':
+        this.load.chengeData(index);
         break;
 
       default:
@@ -109,12 +113,6 @@ export class ThreeService {
 
   }
 
-  //////////////////////////////////////////////////////
-  // データの選択を処理する
-  //////////////////////////////////////////////////////
-  public selectChange(mode: string, index: number): void {
-    console.log("selectChange", mode, index);
-  }
 
   //////////////////////////////////////////////////////
   // データをクリアする
@@ -142,7 +140,7 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // 編集モードの変更通知を処理する
   //////////////////////////////////////////////////////
-  public ChangeMode(ModeName: string, currentPage: number = 1): void {
+  public ChengeMode(ModeName: string, currentPage: number = 1): void {
 
     if (this.mode !== ModeName) {
       this.currentIndex = -1;
@@ -189,7 +187,7 @@ export class ThreeService {
 
       case 'joints':
         if (this.currentIndex !== currentPage) {
-          this.joint.changeData(currentPage);
+          this.joint.chengeData(currentPage);
         }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
@@ -204,7 +202,7 @@ export class ThreeService {
 
       case 'fix_nodes':
         if (this.currentIndex !== currentPage) {
-          this.fixNode.changeData(currentPage);
+          this.fixNode.chengeData(currentPage);
         }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
@@ -220,7 +218,7 @@ export class ThreeService {
 
       case 'fix_member':
         if (this.currentIndex !== currentPage) {
-          this.fixMember.changeData(currentPage);
+          this.fixMember.chengeData(currentPage);
         }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
@@ -235,7 +233,7 @@ export class ThreeService {
 
       case 'load_names':
         if (this.currentIndex !== currentPage) {
-          this.load.changeData(currentPage);
+          this.load.chengeData(currentPage);
         }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, false, false);
@@ -248,9 +246,9 @@ export class ThreeService {
         this.fsec.visibleChange(false);
         break;
 
-      case 'load_values':
+      case 'load_points':
         if (this.currentIndex !== currentPage) {
-          this.load.changeData(currentPage);
+          this.load.chengeData(currentPage);
         }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, true, false);
@@ -265,7 +263,7 @@ export class ThreeService {
 
       case 'disg':
         if (this.currentIndex !== currentPage) {
-          this.disg.changeData(currentPage);
+          this.disg.chengeData(currentPage);
         }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
@@ -294,7 +292,7 @@ export class ThreeService {
 
       case 'reac':
         if (this.currentIndex !== currentPage) {
-          this.reac.changeData(currentPage);
+          this.reac.chengeData(currentPage);
         }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
@@ -325,7 +323,7 @@ export class ThreeService {
       case 'comb_fsec':
       case 'pik_fsec':
         if (this.currentIndex !== currentPage) {
-          this.fsec.changeData(currentPage, ModeName);
+          this.fsec.chengeData(currentPage, ModeName);
         }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
@@ -373,7 +371,11 @@ export class ThreeService {
         this.member.detectObject(raycaster, action);
         break;
 
-      case 'load_values':
+      case 'load_points':
+
+        break;
+
+      case 'load_members':
         this.member.detectObject(raycaster, action);
         break;
 

@@ -524,7 +524,6 @@ export class ThreeLoadService {
   // #endregion
 
 
-
   // #region スケールを反映する
   private onResize(): void {
     console.log("three load!", "onResize");
