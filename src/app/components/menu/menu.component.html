@@ -7,18 +7,17 @@
               class="far fa-file"></i></a>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <button ngbDropdownItem (click)="renew()">新規作成</button>
-            <label style="width: 100%;margin: 0px;">
-              <span ngbDropdownItem style="padding: 8px;">
+            <label style="width: 100%; margin:0">
+              <span ngbDropdownItem style="padding:8px">
                 ファイルを開く
                 <input type="file" accept="application/fwj" (change)="open($event)" style="display:none" />
               </span>
             </label>
-            <!-- <button ngbDropdownItem (change)="open($event)" accept="application/fwj">
-              <label>
-                ファイルを開く
-                <input type="file" accept="application/fwj" style="display:none" />
+            <!-- <button ngbDropdownItem (change)="open($event)" accept="application/fwj"><label>ファイルを開く
+              <input type="file" accept="application/fwj"  style="display:none" />
               </label>
-            </button> -->
+            </button>
+            <button ngbDropdownItem (click)="open(evt)">ファイルを開く</button> -->
             <button ngbDropdownItem (click)="save()">ファイルを保存</button>
             <button ngbDropdownItem (click)="pickup()">ピックアップファイル出力</button>
           </div>

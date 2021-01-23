@@ -53,7 +53,7 @@ export class ThreeReactService {
       return this.nodeThree.baseScale * 80;
     }
 
-    public changeData(index: number): void {
+    public chengeData(index: number): void {
 
       // 一旦全排除
       this.ClearData();

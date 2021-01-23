@@ -36,13 +36,13 @@ export class ResultReacComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (this.comb.isChange === false) {
+    if (this.comb.isChenge === false) {
       this.btnCombine = 'btn btn-outline-primary';
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';
     }
     // ピックアップデータがあればボタンを表示する
-    if (this.pic.isChange === false) {
+    if (this.pic.isChenge === false) {
       this.btnPickup = 'btn btn-outline-primary';
     } else {
       this.btnPickup = 'btn btn-outline-primary disabled';
@@ -61,6 +61,6 @@ export class ResultReacComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.three.ChangeMode('reac', currentPage);
+    this.three.ChengeMode('reac', currentPage);
   }
 }

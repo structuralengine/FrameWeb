@@ -26,7 +26,7 @@ import { DataHelperModule } from './data-helper.module';
 })
 export class ResultDataService {
 
-  public isCombinePickupChange: boolean;
+  public isCombinePickupChenge: boolean;
   constructor(
     private combine: InputCombineService,
     private define: InputDefineService,
@@ -62,7 +62,7 @@ export class ResultDataService {
     this.pickdisg.clear();
     this.pickreac.clear();
     this.pickfsec.clear();
-    this.isCombinePickupChange = true;
+    this.isCombinePickupChenge = true;
 
     // 図をクリアする
     this.three_fsec.ClearData();
@@ -73,10 +73,6 @@ export class ResultDataService {
 
   // 計算結果を読み込む
   public loadResultData(jsonData: object): boolean {
-
-    if ( 'error' in jsonData){
-      return false;
-    }
 
     try {
       // 基本ケース
@@ -92,7 +88,7 @@ export class ResultDataService {
 
 
   public CombinePickup(): void {
-    if (this.isCombinePickupChange === false) {
+    if (this.isCombinePickupChenge === false) {
       return;
     }
     const load = this.load.getLoadNameJson(1);
@@ -206,7 +202,7 @@ export class ResultDataService {
     // this.pickreac.setReacPickupJson(pickList);
     // this.pickfsec.setFsecPickupJson(pickList);
 
-    this.isCombinePickupChange = false;
+    this.isCombinePickupChenge = false;
   }
 
   // ピックアップファイル出力

@@ -6,35 +6,32 @@
   page-break-after: avoid;
 }
 
-
-@media print{
-  .title-and-menu{
+@media print {
+  .title-and-menu {
     display: none;
   }
 
-  #contents-dialog-id{
-    display:none;
+  #contents-dialog-id {
+    display: none;
+  }
+}
+.invoicetTable {
+  margin: 8px 0;
+  h2 {
+    font-size: 24px;
   }
 
-  .invoicetTable{
-    margin:8px 0;
-    h2{
-      font-size: 24px;
+  h3 {
+    font-size: 20px;
+  }
+  table {
+    th {
+      padding: 4px 8px;
+      font-weight: 400;
     }
 
-    h3{
-      font-size: 20px;
-    }
-    table{
-      th{
-        padding:4px 8px;
-        font-weight: 400;
-      }
-
-      td{
-        padding:4px 8px;
-      }
+    td {
+      padding: 4px 8px;
     }
   }
 }
-

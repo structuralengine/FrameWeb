@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
   
 
     this.user.isContentsDailogShow = true;
-    //this.setDialogHeight();
+    this.setDialogHeight();
 
   }
 
@@ -75,24 +75,13 @@ export class AppComponent implements OnInit {
       // ヘッダ領域を取得
       const header = document.getElementsByClassName('header');
       const container = document.getElementsByClassName('container');
-      const headerSize = container[0].clientHeight + header[0].clientHeight + 50;
+      const headerSize = container[0].clientHeight + header[0].clientHeight + 30;
 
       dialog.style.height = window.innerHeight - headerSize + 'px';
       console.log('dialog height:' + dialog.style.height);
 
     }, 100);
 
-  }
-
-  public getDialogHeight(): number {
-    const dialog = document.getElementById('contents-dialog-id');
-    let dialogHeight = parseFloat(dialog.style.height); // ヘッダー高さを引く
-    if(isNaN(dialogHeight)){
-      dialogHeight = window.innerHeight - 200; // メニューとヘッダー高さを引く
-    } else {
-      dialogHeight -=  80;
-    }
-    return dialogHeight;
   }
 
 

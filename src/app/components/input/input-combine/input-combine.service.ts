@@ -24,11 +24,6 @@ export class InputCombineService {
       const tmp = this.combine[i];
       if (tmp['row'] === row) {
         result = tmp;
-        for (let i = 1; i <= col; i++) {
-          if(result['C' + i] === 0){
-            result['C' + i] = null;
-          }
-        }
         break;
       }
     }
@@ -36,9 +31,8 @@ export class InputCombineService {
     // 対象データが無かった時に処理
     if (result == null) {
       result = { row: row };
-      result['name'] = this.getCombineName(row);
-      for (let i = 1; i <= col; i++) {
-        result['C' + i] = null;
+      for (let i = 1; i < col; i++) {
+        result['C' + i] = '';
       }
       this.combine.push(result);
     }
@@ -55,17 +49,6 @@ export class InputCombineService {
         continue;
       }
       const result: {} = json[index];
-      for (const key of Object.keys(result)) {
-        if (key.charAt(0)!== 'C'){
-          continue;
-        }
-        const value = this.helper.toNumber(result[key]);
-        if(value === 0){
-          result[key] = null;
-        } else { 
-          result[key] = value;
-        }
-      }
       this.combine.push(result);
     }
   }
@@ -80,7 +63,7 @@ export class InputCombineService {
       for (let key in row) {
         if (key === 'row' || key === 'name') {
           data[key] = row[key];
-        } else if (key.charAt(0) === 'C'){
+        } else {
           const value = row[key];
           const num = this.helper.toNumber(value);
           if (num != null) {

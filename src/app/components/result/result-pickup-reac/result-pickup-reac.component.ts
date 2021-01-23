@@ -41,7 +41,7 @@ export class ResultPickupReacComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (this.comb.isChange === false) {
+    if (this.comb.isChenge === false) {
       this.btnCombine = 'btn btn-outline-primary';
     } else {
       this.btnCombine = 'btn btn-outline-primary disabled';
@@ -61,6 +61,6 @@ export class ResultPickupReacComponent implements OnInit {
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
 
-    this.three.ChangeMode('pik_reac', currentPage);
+    this.three.ChengeMode('pik_reac', currentPage);
   }
 }

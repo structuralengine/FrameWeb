@@ -1,0 +1,33 @@
+<div class="invoicetTable reacPickup">
+    <h2>PICKUP 反力</h2>
+    <div *ngFor="let title of pickReac_title; let i = index">
+      <p>{{title[0]}}</p>
+      <div *ngFor="let type of pickReac_type[i]; let k = index">
+        <p>{{type}}</p>
+        <table>
+          <tr>
+            <th>SUPPORT</th>
+            <th>TX</th>
+            <th>TY</th>
+            <th>TZ</th>
+            <th>MX</th>
+            <th>MY</th>
+            <th>MZ</th>
+            <th>comb</th>
+          </tr>
+       
+          <tr *ngFor="let data of pickReac_dataset[i][k]">
+            <td>{{data[0]}}</td>
+            <td>{{data[1]}}</td>
+            <td>{{data[2]}}</td>
+            <td>{{data[3]}}</td>
+            <td>{{data[4]}}</td>
+            <td>{{data[5]}}</td>
+            <td>{{data[6]}}</td>
+            <td>{{data[7]}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  
