@@ -37,7 +37,8 @@ export class MenuComponent implements OnInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private http: HttpClient,
-    private three: ThreeService) {
+    private three: ThreeService
+    ) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -108,18 +109,16 @@ export class MenuComponent implements OnInit {
           return;
         }
     */
-
-
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const jsonData: {} = this.InputData.getInputJson(0);
+    // console.log(JSON.stringify(jsonData));
 
     if ('error' in jsonData) {
       alert(jsonData['error']);
       modalRef.close(); // モーダルダイアログを消す
       return;
     }
-
     this.ResultData.clear(); // 解析結果情報をクリア
 
     this.post_compress(jsonData, modalRef);
@@ -219,7 +218,7 @@ export class MenuComponent implements OnInit {
   }
   */
 
-  // ログイン関係
+  // ログイン関係 
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
