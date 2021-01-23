@@ -72,7 +72,7 @@ export class InputPickupComponent implements OnInit, AfterViewInit {
         }
       }
       if (changes !== undefined) {
-        this.result.isCombinePickupChenge = true;
+        this.result.isCombinePickupChange = true;
       }
     }
   };

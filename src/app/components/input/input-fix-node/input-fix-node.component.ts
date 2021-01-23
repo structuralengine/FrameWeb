@@ -52,7 +52,7 @@ export class InputFixNodeComponent implements OnInit, AfterViewInit {
       if (this.initialFlg === true) {
         return;
       }
-      this.three.chengeData('fix_nodes', this.page);
+      this.three.changeData('fix_nodes', this.page);
     }
   };
 
@@ -147,7 +147,7 @@ export class InputFixNodeComponent implements OnInit, AfterViewInit {
       const fix_node = this.data.getFixNodeColumns(this.page, i);
       this.dataset.push(fix_node);
     }
-    this.three.ChengeMode('fix_nodes', currentPage);
+    this.three.ChangeMode('fix_nodes', currentPage);
   }
 
   // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り

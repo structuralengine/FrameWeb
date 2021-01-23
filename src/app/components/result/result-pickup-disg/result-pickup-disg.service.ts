@@ -6,12 +6,12 @@ import { Injectable } from '@angular/core';
 export class ResultPickupDisgService {
 
   public disgPickup: any;
-  public isChenge: boolean;
+  public isChange: boolean;
   private worker: Worker;
 
   constructor() { 
     this.clear();
-    this.isChenge = true;
+    this.isChange = true;
     this.worker = new Worker('./result-pickup-disg.worker', { name: 'pickup-disg', type: 'module' });
   }
 
@@ -64,7 +64,7 @@ export class ResultPickupDisgService {
       // Create a new
       this.worker.onmessage = ({ data }) => {
         this.disgPickup = data.disgPickup;
-        this.isChenge = false;
+        this.isChange = false;
         console.log('変位disg の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
       };
       this.worker.postMessage(postData);
@@ -107,7 +107,7 @@ export class ResultPickupDisgService {
         }
         this.disgPickup[pickNo] = tmp;
       }
-      this.isChenge = false;
+      this.isChange = false;
     } catch (e) {
       console.log(e);
     }

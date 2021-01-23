@@ -69,7 +69,7 @@ export class InputLoadNameComponent implements OnInit {
     afterSelection: (hotInstance, row, column, row2, column2, preventScrolling, selectionLayerLevel) => {
       const a1: number = (this.page - 1) * InputLoadNameComponent.ROWS_COUNT + 1;
       const a2: number = a1 + row;
-      this.three.ChengeMode('load_names', a2);
+      this.three.ChangeMode('load_names', a2);
     }
   };
 
@@ -158,7 +158,7 @@ export class InputLoadNameComponent implements OnInit {
       this.dataset.push(load_name);
       this.rowHeaders.push(i);
     }
-    this.three.ChengeMode('load_names');
+    this.three.ChangeMode('load_names');
   }
 
   // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り

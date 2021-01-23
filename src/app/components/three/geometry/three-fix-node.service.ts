@@ -93,7 +93,7 @@ export class ThreeFixNodeService {
     return this.nodeThree.center;
   }
 
-  public chengeData(index: number): void {
+  public changeData(index: number): void {
 
     this.ClearData();
 

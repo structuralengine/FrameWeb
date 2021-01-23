@@ -95,7 +95,7 @@ export class InputNoticePointsComponent implements OnInit, AfterViewInit {
           console.log(hotInstance.render());
         }
       }
-      this.three.chengeData('notice-points');
+      this.three.changeData('notice-points');
     }
   };
 
@@ -124,7 +124,7 @@ export class InputNoticePointsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.initialFlg = true;
     this.loadPage(1);
-    this.three.ChengeMode('notice_points');
+    this.three.ChangeMode('notice_points');
     this.message = 'please select button.';
     this.myControl = new FormGroup({
       number2: new FormControl(),

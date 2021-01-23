@@ -51,7 +51,7 @@ export class InputFixMemberComponent implements OnInit, AfterViewInit {
       if (this.initialFlg===true){
         return;
       }
-      this.three.chengeData('fix_member', this.page );
+      this.three.changeData('fix_member', this.page );
     }
   };
   private initialFlg = true;
@@ -137,7 +137,7 @@ export class InputFixMemberComponent implements OnInit, AfterViewInit {
       const fix_member = this.data.getFixMemberColumns(this.page, i);
       this.dataset.push(fix_member);
     }
-    this.three.ChengeMode('fix_member', currentPage);
+    this.three.ChangeMode('fix_member', currentPage);
   }
   // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り
   public moveToNextPage(count: number, id: number): void {

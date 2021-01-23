@@ -51,7 +51,7 @@ export class InputJointComponent implements OnInit, AfterViewInit {
       if (this.initialFlg===true){
         return;
       }
-      this.three.chengeData('joints', this.page );
+      this.three.changeData('joints', this.page );
     }
   };
 
@@ -138,7 +138,7 @@ export class InputJointComponent implements OnInit, AfterViewInit {
       const joint = this.input.getJointColumns(this.page, i);
       this.dataset.push(joint);
     }
-    this.three.ChengeMode('joints', currentPage);
+    this.three.ChangeMode('joints', currentPage);
   }
 
    // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り

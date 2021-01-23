@@ -71,7 +71,7 @@ export class ThreeMembersService {
   }
 
   // データが変更された時の処理
-  public chengeData(): void {
+  public changeData(): void {
     
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);

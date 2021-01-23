@@ -57,7 +57,7 @@ export class InputLoadComponent implements OnInit, AfterViewInit {
       if (this.initialFlg===true){
         return;
       }
-      this.three.chengeData('load_points', this.page);
+      this.three.changeData('load_points', this.page);
     }
   };
 
@@ -114,7 +114,7 @@ export class InputLoadComponent implements OnInit, AfterViewInit {
       if (this.initialFlg===true){
         return;
       }
-      this.three.chengeData('load_members', this.page);
+      this.three.changeData('load_members', this.page);
     }
   };
 
@@ -209,7 +209,7 @@ export class InputLoadComponent implements OnInit, AfterViewInit {
     //   this.dataset.push(loadColumn);
     //   this.rowHeaders.push(i);
     // }
-    // this.three.ChengeMode('loadColumn');
+    // this.three.ChangeMode('loadColumn');
   
    for (let i = 1; i <= this.ROWS_COUNT; i++) {
       const loadColumn = this.data.getLoadColumns(this.page, i);
@@ -218,15 +218,15 @@ export class InputLoadComponent implements OnInit, AfterViewInit {
     const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
     this.load_name = currentLoad['name'];
 
-    this.three.ChengeMode('load_points', currentPage);
+    this.three.ChangeMode('load_points', currentPage);
   }
 
   public loadPointsActive(): void {
-    this.three.ChengeMode('load_points');
+    this.three.ChangeMode('load_points');
   }
 
   public loadMembersActive(): void {
-    this.three.ChengeMode('load_members');
+    this.three.ChangeMode('load_members');
   }
 
 

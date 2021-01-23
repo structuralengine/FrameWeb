@@ -65,7 +65,7 @@ export class InputMembersComponent implements OnInit, AfterViewInit {
             hotInstance.render();
           }
         }
-        this.three.chengeData('members');
+        this.three.changeData('members');
       } catch (e) {
         console.log(e);
       }
@@ -93,7 +93,7 @@ export class InputMembersComponent implements OnInit, AfterViewInit {
     this.myControl = new FormGroup({
       number2: new FormControl(),
     });
-    this.three.ChengeMode('members');
+    this.three.ChangeMode('members');
   }
   ngAfterViewInit() {
     this.initialFlg = false;

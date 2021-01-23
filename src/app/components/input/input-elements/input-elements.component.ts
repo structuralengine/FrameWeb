@@ -71,7 +71,7 @@ export class InputElementsComponent implements OnInit, AfterViewInit {
       if (this.initialFlg === true) {
         return;
       }
-      this.three.chengeData('elements', this.page);
+      this.three.changeData('elements', this.page);
     }
   };
 
@@ -163,7 +163,7 @@ export class InputElementsComponent implements OnInit, AfterViewInit {
       this.dataset.push(element);
     }
 
-    this.three.ChengeMode('elements', currentPage);
+    this.three.ChangeMode('elements', currentPage);
   }
 
    // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り

@@ -112,7 +112,7 @@ export class ThreeLoadService {
     return this.nodeThree.minDistance;
   }
 
-  public chengeData(index: number): void {
+  public changeData(index: number): void {
 
     // 一旦全排除
     this.ClearData();

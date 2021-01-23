@@ -53,7 +53,7 @@ export class InputNodesComponent implements OnInit, AfterViewInit {
       if (this.initialFlg === true) {
         return;
       }
-      this.three.chengeData('nodes');
+      this.three.changeData('nodes');
     }
   };
 
@@ -73,7 +73,7 @@ export class InputNodesComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.initialFlg = true;
     this.loadPage(1);
-    this.three.ChengeMode('nodes');
+    this.three.ChangeMode('nodes');
     this.message = 'please select button.';
     this.myControl = new FormGroup({
       number2: new FormControl(),

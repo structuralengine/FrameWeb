@@ -108,7 +108,7 @@ export class ThreeDisplacementService {
     this.gui = null;
   }
 
-  public chengeData(index: number): void {
+  public changeData(index: number): void {
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
