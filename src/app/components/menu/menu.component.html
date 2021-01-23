@@ -7,8 +7,8 @@
               class="far fa-file"></i></a>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <button ngbDropdownItem (click)="renew()">新規作成</button>
-            <label>
-              <span ngbDropdownItem>
+            <label style="width: 100%; margin:0">
+              <span ngbDropdownItem style="padding:8px">
                 ファイルを開く
                 <input type="file" accept="application/fwj" (change)="open($event)" style="display:none" />
               </span>
