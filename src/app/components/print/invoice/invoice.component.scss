@@ -2,6 +2,9 @@
   page-break-after: always;
 }
 
+
+
+
 .invoice:last-child {
   page-break-after: avoid;
 }
@@ -25,13 +28,18 @@
     font-size: 20px;
   }
   table {
+   // page-break-after: auto;
     th {
       padding: 4px 8px;
       font-weight: 400;
+      page-break-inside:avoid;
+      // page-break-after:auto;
     }
 
     td {
       padding: 4px 8px;
+      page-break-inside:avoid; 
+      //page-break-after:auto;
     }
   }
 }
