@@ -29,7 +29,7 @@ export class ThreeJointService {
       this.isVisible = null;
     }
 
-  public visible(flag: boolean): void {
+  public visibleChange(flag: boolean): void {
     if( this.isVisible === flag){
       return;
     }

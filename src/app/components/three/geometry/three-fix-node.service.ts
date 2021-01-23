@@ -40,7 +40,7 @@ export class ThreeFixNodeService {
   }
 
   // 表示設定を変更する
-  public visible(flag: boolean): void {
+  public visibleChange(flag: boolean): void {
     if (this.isVisible === flag) {
       return;
     }
