@@ -448,13 +448,27 @@ export class ThreeLoadService {
       if (localAxis.x.y === 0 && localAxis.x.z === 0) {
         //console.log(load.m, m, 'は x軸に平行な部材です')
         if (direction === 'gx') direction = 'x';
+        if (direction === 'gy') direction = 'y';
+        if (direction === 'gz') direction = 'z';
       }
-      if (localAxis.x.x === 0 && localAxis.x.z === 0) {
+      else if (localAxis.x.x === 0 && localAxis.x.z === 0) {
         //console.log(load.m, m, 'は y軸に平行な部材です')
+        if (direction === 'gx'){
+          direction = 'y';
+          P1 = -P1;
+          P2 = -P2;
+        }
         if (direction === 'gy') direction = 'x';
+        if (direction === 'gz') direction = 'z';
       }
-      if (localAxis.x.x === 0 && localAxis.x.y === 0) {
+      else if (localAxis.x.x === 0 && localAxis.x.y === 0) {
         //console.log(load.m, m, 'は z軸に平行な部材です')
+        if (direction === 'gx') {
+          direction = 'y';
+          P1 = -P1;
+          P2 = -P2;
+        }
+        if (direction === 'gy') direction = 'z';
         if (direction === 'gz') {
           direction = 'x';
           P1 = -P1;
@@ -462,9 +476,10 @@ export class ThreeLoadService {
         }
       }
 
+
       // 分布荷重 wy, wz -------------------------------
       // mark=2, direction=x
-      
+
       // 非表示になっている余った荷重を見つける
       let arrow: THREE.Group = null;
       let already: boolean = false;
@@ -483,6 +498,7 @@ export class ThreeLoadService {
       if (already === false) {
         arrow = this.distributeLoad.clone();
       }
+
 
       // 配置位置（その他の荷重とぶつからない位置）を決定する
       const offset = new THREE.Vector2(0, 0);
