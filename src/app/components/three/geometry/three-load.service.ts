@@ -425,10 +425,10 @@ export class ThreeLoadService {
       }
 
       // 部材データを集計する
-      const m = memberData[load.m];
-      if (m === undefined) {
+      if (!(load.m in memberData)) {
         continue;
       }
+      const m = memberData[load.m];
       // 節点データを集計する
       const i = nodeData[m.ni];
       const j = nodeData[m.nj];
@@ -441,84 +441,80 @@ export class ThreeLoadService {
       // リストに登録する
       const target = (m in this.memberLoadList) ? this.memberLoadList[m] : { localAxis, wx: [], wy: [], wz: [], wr: [] };
 
+      // 荷重値と向き -----------------------------------
+      let P1: number = load.P1;
+      let P2: number = load.P2;
       let direction: string = load.direction;
-
       if (localAxis.x.y === 0 && localAxis.x.z === 0) {
-        console.log(m, 'は x軸に平行な部材です')
+        //console.log(load.m, m, 'は x軸に平行な部材です')
         if (direction === 'gx') direction = 'x';
-        if (direction === 'gy') direction = 'y';
-        if (direction === 'gz') direction = 'z';
       }
       if (localAxis.x.x === 0 && localAxis.x.z === 0) {
-        console.log(m, 'は y軸に平行な部材です')
-        if (direction === 'gx') direction = '-y';
+        //console.log(load.m, m, 'は y軸に平行な部材です')
         if (direction === 'gy') direction = 'x';
-        if (direction === 'gz') direction = 'z';
       }
       if (localAxis.x.x === 0 && localAxis.x.y === 0) {
-        console.log(m, 'は z軸に平行な部材です')
-        if (direction === 'gx') direction = '-y';
-        if (direction === 'gy') direction = 'z';
-        if (direction === 'gz') direction = '-x';
+        //console.log(load.m, m, 'は z軸に平行な部材です')
+        if (direction === 'gz') {
+          direction = 'x';
+          P1 = -P1;
+          P2 = -P2;
+        }
       }
-      /*
+
+      // 分布荷重 wy, wz -------------------------------
+      // mark=2, direction=x
+      
       // 非表示になっている余った荷重を見つける
       let arrow: THREE.Group = null;
       let already: boolean = false;
-      let index = -1;
-      let key: string = null;
-
-      if (localAxis.y === 0 && localAxis.z === 0) {
-        index = target[''].findIndex(a => { a.visible === false });
-      }
-
-      if (i > 0) {
-        arrow = target[k][i];
-        arrow.visible = true;
-        target[k].splice(i, 1); // 一旦削除
-        already = true;
-        break;
+      for (const k of ["wy", "wz"]) {
+        const i = target[k].findIndex(a => { a.visible === false });
+        if (i > 0) {
+          arrow = target[k][i];
+          arrow.visible = true;
+          target[k].splice(i, 1); // 一旦削除
+          already = true;
+          break;
+        }
       }
 
       // 非表示になっている余った荷重がなければ新しいのを準備する
       if (already === false) {
-        arrow = this.pointLoad.clone();
+        arrow = this.distributeLoad.clone();
       }
 
-        // 配置位置（その他の荷重とぶつからない位置）を決定する
-        const offset = new THREE.Vector2(0, 0);
-        for (const a of target[key]) {
-          if (a.visible === false) {
-            continue;
-          }
-          const child: any = a.getObjectByName("child");
-          const direction: boolean = (Math.round(child.rotation.x) < 0)
-          if (value < 0 && direction === true) {
-            // マイナス
-            offset.x += child.scale.x;
-          } if (value > 0 && direction === false) {
-            // プラスの荷重
-            offset.x -= child.scale.x;
-          }
+      // 配置位置（その他の荷重とぶつからない位置）を決定する
+      const offset = new THREE.Vector2(0, 0);
+      for (const a of target[key]) {
+        if (a.visible === false) {
+          continue;
         }
-        // 荷重を編集する
-        // 長さを決める
-        // scale = 1 の時 長さlength = maxLengthとなる
-        const scale = Math.abs(value / pMax);
-        const length: number = maxLength * scale;
-        this.pointLoad.change(arrow, node, offset, value, length, key);
-
-        // リストに登録する
-        target[key].push(arrow);
-        if (already === false) {
-          this.scene.add(arrow);
+        const child: any = a.getObjectByName("child");
+        const direction: boolean = (Math.round(child.rotation.x) < 0)
+        if (value < 0 && direction === true) {
+          // マイナス
+          offset.x += child.scale.x;
+        } if (value > 0 && direction === false) {
+          // プラスの荷重
+          offset.x -= child.scale.x;
         }
-        this.pointLoadList[n] = target;
-
       }
-      */
+      // 荷重を編集する
+      // 長さを決める
+      // scale = 1 の時 長さlength = maxLengthとなる
+      const scale = Math.abs(value / pMax);
+      const length: number = maxLength * scale;
+      this.pointLoad.change(arrow, node, offset, value, length, key);
+
+      // リストに登録する
+      target[key].push(arrow);
+      if (already === false) {
+        this.scene.add(arrow);
+      }
+      this.pointLoadList[n] = target;
+
     }
-
   
   }
 
