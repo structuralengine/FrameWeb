@@ -700,11 +700,19 @@ td,
 th {
   vertical-align: top;
   padding: 0;
+  line-height: 15px;
 }
 
+td{
+  text-align: right;
+  padding: 4px;
+}
 th {
-  text-align: left;
+  text-align: center;
+  font-size: 11px!important;
   font-weight: bold;
+  padding: 4px 3px;
+  vertical-align: middle;
 }
 
 /* Misc */
@@ -725,3 +733,5 @@ template {
 [hidden] {
   display: none;
 }
+
+

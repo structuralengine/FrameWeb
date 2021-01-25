@@ -28,8 +28,8 @@ export class ResultCombineDisgComponent implements OnInit {
   constructor(private data: ResultCombineDisgService,
               private disg: ResultDisgService,
               private comb: InputCombineService,
-              private result: ResultDataService,
               private three: ThreeService,
+              private result: ResultDataService,
               private pic: ResultPickupDisgService) {
     this.dataset = new Array();
   }
