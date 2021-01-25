@@ -42,9 +42,11 @@ export class ThreeLoadService {
   value: {
     localAxcis: 部材のローカル座標
     wx: [], // 軸方向荷重のリスト
-    wy: [], // y軸方向荷重のリスト（分布荷重と集中荷重）
+    wy: [], // y軸方向荷重のリスト
     wz: [], // z軸方向荷重のリスト
-    wr: []  // ねじり方向荷重のリスト（分布ねじりと集中曲げ）
+    wgy: [], // 絶対座標系y軸方向荷重のリスト
+    wgz: [], // 絶対座標系z軸方向荷重のリスト
+    wr: []  // ねじり方向荷重のリスト
   }*/
 
   // 荷重のテンプレート
@@ -72,7 +74,7 @@ export class ThreeLoadService {
     // フォントをロード
     const loader = new THREE.FontLoader();
     loader.load("./assets/fonts/helvetiker_regular.typeface.json", (font) => {
-      
+
       const text = new ThreeLoadText(font);
       const dim = new ThreeLoadDimension(text); //寸法戦を扱うモジュール
 
@@ -307,7 +309,7 @@ export class ThreeLoadService {
     for (const load of targetNodeLoad) {
       mMax = Math.max(
         mMax,
-        Math.abs(load.rx), 
+        Math.abs(load.rx),
         Math.abs(load.ry),
         Math.abs(load.rz)
       );
@@ -390,12 +392,19 @@ export class ThreeLoadService {
     memberLoadData: any,
     nodeData: object,
     memberData: object
-  ): void { 
-    // this.distributeLoad: ThreeLoadDistribute(text, dim);         // 分布荷重のテンプレート
-    // this.axialLoad: ThreeLoadAxial(text);                   // 軸方向荷重のテンプレート
-    // this.torsionLoad: ThreeLoadTorsion(text, dim, this.momentLoad);           // ねじり分布荷重のテンプレート
-    // this.temperatureLoad: ThreeLoadTemperature(text, dim);  // 温度荷重のテンプレート
+  ): void {
+
     if (memberLoadData === undefined) {
+      return;
+    }
+
+    // スケールを決定する 最大の荷重を 1とする
+    let pMax = 0;
+    memberLoadData.forEach((load, index, array) => {
+      pMax = Math.max(pMax, Math.abs(load.P1));
+      pMax = Math.max(pMax, Math.abs(load.P2));
+    })
+    if (pMax === 0) {
       return;
     }
 
@@ -406,15 +415,6 @@ export class ThreeLoadService {
       })
     ).temp;
 
-    // スケールを決定する 最大の荷重を 1とする
-    let pMax = 0;
-    for (const load of targetMemberLoad) {
-      pMax = Math.max(pMax, Math.abs(load.P1));
-      pMax = Math.max(pMax, Math.abs(load.P2));
-    }
-    if (pMax === 0) {
-      return;
-    }
     const maxLength = this.baseScale(); // 最も大きい集中荷重矢印の長さは baseScale * 2 とする
 
     // 分布荷重の矢印をシーンに追加する
@@ -430,16 +430,17 @@ export class ThreeLoadService {
       }
       const m = memberData[load.m];
       // 節点データを集計する
-      const i = nodeData[m.ni];
-      const j = nodeData[m.nj];
-      if (i === undefined || j === undefined) {
+      if (!(m.ni in nodeData && m.nj in nodeData )) {
         continue;
       }
+      const i = nodeData[m.ni];
+      const j = nodeData[m.nj];
+
       // 部材の座標軸を取得
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
 
       // リストに登録する
-      const target = (m in this.memberLoadList) ? this.memberLoadList[m] : { localAxis, wx: [], wy: [], wz: [], wr: [] };
+      const target = (m in this.memberLoadList) ? this.memberLoadList[m] : { localAxis, wx: [], wy: [], wz: [], wgy: [], wgz: [], wr: [] };
 
       // 荷重値と向き -----------------------------------
       let P1: number = load.P1;
@@ -498,10 +499,10 @@ export class ThreeLoadService {
       if (already === false) {
         arrow = this.distributeLoad.clone();
       }
-
+      // 方向を決定する
+      const key: string = 'w' + direction;
 
       // 配置位置（その他の荷重とぶつからない位置）を決定する
-      const offset = new THREE.Vector2(0, 0);
       for (const a of target[key]) {
         if (a.visible === false) {
           continue;
@@ -528,10 +529,9 @@ export class ThreeLoadService {
       if (already === false) {
         this.scene.add(arrow);
       }
-      this.pointLoadList[n] = target;
-
+      this.memberLoadList[m] = target;
     }
-  
+
   }
 
   // #endregion
@@ -558,7 +558,7 @@ export class ThreeLoadService {
 
   // #endregion
 
- 
+
   // #region データをクリアする
   public ClearData(): void {
     // 既に存在する荷重を非表示にする
@@ -591,5 +591,5 @@ export class ThreeLoadService {
   }
   // #endregion
 
- 
+
 }
