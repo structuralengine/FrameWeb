@@ -1,17 +1,34 @@
 <div class="btn-group">
   <nav>
-    <a routerLink="/result-reac" routerLinkActive="selected-item" class="btn btn-outline-primary active">基本ケース</a>
-    <a routerLink="/result-comb_reac" routerLinkActive="selected-item" [class]="btnCombine">COMBINE</a>
-    <a routerLink="/result-pic_reac" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
+    <a
+      routerLink="/result-reac"
+      routerLinkActive="selected-item"
+      class="btn btn-outline-primary active"
+      >基本ケース</a
+    >
+    <a
+      routerLink="/result-comb_reac"
+      routerLinkActive="selected-item"
+      [class]="btnCombine"
+      >COMBINE</a
+    >
+    <a
+      routerLink="/result-pic_reac"
+      routerLinkActive="selected-item"
+      [class]="btnPickup"
+      >PICKUP</a
+    >
   </nav>
 </div>
 
 <div class="pager">
-  <div class="pager-title">タイプ</div>
+  <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
+  <p class="load-name">{{ load_name }}</p>
+  <!-- <div class="pager-title">タイプ</div>
   <ngb-pagination class="ngb-pagination" [collectionSize]="collectionSize" [(page)]="page" [maxSize]="7" [rotate]="true"
     [ellipses]="false" [boundaryLinks]="true" aria-label="Default pagination" (pageChange)="loadPage($event)">
   </ngb-pagination>
-  <div class="load-name">{{load_name}}</div>
+  <div class="load-name">{{load_name}}</div> -->
 </div>
 
 <div class="result_table">
@@ -27,14 +44,14 @@
       <th class="case">組み合わせ</th>
     </tr>
     <tr *ngFor="let resultData of dataset; index as i">
-      <td class="id">{{resultData.id}}</td>
-      <td class="tx">{{resultData.tx}}</td>
-      <td class="ty">{{resultData.ty}} </td>
-      <td class="tz">{{resultData.tz}} </td>
-      <td class="mx">{{resultData.mx}} </td>
-      <td class="my">{{resultData.my}} </td>
-      <td class="mz">{{resultData.mz}} </td>
-      <td class="case">{{resultData.case}} </td>
+      <td class="id">{{ resultData.id }}</td>
+      <td class="tx">{{ resultData.tx }}</td>
+      <td class="ty">{{ resultData.ty }}</td>
+      <td class="tz">{{ resultData.tz }}</td>
+      <td class="mx">{{ resultData.mx }}</td>
+      <td class="my">{{ resultData.my }}</td>
+      <td class="mz">{{ resultData.mz }}</td>
+      <td class="case">{{ resultData.case }}</td>
     </tr>
   </table>
 </div>
