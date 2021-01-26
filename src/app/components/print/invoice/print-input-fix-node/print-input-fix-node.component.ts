@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
+import { PrintInputFixNodeService } from "./print-input-fix-node.service";
 
 @Component({
   selector: "app-print-input-fix-node",
@@ -27,7 +28,11 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   public fixNode_dataset = [];
   public fixNode_typeNum = [];
 
-  constructor(private InputData: InputDataService) {}
+  public judge : boolean;
+
+  constructor(private InputData: InputDataService,private countArea:PrintInputFixNodeService) {
+    this.judge = false;
+  }
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);
@@ -36,7 +41,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       const tables = this.printFixnode(inputJson); // {body, title}
       this.fixNode_dataset = tables.body;
       this.fixNode_typeNum = tables.title;
-      this.fixNode_countArea = this.countTotal;
+      this.judge = this.countArea.setCurrentY(this.countTotal);
     }
   }
 

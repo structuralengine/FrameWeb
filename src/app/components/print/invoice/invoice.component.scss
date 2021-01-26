@@ -19,6 +19,11 @@ $height_content: 20px;
     display: none;
   }
 }
+
+.pagerBreak{
+  page-break-after: left;
+}
+
 .invoicetTable {
   h2 {
     height: $height_header;

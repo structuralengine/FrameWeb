@@ -1,30 +1,44 @@
-import { Injectable } from '@angular/core';
-import {Router} from '@angular/router';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class PrintService {
   isPrinting = false;
-  contentEditable1 : boolean[];
+  contentEditable1: boolean[];
 
   constructor(private router: Router) {
-    this.contentEditable1 = [false, false, false, false, false, false, false, false, false];
-   }
+    this.contentEditable1 = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+  }
 
   printDocument(documentName: string, documentData: string[]) {
     this.isPrinting = true;
-    this.router.navigate(['/',
-      { outlets: {
-        'print': ['print', documentName, documentData.join()]
-      }}]);
+    this.router.navigate([
+      "/",
+      {
+        outlets: {
+          print: ["print", documentName, documentData.join()],
+        },
+      },
+    ]);
   }
 
   onDataReady() {
     setTimeout(() => {
       window.print();
       this.isPrinting = false;
-      this.router.navigate([{ outlets: { print: null }}]);
+      this.router.navigate([{ outlets: { print: null } }]);
     });
   }
 }

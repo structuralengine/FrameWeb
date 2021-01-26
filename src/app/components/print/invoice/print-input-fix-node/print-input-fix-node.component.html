@@ -1,6 +1,7 @@
-<div class="invoicetTable fixNode">
+<div *ngIf="judge" class="pagerBreak">
+  <div class="invoicetTable fixNode">
     <h2>支点データ</h2>
-  
+
     <div *ngFor="let title of fixNode_typeNum; let i = index">
       <h3>タイプ {{title}}</h3>
       <table>
@@ -35,3 +36,4 @@
       </table>
     </div>
   </div>
+</div>
