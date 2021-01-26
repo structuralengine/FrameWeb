@@ -19,16 +19,19 @@ export class ThreeLoadMoment {
 
   public clone(): THREE.Group{
 
-    const ellipse = this.ellipse.clone();
+    const child = new THREE.Group();
+
     const line_mat: any = this.ellipse.material;
-    ellipse.material = line_mat.clone();
+    const line_geo: any = this.ellipse.geometry;
+    const ellipse = new THREE.Line(line_geo.clone(), line_mat.clone());
+    ellipse.name = "line";
+
+    child.add(ellipse);
 
     const arrow = this.arrow.clone();
     const arrow_mat: any = this.arrow.material;
     arrow.material = arrow_mat.clone();
 
-    const child = new THREE.Group();
-    child.add(ellipse);
     child.add(arrow);
     child.name = "child";
 

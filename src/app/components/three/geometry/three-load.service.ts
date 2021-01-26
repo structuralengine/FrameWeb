@@ -223,7 +223,7 @@ export class ThreeLoadService {
         Math.abs(load.rz)
       );
     });
-    if(pMax === 0 && mMax === 0 ){
+    if (pMax === 0 && mMax === 0) {
       return;
     }
 
@@ -365,7 +365,6 @@ export class ThreeLoadService {
     nodeData: object,
     memberData: object
   ): void {
-
     if (memberLoadData === undefined) {
       return;
     }
@@ -389,6 +388,10 @@ export class ThreeLoadService {
 
     const maxLength = this.baseScale(); // 最も大きい集中荷重矢印の長さは baseScale * 2 とする
 
+    // スケールを決める
+    // 荷重値 = pMax の時 表示長さ = maxLength となる
+    const scale = maxLength / pMax * 10;
+
     // 分布荷重の矢印をシーンに追加する
     for (const load of targetMemberLoad) {
       if (load.P1 === 0 && load.P2 === 0) {
@@ -406,6 +409,8 @@ export class ThreeLoadService {
       }
       const i = nodeData[m.ni];
       const j = nodeData[m.nj];
+      const nodei = new THREE.Vector3(i.x, i.y, i.z);
+      const nodej = new THREE.Vector3(j.x, j.y, j.z);
 
       // 部材の座標軸を取得
       const localAxis = this.three_member.localAxis(
@@ -459,59 +464,80 @@ export class ThreeLoadService {
 
       // 分布荷重 wy, wz -------------------------------
       // mark=2, direction=x
-
-      // 非表示になっている余った荷重を見つける
-      let arrow: THREE.Group = null;
-      let already: boolean = false;
-      for (const k of ["wy", "wz"]) {
-        const i = target[k].findIndex((a) => {
-          a.visible === false;
-        });
-        if (i > 0) {
-          arrow = target[k][i];
-          arrow.visible = true;
-          target[k].splice(i, 1); // 一旦削除
-          already = true;
-          break;
+      if (
+        load.mark === 2 &&
+        (direction === "y" ||
+          direction === "z" ||
+          direction === "gx" ||
+          direction === "gy" ||
+          direction === "gz")
+      ) {
+        // 非表示になっている余った荷重を見つける
+        let arrow: THREE.Group = null;
+        let already: boolean = false;
+        for (const k of ["wy", "wz", "wgy", "wgz"]) {
+          const i = target[k].findIndex((a) => {
+            a.visible === false;
+          });
+          if (i > 0) {
+            arrow = target[k][i];
+            arrow.visible = true;
+            target[k].splice(i, 1); // 一旦削除
+            already = true;
+            break;
+          }
         }
-      }
 
-      // 非表示になっている余った荷重がなければ新しいのを準備する
-      if (already === false) {
-        arrow = this.distributeLoad.clone();
-      }
-      // 方向を決定する
-      const key: string = "w" + direction;
+        // 非表示になっている余った荷重がなければ新しいのを準備する
+        if (already === false) {
+          arrow = this.distributeLoad.clone();
+        }
 
-      // 配置位置（その他の荷重とぶつからない位置）を決定する
-      for (const a of target[key]) {
-        if (a.visible === false) {
-          continue;
-        }
-        const child: any = a.getObjectByName("child");
-        const direction: boolean = Math.round(child.rotation.x) < 0;
-        if (value < 0 && direction === true) {
-          // マイナス
-          offset.x += child.scale.x;
-        }
-        if (value > 0 && direction === false) {
-          // プラスの荷重
-          offset.x -= child.scale.x;
-        }
-      }
-      // 荷重を編集する
-      // 長さを決める
-      // scale = 1 の時 長さlength = maxLengthとなる
-      const scale = Math.abs(value / pMax);
-      const length: number = maxLength * scale;
-      this.pointLoad.change(arrow, node, offset, value, length, key);
+        // 方向を決定する
+        const key: string = "w" + direction;
 
-      // リストに登録する
-      target[key].push(arrow);
-      if (already === false) {
-        this.scene.add(arrow);
+        // 配置位置（その他の荷重とぶつからない位置）を決定する
+        let offset = 0;
+        for (const a of target[key]) {
+          if (a.visible === false) {
+            continue;
+          }
+          const child: any = a.getObjectByName("child");
+          const mesh: any = child.getObjectByName("face");
+          const face_geo = mesh.geometry;
+          const points = face_geo.vertices;
+          const h = Math.abs(points[1].y - points[3].y);
+          if (P1 + P2 > 0) {
+            // プラス側にオフセット
+            offset += h;
+          } else {
+            // マイナス側にオフセット
+            offset -= h;
+          }
+        }
+        // 荷重を編集する
+        this.distributeLoad.change(
+          arrow,
+          nodei,
+          nodej,
+          localAxis,
+          key,
+          load.L1,
+          load.L2,
+          P1,
+          P2,
+          offset,
+          scale
+        );
+
+        // リストに登録する
+        target[key].push(arrow);
+        if (already === false) {
+          this.scene.add(arrow);
+        }
+        this.memberLoadList[m] = target;
+        return; // sasa
       }
-      this.memberLoadList[m] = target;
     }
   }
 
