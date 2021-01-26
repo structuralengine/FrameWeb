@@ -4,6 +4,20 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class PrintInputMembersService {
+  currentY : number;
 
-  constructor() { }
+  constructor(){
+    this.currentY = 0;
+  }
+
+  setCurrentY(tableHeight:number):boolean{
+    this.currentY += tableHeight;
+    if(this.currentY > 1140){
+      this.currentY = 0;
+      return true;
+    }else{
+      return false;
+    }
+  }
+
 }

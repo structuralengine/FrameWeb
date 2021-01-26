@@ -1,50 +1,57 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { AfterViewInit } from '@angular/core';
-
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { AfterViewInit } from "@angular/core";
+import { PrintInputElementsService } from "./print-input-elements.service";
 
 @Component({
-  selector: 'app-print-input-elements',
-  templateUrl: './print-input-elements.component.html',
-  styleUrls: ['./print-input-elements.component.scss', '../../../../app.component.scss','../invoice.component.scss']
+  selector: "app-print-input-elements",
+  templateUrl: "./print-input-elements.component.html",
+  styleUrls: [
+    "./print-input-elements.component.scss",
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+  ],
 })
-export class PrintInputElementsComponent implements OnInit, AfterViewInit  {
+export class PrintInputElementsComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   public elements_dataset = [];
   public elements_typeNum = [];
-  constructor( 
-    private InputData: InputDataService
-    ) {}
 
+  public judge: boolean;
+
+  constructor(
+    private InputData: InputDataService,
+    private countArea: PrintInputElementsService
+  ) {}
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit() {
-
     const inputJson: any = this.InputData.getInputJson(0);
 
-    if ('element' in inputJson) {
+    if ("element" in inputJson) {
       const tables = this.printElement(inputJson); // {body, title}
       this.elements_dataset = tables.body;
       this.elements_typeNum = tables.title;
-      console.log("dsaffds", tables)
+      this.judge = this.countArea.setCurrentY(this.countTotal);
+      console.log("dsaffds", tables);
     }
-
   }
 
-   // 材料データ element を印刷する
-  private printElement(inputJson): any {
+  ngAfterViewInit() {}
 
+  // 材料データ element を印刷する
+  private printElement(inputJson): any {
     let printAfterInfo: any;
 
-    const json: {} = inputJson['element']; // inputJsonからnodeだけを取り出す
+    const json: {} = inputJson["element"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
     const body: any = [];
     let head: string[];
@@ -54,22 +61,6 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit  {
       title.push(index.toString());
       const elist = json[index]; // 1行分のnodeデータを取り出す
 
-      // // あらかじめテーブルの高さを計算する
-      // const dataCount: number = elist.length;;
-      // const TableHeight: number = (dataCount + 3) * (fontsize * 2.3);
-
-      // // はみ出るなら改ページ
-      // if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
-      //   if (pageHeight - currentY < (pageHeight - this.margine.top - this.margine.bottom) / 2) { // かつ余白が頁の半分以下ならば
-      //     doc.addPage();
-      //     currentY = this.margine.top + fontsize;
-      //     LineFeed = 0;
-      //   }
-      // }
-
-      // if (No === 1) {
-      //   doc.text(this.margine.left, currentY + LineFeed, "材料データ")
-      // }
       const table: any = []; // この時点でリセット、再定義 一旦空にする
       for (const key of Object.keys(elist)) {
         const item = elist[key];
@@ -85,9 +76,11 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit  {
         line.push(item.J.toFixed(4));
         table.push(line);
       }
+      this.countCell = elist.length * 20;
       body.push(table);
     }
-    return { body, title };
+    this.countHead = keys.length * 2 * 20;
+    this.countTotal = this.countCell + this.countHead + 40;
+    return { body, title, this: this.countTotal };
   }
-
 }

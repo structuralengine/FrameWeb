@@ -19,7 +19,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   countCell: number;
   countHead: number;
   countTotal: number;
-  fixNode_countArea:number;
+  fixNode_countArea: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -28,9 +28,12 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   public fixNode_dataset = [];
   public fixNode_typeNum = [];
 
-  public judge : boolean;
+  public judge: boolean;
 
-  constructor(private InputData: InputDataService,private countArea:PrintInputFixNodeService) {
+  constructor(
+    private InputData: InputDataService,
+    private countArea: PrintInputFixNodeService
+  ) {
     this.judge = false;
   }
 
@@ -41,13 +44,11 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       const tables = this.printFixnode(inputJson); // {body, title}
       this.fixNode_dataset = tables.body;
       this.fixNode_typeNum = tables.title;
-      this.judge = this.countArea.setCurrentY(this.countTotal);
+      this.judge = this.countArea.setCurrentY(tables.this.countTotal);
     }
   }
 
-  ngAfterViewInit() {
-   
-  }
+  ngAfterViewInit() {}
 
   // 支点データ fix_node を印刷する
   private printFixnode(inputJson): any {
@@ -75,11 +76,11 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
         line.push(item.rz.toString());
         table.push(line);
       }
-      this.countCell = elist.length * 20;
+      this.countCell = (elist.length + 1) * 20;
       body.push(table);
     }
-    this.countHead = keys.length * 20;
+    this.countHead = keys.length * 2 * 20;
     this.countTotal = this.countCell + this.countHead + 40;
-    return { body, title,this:this.countTotal};
+    return { body, title, this: this.countTotal };
   }
 }

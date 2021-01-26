@@ -1,39 +1,38 @@
-<div *ngIf="judge" class="pagerBreak">
-  <div class="invoicetTable fixNode">
-    <h2>支点データ</h2>
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable fixNode">
+  <h2>支点データ</h2>
 
-    <div *ngFor="let title of fixNode_typeNum; let i = index">
-      <h3>タイプ {{title}}</h3>
-      <table>
-        <tr>
-          <th class="id">格点No</th>
-          <th class="TX">TX</th>
-          <th class="TY">TY</th>
-          <th class="TZ">TZ</th>
-          <th class="RX">RX</th>
-          <th class="RY">RY</th>
-          <th class="RZ">RZ</th>
-        </tr>
-        <tr>
-          <th class="id"></th>
-          <th class="A">(㎡)</th>
-          <th class="E">(kN/㎡)</th>
-          <th class="G">(kN/㎡)</th>
-          <th class="ESP"></th>
-          <th class="I">y軸周り</th>
-          <th class="I">z軸周り</th>
-          <th class="twist"></th>
-        </tr>
-        <tr *ngFor="let data of fixNode_dataset[i]">
-          <td class="id">{{data[0]}}</td>
-          <td class="TX">{{data[1]}}</td>
-          <td class="TY">{{data[2]}}</td>
-          <td class="TZ">{{data[3]}}</td>
-          <td class="RX">{{data[4]}}</td>
-          <td class="RY">{{data[5]}}</td>
-          <td class="RZ">{{data[6]}}</td>
-        </tr>
-      </table>
-    </div>
+  <div *ngFor="let title of fixNode_typeNum; let i = index">
+    <h3>タイプ {{title}}</h3>
+    <table>
+      <tr>
+        <th class="id">格点No</th>
+        <th class="TX">TX</th>
+        <th class="TY">TY</th>
+        <th class="TZ">TZ</th>
+        <th class="RX">RX</th>
+        <th class="RY">RY</th>
+        <th class="RZ">RZ</th>
+      </tr>
+      <tr>
+        <th class="id"></th>
+        <th class="A">(㎡)</th>
+        <th class="E">(kN/㎡)</th>
+        <th class="G">(kN/㎡)</th>
+        <th class="ESP"></th>
+        <th class="I">y軸周り</th>
+        <th class="I">z軸周り</th>
+        <th class="twist"></th>
+      </tr>
+      <tr *ngFor="let data of fixNode_dataset[i]">
+        <td class="id">{{data[0]}}</td>
+        <td class="TX">{{data[1]}}</td>
+        <td class="TY">{{data[2]}}</td>
+        <td class="TZ">{{data[3]}}</td>
+        <td class="RX">{{data[4]}}</td>
+        <td class="RY">{{data[5]}}</td>
+        <td class="RZ">{{data[6]}}</td>
+      </tr>
+    </table>
   </div>
 </div>

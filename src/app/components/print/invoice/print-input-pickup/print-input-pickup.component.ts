@@ -21,16 +21,17 @@ export class PrintInputPickupComponent implements OnInit,AfterViewInit {
   constructor(private InputData: InputDataService) { }
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit() {
-
+    
     const inputJson: any = this.InputData.getInputJson(0);
 
     const pickupJson: any = this.InputData.pickup.getPickUpJson();
     if (Object.keys(pickupJson).length > 0) {
       this.pickup_dataset = this.printPickup(pickupJson);
     }
+  }
+
+  ngAfterViewInit() {
+
 
   }
 

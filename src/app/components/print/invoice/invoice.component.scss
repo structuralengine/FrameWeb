@@ -2,13 +2,13 @@ $height_header: 40px;
 $height_semiHeader: 32px;
 $height_content: 20px;
 
-.invoice {
-  page-break-after: always;
-}
+// .invoice {
+//   page-break-after: always;
+// }
 
-.invoice:last-child {
-  page-break-after: avoid;
-}
+// .invoice:last-child {
+//   page-break-after: avoid;
+// }
 
 @media print {
   .title-and-menu {
@@ -21,7 +21,7 @@ $height_content: 20px;
 }
 
 .pagerBreak{
-  page-break-after: left;
+  page-break-before: always;
 }
 
 .invoicetTable {

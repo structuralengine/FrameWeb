@@ -1,48 +1,55 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { AfterViewInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { AfterViewInit } from "@angular/core";
 
 @Component({
-  selector: 'app-print-input-joint',
-  templateUrl: './print-input-joint.component.html',
-  styleUrls: ['./print-input-joint.component.scss', '../../../../app.component.scss','../invoice.component.scss']
+  selector: "app-print-input-joint",
+  templateUrl: "./print-input-joint.component.html",
+  styleUrls: [
+    "./print-input-joint.component.scss",
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+  ],
 })
 export class PrintInputJointComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
-  invoiceDetails: Promise<any>[];  
-  
+  invoiceDetails: Promise<any>[];
+
   public joint_dataset = [];
   public joint_typeNum = [];
-  constructor( private InputData: InputDataService ) { }
+
+  public judge: boolean;
+
+  constructor(private InputData: InputDataService) {}
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit() {
-
     const inputJson: any = this.InputData.getInputJson(0);
 
-    if ('joint' in inputJson) {
+    if ("joint" in inputJson) {
       const tables = this.printjoint(inputJson); // {body, title}
       this.joint_dataset = tables.body;
       this.joint_typeNum = tables.title;
     }
   }
 
-   // 結合データ を印刷する
-   private printjoint(inputJson): any {
+  ngAfterViewInit() {}
 
-    const json: {} = inputJson['joint'];
-
+  // 結合データ を印刷する
+  private printjoint(inputJson): any {
+    const json: {} = inputJson["joint"];
     const body: any = [];
+    const keys: string[] = Object.keys(json);
     // const table: any = []; // 下に移動
     const title: string[] = new Array();
-    for (const index of Object.keys(json)) {
+    for (const index of keys) {
       const elist = json[index]; // 1行分のnodeデータを取り出す
       title.push(index.toString());
       const table: any = []; // この時点でリセット、再定義 一旦空にする
@@ -59,11 +66,12 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
         line.push(item.yj.toString());
         line.push(item.zj.toString());
         table.push(line);
-
       }
+      this.countCell = (elist.length + 1) * 20;
       body.push(table);
     }
-    return { body, title };
-
+    this.countHead = keys.length * 2 * 20;
+    this.countTotal = this.countCell + this.countHead + 40;
+    return { body, title, this: this.countTotal };
   }
 }

@@ -25,16 +25,17 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-  }
-
-
-  ngAfterViewInit() {
-
+    
     const inputJson: any = this.InputData.getInputJson(0);
 
     if ('node' in inputJson) {
       this.node_dataset = this.printNode(inputJson);
     }
+  }
+
+
+  ngAfterViewInit() {
+
   }
 
   // 格子点データ node を印刷する
