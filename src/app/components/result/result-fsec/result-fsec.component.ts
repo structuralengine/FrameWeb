@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { ResultFsecService } from './result-fsec.service';
-import { InputLoadService } from '../../input/input-load/input-load.service';
-import { ThreeService } from '../../three/three.service';
+import { Component, OnInit } from "@angular/core";
+import { ResultFsecService } from "./result-fsec.service";
+import { InputLoadService } from "../../input/input-load/input-load.service";
+import { ThreeService } from "../../three/three.service";
 
-import { ResultDataService } from '../../../providers/result-data.service';
-import { ResultCombineFsecService } from '../result-combine-fsec/result-combine-fsec.service';
-import { ResultPickupFsecService } from '../result-pickup-fsec/result-pickup-fsec.service';
+import { ResultDataService } from "../../../providers/result-data.service";
+import { ResultCombineFsecService } from "../result-combine-fsec/result-combine-fsec.service";
+import { ResultPickupFsecService } from "../result-pickup-fsec/result-pickup-fsec.service";
+import { AppComponent } from "src/app/app.component";
 
 @Component({
-  selector: 'app-result-fsec',
-  templateUrl: './result-fsec.component.html',
-  styleUrls: ['./result-fsec.component.scss','../../../app.component.scss','../../../floater.component.scss']
+  selector: "app-result-fsec",
+  templateUrl: "./result-fsec.component.html",
+  styleUrls: [
+    "./result-fsec.component.scss",
+    "../../../app.component.scss",
+    "../../../floater.component.scss",
+  ],
 })
 export class ResultFsecComponent implements OnInit {
-
   dataset: any[];
   page: number;
   load_name: string;
@@ -21,12 +25,15 @@ export class ResultFsecComponent implements OnInit {
   btnCombine: string;
   btnPickup: string;
 
-  constructor(private data: ResultFsecService,
-              private load: InputLoadService,
-              private three: ThreeService,
-              private result: ResultDataService,
-              private comb: ResultCombineFsecService,
-              private pic: ResultPickupFsecService) {
+  constructor(
+    private data: ResultFsecService,
+    private app: AppComponent,
+    private load: InputLoadService,
+    private three: ThreeService,
+    private result: ResultDataService,
+    private comb: ResultCombineFsecService,
+    private pic: ResultPickupFsecService
+  ) {
     this.dataset = new Array();
   }
 
@@ -37,16 +44,21 @@ export class ResultFsecComponent implements OnInit {
 
     // コンバインデータがあればボタンを表示する
     if (this.comb.isChange === false) {
-      this.btnCombine = 'btn btn-outline-primary';
+      this.btnCombine = "btn btn-outline-primary";
     } else {
-      this.btnCombine = 'btn btn-outline-primary disabled';
+      this.btnCombine = "btn btn-outline-primary disabled";
     }
     // ピックアップデータがあればボタンを表示する
     if (this.pic.isChange === false) {
-      this.btnPickup = 'btn btn-outline-primary';
+      this.btnPickup = "btn btn-outline-primary";
     } else {
-      this.btnPickup = 'btn btn-outline-primary disabled';
+      this.btnPickup = "btn btn-outline-primary disabled";
     }
+  }
+
+  //　pager.component からの通知を受け取る
+  onReceiveEventFromChild(eventData: number) {
+    this.dataset.splice(0);
   }
 
   loadPage(currentPage: number) {
@@ -56,13 +68,13 @@ export class ResultFsecComponent implements OnInit {
     this.dataset = new Array();
     for (let i = 1; i <= this.data.FSEC_ROWS_COUNT; i++) {
       const reac = this.data.getFsecColumns(this.page, i);
-      if(reac === null){
+      if (reac === null) {
         break;
       }
       this.dataset.push(reac);
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.three.ChangeMode('fsec', currentPage);
+    this.three.ChangeMode("fsec", currentPage);
   }
 }

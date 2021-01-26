@@ -1,57 +1,80 @@
 <div class="btn-group">
   <nav>
-    <a routerLink="/result-fsec" routerLinkActive="selected-item" class="btn btn-outline-primary">基本ケース</a>
-    <a routerLink="/result-comb_fsec" routerLinkActive="selected-item"
-      class="btn btn-outline-primary active">COMBINE</a>
-    <a routerLink="/result-pic_fsec" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
+    <a
+      routerLink="/result-fsec"
+      routerLinkActive="selected-item"
+      class="btn btn-outline-primary"
+      >基本ケース</a
+    >
+    <a
+      routerLink="/result-comb_fsec"
+      routerLinkActive="selected-item"
+      class="btn btn-outline-primary active"
+      >COMBINE</a
+    >
+    <a
+      routerLink="/result-pic_fsec"
+      routerLinkActive="selected-item"
+      [class]="btnPickup"
+      >PICKUP</a
+    >
   </nav>
 </div>
 
 <div class="pager">
-  <div class="pager-title">タイプ</div>
+  <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
+  <p class="load-name">{{ load_name }}</p>
+  <!-- <div class="pager-title">タイプ</div>
   <ngb-pagination class="ngb-pagination" [collectionSize]="collectionSize" [(page)]="page" [maxSize]="7" [rotate]="true"
     [ellipses]="false" [boundaryLinks]="true" aria-label="Default pagination" (pageChange)="loadPage($event)">
   </ngb-pagination>
-  <div class="load-name">{{load_name}}</div>
+  <div class="load-name">{{load_name}}</div> -->
 </div>
 
 <div *ngFor="let r of KEYS; index as i">
-  <input id="{{TITLES[i]}}" class="acd-check" type="checkbox" [checked]="i==0">
-  <label class="acd-label" for="{{TITLES[i]}}">
-    <div class="conbine-title  acd">{{TITLES[i]}}<i class="fas fa-sort-down"></i></div>
-  </label> 
-    <div class="acd-content">
-      <div class="result_table fsec">
-        <table class="acd">
-          <thead>
-            <tr>
-              <th class="m">部材No</th>
-              <th class="n">節点No</th>
-              <th class="l">着目位置</th>
-              <th class="fx">軸方向力</th>
-              <th class="fy">y方向のせん断力</th>
-              <th class="fz">z方向のせん断力</th>
-              <th class="mx">ねじりモーメント</th>
-              <th class="my">y軸周りの<br>曲げモーメント</th>
-              <th class="mz">z軸周りの<br>曲げモーメント</th>
-              <th class="case">組み合わせ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let resultData of dataset[i]; index as i">
-              <td class="m">{{resultData.m}}</td>
-              <td class="n">{{resultData.n}} </td>
-              <td class="l">{{resultData.l}} </td>
-              <td class="fx">{{resultData.fx}} </td>
-              <td class="fy">{{resultData.fy}} </td>
-              <td class="fz">{{resultData.fz}} </td>
-              <td class="mx">{{resultData.mx}} </td>
-              <td class="my">{{resultData.my}} </td>
-              <td class="mz">{{resultData.mz}} </td>
-              <td class="case">{{resultData.case}} </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <input
+    id="{{ TITLES[i] }}"
+    class="acd-check"
+    type="checkbox"
+    [checked]="i == 0"
+  />
+  <label class="acd-label" for="{{ TITLES[i] }}">
+    <div class="conbine-title acd">
+      {{ TITLES[i] }}<i class="fas fa-sort-down"></i>
     </div>
+  </label>
+  <div class="acd-content">
+    <div class="result_table fsec">
+      <table class="acd">
+        <thead>
+          <tr>
+            <th class="m">部材No</th>
+            <th class="n">節点No</th>
+            <th class="l">着目位置</th>
+            <th class="fx">軸方向力</th>
+            <th class="fy">y方向のせん断力</th>
+            <th class="fz">z方向のせん断力</th>
+            <th class="mx">ねじりモーメント</th>
+            <th class="my">y軸周りの<br />曲げモーメント</th>
+            <th class="mz">z軸周りの<br />曲げモーメント</th>
+            <th class="case">組み合わせ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let resultData of dataset[i]; index as i">
+            <td class="m">{{ resultData.m }}</td>
+            <td class="n">{{ resultData.n }}</td>
+            <td class="l">{{ resultData.l }}</td>
+            <td class="fx">{{ resultData.fx }}</td>
+            <td class="fy">{{ resultData.fy }}</td>
+            <td class="fz">{{ resultData.fz }}</td>
+            <td class="mx">{{ resultData.mx }}</td>
+            <td class="my">{{ resultData.my }}</td>
+            <td class="mz">{{ resultData.mz }}</td>
+            <td class="case">{{ resultData.case }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
