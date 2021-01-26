@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../../../providers/input-data.service';
 import { AfterViewInit } from '@angular/core';
+import { PrintInputNoticePointsService } from './print-input-notice-points.service';
 
 @Component({
   selector: 'app-print-input-notice-points',
@@ -35,12 +36,11 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
 
   // 着目点データ notice_points を印刷する
   private printNoticepoints(inputJson): any {
-
     let printAfterInfo: any;
-
     const json: {} = inputJson['notice_points'];
-
     const body: any = [];
+    const keys: string[] = Object.keys(json);
+    
     for (const index of Object.keys(json)) {
 
       const item = json[index]; // 1行分のnodeデータを取り出す

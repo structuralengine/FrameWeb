@@ -91,6 +91,9 @@ import { PrintResultReacComponent } from './components/print/invoice/print-resul
 import { PrintResultPickupDisgComponent } from './components/print/invoice/print-result-pickup-disg/print-result-pickup-disg.component';
 import { PrintResultPickupFsecComponent } from './components/print/invoice/print-result-pickup-fsec/print-result-pickup-fsec.component';
 import { PrintResultPickupReacComponent } from './components/print/invoice/print-result-pickup-reac/print-result-pickup-reac.component';
+
+import { PrintInputNoticePointsService } from './components/print/invoice/print-input-notice-points/print-input-notice-points.service';
+
 import { PagerComponent } from './components/input/pager/pager.component';
 import { SheetComponent } from './components/input/sheet/sheet.component';
 
@@ -185,6 +188,7 @@ import { SheetComponent } from './components/input/sheet/sheet.component';
     InputPickupService,
 
     PrintService,
+    PrintInputNoticePointsService,
 
     ResultDataService,
     ResultDisgService,

@@ -1,53 +1,60 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { AfterViewInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { AfterViewInit } from "@angular/core";
 
 @Component({
-  selector: 'app-print-input-fix-node',
-  templateUrl: './print-input-fix-node.component.html',
-  styleUrls: ['./print-input-fix-node.component.scss', '../../../../app.component.scss','../invoice.component.scss']
+  selector: "app-print-input-fix-node",
+  templateUrl: "./print-input-fix-node.component.html",
+  styleUrls: [
+    "./print-input-fix-node.component.scss",
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+  ],
 })
-export class PrintInputFixNodeComponent implements OnInit,AfterViewInit {
+export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number;
+  fixNode_countArea:number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
   public fixNode_dataset = [];
-  public fixNode_typeNum = [];  
+  public fixNode_typeNum = [];
 
-  constructor( private InputData: InputDataService ) { }
+  constructor(private InputData: InputDataService) {}
 
   ngOnInit(): void {
-  }
-
-  
-  ngAfterViewInit() {
-
     const inputJson: any = this.InputData.getInputJson(0);
 
-    if ('fix_node' in inputJson) {
+    if ("fix_node" in inputJson) {
       const tables = this.printFixnode(inputJson); // {body, title}
       this.fixNode_dataset = tables.body;
       this.fixNode_typeNum = tables.title;
+      this.fixNode_countArea = this.countTotal;
     }
   }
-  
+
+  ngAfterViewInit() {
+   
+  }
+
   // 支点データ fix_node を印刷する
   private printFixnode(inputJson): any {
-
-    const json: {} = inputJson['fix_node'];
+    const json: {} = inputJson["fix_node"];
     const keys: string[] = Object.keys(json);
     const body: any = [];
+
     // const table: any = []; // 下に移動
     const title: string[] = new Array();
-    for (const index of Object.keys(json)) {
+    for (const index of keys) {
       const elist = json[index]; // 1行分のnodeデータを取り出す
       title.push(index.toString());
-
       const table: any = []; // この時点でリセット、再定義 一旦空にする
       for (const key of Object.keys(elist)) {
         const item = elist[key];
@@ -62,11 +69,12 @@ export class PrintInputFixNodeComponent implements OnInit,AfterViewInit {
         line.push(item.ry.toString());
         line.push(item.rz.toString());
         table.push(line);
-
       }
+      this.countCell = elist.length * 20;
       body.push(table);
     }
-    return { body, title };
+    this.countHead = keys.length * 20;
+    this.countTotal = this.countCell + this.countHead + 40;
+    return { body, title,this:this.countTotal};
   }
-
 }
