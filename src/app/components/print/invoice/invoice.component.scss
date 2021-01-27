@@ -1,13 +1,14 @@
-.invoice {
-  page-break-after: always;
-}
+$height_header: 40px;
+$height_semiHeader: 32px;
+$height_content: 20px;
 
+// .invoice {
+//   page-break-after: always;
+// }
 
-
-
-.invoice:last-child {
-  page-break-after: avoid;
-}
+// .invoice:last-child {
+//   page-break-after: avoid;
+// }
 
 @media print {
   .title-and-menu {
@@ -18,27 +19,46 @@
     display: none;
   }
 }
+
+.pagerBreak{
+  page-break-before: always;
+}
+
 .invoicetTable {
-  margin: 8px 0;
   h2 {
-    font-size: 24px;
+    height: $height_header;
+    margin-top: 8px;
+    line-height: 40px;
+    font-size: 20px;
+    font-weight: 400;
+    font-family: "ＭＳ Ｐゴシック";
   }
 
   h3 {
-    font-size: 20px;
+    height: $height_semiHeader;
+    line-height: 32px;
+    font-size: 16px;
+    font-family: "ＭＳ 明朝";
   }
+
   table {
-   // page-break-after: auto;
+    font-family: "ＭＳ 明朝";
+    font-size: 16px;
+    // page-break-after: auto;
     th {
+      height: $height_content;
       padding: 4px 8px;
+      text-align: center;
       font-weight: 400;
-      page-break-inside:avoid;
+      page-break-inside: avoid;
       // page-break-after:auto;
     }
 
     td {
+      height: $height_content;
       padding: 4px 8px;
-      page-break-inside:avoid; 
+      text-align: right;
+      page-break-inside: avoid;
       //page-break-after:auto;
     }
   }

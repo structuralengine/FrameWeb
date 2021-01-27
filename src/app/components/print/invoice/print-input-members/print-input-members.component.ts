@@ -1,17 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { AfterViewInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { AfterViewInit } from "@angular/core";
+import { DataCountService } from "../dataCount.service";
 
 
 @Component({
-  selector: 'app-print-input-members',
-  templateUrl: './print-input-members.component.html',
-  styleUrls: ['./print-input-members.component.scss','../../../../app.component.scss','../invoice.component.scss']
+  selector: "app-print-input-members",
+  templateUrl: "./print-input-members.component.html",
+  styleUrls: [
+    "./print-input-members.component.scss",
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+  ],
 })
 export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -19,41 +27,29 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
   public member_dataset = [];
 
+  public judge: boolean;
+
   constructor(
-    private InputData: InputDataService
-  ) { }
+    private InputData: InputDataService,
+    private countArea: DataCountService
+  ) {}
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit() {
-
     const inputJson: any = this.InputData.getInputJson(0);
 
-    if ('member' in inputJson) {
-      this.member_dataset = this.printMember(inputJson);
+    if ("member" in inputJson) {
+      const tables = this.printMember(inputJson);
+      this.member_dataset = tables.body;
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 
+  ngAfterViewInit() {}
+
   //要素データ member を印刷する
   private printMember(inputJson): any {
-
     const body: any = [];
-    const json: {} = inputJson['member']; // inputJsonからnodeだけを取り出す
-
-    // // あらかじめテーブルの高さを計算する
-    // const dataCount: number = Object.keys(json).length;
-    // const TableHeight: number = (dataCount + 1) * (fontsize * 2.3);
-
-    // はみ出るなら改ページ
-    // if (currentY + TableHeight > (pageHeight - this.margine.top - this.margine.bottom)) { // はみ出るなら改ページ
-    //   if (pageHeight - currentY < (pageHeight - this.margine.top - this.margine.bottom) / 2) { // かつ余白が頁の半分以下ならば
-    //     doc.addPage();
-    //     currentY = this.margine.top + fontsize;
-    //     LineFeed = 0;
-    //   }
-    // }
-
+    const json: {} = inputJson["member"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
 
     for (const index of keys) {
@@ -69,9 +65,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
       line.push(item.cg.toString());
       body.push(line);
     }
-
-    return body;
+    this.countTotal = (keys.length + 1) * 20 + 40;
+    return {body,this:this.countTotal};
   }
-  
-
 }

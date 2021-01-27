@@ -1,5 +1,8 @@
+<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable">
-    <h2>COMBINEデータ</h2>
+  <h2>COMBINEデータ</h2>
+  <div *ngFor="let comb_dataset of comb_tables index as i">
+    <div *ngIf="i > 0" class="pagerBreak"></div>
     <table>
       <tr>
         <th class="id">CombNo.</th>
@@ -27,3 +30,4 @@
       </tr>
     </table>
   </div>
+</div>
