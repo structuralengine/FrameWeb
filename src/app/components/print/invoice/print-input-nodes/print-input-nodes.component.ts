@@ -40,12 +40,13 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
 
     if ("node" in inputJson) {
       const tables = this.printNode(inputJson);
-      this.node_dataset = tables.body;
-      if(tables.splid > 0){
-      this.node_splid = tables.splid;
-      }else{
-        this.node_splid = [1];
-      }
+      this.node_dataset = tables.splid;
+      this.node_splid = tables.m;
+      // if (tables.splid > 0) {
+      //   this.node_splid = tables.splid;
+      // } else {
+      //   this.node_splid = [1];
+      // }
       this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
@@ -57,6 +58,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     const minCount: number = 52; // これ以上なら２行書きとする
     const body: any = [];
     const splid: any = [];
+    let m: number = 0;
     const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
 
@@ -105,10 +107,12 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       }
     } else {
       // 2列表示.ページがまたぐ場合
-      const m = Math.ceil(keys.length / 106);
-      for (let j = 0; j < m; j++) {
-        const n = Math.ceil(106 * m - 52); // 分割位置
-        for (let i = 0; i < n; i++) {
+      console.log("keyslength",keys.length);
+      m = Math.ceil(keys.length / 107);
+      for (let j = 1; j <= m; j++) {
+        const n = Math.ceil(161 * j - 108); // 分割位置
+        const f = 108 * j - 107; // 分割した後の初項となる値を調べる
+        for (let i = f; i <= n; i++) {
           const line: string[] = new Array();
           // 左側
           const index1: string = keys[i];
@@ -118,8 +122,8 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
           line.push(item1.y.toFixed(3));
           line.push(item1.z.toFixed(3));
           // 右側
-          if (keys.length > n + i) {
-            const index2: string = keys[n + i];
+          if (keys.length > minCount * 2) {
+            const index2: string = keys[n + 1];
             const item2 = json[index2];
             line.push(index2);
             line.push(item2.x.toFixed(3));
@@ -137,6 +141,6 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       }
     }
     this.countTotal = (keys.length + 1) * 20 + 40;
-    return { splid, body, this: this.countTotal };
+    return { m, splid, this: this.countTotal };
   }
 }
