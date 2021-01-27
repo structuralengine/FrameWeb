@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
-import { PrintInputFixNodeService } from "./print-input-fix-node.service";
+import { DataCountService } from "../dataCount.service";
 
 @Component({
   selector: "app-print-input-fix-node",
@@ -32,7 +32,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
 
   constructor(
     private InputData: InputDataService,
-    private countArea: PrintInputFixNodeService
+    private countArea: DataCountService
   ) {
     this.judge = false;
   }
@@ -44,7 +44,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       const tables = this.printFixnode(inputJson); // {body, title}
       this.fixNode_dataset = tables.body;
       this.fixNode_typeNum = tables.title;
-      this.judge = this.countArea.setCurrentY(tables.this.countTotal);
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 
@@ -60,6 +60,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
     const title: string[] = new Array();
     for (const index of keys) {
       const elist = json[index]; // 1行分のnodeデータを取り出す
+      console.log("elist.length",elist.length);
       title.push(index.toString());
       const table: any = []; // この時点でリセット、再定義 一旦空にする
       for (const key of Object.keys(elist)) {

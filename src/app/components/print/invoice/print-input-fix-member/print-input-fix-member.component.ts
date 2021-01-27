@@ -1,7 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
-import { PrintInputFixMemberService } from "./print-input-fix-member.service";
+import { DataCountService } from "../dataCount.service";
+import { Data } from "@angular/router";
 
 @Component({
   selector: "app-print-input-fix-member",
@@ -31,7 +32,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
 
   constructor(
     private InputData: InputDataService,
-    private countArea: PrintInputFixMemberService
+    private countArea: DataCountService
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +42,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
       const tables = this.printFixmember(inputJson); // {body, title}
       this.fixMember_dataset = tables.body;
       this.fixMember_typeNum = tables.title;
-      this.judge = this.countArea.setCurrentY(tables.this.countTotal);
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 

@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
+import { DataCountService } from "../dataCount.service"
+import { Data } from "@angular/router";
 
 @Component({
   selector: "app-print-input-joint",
@@ -28,7 +30,8 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
 
   public judge: boolean;
 
-  constructor(private InputData: InputDataService) {}
+  constructor(private InputData: InputDataService,
+    private countArea: DataCountService ) {}
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);
@@ -37,6 +40,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
       const tables = this.printjoint(inputJson); // {body, title}
       this.joint_dataset = tables.body;
       this.joint_typeNum = tables.title;
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 

@@ -1,17 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { AfterViewInit } from '@angular/core';
-
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { AfterViewInit } from "@angular/core";
+import { DataCountService } from "../dataCount.service";
 
 @Component({
-  selector: 'app-print-input-nodes',
-  templateUrl: './print-input-nodes.component.html',
-  styleUrls: ['./print-input-nodes.component.scss', '../../../../app.component.scss','../invoice.component.scss']
+  selector: "app-print-input-nodes",
+  templateUrl: "./print-input-nodes.component.html",
+  styleUrls: [
+    "./print-input-nodes.component.scss",
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+  ],
 })
 export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -19,36 +26,36 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
 
   public node_dataset = [];
 
+  public judge: boolean;
 
   constructor(
-    private InputData: InputDataService
+    private InputData: InputDataService,
+    private countArea: DataCountService
   ) {}
 
   ngOnInit(): void {
-    
     const inputJson: any = this.InputData.getInputJson(0);
 
-    if ('node' in inputJson) {
-      this.node_dataset = this.printNode(inputJson);
+    if ("node" in inputJson) {
+      const tables = this.printNode(inputJson);
+      this.node_dataset = tables.body;
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 
-
-  ngAfterViewInit() {
-
-  }
+  ngAfterViewInit() {}
 
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
     const minCount: number = 5; // これ以上なら２行書きとする
     const body: any = [];
-    const json: {} = inputJson['node']; // inputJsonからnodeだけを取り出す
+    const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
 
     let head: string[];
 
     if (keys.length < minCount) {
-      head = ['No.', 'X(m)', 'Y(m)', 'Z(m)'];
+      head = ["No.", "X(m)", "Y(m)", "Z(m)"];
       for (const index of keys) {
         const item = json[index]; // 1行分のnodeデータを取り出す
         // 印刷する1行分のリストを作る
@@ -61,7 +68,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       }
     } else {
       // 2列表示
-      head = ['No.', 'X(m)', 'Y(m)', 'Z(m)', 'No.', 'X(m)', 'Y(m)', 'Z(m)'];
+      head = ["No.", "X(m)", "Y(m)", "Z(m)", "No.", "X(m)", "Y(m)", "Z(m)"];
       const n = Math.ceil(keys.length / 2); // 分割位置
       for (let i = 0; i < n; i++) {
         const line: string[] = new Array();
@@ -81,16 +88,15 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
           line.push(item2.y.toFixed(3));
           line.push(item2.z.toFixed(3));
         } else {
-          line.push('');
-          line.push('');
-          line.push('');
-          line.push('');
+          line.push("");
+          line.push("");
+          line.push("");
+          line.push("");
         }
         body.push(line);
       }
-
     }
-    return body;
+    this.countTotal = (keys.length + 1) * 20 + 40;
+    return { body, this: this.countTotal };
   }
-
 }

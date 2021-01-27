@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
-import { PrintInputCombineService } from "./print-input-combine.service";
+import { DataCountService } from "../dataCount.service";
 
 @Component({
   selector: "app-print-input-combine",
@@ -24,25 +24,41 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public comb_dataset = [];
+  public comb_tables = [];
 
   public judge: boolean;
 
   constructor(
     private InputData: InputDataService,
-    private countArea: PrintInputCombineService
+    private countArea: DataCountService
   ) {
     this.judge = false;
   }
 
   ngOnInit(): void {
+    this.comb_tables =[];
     const inputJson: any = this.InputData.getInputJson(0);
 
     const combineJson: any = this.InputData.combine.getCombineJson();
     if (Object.keys(combineJson).length > 0) {
+      let comb_dataset = [];
+
       const tables = this.printCombine(combineJson);
-      this.comb_dataset = tables.body;
-      this.judge = this.countArea.setCurrentY(tables.this.countTotal);
+      let row = 0;
+      for(const line of tables.body) {
+        comb_dataset.push(line);
+        row ++;
+        if ( row > 60){ // とりあえず60行超えたらとする
+          this.comb_tables.push(comb_dataset);
+          comb_dataset = [];
+          row = 0;
+        }
+      }
+      if(comb_dataset.length > 0){
+        this.comb_tables.push(comb_dataset);
+      } 
+
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 
@@ -50,6 +66,20 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
 
   // COMBINEデータ  を印刷する
   private printCombine(json): any {
+
+    // テストコード
+    for(let i = 3; i < 10; i++){
+      const temp = json['1'];
+      const key = i.toString();
+      temp['row'] =i
+      for(let j = 1; j < i; j++){
+        const Ckey = 'C' + key;
+        temp[ Ckey] = j
+      }
+      json[key] = temp;
+    }
+
+
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
 

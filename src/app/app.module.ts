@@ -92,18 +92,8 @@ import { PrintResultPickupDisgComponent } from "./components/print/invoice/print
 import { PrintResultPickupFsecComponent } from "./components/print/invoice/print-result-pickup-fsec/print-result-pickup-fsec.component";
 import { PrintResultPickupReacComponent } from "./components/print/invoice/print-result-pickup-reac/print-result-pickup-reac.component";
 
-import { PrintInputCombineService } from "./components/print/invoice/print-input-combine/print-input-combine.service";
-import { PrintInputDefineService } from "./components/print/invoice/print-input-define/print-input-define.service";
-import { PrintInputElementsService } from "./components/print/invoice/print-input-elements/print-input-elements.service";
-import { PrintInputFixMemberService } from "./components/print/invoice/print-input-fix-member/print-input-fix-member.service";
-import { PrintInputFixNodeService } from "./components/print/invoice/print-input-fix-node/print-input-fix-node.service";
-import { PrintInputJointService } from "./components/print/invoice/print-input-joint/print-input-joint.service";
-import { PrintInputLoadService } from "./components/print/invoice/print-input-load/print-input-load.service";
-import { PrintInputMembersService } from "./components/print/invoice/print-input-members/print-input-members.service";
-import { PrintInputNodesService } from "./components/print/invoice/print-input-nodes/print-input-nodes.service";
-import { PrintInputNoticePointsService } from "./components/print/invoice/print-input-notice-points/print-input-notice-points.service";
-import { PrintInputPanelService } from "./components/print/invoice/print-input-panel/print-input-panel.service";
-import { PrintInputPickupService } from "./components/print/invoice/print-input-pickup/print-input-pickup.service";
+
+import { DataCountService } from "./components/print/invoice/dataCount.service";
 import { PrintResultCombineDisgService } from "./components/print/invoice/print-result-combine-disg/print-result-combine-disg.service";
 import { PrintResultCombineFsecService } from "./components/print/invoice/print-result-combine-fsec/print-result-combine-fsec.service";
 import { PrintResultCombineReacService } from "./components/print/invoice/print-result-combine-reac/print-result-combine-reac.service";
@@ -116,6 +106,7 @@ import { PrintResultPickupReacService } from "./components/print/invoice/print-r
 
 import { PagerComponent } from "./components/input/pager/pager.component";
 import { SheetComponent } from "./components/input/sheet/sheet.component";
+import { PrintInputLoadNameComponent } from './components/print/invoice/print-input-load-name/print-input-load-name.component';
 
 @NgModule({
   imports: [
@@ -188,6 +179,7 @@ import { SheetComponent } from "./components/input/sheet/sheet.component";
 
     PagerComponent,
     SheetComponent,
+    PrintInputLoadNameComponent,
   ],
   entryComponents: [LoginDialogComponent, WaitDialogComponent],
   providers: [
@@ -217,18 +209,8 @@ import { SheetComponent } from "./components/input/sheet/sheet.component";
     ResultPickupFsecService,
     ResultCombineFsecService,
 
-    PrintInputCombineService,
-    PrintInputDefineService,
-    PrintInputElementsService,
-    PrintInputFixMemberService,
-    PrintInputFixNodeService,
-    PrintInputJointService,
-    PrintInputLoadService,
-    PrintInputMembersService,
-    PrintInputNodesService,
-    PrintInputNoticePointsService,
-    PrintInputPanelService,
-    PrintInputPickupService,
+    DataCountService,
+
     PrintResultCombineDisgService,
     PrintResultCombineFsecService,
     PrintResultCombineReacService,

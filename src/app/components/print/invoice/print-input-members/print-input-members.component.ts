@@ -1,7 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
-import { PrintInputMembersService } from "./print-input-members.service";
+import { DataCountService } from "../dataCount.service";
+
 
 @Component({
   selector: "app-print-input-members",
@@ -30,7 +31,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
   constructor(
     private InputData: InputDataService,
-    private countArea: PrintInputMembersService
+    private countArea: DataCountService
   ) {}
 
   ngOnInit(): void {

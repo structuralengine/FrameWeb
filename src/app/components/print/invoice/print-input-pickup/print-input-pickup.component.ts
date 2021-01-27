@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InputDataService } from '../../../../providers/input-data.service';
 import { AfterViewInit } from '@angular/core';
+import { DataCountService } from '../dataCount.service'
 
 @Component({
   selector: 'app-print-input-pickup',
@@ -11,6 +12,9 @@ export class PrintInputPickupComponent implements OnInit,AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -18,7 +22,10 @@ export class PrintInputPickupComponent implements OnInit,AfterViewInit {
 
   public pickup_dataset = [];
 
-  constructor(private InputData: InputDataService) { }
+  public judge: boolean;
+
+  constructor(private InputData: InputDataService,
+    private countArea: DataCountService) { }
 
   ngOnInit(): void {
     
@@ -26,7 +33,9 @@ export class PrintInputPickupComponent implements OnInit,AfterViewInit {
 
     const pickupJson: any = this.InputData.pickup.getPickUpJson();
     if (Object.keys(pickupJson).length > 0) {
-      this.pickup_dataset = this.printPickup(pickupJson);
+      const tables = this.printPickup(pickupJson);
+      this.pickup_dataset = tables.body;
+      this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 
@@ -42,9 +51,9 @@ export class PrintInputPickupComponent implements OnInit,AfterViewInit {
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-
+    const keys: string[] = Object.keys(json);
     const body: any = [];
-    for (const index of Object.keys(json)) {
+    for (const index of keys) {
 
       const item = json[index]; // 1行分のnodeデータを取り出す
 
@@ -74,7 +83,8 @@ export class PrintInputPickupComponent implements OnInit,AfterViewInit {
         body.push(line); // 表の1行 登録
       }
     }
-    return body;
+    this.countTotal = ( keys.length * 2 + 1) * 20 + 40;
+    return { body, this:this.countTotal };
   }
 
 
