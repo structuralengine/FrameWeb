@@ -22,7 +22,7 @@ export class InputMembersComponent implements OnInit {
     { title: "j端",          dataType: "integer",                 dataIndx: "nj", sortable: false, minwidth: 10, width: 10 },
     { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
     { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
-    { title: "コードアングル", dataType: "float",                   dataIndx: "cg", sortable: false, width: 100 }
+    { title: "コードアングル", dataType: "float",                   dataIndx: "cg", sortable: false, width: 130 }
   ];
 
   private ROWS_COUNT = 15;
