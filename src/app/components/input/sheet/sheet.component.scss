@@ -1,26 +1,17 @@
-div.pq-toolbar button
-{
-    margin:0px 5px;
+div.pq-toolbar button {
+    margin: 0px 5px;
 }
-button.delete_btn
-{
-    margin:-3px 0px;
+button.delete_btn {
+    margin: -3px 0px;
 }
-.pq-row-delete
-{
-    text-decoration:line-through;         
+.pq-row-delete {
+    text-decoration: line-through;
 }
-.pq-row-delete > .pq-grid-cell
-{
-    background-color:pink;   
+.pq-row-delete > .pq-grid-cell {
+    background-color: pink;
 }
-
 
 .datasheet {
-    padding-top: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-bottom: 15px;
+    padding: 16px;
     z-index: 1;
-  }
-  
+}

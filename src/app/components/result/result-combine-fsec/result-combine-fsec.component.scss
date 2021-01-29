@@ -1,12 +1,12 @@
 .btn-group {
-    width: 500px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    margin-left: 15px;
+    display: flex;
+    padding: 0 16px;
+    margin-right: auto;
+    margin-top: 16px !important;
 }
 
 .pager {
-    margin-top:  10px;
+    margin-bottom: 16px;
     margin-left: 0.5px;
     margin-right: 0.5px;
     .pager-title{
