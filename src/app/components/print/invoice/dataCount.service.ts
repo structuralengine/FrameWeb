@@ -12,7 +12,17 @@ export class DataCountService {
 
   setCurrentY(tableHeight: number): boolean {
     this.currentY += tableHeight;
-    if (this.currentY > 1060) {
+    if (this.currentY > 1160) {
+        this.currentY = 0;
+        return true;
+    } else {
+      return false;
+    }
+  }
+
+  setCurrentLastY(tableHeight: number): boolean {
+    this.currentY += tableHeight;
+    if (this.currentY > 1160) {
         this.currentY = 0;
         return true;
     } else {

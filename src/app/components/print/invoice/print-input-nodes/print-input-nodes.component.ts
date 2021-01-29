@@ -24,11 +24,14 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
+  bottomCell: number = 59;
 
   public node_dataset = [];
   public node_page = [];
 
   public judge: boolean;
+  public judgeLast: boolean;
+  public headerShow: boolean;
 
   constructor(
     private InputData: InputDataService,
@@ -42,12 +45,12 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       const tables = this.printNode(inputJson);
       this.node_dataset = tables.splid;
       this.node_page = tables.page;
-      // if (tables.splid > 0) {
-      //   this.node_splid = tables.splid;
-      // } else {
-      //   this.node_splid = [1];
-      // }
+      this.headerShow = true;
+      if (tables.page === 1) {
+        this.headerShow = false;
+      }
       this.judge = this.countArea.setCurrentY(tables.this);
+      this.judgeLast = this.countArea.setCurrentY(tables.lastArrayCount);
     }
   }
 
@@ -55,57 +58,86 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
 
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
-    const minCount: number = 52; // これ以上なら２行書きとする
+    // const minCount: number = 52; // これ以上なら２行書きとする
     let body: any = [];
     const splid: any = [];
-    let m: number = 0;
     let page: number = 0;
     const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
 
-    let head: string[];
-
     let break_flg = true;
-    while (break_flg) {
-      for (let i = 0; i < 54; i++) {
-        const line = ["", "", "", "", "", "", "", ""];
+    if (keys.length > this.bottomCell * 2) {
+      while (break_flg) {
+        for (let i = 0; i < this.bottomCell; i++) {
+          const line = ["", "", "", "", "", "", "", ""];
 
-        const j = page * 108 + i; //0, 108, 216, ...
-        if(j===289){
-          console.log('')
+          const j = page * this.bottomCell * 2 + i;
+          const s = j + 1;
+
+          if (s > keys.length) {
+            break_flg = false;
+            break;
+          }
+          const index1: string = keys[j];
+          const item1 = json[index1];
+          line[0] = index1;
+          line[1] = item1.x.toFixed(3);
+          line[2] = item1.y.toFixed(3);
+          line[3] = item1.z.toFixed(3);
+
+          const k = j + this.bottomCell;
+
+          if (k < keys.length) {
+            const index2: string = keys[k];
+            const item2 = json[index2];
+            line[4] = index2;
+            line[5] = item2.x.toFixed(3);
+            line[6] = item2.y.toFixed(3);
+            line[7] = item2.z.toFixed(3);
+          }
+          body.push(line);
         }
-        if (j > keys.length) {
-          break_flg = false;
+        if (body.length === 0) {
           break;
         }
-        const index1: string = keys[j];
+        splid.push(body);
+        body = [];
+        page++;
+      }
+    } else {
+      this.bottomCell = keys.length / 2;
+      const n = Math.ceil(this.bottomCell);
+
+      for (let i = 0; i < n; i++) {
+        const line = ["", "", "", "", "", "", "", ""];
+
+        const index1: string = keys[i];
         const item1 = json[index1];
         line[0] = index1;
         line[1] = item1.x.toFixed(3);
         line[2] = item1.y.toFixed(3);
         line[3] = item1.z.toFixed(3);
-
-        const k = j + 54;
-        if (k < keys.length) {
-          const index2: string = keys[k];
+        if (keys.length < n + i + 1) {
+          line[4] = "";
+          line[5] = "";
+          line[6] = "";
+          line[7] = "";
+        } else {
+          const index2: string = keys[n + i];
           const item2 = json[index2];
           line[4] = index2;
           line[5] = item2.x.toFixed(3);
           line[6] = item2.y.toFixed(3);
           line[7] = item2.z.toFixed(3);
         }
+
         body.push(line);
       }
-      
-      if(body.length === 0){
-        break;
-      }
       splid.push(body);
-      body = [];
-      page++;
     }
-
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
     this.countTotal = (keys.length + 1) * 20 + 40;
-    return { page, splid, this: this.countTotal };
+    return { page, splid, this: this.countTotal, lastArrayCount };
   }
 }

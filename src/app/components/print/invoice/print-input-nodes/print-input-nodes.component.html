@@ -2,6 +2,7 @@
 <div class="invoicetTable node">
   <h2>格点データ</h2>
   <div *ngFor="let dataset of node_dataset index as i">
+    <div *ngIf="i > 0" class="pagerBreak"></div>
     <table>
       <tr>
         <th class="id">No</th>
@@ -12,6 +13,7 @@
         <th class="x">X</th>
         <th class="y">Y</th>
         <th class="z">Z</th>
+
       </tr>
       <tr *ngFor="let data of dataset">
         <td class="id">{{data[0]}}</td>
@@ -25,5 +27,4 @@
       </tr>
     </table>
   </div>
-  
 </div>
