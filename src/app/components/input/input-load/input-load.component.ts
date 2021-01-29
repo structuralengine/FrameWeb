@@ -43,7 +43,7 @@ export class InputLoadComponent implements OnInit {
       dataType: "integer",
       dataIndx: "mark",
       sortable: false,
-      width: 30,
+      width: 60,
     },
     {
       title: "L1",
