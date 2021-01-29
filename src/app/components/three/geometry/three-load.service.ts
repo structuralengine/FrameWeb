@@ -21,9 +21,14 @@ import { ThreeLoadTemperature } from "./three-load/three-load-temperature";
   providedIn: "root",
 })
 export class ThreeLoadService {
+
   private isVisible = { object: false, gui: false };
 
-  // 節点荷重を格納する変数
+  // 全ケースの荷重を保存
+  private AllCaseLoadList: {};
+  private currentIndex: string;
+
+  /* 節点荷重を格納する変数
   private pointLoadList: any;
   /*key: "節点番号",
   value: {
@@ -35,7 +40,7 @@ export class ThreeLoadService {
     rz: []  // z軸周りのねじり荷重のリスト
   }*/
 
-  // 要素荷重を格納する変数
+  /* 要素荷重を格納する変数
   private memberLoadList: any;
   /*key: "要素番号",
   value: {
@@ -84,9 +89,6 @@ export class ThreeLoadService {
       this.temperatureLoad = new ThreeLoadTemperature(text, dim); // 温度荷重のテンプレート
     });
 
-    this.pointLoadList = {};
-    this.memberLoadList = {};
-
     // gui
     this.LoadScale = 100;
     this.params = {
@@ -94,76 +96,112 @@ export class ThreeLoadService {
     };
     this.gui = {};
 
-    this.ClearData();
+
+    this.AllCaseLoadList = {};
+    this.currentIndex = null;
   }
 
-  public visibleChange(flag: boolean, gui: boolean): void {
-    console.log("three load!", "visible", "pass");
+  // 荷重を全部削除する
+  public ClearData(): void {
 
-    // 非表示にする
-    if (flag === false) {
-      this.ClearData();
-      this.guiDisable();
-      this.isVisible.object = false;
+    for(const key of Object.keys(this.AllCaseLoadList)){
+      const targetLoad = this.AllCaseLoadList[key];
+      const ThreeObject: THREE.Object3D = targetLoad.ThreeObject;
+      this.scene.remove(ThreeObject);
+    }
+
+    this.AllCaseLoadList = {};
+    this.currentIndex = null;
+  }
+
+
+  // ファイルを開いたときの処理
+  public fileload() {
+
+    // 今までの荷重を削除する
+    this.ClearData();
+
+    // 荷重を作成する
+    for( const id of Object.keys(this.load.load)){
+      this.addCase(id);
+    }
+
+    // 荷重図を非表示のまま作成する
+    for(const id of Object.keys(this.AllCaseLoadList)){
+      this.currentIndex = id; // カレントデータをセット
+      this.changeData(); // 荷重図を追加する
+    }
+
+  }
+
+  
+  // 表示ケースを変更する
+  public changeCase(id: string): void {
+
+    if(this.currentIndex === id){
       return;
     }
 
-    // gui の表示を切り替える
-    if (gui === true) {
-      this.guiEnable();
-    } else {
-      this.guiDisable();
+    // 初めての荷重ケースが呼び出された場合
+    if(!(id in this.AllCaseLoadList)){
+      this.addCase(id);
     }
-    this.isVisible.gui = gui;
 
-    // すでに表示されていたら変わらない
-    if (this.isVisible.object === true) {
+    // 荷重の表示非表示を切り替える
+    for(const key of Object.keys(this.AllCaseLoadList)){
+      const targetLoad = this.AllCaseLoadList[key];
+      const ThreeObject: THREE.Object3D = targetLoad.ThreeObject;
+      ThreeObject.visible = ( key === id) ? true : false;
+    }
+
+    // カレントデータをセット
+    this.currentIndex = id;
+
+  }
+
+  // ケースを追加する
+  private addCase(id: string): void {
+    const ThreeObject = new THREE.Object3D();
+    ThreeObject.name = id;
+    ThreeObject.visible = false;　// ファイルを読んだ時点では、全ケース非表示
+
+    this.AllCaseLoadList[id] = {
+      ThreeObject,
+      pointLoadList: {},
+      memberLoadList: {}
+    }
+
+    this.scene.add(ThreeObject); // シーンに追加
+  }
+
+  // ケースの荷重図を消去する
+  private removeCase(id: string): void {
+
+    if(!(id in this.AllCaseLoadList)) {
       return;
     }
 
-    // 表示する
-    this.changeData(0);
-    this.isVisible.object = true;
+    const data =  this.AllCaseLoadList[id];
+    const ThreeObject = data.ThreeObject;
+    this.scene.remove(ThreeObject);
+
   }
 
-  // guiを表示する
-  private guiEnable(): void {
-    console.log("three load!", "guiEnable");
+  public changeData(row: number = -1): void {
 
-    if (!("LoadScale" in this.gui)) {
-      const gui_step: number = 1;
-      this.gui["LoadScale"] = this.scene.gui
-        .add(this.params, "LoadScale", 0, 200)
-        .step(gui_step)
-        .onChange((value) => {
-          this.LoadScale = value;
-          this.onResize();
-          this.scene.render();
-        });
+    // データになカレントデータがなければ
+    if ( !(this.currentIndex in this.load.load)){
+      this.removeCase(this.currentIndex);
+      return;
     }
-  }
 
-  // guiを非表示にする
-  private guiDisable(): void {
-    console.log("three load!", "guiDisable");
-    for (const key of Object.keys(this.gui)) {
-      this.scene.gui.remove(this.gui[key]);
+    // ケースの荷重図を表示する
+    if (!(this.currentIndex in this.AllCaseLoadList)) {
+      this.addCase(this.currentIndex);
     }
-    this.gui = {};
-  }
-
-  private baseScale(): number {
-    console.log("three load!", "baseScale");
-    return this.nodeThree.baseScale * 10;
-  }
-
-  // #region 荷重の変更を反映する
-
-  public changeData(index: number): void {
-    console.log("three load!", "changeData");
-
-    // 一旦全部非表示 にする
-    this.ClearData();
+    const data =  this.AllCaseLoadList[this.currentIndex];
+    const ThreeObject = data.ThreeObject;
+    ThreeObject.visible = true;
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
@@ -171,12 +209,10 @@ export class ThreeLoadService {
       return; // 格点がなければ 以降の処理は行わない
     }
 
-    const targetCase: string = index.toString();
-
     // 節点荷重データを入手
-    const nodeLoadData = this.load.getNodeLoadJson(0, targetCase);
-    if (targetCase in nodeLoadData) {
-      this.createPointLoad(nodeLoadData[targetCase], nodeData);
+    const nodeLoadData = this.load.getNodeLoadJson(0, this.currentIndex);
+    if (this.currentIndex in nodeLoadData) {
+      this.createPointLoad(nodeLoadData[this.currentIndex], row, nodeData);
     }
 
     // 要素データを入手
@@ -186,9 +222,9 @@ export class ThreeLoadService {
     }
 
     // 要素荷重データを入手
-    const memberLoadData = this.load.getMemberLoadJson(0, targetCase);
-    if (targetCase in memberLoadData) {
-      this.createMemberLoad(memberLoadData[targetCase], nodeData, memberData);
+    const memberLoadData = this.load.getMemberLoadJson(0, this.currentIndex);
+    if (this.currentIndex in memberLoadData) {
+      this.createMemberLoad(memberLoadData[this.currentIndex], row, nodeData, memberData);
     }
 
     // サイズや重なりを調整する
@@ -541,6 +577,71 @@ export class ThreeLoadService {
     }
   }
 
+
+  public visibleChange(flag: boolean, gui: boolean): void {
+    console.log("three load!", "visible", "pass");
+    return; // sasa
+    // 非表示にする
+    if (flag === false) {
+      this.DisableData();
+      this.guiDisable();
+      this.isVisible.object = false;
+      return;
+    }
+
+    // gui の表示を切り替える
+    if (gui === true) {
+      this.guiEnable();
+    } else {
+      this.guiDisable();
+    }
+    this.isVisible.gui = gui;
+
+    // すでに表示されていたら変わらない
+    if (this.isVisible.object === true) {
+      return;
+    }
+
+    // 表示する
+    this.changeData(0);
+    this.isVisible.object = true;
+  }
+
+  // guiを表示する
+  private guiEnable(): void {
+    console.log("three load!", "guiEnable");
+
+    if (!("LoadScale" in this.gui)) {
+      const gui_step: number = 1;
+      this.gui["LoadScale"] = this.scene.gui
+        .add(this.params, "LoadScale", 0, 200)
+        .step(gui_step)
+        .onChange((value) => {
+          this.LoadScale = value;
+          this.onResize();
+          this.scene.render();
+        });
+    }
+  }
+
+  // guiを非表示にする
+  private guiDisable(): void {
+    console.log("three load!", "guiDisable");
+    for (const key of Object.keys(this.gui)) {
+      this.scene.gui.remove(this.gui[key]);
+    }
+    this.gui = {};
+  }
+
+  private baseScale(): number {
+    console.log("three load!", "baseScale");
+    return this.nodeThree.baseScale * 10;
+  }
+
+
+
+
+
   // #endregion
 
   // #region スケールを反映する
@@ -564,8 +665,10 @@ export class ThreeLoadService {
   // #endregion
 
   // #region データをクリアする
-  public ClearData(): void {
-    // 既に存在する荷重を非表示にする
+
+
+  private DisableData(): void {
+      // 既に存在する荷重を非表示にする
     this.ClearNodeLoad();
     this.ClearMemberLoad();
   }

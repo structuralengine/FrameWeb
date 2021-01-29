@@ -68,7 +68,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
-        this.three.changeData('fileLoad');
+        this.three.fileload();
       })
       .catch(err => {
         console.log(err);

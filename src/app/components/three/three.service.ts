@@ -45,26 +45,29 @@ export class ThreeService {
   }
 
   //////////////////////////////////////////////////////
+  // ファイルを開く処理する
+  //////////////////////////////////////////////////////
+  public fileload(): void {
+        // ファイルを読み込んだ
+        // this.node.changeData();
+        // this.member.changeData();
+        // this.fixNode.ClearData();
+        // this.fixMember.ClearData();
+        // this.joint.ClearData();
+        this.load.fileload();
+        // this.disg.ClearData();
+        // this.reac.ClearData();
+        // this.fsec.ClearData();
+  }
+
+  //////////////////////////////////////////////////////
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
   public changeData(mode: string = '', index: number = 0): void {
 
     switch (mode) {
 
-      case 'fileLoad':
-        // ファイルを読み込んだ
-        this.node.changeData();
-        this.member.changeData();
-        this.fixNode.ClearData();
-        this.fixMember.ClearData();
-        this.joint.ClearData();
-        this.load.ClearData();
-        this.disg.ClearData();
-        this.reac.ClearData();
-        this.fsec.ClearData();
-        break;
-
-      case 'nodes':
+   case 'nodes':
         this.node.changeData();
         this.member.changeData();
         break;

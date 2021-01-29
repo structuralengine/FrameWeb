@@ -8,7 +8,7 @@ import { InputMembersService } from '../input-members/input-members.service'
 export class InputLoadService {
 
   public load_name: any[];
-  public load: any[];
+  public load: {};
 
   constructor(private member: InputMembersService,
               private helper: DataHelperModule) {
@@ -17,7 +17,7 @@ export class InputLoadService {
 
   public clear(): void {
     this.load_name = new Array();
-    this.load = new Array();
+    this.load = {};
   }
 
   public getLoadNameColumns(index: number): any {
@@ -45,7 +45,9 @@ export class InputLoadService {
   }
 
 
-  public getLoadColumns(typNo: number, row: number): any {
+  public getLoadColumns(index: number, row: number): any {
+
+    const typNo: string = index.toString();
 
     let target: any;
     let result: any = undefined;
@@ -129,7 +131,7 @@ export class InputLoadService {
 
           const item2 = load_node_list[i];
 
-          const _row: string = ('row' in item2) ? item2['row'] : (i + 1).toString();
+          const _row: string = ('row' in item2) ? item2['row'] : (i + 1);
 
           const _n: string = ('n' in item2) ? item2.n : '';
           const _tx: string = ('tx' in item2) ? item2.tx : '';
