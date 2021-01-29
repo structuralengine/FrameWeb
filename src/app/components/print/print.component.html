@@ -1,76 +1,131 @@
-<h2>印刷データを選択</h2>
+<div class="printdata-choice">
+  <h2>印刷データを選択</h2>
+</div>
 <div class="print-choice">
   <ul>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="result0"
-          (change)="toggleEditable($event,0)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="result0"
+          (change)="toggleEditable($event, 0)"
+        />
         <span class="checkbox-parts">入力データ</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print1"
-          (change)="toggleEditable($event,1)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print1"
+          (change)="toggleEditable($event, 1)"
+        />
         <span class="checkbox-parts">変位量</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print2"
-          (change)="toggleEditable($event,2)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print2"
+          (change)="toggleEditable($event, 2)"
+        />
         <span class="checkbox-parts">COMBINE 変位量</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print3"
-          (change)="toggleEditable($event,3)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print3"
+          (change)="toggleEditable($event, 3)"
+        />
         <span class="checkbox-parts">PICKUP 変位量</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print4"
-          (change)="toggleEditable($event,4)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print4"
+          (change)="toggleEditable($event, 4)"
+        />
         <span class="checkbox-parts">断面力</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print5"
-          (change)="toggleEditable($event,5)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print5"
+          (change)="toggleEditable($event, 5)"
+        />
         <span class="checkbox-parts">COMBINE 断面力</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print6"
-          (change)="toggleEditable($event,6)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print6"
+          (change)="toggleEditable($event, 6)"
+        />
         <span class="checkbox-parts">PICKUP 断面力</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-print" class="checkbox-input" id="print7"
-          (change)="toggleEditable($event,7)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-print"
+          class="checkbox-input"
+          id="print7"
+          (change)="toggleEditable($event, 7)"
+        />
         <span class="checkbox-parts">反力</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-result" class="checkbox-input" id="print8"
-          (change)="toggleEditable($event,8)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-result"
+          class="checkbox-input"
+          id="print8"
+          (change)="toggleEditable($event, 8)"
+        />
         <span class="checkbox-parts">COMBINE 反力</span>
       </label>
     </li>
     <li>
-      <label>
-        <input type="checkbox" name="checkbox-result" class="checkbox-input" id="print9"
-          (change)="toggleEditable($event,9)">
+      <label style="width: 100%">
+        <input
+          type="checkbox"
+          name="checkbox-result"
+          class="checkbox-input"
+          id="print9"
+          (change)="toggleEditable($event, 9)"
+        />
         <span class="checkbox-parts">PICKUP 反力</span>
       </label>
     </li>
   </ul>
 </div>
-<button (click)="onPrintInvoice()">印刷する</button>
+
+<div class="print-ing">
+  <button (click)="onPrintInvoice()">印刷する</button>
+</div>
