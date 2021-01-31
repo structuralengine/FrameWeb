@@ -67,67 +67,66 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     const countHead = keys.length * 2 * 20;
     const countTotal = countCell + countHead + 40;
   
+    
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
     let ROW = 0
     for (const index of keys) {
       ROW += 2; // 行
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      const countCell = elist.length;
+      const countCell = (Object.keys(elist).length);
       ROW += countCell;
 
       if(ROW < 59){
         break_after.push(false)
       } else {
         break_after.push(true);
-        ROW = 0
+        ROW = 0;
       }
     }
-
+    
     // テーブル
     const splid: any = [];
     const title: string[] = new Array();
     for (const index of keys) {
-
+      const elist = json[index]; // 1テーブル分のデータを取り出す
       const table: any = []; // この時点でリセット、再定義 一旦空にする
-
-      const elist = json[index]; // 1テーブル分のnodeデータを取り出す
+      
       title.push(index.toString());
-
+      
       let body: any = [];
       let row = 2; // タイトル行
       for (const key of Object.keys(elist)){
         const item = elist[key];
-
+        
         const line = ["", "", "", "", "", "", "",""];
         line[0] = key;
-        line[1] = item.A.toExponential(2);
+        line[1] = item.A.toFixed(4);
         line[2] = item.E.toExponential(2);
         line[3] = item.G.toExponential(2);
         line[4] = item.Xp.toExponential(2);
         line[5] = item.Iy.toFixed(6);
-        line[6] = item.Iz.toString(6);
+        line[6] = item.Iz.toFixed(6);
         line[7] = item.J.toFixed(4);
         body.push(line);
         row ++;
-
+        
         //１テーブルで59行以上データがあるならば
         if(row > 59){
           table.push(body);
           body = [];
           row = 2;
         }
-
+        
       }
-
+      
       if(body.length > 0){
         table.push(body);
       }
-
+      
       splid.push(table);
-
+      
     }
-
     return { 
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
       title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
