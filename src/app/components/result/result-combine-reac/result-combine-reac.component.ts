@@ -78,9 +78,9 @@ export class ResultCombineReacComponent implements OnInit {
 
     // ピックアップデータがあればボタンを表示する
     if (this.pic.isChange === false) {
-      this.btnPickup = "btn btn-outline-primary";
+      this.btnPickup = "btn-change";
     } else {
-      this.btnPickup = "btn btn-outline-primary disabled";
+      this.btnPickup = "btn-change disabled";
     }
 
     // テーブルの高さを計算する

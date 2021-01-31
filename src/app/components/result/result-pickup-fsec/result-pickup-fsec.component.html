@@ -3,7 +3,7 @@
     <a
       routerLink="/result-fsec"
       routerLinkActive="selected-item"
-      class="btn btn-outline-primary"
+      class="btn-change"
       >基本ケース</a
     >
     <a
@@ -15,7 +15,7 @@
     <a
       routerLink="/result-pic_fsec"
       routerLinkActive="selected-item"
-      class="btn btn-outline-primary active"
+      class="btn-change active"
       >PICKUP</a
     >
   </nav>
@@ -33,29 +33,33 @@
 
 <div class="result_table">
   <table>
-    <tr>
-      <th class="m">部材No</th>
-      <th class="n">節点No</th>
-      <th class="l">着目位置</th>
-      <th class="fx">軸方向力</th>
-      <th class="fy">y方向のせん断力</th>
-      <th class="fz">z方向のせん断力</th>
-      <th class="mx">ねじりモーメント</th>
-      <th class="my">y軸回りの<br />曲げモーメント</th>
-      <th class="mz">z軸回りの<br />曲げモーメント</th>
-      <th class="case">組み合わせ</th>
-    </tr>
-    <tr *ngFor="let resultData of dataset; index as i">
-      <td class="m">{{ resultData.m }}</td>
-      <td class="n">{{ resultData.n }}</td>
-      <td class="l">{{ resultData.l }}</td>
-      <td class="fx">{{ resultData.fx }}</td>
-      <td class="fy">{{ resultData.fy }}</td>
-      <td class="fz">{{ resultData.fz }}</td>
-      <td class="mx">{{ resultData.mx }}</td>
-      <td class="my">{{ resultData.my }}</td>
-      <td class="mz">{{ resultData.mz }}</td>
-      <td class="case">{{ resultData.case }}</td>
-    </tr>
+    <thead>
+      <tr>
+        <th class="m">部材No</th>
+        <th class="n">節点No</th>
+        <th class="l">着目位置</th>
+        <th class="fx">軸方向力</th>
+        <th class="fy">y方向のせん断力</th>
+        <th class="fz">z方向のせん断力</th>
+        <th class="mx">ねじりモーメント</th>
+        <th class="my">y軸回りの<br />曲げモーメント</th>
+        <th class="mz">z軸回りの<br />曲げモーメント</th>
+        <th class="case">組み合わせ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let resultData of dataset; index as i">
+        <td class="m">{{ resultData.m }}</td>
+        <td class="n">{{ resultData.n }}</td>
+        <td class="l">{{ resultData.l }}</td>
+        <td class="fx">{{ resultData.fx }}</td>
+        <td class="fy">{{ resultData.fy }}</td>
+        <td class="fz">{{ resultData.fz }}</td>
+        <td class="mx">{{ resultData.mx }}</td>
+        <td class="my">{{ resultData.my }}</td>
+        <td class="mz">{{ resultData.mz }}</td>
+        <td class="case">{{ resultData.case }}</td>
+      </tr>
+    </tbody>
   </table>
 </div>

@@ -1,23 +1,8 @@
 <div class="btn-group">
   <nav>
-    <a
-      routerLink="/result-fsec"
-      routerLinkActive="selected-item"
-      class="btn btn-outline-primary"
-      >基本ケース</a
-    >
-    <a
-      routerLink="/result-comb_fsec"
-      routerLinkActive="selected-item"
-      class="btn btn-outline-primary active"
-      >COMBINE</a
-    >
-    <a
-      routerLink="/result-pic_fsec"
-      routerLinkActive="selected-item"
-      [class]="btnPickup"
-      >PICKUP</a
-    >
+    <a routerLink="/result-fsec" class="btn-change">基本ケース</a>
+    <a routerLink="/result-comb_fsec" class="btn-change active">COMBINE</a>
+    <a routerLink="/result-pic_fsec" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
 

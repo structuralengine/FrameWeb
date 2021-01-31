@@ -3,7 +3,7 @@
     <a
       routerLink="/result-fsec"
       routerLinkActive="selected-item"
-      class="btn btn-outline-primary active"
+      class="btn-change active"
       >基本ケース</a
     >
     <a
@@ -33,27 +33,31 @@
 
 <div class="result_table">
   <table>
-    <tr>
-      <th>部材No</th>
-      <th>節点No</th>
-      <th>着目位置</th>
-      <th>軸方向力</th>
-      <th>y軸方向の<br />せん断力</th>
-      <th>z軸方向の<br />せん断力</th>
-      <th>ねじりモーメント</th>
-      <th>y軸回りの<br />曲げモーメント</th>
-      <th>z軸回りの<br />曲げモーメント</th>
-    </tr>
-    <tr *ngFor="let resultData of dataset; index as i">
-      <td>{{ resultData.m }}</td>
-      <td>{{ resultData.n }}</td>
-      <td>{{ resultData.l }}</td>
-      <td>{{ resultData.fx }}</td>
-      <td>{{ resultData.fy }}</td>
-      <td>{{ resultData.fz }}</td>
-      <td>{{ resultData.mx }}</td>
-      <td>{{ resultData.my }}</td>
-      <td>{{ resultData.mz }}</td>
-    </tr>
+    <thead>
+      <tr>
+        <th>部材No</th>
+        <th>節点No</th>
+        <th>着目位置</th>
+        <th>軸方向力</th>
+        <th>y軸方向の<br />せん断力</th>
+        <th>z軸方向の<br />せん断力</th>
+        <th>ねじりモーメント</th>
+        <th>y軸回りの<br />曲げモーメント</th>
+        <th>z軸回りの<br />曲げモーメント</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let resultData of dataset; index as i">
+        <td>{{ resultData.m }}</td>
+        <td>{{ resultData.n }}</td>
+        <td>{{ resultData.l }}</td>
+        <td>{{ resultData.fx }}</td>
+        <td>{{ resultData.fy }}</td>
+        <td>{{ resultData.fz }}</td>
+        <td>{{ resultData.mx }}</td>
+        <td>{{ resultData.my }}</td>
+        <td>{{ resultData.mz }}</td>
+      </tr>
+    </tbody>
   </table>
 </div>
