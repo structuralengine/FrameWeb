@@ -13,22 +13,12 @@ import { DataCountService } from "../dataCount.service";
   ],
 })
 export class PrintInputElementsComponent implements OnInit, AfterViewInit {
-  page: number;
-  load_name: string;
-  collectionSize: number;
-  countCell: number;
-  countHead: number;
-  countTotal: number;
 
-  btnPickup: string;
-  tableHeight: number;
-  invoiceIds: string[];
-  invoiceDetails: Promise<any>[];
-
-  public elements_dataset = [];
+  public elements_table = [];
+  public elements_break = [];
   public elements_typeNum = [];
 
-  public judge: boolean;
+   public judge: boolean;
 
   constructor(
     private InputData: InputDataService,
@@ -41,48 +31,196 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     const inputJson: any = this.InputData.getInputJson(0);
 
     if ("element" in inputJson) {
-      const tables = this.printElement(inputJson); // {body, title}
-      this.elements_dataset = tables.body;
+
+      const tables = this.printElement(inputJson); 
+      // { 
+      //   table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
+      //   title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
+      //   this: countTotal, // 全体の高さ
+      //   break_after: break_aft
+      
+       // 各タイプの前に改ページ（break_after）が必要かどうか判定
+      // };
+
+      this.elements_table = tables.table;
+      this.elements_break = tables.break_after;
       this.elements_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this);
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit(){
+
+  }
 
   // 材料データ element を印刷する
   private printElement(inputJson): any {
     const json: {} = inputJson["element"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
-    const body: any = [];
+    
+    // 全体の高さを計算する
+    let countCell = 0;
+    for (const index of keys) {
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      countCell += (Object.keys(elist).length + 1) * 20;
+    }
+    const countHead = keys.length * 2 * 20;
+    const countTotal = countCell + countHead + 40;
   
+    // 各タイプの前に改ページ（break_after）が必要かどうか判定する
+    const break_after: boolean[] = new Array();
+    let ROW = 0
+    for (const index of keys) {
+      ROW += 2; // 行
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      const countCell = elist.length;
+      ROW += countCell;
 
+      if(ROW < 59){
+        break_after.push(false)
+      } else {
+        break_after.push(true);
+        ROW = 0
+      }
+    }
+
+    // テーブル
+    const splid: any = [];
     const title: string[] = new Array();
     for (const index of keys) {
-      const elist = json[index]; // 1行分のnodeデータを取り出す
-      console.log("elist.length",Object.keys(elist).length);
+
+      const table: any = []; // この時点でリセット、再定義 一旦空にする
+
+      const elist = json[index]; // 1テーブル分のnodeデータを取り出す
+      title.push(index.toString());
+
+      let body: any = [];
+      let row = 2; // タイトル行
+      for ( const item  of elist){
+        const line = ["", "", "", "", "", "", "", ""];
+        line[0] = index;
+        line[1] = item.A.toExponential(2);
+        line[2] = item.E.toExponential(2);
+        line[3] = item.Xp.toExponential(2);
+        line[4] = item.Iy.toFixed(6);
+        line[5] = item.Iz.toString(6);
+        line[6] = item.J.toFixed(4);
+        body.push(line);
+        row ++;
+
+        // １テーブルで59行以上データがあるならば
+        if(row > 59){
+          table.push(body);
+          body = [];
+          row = 2;
+        }
+
+      }
+
+      if(body.length > 0){
+        table.push(body);
+      }
+
+      splid.pus(table);
+
+    }
+
+    return { 
+      table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
+      title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
+      this: countTotal, // 全体の高さ
+      break_after: break_after // 各タイプの前に改ページ（break_after）が必要かどうか判定
+    };
+
+    /*
+    let body: any = [];
+    const splid: any = [];
+
+    let page: number = 0;
+
+    let break_flg = true;
+
+    // while (break_flg) {
+    for (const index of keys) {
+      const elist = json[index]; // 1テーブル分のnodeデータを取り出す
+      const keysContents : string[] = Object.keys(elist);
       title.push(index.toString());
       const table: any = []; // この時点でリセット、再定義 一旦空にする
-      for (const key of Object.keys(elist)) {
-        const item = elist[key];
-        // 印刷する1行分のリストを作る
+      if (elist.length > 59) {
+        while (break_flg) {
+          for (let i = 0; i < this.bottomCell; i++) {
+            const line = ["", "", "", "", "", "", "", ""];
+            let index: string = keys[i];
+            const item = json[index]; // 1行分のnodeデータを取り出す
+            const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
+            const j = page * 59 + i + 1;
+            const s = j + 1;
 
-        const line: string[] = new Array();
-        line.push(key);
-        line.push(item.A.toFixed(4));
-        line.push(item.E.toExponential(2));
-        line.push(item.G.toExponential(2));
-        line.push(item.Xp.toExponential(2));
-        line.push(item.Iy.toFixed(6));
-        line.push(item.Iz.toFixed(6));
-        line.push(item.J.toFixed(4));
-        table.push(line);
+            if (s > keys.length) {
+              break_flg = false;
+              break;
+            }
+
+            line[0] = index;
+            line[1] = item.A.toExponential(2);
+            line[2] = item.E.toExponential(2);
+            line[3] = item.Xp.toExponential(2);
+            line[4] = item.Iy.toFixed(6);
+            line[5] = item.Iz.toString(6);
+            line[6] = item.J.toFixed(4);
+
+            body.push(line);
+          }
+          if (body.length === 0) {
+            break;
+          }
+          splid.push(body);
+          body = [];
+          page++;
+        }
+        const lastArray2 = splid.slice(-1)[0];
+        const lastArrayCount2 = lastArray2.length;
+        this.judgeType = this.countArea.setCurrentElements(lastArrayCount2);
+      } else {
+        const elen = elist.length;
+        for(let i = 0; i < elen ; i++){
+          const line = ["", "", "", "", "", "", "", ""];
+            let index: string = keys[i];
+            const item = json[index]; // 1行分のnodeデータを取り出す
+            const j = page * 59 + i + 1;
+            const s = j + 1;
+
+            if (s > keys.length) {
+              break_flg = false;
+              break;
+            }
+
+            line[0] = index;
+            line[1] = item.A.toExponential(2);
+            line[2] = item.E.toExponential(2);
+            line[3] = item.Xp.toExponential(2);
+            line[4] = item.Iy.toFixed(6);
+            line[5] = item.Iz.toString(6);
+            line[6] = item.J.toFixed(4);
+
+            body.push(line);
+        }
+        table.push(body);
+        this.judgeType = this.countArea.setCurrentElements(elen);
+
       }
+      if(this.judgeType === true){
+        page++;
+      }
+    
       this.countCell = (Object.keys(elist).length + 1) * 20;
       body.push(table);
     }
+    
     this.countHead = keys.length * 2 * 20;
     this.countTotal = this.countCell + this.countHead + 40;
-    return { body, title, this: this.countTotal };
+    return { body, title, this: this.countTotal, break_after: break_after };
+
+    */
   }
 }

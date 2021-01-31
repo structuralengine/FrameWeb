@@ -24,6 +24,10 @@ $height_content: 20px;
   page-break-before: always;
 }
 
+.show{
+  display: none;
+}
+
 .invoicetTable {
   h2 {
     height: $height_header;
