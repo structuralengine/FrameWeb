@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
-import { Data } from "@angular/router";
 
 @Component({
   selector: "app-print-input-fix-member",
@@ -32,7 +31,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
 
   constructor(
     private InputData: InputDataService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
   ) {}
 
   ngOnInit(): void {

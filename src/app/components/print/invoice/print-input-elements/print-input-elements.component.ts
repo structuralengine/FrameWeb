@@ -96,19 +96,22 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
 
       let body: any = [];
       let row = 2; // タイトル行
-      for ( const item  of elist){
-        const line = ["", "", "", "", "", "", "", ""];
-        line[0] = index;
+      for (const key of Object.keys(elist)){
+        const item = elist[key];
+
+        const line = ["", "", "", "", "", "", "",""];
+        line[0] = key;
         line[1] = item.A.toExponential(2);
         line[2] = item.E.toExponential(2);
-        line[3] = item.Xp.toExponential(2);
-        line[4] = item.Iy.toFixed(6);
-        line[5] = item.Iz.toString(6);
-        line[6] = item.J.toFixed(4);
+        line[3] = item.G.toExponential(2);
+        line[4] = item.Xp.toExponential(2);
+        line[5] = item.Iy.toFixed(6);
+        line[6] = item.Iz.toString(6);
+        line[7] = item.J.toFixed(4);
         body.push(line);
         row ++;
 
-        // １テーブルで59行以上データがあるならば
+        //１テーブルで59行以上データがあるならば
         if(row > 59){
           table.push(body);
           body = [];
@@ -121,7 +124,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
         table.push(body);
       }
 
-      splid.pus(table);
+      splid.push(table);
 
     }
 
