@@ -422,9 +422,7 @@ export class InputLoadService {
             rz: (rz == null) ? empty : rz
           };
 
-          if (empty === null) {
-            tmp['row'] = row.row;
-          }
+          tmp['row'] = row.row;
 
           tmp_node.push(tmp);
         }
@@ -473,8 +471,7 @@ export class InputLoadService {
           if ((m1 != null || m2 != null) && direction != '' && mark != null
             && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
-            tmp_member.push({
-              row: row.row,
+            const tmp = {
               m1: row.m1,
               m2: row.m2,
               direction: row.direction,
@@ -483,7 +480,11 @@ export class InputLoadService {
               L2: row.L2,
               P1: P1,
               P2: P2
-            });
+            };
+
+            tmp['row'] = row.row;
+
+            tmp_member.push(tmp);
 
 
           }
@@ -495,8 +496,10 @@ export class InputLoadService {
         const load2: any[] = this.convertMemberLoads(load1);
 
         for (let j = 0; j < load2.length; j++) {
-          const row: {} = load2[j];
-          tmp_member.push({
+
+          const row = load2[j];
+
+          const tmp = {
             m: row['m1'],
             direction: row['direction'],
             mark: row['mark'],
@@ -504,7 +507,11 @@ export class InputLoadService {
             L2: this.helper.toNumber(row['L2'], 3),
             P1: this.helper.toNumber(row['P1'], 2),
             P2: this.helper.toNumber(row['P2'], 2)
-          });
+          };
+
+          tmp['row'] = row.row;
+
+          tmp_member.push(tmp);
 
         }
 
