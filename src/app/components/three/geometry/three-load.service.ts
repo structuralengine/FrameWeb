@@ -96,7 +96,6 @@ export class ThreeLoadService {
     };
     this.gui = {};
 
-
     this.AllCaseLoadList = {};
     this.currentIndex = null;
   }
@@ -134,7 +133,7 @@ export class ThreeLoadService {
 
   }
 
-  
+
   // 表示ケースを変更する
   public changeCase(id: string): void {
 
@@ -185,6 +184,7 @@ export class ThreeLoadService {
     const ThreeObject = data.ThreeObject;
     this.scene.remove(ThreeObject);
 
+    delete this.AllCaseLoadList[id];
   }
 
   public changeData(row: number = -1): void {
@@ -199,8 +199,8 @@ export class ThreeLoadService {
     if (!(this.currentIndex in this.AllCaseLoadList)) {
       this.addCase(this.currentIndex);
     }
-    const data =  this.AllCaseLoadList[this.currentIndex];
-    const ThreeObject = data.ThreeObject;
+    const LoadList =  this.AllCaseLoadList[this.currentIndex];
+    const ThreeObject = LoadList.ThreeObject;
     ThreeObject.visible = true;
 
     // 格点データを入手
@@ -212,7 +212,11 @@ export class ThreeLoadService {
     // 節点荷重データを入手
     const nodeLoadData = this.load.getNodeLoadJson(0, this.currentIndex);
     if (this.currentIndex in nodeLoadData) {
-      this.createPointLoad(nodeLoadData[this.currentIndex], row, nodeData);
+      this.createPointLoad(
+        nodeLoadData[this.currentIndex], 
+        nodeData, 
+        LoadList.pointLoadList, 
+        row);
     }
 
     // 要素データを入手
@@ -224,7 +228,12 @@ export class ThreeLoadService {
     // 要素荷重データを入手
     const memberLoadData = this.load.getMemberLoadJson(0, this.currentIndex);
     if (this.currentIndex in memberLoadData) {
-      this.createMemberLoad(memberLoadData[this.currentIndex], row, nodeData, memberData);
+      this.createMemberLoad(
+        memberLoadData[this.currentIndex],
+        nodeData, 
+        memberData,
+        LoadList.memberLoadList, 
+        row);
     }
 
     // サイズや重なりを調整する
@@ -235,7 +244,10 @@ export class ThreeLoadService {
   }
 
   // 節点荷重の矢印を描く
-  private createPointLoad(targetNodeLoad: any[], nodeData: object): void {
+  private createPointLoad(targetNodeLoad: any[],
+                          nodeData: object,
+                          pointLoadList: any,
+                          row: number =-1): void {
     if (targetNodeLoad === undefined) {
       return;
     }
@@ -268,6 +280,14 @@ export class ThreeLoadService {
 
     // 集中荷重の矢印をシーンに追加する
     for (const load of targetNodeLoad) {
+
+      if ( row > 0) {
+        if (load.row !== row) {
+          // 要求されたrow 以外の荷重は変更しない
+          continue;
+        }
+      }
+
       const n = load.n;
 
       // 節点座標 を 取得する
@@ -277,10 +297,8 @@ export class ThreeLoadService {
       const node = nodeData[n];
 
       // リストに登録する
-      const target =
-        n in this.pointLoadList
-          ? this.pointLoadList[n]
-          : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
+      const target = (n in pointLoadList) ? pointLoadList[n]
+                    : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
 
       // 集中荷重 ---------------------------------
       for (let key of ["tx", "ty", "tz"]) {
@@ -339,7 +357,7 @@ export class ThreeLoadService {
         if (already === false) {
           this.scene.add(arrow);
         }
-        this.pointLoadList[n] = target;
+        pointLoadList[n] = target;
       }
 
       // 曲げモーメント荷重 -------------------------
@@ -390,7 +408,7 @@ export class ThreeLoadService {
         if (already === false) {
           this.scene.add(arrow);
         }
-        this.pointLoadList[n] = target;
+        pointLoadList[n] = target;
       }
     }
   }
@@ -399,8 +417,9 @@ export class ThreeLoadService {
   private createMemberLoad(
     memberLoadData: any[],
     nodeData: object,
-    memberData: object
-  ): void {
+    memberData: object,
+    memberLoadList: any,
+    row: number = -1 ): void {
     if (memberLoadData === undefined) {
       return;
     }
@@ -460,10 +479,8 @@ export class ThreeLoadService {
       );
 
       // リストに登録する
-      const target =
-        m in this.memberLoadList
-          ? this.memberLoadList[m]
-          : { localAxis, wx: [], wy: [], wz: [], wgy: [], wgz: [], wr: [] };
+      const target = (m in memberLoadList) ? memberLoadList[m]
+                  : { localAxis, wx: [], wy: [], wz: [], wgy: [], wgz: [], wr: [] };
 
       // 荷重値と向き -----------------------------------
       let P1: number = load.P1;
@@ -571,7 +588,7 @@ export class ThreeLoadService {
         if (already === false) {
           this.scene.add(arrow);
         }
-        this.memberLoadList[m] = target;
+        memberLoadList[m] = target;
         return; // sasa
       }
     }
@@ -647,6 +664,7 @@ export class ThreeLoadService {
   // #region スケールを反映する
   private onResize(): void {
     console.log("three load!", "onResize");
+    /*
     // 節点荷重のスケールを変更する
     for (const n of Object.keys(this.pointLoadList)) {
       const dict = this.pointLoadList[n];
@@ -659,6 +677,7 @@ export class ThreeLoadService {
         }
       }
     }
+    */
     // 要素荷重のスケールを変更する
   }
 
@@ -668,6 +687,8 @@ export class ThreeLoadService {
 
 
   private DisableData(): void {
+    console.log("three load!", "DisableData");
+    /*
       // 既に存在する荷重を非表示にする
     this.ClearNodeLoad();
     this.ClearMemberLoad();
@@ -695,6 +716,7 @@ export class ThreeLoadService {
         }
       }
     }
+        */
   }
   // #endregion
 }
