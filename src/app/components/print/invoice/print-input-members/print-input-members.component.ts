@@ -32,7 +32,9 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   constructor(
     private InputData: InputDataService,
     private countArea: DataCountService
-  ) {}
+  ) {
+    this.judge = false;
+  }
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);
