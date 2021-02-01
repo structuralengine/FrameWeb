@@ -17,7 +17,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number;
+  countTotal: number = 3;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -27,7 +27,6 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   public member_page = [];
 
   public judge: boolean;
-  public judgeLast: boolean;
 
   constructor(
     private InputData: InputDataService,
@@ -43,8 +42,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
       const tables = this.printMember(inputJson);
       this.member_dataset = tables.splid;
       this.member_page = tables.page;
-      this.judge = this.countArea.setCurrentY(tables.this);
-      this.judgeLast = this.countArea.setCurrentY(tables.lastArrayCount);
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     }
   }
 
@@ -92,22 +90,13 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
       page++;
     }
 
-    // for (const index of keys) {
-    //   const item = json[index]; // 1行分のnodeデータを取り出す
-    //   const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
-    //   // 印刷する1行分のリストを作る
-    //   const line: string[] = new Array();
-    //   line.push(index);
-    //   line.push(item.ni.toString());
-    //   line.push(item.nj.toString());
-    //   line.push(len.toFixed(3));
-    //   line.push(item.e.toString());
-    //   line.push(item.cg.toString());
-    //   body.push(line);
-    // }
+    //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
     const lastArrayCount = lastArray.length;
-    this.countTotal = (keys.length + 1) * 20 + 40;
-    return { page, splid, this: this.countTotal, lastArrayCount };
+
+    //全部の行数を取得している。
+    this.countTotal = keys.length;
+
+    return { page, splid, this: this.countTotal, last: lastArrayCount };
   }
 }

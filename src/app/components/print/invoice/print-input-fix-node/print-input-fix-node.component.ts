@@ -25,7 +25,8 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public fixNode_dataset = [];
+  public fixNode_table = [];
+  public fixNode_break = [];
   public fixNode_typeNum = [];
 
   public judge: boolean;
@@ -42,9 +43,12 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
 
     if ("fix_node" in inputJson) {
       const tables = this.printFixnode(inputJson); // {body, title}
-      this.fixNode_dataset = tables.body;
+      this.fixNode_table = tables.table;
+      this.fixNode_break = tables.break_after;
       this.fixNode_typeNum = tables.title;
-      this.judge = this.countArea.setCurrentY(tables.this);
+      this.judge = this.countArea.setCurrentY(tables.this,
+      tables.last
+        );
     }
   }
 
@@ -54,34 +58,82 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   private printFixnode(inputJson): any {
     const json: {} = inputJson["fix_node"];
     const keys: string[] = Object.keys(json);
-    const body: any = [];
 
-    // const table: any = []; // 下に移動
+    // 全体の高さを計算する
+    let countCell = 0;
+    for (const index of keys) {
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      countCell += (Object.keys(elist).length + 1) * 20;
+    }
+    const countHead = keys.length * 2 * 20;
+    const countTotal = countCell + countHead + 40;
+
+    // 各タイプの前に改ページ（break_after）が必要かどうか判定する
+    const break_after: boolean[] = new Array();
+    let ROW = 0;
+    for (const index of keys) {
+      ROW += 2; // 行
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      const countCell = Object.keys(elist).length;
+      ROW += countCell;
+
+      if (ROW < 59) {
+        break_after.push(false);
+      } else {
+        break_after.push(true);
+        ROW = 0;
+      }
+    }
+
+    // テーブル
+    const splid: any = [];
     const title: string[] = new Array();
     for (const index of keys) {
-      const elist = json[index]; // 1行分のnodeデータを取り出す
-      console.log("elist.length",elist.length);
-      title.push(index.toString());
+      const elist = json[index]; // 1テーブル分のデータを取り出す
       const table: any = []; // この時点でリセット、再定義 一旦空にする
+
+      title.push(index.toString());
+
+      let body: any = [];
+      let row = 2; // タイトル行
       for (const key of Object.keys(elist)) {
         const item = elist[key];
-        // 印刷する1行分のリストを作る
 
-        const line: string[] = new Array();
-        line.push(item.n);
-        line.push(item.tx.toString());
-        line.push(item.ty.toString());
-        line.push(item.tz.toString());
-        line.push(item.rx.toString());
-        line.push(item.ry.toString());
-        line.push(item.rz.toString());
-        table.push(line);
+        const line = ["", "", "", "", "", "", ""];
+        line[0] = item.n.toString();
+        line[1] = item.tx.toString();
+        line[2] = item.ty.toString();
+        line[3] = item.tz.toString();
+        line[4] = item.rx.toString();
+        line[5] = item.ry.toString();
+        line[6] = item.rz.toString();
+        body.push(line);
+        row++;
+
+        //１テーブルで59行以上データがあるならば
+        if (row > 59) {
+          table.push(body);
+          body = [];
+          row = 2;
+        }
       }
-      this.countCell = (elist.length + 1) * 20;
-      body.push(table);
+
+      if (body.length > 0) {
+        table.push(body);
+      }
+
+      splid.push(table);
     }
-    this.countHead = keys.length * 2 * 20;
-    this.countTotal = this.countCell + this.countHead + 40;
-    return { body, title, this: this.countTotal };
+
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
+
+    return {
+      table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
+      title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
+      this: countTotal, // 全体の高さ
+      last: lastArrayCount, //最後のページのcurrentYの行数
+      break_after: break_after, // 各タイプの前に改ページ（break_after）が必要かどうか判定
+    };
   }
 }

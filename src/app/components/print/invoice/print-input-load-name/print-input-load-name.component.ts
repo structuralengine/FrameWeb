@@ -18,7 +18,7 @@ export class PrintInputLoadNameComponent implements OnInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number;
+  countTotal: number = 4;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -42,7 +42,9 @@ export class PrintInputLoadNameComponent implements OnInit {
       // 基本荷重データ
       const tables_basic = this.printLoadName(LoadJson);
       this.loadName_dataset = tables_basic.body;
-      this.judge = this.countArea.setCurrentY(tables_basic.basic);
+      this.judge = this.countArea.setCurrentY(tables_basic.basic,
+        tables_basic.last
+        );
     }
   }
 
@@ -51,6 +53,8 @@ export class PrintInputLoadNameComponent implements OnInit {
   // 基本荷重データ load name を印刷する
   private printLoadName(json): any {
     const body: any = [];
+    const splid: any = [];
+
     const dataCount: number = Object.keys(json).length;
     for (const index of Object.keys(json)) {
       const item = json[index]; // 1行分のnodeデータを取り出す
@@ -78,7 +82,12 @@ export class PrintInputLoadNameComponent implements OnInit {
       line.push(joint.toString());
       body.push(line);
     }
-    this.countTotal = (dataCount * 2 + 1) * 20 + 40;
-    return { body, basic: this.countTotal };
+    this.countTotal = dataCount * 2 ;
+
+     //最後のページの行数だけ取得している
+     const lastArray = splid.slice(-1)[0];
+     const lastArrayCount = lastArray.length;
+ 
+    return { body, basic: this.countTotal, last:lastArrayCount};
   }
 }

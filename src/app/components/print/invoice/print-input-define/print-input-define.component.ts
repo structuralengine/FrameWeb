@@ -18,7 +18,7 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number;
+  countTotal: number = 3;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -42,7 +42,9 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     if (Object.keys(defineJson).length > 0) {
       const tables = this.printDefine(defineJson);
       this.define_dataset = tables.body;
-      this.judge = this.countArea.setCurrentY(tables.this);
+      this.judge = this.countArea.setCurrentY(tables.this,
+        tables.last
+        );
     }
   }
 
@@ -57,6 +59,7 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     const dataCount: number = Object.keys(json).length;
 
     const body: any = [];
+    const splid : any = [];
     for (const index of Object.keys(json)) {
       const item = json[index]; // 1行分のnodeデータを取り出す
 
@@ -80,7 +83,12 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
         body.push(line); // 表の1行 登録
       }
     }
-    this.countTotal = (dataCount + 1) * 20 + 40;
-    return { body, this: this.countTotal };
+    this.countTotal = dataCount;
+
+    //最後のページの行数だけ取得している
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
+
+    return { body, this: this.countTotal,last: lastArrayCount };
   }
 }

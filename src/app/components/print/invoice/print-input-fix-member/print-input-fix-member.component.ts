@@ -31,8 +31,10 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
 
   constructor(
     private InputData: InputDataService,
-    private countArea: DataCountService,
-  ) {}
+    private countArea: DataCountService
+  ) {
+    this.judge = false;
+  }
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);
@@ -41,7 +43,9 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
       const tables = this.printFixmember(inputJson); // {body, title}
       this.fixMember_dataset = tables.body;
       this.fixMember_typeNum = tables.title;
-      this.judge = this.countArea.setCurrentY(tables.this);
+      this.judge = this.countArea.setCurrentY(tables.this,
+        tables.last
+        );
     }
   }
 

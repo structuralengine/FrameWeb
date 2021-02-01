@@ -47,7 +47,9 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       this.load_title = tables_actual.titleSum;
       this.load_member = tables_actual.memberSum;
       this.load_node = tables_actual.nodeSum;
-      this.judge_actual = this.countArea.setCurrentY(tables_actual.actual);
+      this.judge_actual = this.countArea.setCurrentY(tables_actual.actual,
+        tables_actual.last
+        );
     }
   }
 
@@ -61,6 +63,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     const titleSum: any = [];
     const memberSum: any = [];
     const nodeSum: any = [];
+    const splid: any = [];
     let countCellSum: number = 0;
 
     // const title: string[] = new Array();
@@ -136,8 +139,13 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       nodeSum.push(nodeData);
       countCellSum = countCellSum + this.countCell;
     }
-    this.countHead = keys.length * 2 * 20;
-    this.countTotal = countCellSum + this.countHead + 40;
-    return { titleSum, memberSum, nodeSum, actual: this.countTotal };
+    this.countHead = keys.length * 2 ;
+    this.countTotal = countCellSum + this.countHead + 2;
+
+    //最後のページの行数だけ取得している
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
+
+    return { titleSum, memberSum, nodeSum, actual: this.countTotal ,last: lastArrayCount};
   }
 }
