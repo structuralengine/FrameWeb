@@ -10,32 +10,11 @@ export class ThreeLoadDimension {
 
   private text: ThreeLoadText;
 
-  private line: THREE.Line;
-  private arrow1: THREE.ArrowHelper;
-  private arrow2: THREE.ArrowHelper;
-
   constructor(text: ThreeLoadText) {
     this.text = text;
-    this.create();
   }
 
   public clone(): THREE.Group {
-    const group = new THREE.Group();
-
-    const line_mat: any = this.line.material;
-    const line_geo: any = this.line.geometry;
-    const line = new THREE.Line(line_geo.clone(), line_mat.clone());
-    line.name = "line";
-
-    group.add(line);
-    group.add(this.arrow1.clone());
-    group.add(this.arrow2.clone());
-
-    return group;
-  }
-
-  // 寸法線を作成する
-  private create(): void {
 
     const points = [
       new THREE.Vector3(0, 0, 0),
@@ -44,26 +23,39 @@ export class ThreeLoadDimension {
       new THREE.Vector3(1, 0, 0),
     ];
 
+    const group = new THREE.Group();
+
     const line_color = 0x000000;
 
     // 面の周りの枠線を描く
     const line_mat = new THREE.LineBasicMaterial({ color: line_color });
     const line_geo = new THREE.BufferGeometry().setFromPoints(points);
-    this.line = new THREE.Line(line_geo, line_mat);
-    this.line.name = "line";
+    const line = new THREE.Line(line_geo, line_mat);
+    line.name = "line";
+
+    group.add(line);
+
 
     // 矢印を描く
     const length = 0.5; // 長さ
     const origin = new THREE.Vector3(length, 1, 0);
 
     const dir1 = new THREE.Vector3(-1, 0, 0); // 矢印の方向（単位ベクトル）
-    this.arrow1 = new THREE.ArrowHelper(dir1, origin, length, line_color);
-    this.arrow1.name = "arrow1";
+    const arrow1 = new THREE.ArrowHelper(dir1, origin, length, line_color);
+    arrow1.name = "arrow1";
+    
+    group.add(arrow1);
+
 
     const dir2 = new THREE.Vector3(1, 0, 0); // 矢印の方向（単位ベクトル）
-    this.arrow2 = new THREE.ArrowHelper(dir2, origin, length, line_color);
-    this.arrow2.name = "arrow2";
+    const arrow2 = new THREE.ArrowHelper(dir2, origin, length, line_color);
+    arrow2.name = "arrow2";
+
+    group.add(arrow2);
+
+    return group;
   }
+
 
 
   // 寸法線を編集する

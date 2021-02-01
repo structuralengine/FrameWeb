@@ -48,16 +48,19 @@ export class ThreeService {
   // ファイルを開く処理する
   //////////////////////////////////////////////////////
   public fileload(): void {
+
         // ファイルを読み込んだ
         this.node.changeData();
         this.member.changeData();
         this.fixNode.ClearData();
         this.fixMember.ClearData();
         this.joint.ClearData();
-        this.load.fileload();
+        this.load.ClearData();
         this.disg.ClearData();
         this.reac.ClearData();
         this.fsec.ClearData();
+
+        this.scene.render();
   }
 
   //////////////////////////////////////////////////////
@@ -237,9 +240,8 @@ export class ThreeService {
         break;
 
       case 'load_names':
-        if (this.currentIndex !== currentPage) {
-          this.load.changeData(currentPage);
-        }
+        this.load.changeCase(currentPage);
+
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(true);
@@ -252,9 +254,8 @@ export class ThreeService {
         break;
 
       case 'load_values':
-        if (this.currentIndex !== currentPage) {
-          this.load.changeData(currentPage);
-        }
+        this.load.changeCase(currentPage);
+
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);

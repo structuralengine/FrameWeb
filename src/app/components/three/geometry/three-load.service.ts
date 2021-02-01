@@ -21,7 +21,6 @@ import { ThreeLoadTemperature } from "./three-load/three-load-temperature";
   providedIn: "root",
 })
 export class ThreeLoadService {
-
   private isVisible = { object: false, gui: false };
 
   // 全ケースの荷重を保存
@@ -100,87 +99,74 @@ export class ThreeLoadService {
     this.currentIndex = null;
   }
 
-  // 荷重を全部削除する
+  // 荷重を再設定する
   public ClearData(): void {
-
-    for(const key of Object.keys(this.AllCaseLoadList)){
-      const targetLoad = this.AllCaseLoadList[key];
-      const ThreeObject: THREE.Object3D = targetLoad.ThreeObject;
-      this.scene.remove(ThreeObject);
+    // 荷重を全部削除する
+    for (const id of Object.keys(this.AllCaseLoadList)) {
+      this.removeCase(id);
     }
 
     this.AllCaseLoadList = {};
     this.currentIndex = null;
-  }
 
-
-  // ファイルを開いたときの処理
-  public fileload() {
-
-    // 今までの荷重を削除する
-    this.ClearData();
-
+    // ファイルを開いたときの処理
     // 荷重を作成する
-    for( const id of Object.keys(this.load.load)){
+    for (const id of Object.keys(this.load.load)) {
       this.addCase(id);
     }
 
     // 荷重図を非表示のまま作成する
-    for(const id of Object.keys(this.AllCaseLoadList)){
+    for (const id of Object.keys(this.AllCaseLoadList)) {
       this.currentIndex = id; // カレントデータをセット
       this.changeData(); // 荷重図を追加する
     }
-
   }
 
-
   // 表示ケースを変更する
-  public changeCase(id: string): void {
-
-    if(this.currentIndex === id){
+  public changeCase(changeCase: number): void {
+    const id: string = changeCase.toString();
+    if (this.currentIndex === id) {
       return;
     }
 
     // 初めての荷重ケースが呼び出された場合
-    if(!(id in this.AllCaseLoadList)){
+    if (!(id in this.AllCaseLoadList)) {
       this.addCase(id);
     }
 
     // 荷重の表示非表示を切り替える
-    for(const key of Object.keys(this.AllCaseLoadList)){
+    for (const key of Object.keys(this.AllCaseLoadList)) {
       const targetLoad = this.AllCaseLoadList[key];
       const ThreeObject: THREE.Object3D = targetLoad.ThreeObject;
-      ThreeObject.visible = ( key === id) ? true : false;
+      ThreeObject.visible = key === id ? true : false;
     }
+    this.scene.render();
 
     // カレントデータをセット
     this.currentIndex = id;
-
   }
 
   // ケースを追加する
   private addCase(id: string): void {
     const ThreeObject = new THREE.Object3D();
     ThreeObject.name = id;
-    ThreeObject.visible = false;　// ファイルを読んだ時点では、全ケース非表示
-
+    ThreeObject.visible = false; // ファイルを読んだ時点では、全ケース非表示
     this.AllCaseLoadList[id] = {
       ThreeObject,
       pointLoadList: {},
-      memberLoadList: {}
-    }
+      memberLoadList: {},
+    };
 
     this.scene.add(ThreeObject); // シーンに追加
   }
 
   // ケースの荷重図を消去する
   private removeCase(id: string): void {
-
-    if(!(id in this.AllCaseLoadList)) {
+    if (!(id in this.AllCaseLoadList)) {
       return;
     }
 
-    const data =  this.AllCaseLoadList[id];
+    const data = this.AllCaseLoadList[id];
     const ThreeObject = data.ThreeObject;
     this.scene.remove(ThreeObject);
 
@@ -188,20 +174,13 @@ export class ThreeLoadService {
   }
 
   public changeData(row: number = -1): void {
-
     // データになカレントデータがなければ
-    if ( !(this.currentIndex in this.load.load)){
+    if (!(this.currentIndex in this.load.load)) {
       this.removeCase(this.currentIndex);
       return;
     }
 
-    // ケースの荷重図を表示する
-    if (!(this.currentIndex in this.AllCaseLoadList)) {
-      this.addCase(this.currentIndex);
-    }
-    const LoadList =  this.AllCaseLoadList[this.currentIndex];
-    const ThreeObject = LoadList.ThreeObject;
-    ThreeObject.visible = true;
+    const LoadList = this.AllCaseLoadList[this.currentIndex];
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
@@ -212,12 +191,51 @@ export class ThreeLoadService {
     // 節点荷重データを入手
     const nodeLoadData = this.load.getNodeLoadJson(0, this.currentIndex);
     if (this.currentIndex in nodeLoadData) {
+      // 対象業(row) に入力されている部材番号を調べる
+      const tempNodeLoad = nodeLoadData[this.currentIndex];
+      let targetNodeLoad = [];
+      if (row < 0) {
+        // 全データ対象の場合
+        targetNodeLoad = tempNodeLoad;
+        for (const key of Object.keys(LoadList.pointLoadList)) {
+          for (const item of LoadList.pointLoadList[key]) {
+            LoadList.ThreeObject.remove(item);
+          }
+          LoadList.pointLoadList[key] = [];
+        }
+      } else {
+        // 変更する行に指定がある場合
+        for (const load of tempNodeLoad) {
+          if (load.row === row) {
+            targetNodeLoad.push(load);
+          }
+        }
+        for (const key of Object.keys(LoadList.pointLoadList)) {
+          const list = LoadList.pointLoadList[key];
+          for (let i = list.length - 1; i >= 0; i--) {
+            const item = list[i];
+            if (item.row === row) {
+              LoadList.ThreeObject.remove(item);
+              list.splice(i, 1);
+            }
+          }
+        }
+      }
+
       this.createPointLoad(
-        nodeLoadData[this.currentIndex], 
-        nodeData, 
+        targetNodeLoad,
+        nodeData,
         LoadList.ThreeObject,
-        LoadList.pointLoadList, 
-        row);
+        LoadList.pointLoadList
+      );
+    }　else {
+      // ケースが存在しなかった
+      for (const key of Object.keys(LoadList.pointLoadList)) {
+        for (const item of LoadList.pointLoadList[key]) {
+          LoadList.ThreeObject.remove(item);
+        }
+        LoadList.pointLoadList[key] = [];
+      }
     }
 
     // 要素データを入手
@@ -229,14 +247,53 @@ export class ThreeLoadService {
     // 要素荷重データを入手
     const memberLoadData = this.load.getMemberLoadJson(0, this.currentIndex);
     if (this.currentIndex in memberLoadData) {
-/*
+
+      // 対象業(row) に入力されている部材番号を調べる
+      const tempMemberLoad = memberLoadData[this.currentIndex];
+      let targetMemberLoad = [];
+      if (row < 0) {
+        // 全データ対象の場合
+        targetMemberLoad = tempMemberLoad;
+        for (const key of Object.keys(LoadList.memberLoadList)) {
+          for (const item of LoadList.memberLoadList[key]) {
+            LoadList.ThreeObject.remove(item);
+          }
+          LoadList.memberLoadList[key] = [];
+        }
+      } else {
+        // 変更する行に指定がある場合
+        for (const load of tempMemberLoad) {
+          if (load.row === row) {
+            targetMemberLoad.push(load);
+          }
+        }
+        for (const key of Object.keys(LoadList.memberLoadList)) {
+          const list = LoadList.memberLoadList[key];
+          for (let i = list.length - 1; i >= 0; i--) {
+            const item = list[i];
+            if (item.row === row) {
+              LoadList.ThreeObject.remove(item);
+              list.splice(i, 1);
+            }
+          }
+        }
+      }
+
       this.createMemberLoad(
-        memberLoadData[this.currentIndex],
-        nodeData, 
+        targetMemberLoad,
+        nodeData,
         memberData,
-        LoadList.memberLoadList, 
-        row);
-*/
+        LoadList.ThreeObject,
+        LoadList.memberLoadList
+      );
+    } else {
+      // ケースが存在しなかった
+      for (const key of Object.keys(LoadList.memberLoadList)) {
+        for (const item of LoadList.memberLoadList[key]) {
+          LoadList.ThreeObject.remove(item);
+        }
+        LoadList.memberLoadList[key] = [];
+      }
     }
 
     // サイズや重なりを調整する
@@ -251,9 +308,8 @@ export class ThreeLoadService {
     targetNodeLoad: any[],
     nodeData: object,
     ThreeObject: THREE.Object3D,
-    pointLoadList: any,
-    row: number = -1): void {
-    
+    pointLoadList: any): void {
+
     if (targetNodeLoad === undefined) {
       return;
     }
@@ -284,26 +340,10 @@ export class ThreeLoadService {
     const maxLength = this.baseScale() * 2; // 最も大きい集中荷重矢印の長さは baseScale * 2 とする
     const maxRadius = this.baseScale(); // 最も大きいモーメント矢印の半径は baseScale とする
 
-    // 既に存在する同じ行の要素を排除する
-    const items = ThreeObject.children.filter((item) =>
-      item['row'] === row
-    )
-    for (const i of items) {
-      ThreeObject.remove(i);
-    }
-
-
     // 集中荷重の矢印をシーンに追加する
     for (const load of targetNodeLoad) {
 
-      if ( row > 0) {
-        if (load.row !== row) {
-          // 要求されたrow 以外の荷重は変更しない
-          continue;
-        }
-      }
-
-      const n = load.n;
+      const n = load.n.toString();;
 
       // 節点座標 を 取得する
       if (!(n in nodeData)) {
@@ -313,7 +353,7 @@ export class ThreeLoadService {
 
       // リストに登録する
       const target = (n in pointLoadList) ? pointLoadList[n]
-                    : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
+          : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
 
       // 集中荷重 ---------------------------------
       for (let key of ["tx", "ty", "tz"]) {
@@ -350,7 +390,7 @@ export class ThreeLoadService {
         this.pointLoad.change(arrow, node, offset, value, length, key);
 
         // リストに登録する
-        arrow['row'] = load.row;
+        arrow["row"] = load.row;
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
@@ -359,31 +399,14 @@ export class ThreeLoadService {
 
       // 曲げモーメント荷重 -------------------------
       for (let key of ["rx", "ry", "rz"]) {
+
         const value = load[key];
         if (value === 0) {
           continue;
         }
 
-        // 非表示になっている余った荷重を見つける
-        let arrow: THREE.Group = null;
-        let already: boolean = false;
-        for (const k of ["rx", "ry", "rz"]) {
-          const i = target[k].findIndex((a) => {
-            a.visible === false;
-          });
-          if (i > 0) {
-            arrow = target[k][i];
-            arrow.visible = true;
-            target[k].splice(i, 1); // 一旦削除
-            already = true;
-            break;
-          }
-        }
-
         // 非表示になっている余った荷重がなければ新しいのを準備する
-        if (already === false) {
-          arrow = this.momentLoad.clone();
-        }
+        const arrow = this.momentLoad.clone();
 
         // 配置位置（その他の荷重とぶつからない位置）を決定する
         let offset = 0;
@@ -401,10 +424,10 @@ export class ThreeLoadService {
         this.momentLoad.change(arrow, node, offset, value, Radius, key);
 
         // リストに登録する
+        arrow["row"] = load.row;
         target[key].push(arrow);
-        if (already === false) {
-          this.scene.add(arrow);
-        }
+        ThreeObject.add(arrow);
+
         pointLoadList[n] = target;
       }
     }
@@ -415,8 +438,9 @@ export class ThreeLoadService {
     memberLoadData: any[],
     nodeData: object,
     memberData: object,
-    memberLoadList: any,
-    row: number = -1 ): void {
+    ThreeObject: THREE.Object3D,
+    memberLoadList: any): void {
+
     if (memberLoadData === undefined) {
       return;
     }
@@ -442,37 +466,31 @@ export class ThreeLoadService {
 
     // スケールを決める
     // 荷重値 = pMax の時 表示長さ = maxLength となる
-    const scale = maxLength / pMax * 10;
+    const scale = (maxLength / pMax) * 10;
 
     // 分布荷重の矢印をシーンに追加する
     for (const load of targetMemberLoad) {
-      if (load.P1 === 0 && load.P2 === 0) {
-        continue;
-      }
-
-      if (row > 0) {
-        if (load.row !== row) {
-          // 要求されたrow 以外の荷重は変更しない
-          continue;
-        }
-      }
-
 
       // 部材データを集計する
       if (!(load.m in memberData)) {
         continue;
       }
-      const m = memberData[load.m];
+      const mNo : string = load.m.toString();
+      const m = memberData[mNo];
       // 節点データを集計する
       if (!(m.ni in nodeData && m.nj in nodeData)) {
         continue;
       }
+
+      if (load.P1 === 0 && load.P2 === 0) {
+        continue;
+      }
+
+      // 部材の座標軸を取得
       const i = nodeData[m.ni];
       const j = nodeData[m.nj];
       const nodei = new THREE.Vector3(i.x, i.y, i.z);
       const nodej = new THREE.Vector3(j.x, j.y, j.z);
-
-      // 部材の座標軸を取得
       const localAxis = this.three_member.localAxis(
         i.x,
         i.y,
@@ -485,7 +503,7 @@ export class ThreeLoadService {
 
       // リストに登録する
       const target = (m in memberLoadList) ? memberLoadList[m]
-                  : { localAxis, wx: [], wy: [], wz: [], wgy: [], wgz: [], wr: [] };
+          : { localAxis, wx: [], wy: [], wz: [], wgy: [], wgz: [], wr: [] };
 
       // 荷重値と向き -----------------------------------
       let P1: number = load.P1;
@@ -522,91 +540,75 @@ export class ThreeLoadService {
 
       // 分布荷重 wy, wz -------------------------------
       // mark=2, direction=x
-      if (
-        load.mark === 2 &&
-        (direction === "y" ||
-          direction === "z" ||
-          direction === "gx" ||
-          direction === "gy" ||
-          direction === "gz")
-      ) {
-        // 非表示になっている余った荷重を見つける
-        let arrow: THREE.Group = null;
-        let already: boolean = false;
-        for (const k of ["wy", "wz", "wgy", "wgz"]) {
-          const i = target[k].findIndex((a) => {
-            a.visible === false;
-          });
-          if (i > 0) {
-            arrow = target[k][i];
-            arrow.visible = true;
-            target[k].splice(i, 1); // 一旦削除
-            already = true;
-            break;
+      if ( load.mark === 2){
+        if (direction === "y" ||
+            direction === "z" ||
+            direction === "gx" ||
+            direction === "gy" ||
+            direction === "gz") {
+
+
+          // 方向を決定する
+          const key: string = "w" + direction;
+
+          // 配置位置（その他の荷重とぶつからない位置）を決定する
+          let offset = 0;
+          for (const a of target[key]) {
+            if (a.visible === false) {
+              continue;
+            }
+            const child: any = a.getObjectByName("child");
+            const mesh: any = child.getObjectByName("face");
+            const face_geo = mesh.geometry;
+            const points = face_geo.vertices;
+            const h = Math.abs(points[1].y - points[3].y);
+            if (P1 + P2 > 0) {
+              // プラス側にオフセット
+              offset += h;
+            } else {
+              // マイナス側にオフセット
+              offset -= h;
+            }
           }
-        }
 
-        // 非表示になっている余った荷重がなければ新しいのを準備する
-        if (already === false) {
-          arrow = this.distributeLoad.clone();
-        }
+          // 荷重を編集する
+          const arrow = this.distributeLoad.create(
+            nodei,
+            nodej,
+            localAxis,
+            key,
+            load.L1,
+            load.L2,
+            P1,
+            P2,
+            offset,
+            scale
+          );
 
-        // 方向を決定する
-        const key: string = "w" + direction;
+          // リストに登録する
+          arrow["row"] = load.row;
+          target[key].push(arrow);
+          ThreeObject.add(arrow);
+          memberLoadList[mNo] = target;
 
-        // 配置位置（その他の荷重とぶつからない位置）を決定する
-        let offset = 0;
-        for (const a of target[key]) {
-          if (a.visible === false) {
-            continue;
-          }
-          const child: any = a.getObjectByName("child");
-          const mesh: any = child.getObjectByName("face");
-          const face_geo = mesh.geometry;
-          const points = face_geo.vertices;
-          const h = Math.abs(points[1].y - points[3].y);
-          if (P1 + P2 > 0) {
-            // プラス側にオフセット
-            offset += h;
-          } else {
-            // マイナス側にオフセット
-            offset -= h;
-          }
-        }
-        // 荷重を編集する
-        this.distributeLoad.change(
-          arrow,
-          nodei,
-          nodej,
-          localAxis,
-          key,
-          load.L1,
-          load.L2,
-          P1,
-          P2,
-          offset,
-          scale
-        );
 
-        // リストに登録する
-        target[key].push(arrow);
-        if (already === false) {
-          this.scene.add(arrow);
+        } else if(direction === 'x'){
+          // 軸方向分布荷重
         }
-        memberLoadList[m] = target;
-        return; // sasa
+      } else if( load.mark=== 1) {
+          // 集中荷重荷重
+
       }
     }
   }
 
-
   public visibleChange(flag: boolean, gui: boolean): void {
     console.log("three load!", "visible", "pass");
-    return; // sasa
+
     // 非表示にする
     if (flag === false) {
-      this.DisableData();
       this.guiDisable();
+      this.changeCase(-1);
       this.isVisible.object = false;
       return;
     }
@@ -625,7 +627,7 @@ export class ThreeLoadService {
     }
 
     // 表示する
-    this.changeData(0);
+    this.changeCase(0);
     this.isVisible.object = true;
   }
 
@@ -641,7 +643,6 @@ export class ThreeLoadService {
         .onChange((value) => {
           this.LoadScale = value;
           this.onResize();
-          this.scene.render();
         });
     }
   }
@@ -661,18 +662,19 @@ export class ThreeLoadService {
   }
 
 
-
-
-
-  // #endregion
-
-  // #region スケールを反映する
+  // スケールを反映する
   private onResize(): void {
     console.log("three load!", "onResize");
-    /*
+
+    if (!(this.currentIndex in this.AllCaseLoadList)) {
+      return;
+    }
+    const loadList = this.AllCaseLoadList[this.currentIndex ];
+
     // 節点荷重のスケールを変更する
-    for (const n of Object.keys(this.pointLoadList)) {
-      const dict = this.pointLoadList[n];
+    const pointLoadList = loadList.pointLoadList;
+    for (const n of Object.keys(pointLoadList)) {
+      const dict = pointLoadList[n];
       for (let direction of Object.keys(dict)) {
         for (const item of dict[direction]) {
           if (item.visible == true) {
@@ -682,46 +684,13 @@ export class ThreeLoadService {
         }
       }
     }
-    */
+
     // 要素荷重のスケールを変更する
+    const memberLoadList = loadList.memberLoadList;
+
+
+
+    this.scene.render();
   }
 
-  // #endregion
-
-  // #region データをクリアする
-
-
-  private DisableData(): void {
-    console.log("three load!", "DisableData");
-    /*
-      // 既に存在する荷重を非表示にする
-    this.ClearNodeLoad();
-    this.ClearMemberLoad();
-  }
-
-  // 節点荷重を非表示にする
-  private ClearNodeLoad(): void {
-    for (const n of Object.keys(this.pointLoadList)) {
-      const dict = this.pointLoadList[n];
-      for (let direction of Object.keys(dict)) {
-        for (const load of dict[direction]) {
-          load.visible = false;
-        }
-      }
-    }
-  }
-
-  // 要素荷重を非表示にする
-  private ClearMemberLoad(): void {
-    for (const m of Object.keys(this.memberLoadList)) {
-      const dict = this.memberLoadList[m];
-      for (let key of ["wx", "wy", "wz", "wr"]) {
-        for (const load of dict[key]) {
-          load.visible = false;
-        }
-      }
-    }
-        */
-  }
-  // #endregion
 }

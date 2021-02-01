@@ -12,122 +12,9 @@ export class ThreeLoadDistribute {
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
 
-  private mesh: THREE.Mesh;
-  private line: THREE.Line;
-  private arrow1: THREE.ArrowHelper;
-  private arrow2: THREE.ArrowHelper;
-  private dim1: THREE.Group;
-  private dim2: THREE.Group;
-  private dim3: THREE.Group;
-
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
-    this.create();
-  }
-
-  public clone(): THREE.Group {
-
-    const child = new THREE.Group();
-
-    const mesh = this.mesh.clone();
-    const mesh_mat: any = this.mesh.material;
-    mesh.material = mesh_mat.clone();
-    child.add(mesh);
-
-    const line_mat: any = this.line.material;
-    const line_geo: any = this.line.geometry;
-    const line = new THREE.Line(line_geo.clone(), line_mat.clone());
-    line.name = "line";
-    child.add(line);
-
-    for (const target of [this.arrow1, this.arrow2]) {
-      const arrow = target.clone();
-      const line_mat: any = target.line.material;
-      const cone_mat: any = target.cone.material;
-      arrow.line.material = line_mat.clone();
-      arrow.cone.material = cone_mat.clone();
-      child.add(arrow);
-    }
-
-    const dim = new THREE.Group();
-
-    for (const target of [this.dim1, this.dim2, this.dim3]) {
-      dim.add(target.clone());
-    }
-    dim.name = "Dimension";
-    child.add(dim);
-
-    child.name = "child";
-
-    const group = new THREE.Group();
-    group.add(child);
-    group.name = "DistributeLoad";
-
-    return group;
-  }
-
-  // 等分布荷重の雛形をX-Y平面上に生成する
-  private create(): void {
-
-    const points = [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 1, 0),
-      new THREE.Vector3(0.5, 1, 0),
-      new THREE.Vector3(1, 1, 0),
-      new THREE.Vector3(1, 0, 0),
-    ];
-
-    const line_color = 0x0000ff;
-    const face_color = 0x00cc00;
-
-    // 面を作成する
-    const face_mat = new THREE.MeshBasicMaterial({
-      transparent: true,
-      side: THREE.DoubleSide,
-      color: face_color,
-      opacity: 0.3,
-    });
-    const face_geo = new THREE.Geometry();
-    face_geo.vertices = points;
-    face_geo.faces.push(new THREE.Face3(0, 1, 2));
-    face_geo.faces.push(new THREE.Face3(2, 3, 4));
-    face_geo.faces.push(new THREE.Face3(0, 2, 4));
-    this.mesh = new THREE.Mesh(face_geo, face_mat);
-    this.mesh.name = "face";
-
-    // 面の周りの枠線を描く
-    const line_mat = new THREE.LineBasicMaterial({ color: line_color });
-    const line_geo = new THREE.BufferGeometry().setFromPoints([
-      points[1],
-      points[2],
-      points[3],
-    ]);
-    this.line = new THREE.Line(line_geo, line_mat);
-    this.line.name = "line";
-
-    // 矢印を描く
-    const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
-    const length = 1; // 長さ
-
-    const origin1 = new THREE.Vector3(0, 1, 0);
-    this.arrow1 = new THREE.ArrowHelper(dir, origin1, length, line_color);
-    this.arrow1.name = "arrow1";
-
-    const origin2 = new THREE.Vector3(1, 1, 0);
-    this.arrow2 = new THREE.ArrowHelper(dir, origin2, length, line_color);
-    this.arrow2.name = "arrow2";
-
-    // 寸法線を描く
-    this.dim1 = this.dim.clone();
-    this.dim1.name = "Dimension1";
-
-    this.dim2 = this.dim.clone();
-    this.dim2.name = "Dimension2";
-
-    this.dim3 = this.dim.clone();
-    this.dim3.name = "Dimension3";
-
   }
 
   /// 等分布荷重を編集する
@@ -142,8 +29,7 @@ export class ThreeLoadDistribute {
   // P2: 終点側の荷重値
   // offset: 配置位置（その他の荷重とぶつからない位置）
   // scale: スケール
-  public change(
-    target: THREE.Group,
+  public create(
     nodei: THREE.Vector3,
     nodej: THREE.Vector3,
     localAxis: any,
@@ -154,35 +40,15 @@ export class ThreeLoadDistribute {
     P2: number,
     offset: number,
     scale: number,
-  ): void {
-
-    const child: any = target.getObjectByName("child");
-    const mesh: any = child.getObjectByName("face");
-    const line: any = child.getObjectByName("line");
-    const arrow1: any = child.getObjectByName("arrow1");
-    const arrow2: any = child.getObjectByName("arrow2");
-    const dim: any = child.getObjectByName("Dimension");
-    const dim1: any = dim.getObjectByName("Dimension1");
-    const dim2: any = dim.getObjectByName("Dimension2");
-    const dim3: any = dim.getObjectByName("Dimension3");
+  ): THREE.Group {
 
     // 線の色を決める
-    let my_color = 0xff0000;
-    if (direction === "wy" || direction === "wgy") {
-      my_color = 0x00ff00;
-    } else if (direction === "wz" || direction === "wgz") {
-      my_color = 0x0000ff;
-    }
+    let my_color = this.getColor(direction);
 
-    // 線の色を変更する
-    mesh.material.color.set(my_color);
-    line.material.color.set(my_color);
-    arrow1.line.material.color.set(my_color);
-    arrow1.cone.material.color.set(my_color);
-    arrow2.line.material.color.set(my_color);
-    arrow2.cone.material.color.set(my_color);
+    const child = new THREE.Group();
 
     // 長さを決める
+    /*
     const len = nodei.distanceTo(nodej);
     let LL: number = len;
     let y0 = 0;
@@ -223,29 +89,39 @@ export class ThreeLoadDistribute {
       new THREE.Vector3(x3, y3, 0),
       new THREE.Vector3(x3, y0, 0),
     ];
+    */
+    const points: THREE.Vector3[]  = this.getPoints( 
+      nodei, nodej, direction, pL1, pL2, P1, P2, scale);
 
-    // 長さを変更する
     // 面
-    const face_geo = mesh.geometry;
-    face_geo.vertices = points;
+    child.add(this.getFace(my_color, points));
+
     // 線
-    const positions = line.geometry.attributes.position.array;
-    let index = 0;
-    for (let i = 1; i <= 3; i++) {
-      positions[ index ++ ] = points[i].x;
-      positions[ index ++ ] = points[i].y;
-      positions[ index ++ ] = points[i].z;
-    }
+    child.add(this.getLine(my_color, points));
+
     // 矢印
-    arrow1.position.x = x1;
-    arrow1.position.y = y1;
-    arrow1.scale.set(y1, y1, y1);
-    arrow2.position.x = x3;
-    arrow2.position.y = y3;
-    arrow2.scale.set(y3, y3, y3);
+    for(const arrow of this.getArrow(my_color, points)){
+      child.add(arrow);
+    }
 
     // 寸法線
-    const y4 = Math.max(y1, y3) * 2;
+    const dim = new THREE.Group();
+
+    const dim1 = this.dim.clone();
+    dim1.name = "Dimension1";
+
+    const dim2 = this.dim.clone();
+    dim2.name = "Dimension2";
+
+    const dim3 = this.dim.clone();
+    dim3.name = "Dimension3";
+
+    const size: number = 0.1; // 文字サイズ
+    const y1a = Math.abs(y1);
+    const y3a = Math.abs(y3);
+    const y4a = Math.max(y1a, y3a) + (size * 10);
+    const a = (y1a>y3a) ? Math.sign(y1) : Math.sign(y3);
+    const y4 = a * y4a;
     if(L1 === 0){
       dim1.visible = false;
     } else {
@@ -259,6 +135,7 @@ export class ThreeLoadDistribute {
       ];
       this.dim.change(dim1, p, L1.toFixed(3))
     }
+    dim.add(dim1);
 
     dim2.visible = true;
     const p = [
@@ -268,6 +145,7 @@ export class ThreeLoadDistribute {
       new THREE.Vector2(x3, y3),
     ];
     this.dim.change(dim2, p, L.toFixed(3))
+    dim.add(dim2);
 
     if(L2 === 0){
       dim3.visible = false;
@@ -282,21 +160,21 @@ export class ThreeLoadDistribute {
       ];
       this.dim.change(dim3, p, L2.toFixed(3))
     }
+    dim.add(dim3);
+
+    dim.name = "Dimension";
+    child.add(dim);
+
+    child.name = "child";
+
 
     // 全体
     child.position.y = offset;
+    const group = new THREE.Group();
+    group.add(child);
+    group.name = "DistributeLoad";
 
     // 文字を追加する
-    const oldText1 = target.getObjectByName("text1");
-    if (oldText1 !== undefined) {
-      target.remove(oldText1);
-    }
-    const oldText2 = target.getObjectByName("text2");
-    if (oldText2 !== undefined) {
-      target.remove(oldText2);
-    }
-
-    const size: number = 0.1;
     const pos = new THREE.Vector2(0, 0);
     if(P1 !== 0) {
       let text: THREE.Group;
@@ -312,7 +190,7 @@ export class ThreeLoadDistribute {
         text.position.y = y1;
       }
       text.name = "text1";
-      target.add(text);
+      group.add(text);
     }
 
     if(P2 !== 0) {
@@ -329,19 +207,20 @@ export class ThreeLoadDistribute {
         text.position.y = y3;
       }
       text.name = "text2";
-      target.add(text);
+      group.add(text);
     }
-
 
 
     // 全体の位置を修正する
     const lP1 = this.getPointInBetweenByLen(nodei, nodej, L1);
     const lP3 = this.getPointInBetweenByLen(nodei, nodej, L1 + L);
-    const lP2 = new THREE.Vector3((lP1.x + lP3.x)/2, 
+    const lP2 = new THREE.Vector3((lP1.x + lP3.x)/2,
                                   (lP1.y + lP3.y)/2,
                                   (lP1.z + lP3.z)/2);
-    target.position.set(lP2.x, lP2.y, lP2.z);
 
+    group.position.set(lP2.x, lP2.y, lP2.z);
+
+    /*
     // 全体の向きを変更する
 
 
@@ -357,7 +236,7 @@ export class ThreeLoadDistribute {
       //target.lookAt(b);
         //target.rotation.z = Math.acos(v.x / len);
     //    target.rotation.y = Math.acos(v.x / len);
-    
+
         //target.rotation.y = Math.acos(v.z / len);
         //target.rotation.y = 0.5 * Math.PI + Math.atan2(v.z, v.y);
     /*
@@ -366,13 +245,149 @@ export class ThreeLoadDistribute {
         }else if (direction === "wz") {
         }
     */
-    
+
+   group.name = "DistributeLoad";
+
+   return group;
 }
 
   // 2点A, B を結ぶ直線上のA点からの距離Length の点
   private getPointInBetweenByLen(pointA: THREE.Vector3, pointB: THREE.Vector3, length) {
     const dir = pointB.clone().sub(pointA).normalize().multiplyScalar(length);
     return pointA.clone().add(dir);
+  }
+
+  private getColor(direction: string): number {
+    let my_color = 0xff0000;
+    if (direction === "wy" || direction === "wgy") {
+      my_color = 0x00ff00;
+    } else if (direction === "wz" || direction === "wgz") {
+      my_color = 0x0000ff;
+    }
+    return my_color;
+  }
+
+  private getPoints(
+    nodei: THREE.Vector3,
+    nodej: THREE.Vector3,
+    direction: string,
+    pL1: number,
+    pL2: number,
+    P1: number,
+    P2: number,
+    scale: number,
+  ): THREE.Vector3[] {
+    
+    const len = nodei.distanceTo(nodej);
+
+    let LL: number = len;
+    let y0 = 0;
+    if (direction === "wgx") {
+      LL = new THREE.Vector2(nodei.z, nodei.y).distanceTo(new THREE.Vector2(nodej.z, nodej.y));
+      const xHeight = Math.abs(nodei.x - nodej.x);
+      y0 = xHeight * LL / len;
+    } else if (direction === "wgy") {
+      LL = new THREE.Vector2(nodei.x, nodei.z).distanceTo(new THREE.Vector2(nodej.x, nodej.z));
+      const yHeight = Math.abs(nodei.y - nodej.y);
+      y0 = yHeight * LL / len;
+    } else if (direction === "wgz") {
+      LL = new THREE.Vector2(nodei.x, nodei.y).distanceTo(new THREE.Vector2(nodej.x, nodej.y));
+      const zHeight = Math.abs(nodei.z - nodej.z);
+      y0 = zHeight * LL / len;
+    }
+    const L1 = pL1 * len / LL;
+    const L2 = pL2 * len / LL;
+
+    const L: number = len - L1 - L2;
+    let x1 = -L/2;
+    let x3 = L/2;
+    const y1 = P1 * scale + y0;
+    const y3 = P2 * scale + y0;
+    let y2 = (y1 + y3) / 2;
+    if (Math.sign(P1) !== Math.sign(P2) ){
+      const pp1 = Math.abs(P1);
+      const pp2 = Math.abs(P2);
+      x3 = L * pp2 / ( pp1 + pp2 )
+      x1 = x3 - L;
+      y2 = 0;
+    }
+
+    return [
+      new THREE.Vector3(x1, y0, 0),
+      new THREE.Vector3(x1, y1, 0),
+      new THREE.Vector3( 0, y2, 0),
+      new THREE.Vector3(x3, y3, 0),
+      new THREE.Vector3(x3, y0, 0),
+    ];
+  }
+
+  private getFace(
+    my_color: number , points: THREE.Vector3[]): THREE.Mesh {
+
+    const face_mat = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: my_color,
+      opacity: 0.3,
+    });
+
+    const face_geo = new THREE.Geometry();
+    face_geo.vertices = points;
+
+    face_geo.faces.push(new THREE.Face3(0, 1, 2));
+    face_geo.faces.push(new THREE.Face3(2, 3, 4));
+    face_geo.faces.push(new THREE.Face3(0, 2, 4));
+
+    const mesh = new THREE.Mesh(face_geo, face_mat);
+    mesh.name = "face";
+    return mesh;
+
+  }
+
+  private getLine(
+    my_color: number , points: THREE.Vector3[]): THREE.Line {
+
+    const line_mat = new THREE.LineBasicMaterial({ color: my_color });
+    const line_geo = new THREE.BufferGeometry().setFromPoints([
+      points[1],
+      points[2],
+      points[3],
+    ]);
+    const line = new THREE.Line(line_geo, line_mat);
+    line.name = "line";
+
+    return line;
+  }
+
+  private getArrow(
+    my_color: number , points: THREE.Vector3[]): THREE.ArrowHelper[] {
+
+      
+      const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
+      const length = 1; // 長さ
+
+      const child: THREE.ArrowHelper[] = new Array();
+
+      const origin1 = new THREE.Vector3(0, 1, 0);
+      const arrow1 = new THREE.ArrowHelper(dir, origin1, length, my_color);
+      arrow1.position.x = points[0].x;
+      const y1 = points[1].y;
+      arrow1.position.y = y1;
+      arrow1.scale.set(y1, y1, y1);
+      arrow1.name = "arrow1";
+      child.push(arrow1);
+
+      const origin2 = new THREE.Vector3(1, 1, 0);
+      const arrow2 = new THREE.ArrowHelper(dir, origin2, length, my_color);
+      arrow2.position.x = points[3].x;
+      const y3 = points[3].y;
+      arrow2.position.y = y3;
+      arrow2.scale.set(y3, y3, y3);
+      arrow2.name = "arrow2";
+      child.push(arrow2);
+
+      return child;
+
   }
 
 }

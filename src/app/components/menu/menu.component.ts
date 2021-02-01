@@ -60,6 +60,8 @@ export class MenuComponent implements OnInit {
 
   // ファイルを開く
   open(evt) {
+    const modalRef = this.modalService.open(WaitDialogComponent);
+
     const file = evt.target.files[0];
     this.fileName = file.name;
     evt.target.value = '';
@@ -69,9 +71,11 @@ export class MenuComponent implements OnInit {
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
         this.three.fileload();
+        modalRef.close(); 
       })
       .catch(err => {
-        console.log(err);
+        alert(err);
+        modalRef.close(); 
       });
   }
 
