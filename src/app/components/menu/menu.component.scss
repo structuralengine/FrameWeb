@@ -16,6 +16,10 @@ $border-color: #428bca;
   padding: 8px 0;
   //flex: 1 0 auto;
   font-weight: lighter;
+  @media screen and (max-width: 767px) {
+    display: block;
+    text-align: center;
+  }
 
   .icon-area {
     display: flex;
@@ -32,6 +36,14 @@ $border-color: #428bca;
         display: inline-block;
         margin-right: 8px;
       }
+    }
+    span {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    @media screen and (max-width: 767px) {
+      justify-content: center;
     }
   }
 
@@ -61,6 +73,9 @@ i.fas {
   margin: 0;
   font-size: 16px;
   font-weight: lighter;
+  @media screen and (max-width: 767px) {
+    margin: 4px 0;
+  }
 }
 
 .login-item {
