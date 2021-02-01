@@ -18,13 +18,14 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number;
+  countTotal: number = 2;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public fixMember_dataset = [];
+  public fixMember_table = [];
+  public fixMember_break = [];
   public fixMember_typeNum = [];
 
   public judge: boolean;
@@ -41,11 +42,10 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
 
     if ("fix_member" in inputJson) {
       const tables = this.printFixmember(inputJson); // {body, title}
-      this.fixMember_dataset = tables.body;
+      this.fixMember_table = tables.table;
+      this.fixMember_break = tables.break_after;
       this.fixMember_typeNum = tables.title;
-      this.judge = this.countArea.setCurrentY(tables.this,
-        tables.last
-        );
+      this.judge = this.countArea.setCurrentY(tables.this,tables.last);
     }
   }
 
@@ -53,32 +53,84 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
 
   // バネデータ fix_member を印刷する
   private printFixmember(inputJson): any {
-    const body: any = [];
     const json: {} = inputJson["fix_member"];
     const keys: string[] = Object.keys(json);
 
-    const title: string[] = new Array();
+    
+    // 全体の高さを計算する
+    let countCell = 0;
     for (const index of keys) {
-      const elist = json[index]; // 1行分のnodeデータを取り出す
-      title.push(index.toString());
-      const table: any = [];
-      for (const key of Object.keys(elist)) {
-        const item = elist[key];
-
-        // 印刷する1行分のリストを作る
-        const line: string[] = new Array();
-        line.push(item.m);
-        line.push(item.tx.toString());
-        line.push(item.ty.toString());
-        line.push(item.tz.toString());
-        line.push(item.tr.toString());
-        table.push(line);
-      }
-      this.countCell = (elist.length + 1) * 20;
-      body.push(table);
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      countCell += (Object.keys(elist).length + 1) ;
     }
-    this.countHead = keys.length * 2 * 20;
-    this.countTotal = this.countCell + this.countHead + 40;
-    return { body, title, this: this.countTotal };
-  }
+    const countHead = keys.length * 2;
+    const countTotal = countCell + countHead ;
+
+     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
+     const break_after: boolean[] = new Array();
+     let ROW = 0;
+     for (const index of keys) {
+       ROW += 2; // 行
+       const elist = json[index]; // 1テーブル分のデータを取り出す
+       const countCell = Object.keys(elist).length;
+       ROW += countCell;
+ 
+       if (ROW < 59) {
+         break_after.push(false);
+       } else {
+         break_after.push(true);
+         ROW = 0;
+       }
+     }
+
+   // テーブル
+   const splid: any = [];
+   const title: string[] = new Array();
+   for (const index of keys) {
+     const elist = json[index]; // 1テーブル分のデータを取り出す
+     const table: any = []; // この時点でリセット、再定義 一旦空にする
+
+     title.push(index.toString());
+
+     let body: any = [];
+     let row = 2; // タイトル行
+     for (const key of Object.keys(elist)) {
+       const item = elist[key];
+
+       const line = ["", "", "", "", ""];
+       line[0] = item.m;
+       line[1] = item.tx.toString();
+       line[2] = item.ty.toString();
+       line[3] = item.tz.toString();
+       line[4] = item.tr.toString();
+       body.push(line);
+       row++;
+
+       //１テーブルで59行以上データがあるならば
+       if (row > 59) {
+         table.push(body);
+         body = [];
+         row = 2;
+       }
+     }
+
+     if (body.length > 0) {
+       table.push(body);
+     }
+     splid.push(table);
+   }
+
+   //最後のページの行数だけ取得している
+   const lastArray = splid.slice(-1)[0];
+   const lastArrayTable = lastArray[0];
+   const lastArrayCount = lastArrayTable.length;
+
+   return {
+     table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
+     title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
+     this: countTotal, // 全体の高さ
+     last: lastArrayCount, // 最後のページの高さ
+     break_after: break_after, // 各タイプの前に改ページ（break_after）が必要かどうか判定
+   };
+ }
 }

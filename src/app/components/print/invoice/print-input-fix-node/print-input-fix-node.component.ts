@@ -18,7 +18,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number;
+  countTotal: number = 2;
   fixNode_countArea: number;
   btnPickup: string;
   tableHeight: number;
@@ -63,10 +63,10 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
     let countCell = 0;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      countCell += (Object.keys(elist).length + 1) * 20;
+      countCell += (Object.keys(elist).length + 1) ;
     }
-    const countHead = keys.length * 2 * 20;
-    const countTotal = countCell + countHead + 40;
+    const countHead = keys.length * 2;
+    const countTotal = countCell + countHead ;
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
