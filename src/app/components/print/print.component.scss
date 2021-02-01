@@ -2,10 +2,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 16px 0;
-    padding: 16px;
+    margin: 12px 0;
+    padding: 12px;
     background-color: #f5f5f5;
-
+    font-size: 12px;
     ul {
         text-align: left;
         li {
@@ -62,7 +62,8 @@
 }
 
 .printdata-choice {
-    margin-top: 16px;
+    margin-top: 12px;
+    font-size: 12px;
 }
 
 .print-ing {
@@ -71,18 +72,18 @@
     textarea,
     select {
         background: none;
-        border-color: #007bff;
+        border: 0.5px solid #83abcd;
         border-radius: 0.25rem;
         outline: none;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
     }
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     :hover {
         cursor: pointer;
         opacity: 0.7;
-        background-color:#f5f5f5;
+        background-color: #83abcd;
     }
-
+    font-size: 12px;
 }
