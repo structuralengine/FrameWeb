@@ -128,15 +128,13 @@ export class ThreeLoadTorsion {
     this.arrow2.name = "arrow2";
 
     // 寸法線を描く
-    this.dim1 = this.dim.clone();
-    this.dim1.name = "Dimension1";
+    //this.dim1 = this.dim.clone();
+    //this.dim1.name = "Dimension1";
 
-    this.dim2 = this.dim.clone();
-    this.dim2.name = "Dimension2";
+    //this.dim2 = this.dim.clone();
+    //this.dim2.name = "Dimension2";
 
-    this.dim3 = this.dim.clone();
-    this.dim.change(
-      this.dim3,
+    this.dim3 = this.dim.create(
       [
         new THREE.Vector2(1, 1.1),
         new THREE.Vector2(1, 2),

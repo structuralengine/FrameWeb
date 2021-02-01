@@ -3,6 +3,7 @@ import * as THREE from "three";
 
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
+import { groupEnd } from 'console';
 
 @Injectable({
   providedIn: 'root'
@@ -48,50 +49,13 @@ export class ThreeLoadDistribute {
     const child = new THREE.Group();
 
     // 長さを決める
-    /*
-    const len = nodei.distanceTo(nodej);
-    let LL: number = len;
-    let y0 = 0;
-    if (direction === "wgx") {
-      LL = new THREE.Vector2(nodei.z, nodei.y).distanceTo(new THREE.Vector2(nodej.z, nodej.y));
-      const xHeight = Math.abs(nodei.x - nodej.x);
-      y0 = xHeight * LL / len;
-    } else if (direction === "wgy") {
-      LL = new THREE.Vector2(nodei.x, nodei.z).distanceTo(new THREE.Vector2(nodej.x, nodej.z));
-      const yHeight = Math.abs(nodei.y - nodej.y);
-      y0 = yHeight * LL / len;
-    } else if (direction === "wgz") {
-      LL = new THREE.Vector2(nodei.x, nodei.y).distanceTo(new THREE.Vector2(nodej.x, nodej.y));
-      const zHeight = Math.abs(nodei.z - nodej.z);
-      y0 = zHeight * LL / len;
-    }
-    const L1 = pL1 * len / LL;
-    const L2 = pL2 * len / LL;
-
-    const L: number = len - L1 - L2;
-    let x1 = -L/2;
-    let x3 = L/2;
-    const y1 = P1 * scale + y0;
-    const y3 = P2 * scale + y0;
-    let y2 = (y1 + y3) / 2;
-    if (Math.sign(P1) !== Math.sign(P2) ){
-      const pp1 = Math.abs(P1);
-      const pp2 = Math.abs(P2);
-      x3 = L * pp2 / ( pp1 + pp2 )
-      x1 = x3 - L;
-      y2 = 0;
-    }
-
-    const points = [
-      new THREE.Vector3(x1, y0, 0),
-      new THREE.Vector3(x1, y1, 0),
-      new THREE.Vector3( 0, y2, 0),
-      new THREE.Vector3(x3, y3, 0),
-      new THREE.Vector3(x3, y0, 0),
-    ];
-    */
-    const points: THREE.Vector3[]  = this.getPoints( 
+    const p  = this.getPoints( 
       nodei, nodej, direction, pL1, pL2, P1, P2, scale);
+
+    const points: THREE.Vector3[] = p.points;
+    const L1 = p.L1;
+    const L  = p.L;
+    const L2 = p.L2;
 
     // 面
     child.add(this.getFace(my_color, points));
@@ -105,146 +69,80 @@ export class ThreeLoadDistribute {
     }
 
     // 寸法線
-    const dim = new THREE.Group();
-
-    const dim1 = this.dim.clone();
-    dim1.name = "Dimension1";
-
-    const dim2 = this.dim.clone();
-    dim2.name = "Dimension2";
-
-    const dim3 = this.dim.clone();
-    dim3.name = "Dimension3";
-
-    const size: number = 0.1; // 文字サイズ
-    const y1a = Math.abs(y1);
-    const y3a = Math.abs(y3);
-    const y4a = Math.max(y1a, y3a) + (size * 10);
-    const a = (y1a>y3a) ? Math.sign(y1) : Math.sign(y3);
-    const y4 = a * y4a;
-    if(L1 === 0){
-      dim1.visible = false;
-    } else {
-      dim1.visible = true;
-      const x0 = x1 - L1;
-      const p = [
-        new THREE.Vector2(x0, 0),
-        new THREE.Vector2(x0, y4),
-        new THREE.Vector2(x1, y4),
-        new THREE.Vector2(x1, y1),
-      ];
-      this.dim.change(dim1, p, L1.toFixed(3))
-    }
-    dim.add(dim1);
-
-    dim2.visible = true;
-    const p = [
-      new THREE.Vector2(x1, y1),
-      new THREE.Vector2(x1, y4),
-      new THREE.Vector2(x3, y4),
-      new THREE.Vector2(x3, y3),
-    ];
-    this.dim.change(dim2, p, L.toFixed(3))
-    dim.add(dim2);
-
-    if(L2 === 0){
-      dim3.visible = false;
-    } else {
-      dim3.visible = true;
-      const x4 = x3 + L2;
-      const p = [
-        new THREE.Vector2(x3, y3),
-        new THREE.Vector2(x3, y4),
-        new THREE.Vector2(x4, y4),
-        new THREE.Vector2(x4, 0),
-      ];
-      this.dim.change(dim3, p, L2.toFixed(3))
-    }
-    dim.add(dim3);
-
-    dim.name = "Dimension";
-    child.add(dim);
-
-    child.name = "child";
-
+    child.add(this.getDim(points, L1, L, L2));
 
     // 全体
+    child.name = "child";
     child.position.y = offset;
+
     const group = new THREE.Group();
     group.add(child);
     group.name = "DistributeLoad";
 
     // 文字を追加する
-    const pos = new THREE.Vector2(0, 0);
-    if(P1 !== 0) {
-      let text: THREE.Group;
-      if (P1 > 0){
-        text = this.text.create(P1.toFixed(2), pos, size, 'left', 'bottom');
-        text.rotateZ(Math.PI/2);
-        text.position.x = x1;
-        text.position.y = y1;
-      } else {
-        text = this.text.create(P1.toFixed(2), pos, size, 'right', 'bottom');
-        text.rotateZ(-Math.PI/2);
-        text.position.x = x1;
-        text.position.y = y1;
-      }
-      text.name = "text1";
+    for(const text of this.getText(points, P1, P2)){
       group.add(text);
     }
-
-    if(P2 !== 0) {
-      let text: THREE.Group;
-      if (P2 > 0){
-        text = this.text.create(P1.toFixed(2), pos, size, 'left', 'top');
-        text.rotateZ(Math.PI/2);
-        text.position.x = x3;
-        text.position.y = y3;
-      } else {
-        text = this.text.create(P1.toFixed(2), pos, size, 'right', 'top');
-        text.rotateZ(-Math.PI/2);
-        text.position.x = x3;
-        text.position.y = y3;
-      }
-      text.name = "text2";
-      group.add(text);
-    }
-
 
     // 全体の位置を修正する
-    const lP1 = this.getPointInBetweenByLen(nodei, nodej, L1);
-    const lP3 = this.getPointInBetweenByLen(nodei, nodej, L1 + L);
-    const lP2 = new THREE.Vector3((lP1.x + lP3.x)/2,
-                                  (lP1.y + lP3.y)/2,
-                                  (lP1.z + lP3.z)/2);
-
-    group.position.set(lP2.x, lP2.y, lP2.z);
+    //group.up.set(1, 0, 0);
+    var up = new THREE.Vector3(localAxis.z.x, localAxis.z.y, localAxis.z.z).normalize();
+    group.rotation.set(localAxis.x.x, localAxis.x.y, localAxis.x.z);
+    //group.position.set(nodei.x, nodei.y, nodei.z);
 
     /*
-    // 全体の向きを変更する
+    //「上」方向のベクトルを生成。サンプルでは「空」方向。
+    var up = new THREE.Vector3(0, 1, 0);
+    //var up = new THREE.Vector3(localAxis.z.x, localAxis.z.y, localAxis.z.z).normalize();
 
+    //法線ベクトルを取得。サンプルではinput要素から取得。
+    //var normalAxis = new THREE.Vector3(0, 1, 0).normalize();
+    var normalAxis = new THREE.Vector3(localAxis.x.x, localAxis.x.y, localAxis.x.z).normalize();
 
-    const forward = new THREE.Vector3(localAxis.y.x, localAxis.y.y, localAxis.y.z);
-    const viewTarget:THREE.Vector3 = lP2.add(forward);
-    //target.up.set(1,0,0);
-    target.lookAt(viewTarget);
+    //回転軸用のベクトルを生成
+    var dir = new THREE.Vector3();
 
-    // 全体の向きを変更する
-      //const v = new THREE.Vector3(nodej.x - nodei.x, nodej.y - nodei.y, nodej.z - nodei.z);
-    //const la: THREE.Vector3 = localAxis.x;
-    //const b = la.add(lP2);
-      //target.lookAt(b);
-        //target.rotation.z = Math.acos(v.x / len);
-    //    target.rotation.y = Math.acos(v.x / len);
+    //「上」方向と法線ベクトルとの外積を計算。正規化。
+    dir.crossVectors(up, normalAxis).normalize();
 
-        //target.rotation.y = Math.acos(v.z / len);
-        //target.rotation.y = 0.5 * Math.PI + Math.atan2(v.z, v.y);
-    /*
-        if (direction === "wy") {
-          target.rotation.y = Math.acos(v.x / len);
-        }else if (direction === "wz") {
-        }
+    //上記ベクトルとの内積（cosθ）
+    var dot = up.dot(normalAxis);// / (up.length() * normalAxis.length());
+
+    //acos関数を使ってラジアンに変換。
+    var rad = Math.acos(dot);
+
+    //クォータニオンオブジェクトを生成
+    var q = new THREE.Quaternion();
+
+    //計算した回転軸と角度を元にクォータニオンをセットアップ
+    q.setFromAxisAngle(dir, rad);
+
+    //適用したいオブジェクトに回転を適用
+    group.rotation.setFromQuaternion(q);
     */
+
+
+
+
+    // 全体の向きを変更する
+    //group.rotation.y = -Math.PI / 2;
+    //group.lookAt(nodej);
+    /*
+    if (direction === "wy") {
+      group.up.set(0,1,0);
+      group.lookAt(nodej);
+    } else if (direction === "wz") {
+      group.up.set(0,1,0);
+      group.lookAt(nodej);
+    } else if (direction === "wgx") {
+
+    } else if (direction === "wgy") {
+
+    } else if (direction === "wgz") {
+
+    }
+    */
+
 
    group.name = "DistributeLoad";
 
@@ -267,6 +165,7 @@ export class ThreeLoadDistribute {
     return my_color;
   }
 
+  // 座標
   private getPoints(
     nodei: THREE.Vector3,
     nodej: THREE.Vector3,
@@ -276,51 +175,68 @@ export class ThreeLoadDistribute {
     P1: number,
     P2: number,
     scale: number,
-  ): THREE.Vector3[] {
+  ): any {
     
     const len = nodei.distanceTo(nodej);
 
     let LL: number = len;
-    let y0 = 0;
+
+    // 絶対座標系荷重の距離変換を行う
     if (direction === "wgx") {
       LL = new THREE.Vector2(nodei.z, nodei.y).distanceTo(new THREE.Vector2(nodej.z, nodej.y));
-      const xHeight = Math.abs(nodei.x - nodej.x);
-      y0 = xHeight * LL / len;
     } else if (direction === "wgy") {
       LL = new THREE.Vector2(nodei.x, nodei.z).distanceTo(new THREE.Vector2(nodej.x, nodej.z));
-      const yHeight = Math.abs(nodei.y - nodej.y);
-      y0 = yHeight * LL / len;
     } else if (direction === "wgz") {
       LL = new THREE.Vector2(nodei.x, nodei.y).distanceTo(new THREE.Vector2(nodej.x, nodej.y));
-      const zHeight = Math.abs(nodei.z - nodej.z);
-      y0 = zHeight * LL / len;
     }
     const L1 = pL1 * len / LL;
     const L2 = pL2 * len / LL;
-
     const L: number = len - L1 - L2;
-    let x1 = -L/2;
-    let x3 = L/2;
+
+    // 荷重原点
+    let y0 = 0; 
+    // 絶対座標系における荷重原点
+    if (direction === "wgx") {
+      const xHeight = Math.abs(nodei.x - nodej.x);
+      y0 = xHeight  * (L / len) * (LL / len);
+    } else if (direction === "wgy") {
+      const yHeight = Math.abs(nodei.y - nodej.y);
+      y0 = yHeight  * (L / len) * (LL / len);
+    } else if (direction === "wgz") {
+      const zHeight = Math.abs(nodei.z - nodej.z);
+      y0 = zHeight  * (L / len) * (LL / len);
+    }
+
+    // 荷重の各座標
+    let x1 = L1;
+    let x3 = L1 + L;
+    let x2 = (x1 + x3) / 2;
+
     const y1 = P1 * scale + y0;
     const y3 = P2 * scale + y0;
     let y2 = (y1 + y3) / 2;
     if (Math.sign(P1) !== Math.sign(P2) ){
       const pp1 = Math.abs(P1);
       const pp2 = Math.abs(P2);
-      x3 = L * pp2 / ( pp1 + pp2 )
-      x1 = x3 - L;
+      x2 = L * pp1 / ( pp1 + pp2 )
       y2 = 0;
     }
 
-    return [
-      new THREE.Vector3(x1, y0, 0),
-      new THREE.Vector3(x1, y1, 0),
-      new THREE.Vector3( 0, y2, 0),
-      new THREE.Vector3(x3, y3, 0),
-      new THREE.Vector3(x3, y0, 0),
-    ];
+    return {
+      points:[
+        new THREE.Vector3(x1, y0, 0),
+        new THREE.Vector3(x1, y1, 0),
+        new THREE.Vector3(x2, y2, 0),
+        new THREE.Vector3(x3, y3, 0),
+        new THREE.Vector3(x3, y0, 0),
+      ],
+      L1,
+      L,
+      L2
+  };
   }
 
+  // 面
   private getFace(
     my_color: number , points: THREE.Vector3[]): THREE.Mesh {
 
@@ -344,6 +260,7 @@ export class ThreeLoadDistribute {
 
   }
 
+  // 枠線
   private getLine(
     my_color: number , points: THREE.Vector3[]): THREE.Line {
 
@@ -359,6 +276,7 @@ export class ThreeLoadDistribute {
     return line;
   }
 
+  // 両端の矢印
   private getArrow(
     my_color: number , points: THREE.Vector3[]): THREE.ArrowHelper[] {
 
@@ -389,5 +307,122 @@ export class ThreeLoadDistribute {
       return child;
 
   }
+
+  // 寸法線
+  private getDim(points: THREE.Vector3[],
+                L1: number, L: number, L2: number): THREE.Group {
+
+    const dim = new THREE.Group();
+
+    let dim1: THREE.Group;
+    let dim2: THREE.Group;
+    let dim3: THREE.Group;
+
+    const size: number = 0.1; // 文字サイズ
+
+    const y1a = Math.abs(points[1].y);
+    const y3a = Math.abs(points[3].y);
+    const y4a = Math.max(y1a, y3a) + (size * 10);
+    const a = (y1a > y3a) ? Math.sign(points[1].y) : Math.sign(points[3].y);
+    const y4 = a * y4a;
+    if(L1 === 0){
+      dim1 = new THREE.Group();
+      dim1.visible = false;
+    } else {
+      const x0 = points[1].x - L1;
+      const p = [
+        new THREE.Vector2(x0, 0),
+        new THREE.Vector2(x0, y4),
+        new THREE.Vector2(points[1].x, y4),
+        new THREE.Vector2(points[1].x, points[1].y),
+      ];
+      dim1 = this.dim.create(p, L1.toFixed(3))
+      dim1.visible = true;
+    }
+    dim.add(dim1);
+
+    const p = [
+      new THREE.Vector2(points[1].x, points[1].y),
+      new THREE.Vector2(points[1].x, y4),
+      new THREE.Vector2(points[3].x, y4),
+      new THREE.Vector2(points[3].x, points[3].y),
+    ];
+    dim2 = this.dim.create(p, L.toFixed(3))
+    dim2.visible = true;
+    dim.add(dim2);
+
+    if(L2 === 0){
+      dim3 = new THREE.Group();
+      dim3.visible = false;
+    } else {
+      const x4 = points[3].x + L2;
+      const p = [
+        new THREE.Vector2(points[3].x, points[3].y),
+        new THREE.Vector2(points[3].x, y4),
+        new THREE.Vector2(x4, y4),
+        new THREE.Vector2(x4, 0),
+      ];
+      dim3 = this.dim.create(p, L2.toFixed(3))
+      dim3.visible = true;
+    }
+
+    // 登録
+    dim1.name = "Dimension1";
+    dim2.name = "Dimension2";
+    dim3.name = "Dimension3";
+    dim.add(dim1);
+    dim.add(dim2);
+    dim.add(dim3);
+
+    dim.name = "Dimension";
+
+    return dim;
+  }
+
+  // 文字
+  private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
+
+    const result = [];
+
+    const size: number = 0.1; // 文字サイズ
+
+    const pos = new THREE.Vector2(0, 0);
+    if(P1 !== 0) {
+      let text: THREE.Group;
+      if (P1 > 0){
+        text = this.text.create(P1.toFixed(2), pos, size, 'left', 'bottom');
+        text.rotateZ(Math.PI/2);
+        text.position.x = points[1].x;
+        text.position.y = points[1].y;
+      } else {
+        text = this.text.create(P1.toFixed(2), pos, size, 'right', 'bottom');
+        text.rotateZ(-Math.PI/2);
+        text.position.x = points[1].x;
+        text.position.y = points[1].y;
+      }
+      text.name = "text1";
+      result.push(text);
+    }
+
+    if(P2 !== 0) {
+      let text: THREE.Group;
+      if (P2 > 0){
+        text = this.text.create(P1.toFixed(2), pos, size, 'left', 'top');
+        text.rotateZ(Math.PI/2);
+        text.position.x = points[3].x;
+        text.position.y = points[3].y;
+      } else {
+        text = this.text.create(P1.toFixed(2), pos, size, 'right', 'top');
+        text.rotateZ(-Math.PI/2);
+        text.position.x = points[3].x;
+        text.position.y = points[3].y;
+      }
+      text.name = "text2";
+      result.push(text);
+    }
+
+    return result;
+  }
+
 
 }

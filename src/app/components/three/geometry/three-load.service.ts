@@ -591,6 +591,7 @@ export class ThreeLoadService {
           ThreeObject.add(arrow);
           memberLoadList[mNo] = target;
 
+          return; //sasa
 
         } else if(direction === 'x'){
           // 軸方向分布荷重
