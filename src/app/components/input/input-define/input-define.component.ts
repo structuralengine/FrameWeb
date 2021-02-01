@@ -82,7 +82,8 @@ export class InputDefineComponent implements OnInit {
     locale: "jp",
     height: this.tableHeight(),
     numberCell: {
-      show: true // 行番号
+      show: true, // 行番号
+      width:45
     },
     colModel: this.columnHeaders,
     animModel: {
