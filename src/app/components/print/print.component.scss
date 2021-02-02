@@ -71,19 +71,22 @@
     button,
     textarea,
     select {
-        background: none;
+        // background: none;
         border: 0.5px solid #83abcd;
-        border-radius: 0.25rem;
+        border-radius: 3px;
         outline: none;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
+        padding: 8px 20px;
+        background-color: #669987;
+        color: #ffffff;
     }
     margin-bottom: 12px;
     :hover {
         cursor: pointer;
         opacity: 0.7;
-        background-color: #83abcd;
+        background-color: #669987;
     }
     font-size: 12px;
 }
