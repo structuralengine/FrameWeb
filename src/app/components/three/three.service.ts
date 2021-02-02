@@ -99,6 +99,9 @@ export class ThreeService {
         break;
 
       case 'load_names':
+        this.load.changeCase(index);
+        break;
+
       case 'load_values':
         this.load.changeData(index);
         break;

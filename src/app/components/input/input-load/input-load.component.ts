@@ -218,7 +218,11 @@ export class InputLoadComponent implements OnInit {
       this.three.selectChange("load_values", row);
     },
     change: (evt, ui) => {
-      this.three.changeData("load_values", this.page);
+
+      for (const range of ui.updateList){
+        const row = range.rowIndx + 1;
+        this.three.changeData("load_values", row);
+      }
     }
   };
 }
