@@ -12,32 +12,13 @@ export class DataCountService {
     this.currentType = 0;
   }
 
-  setCurrentY(tableHeight: number): boolean {
+  //全部の行の行数を管理している
+  setCurrentY(tableHeight: number, lastHeight: number): boolean {
     this.currentY += tableHeight;
-    if (this.currentY > 1160/*px*/) {
-        this.currentY = 0;
-        return true;
-    } else {
-      return false;
-    }
-  }
-
-  setCurrentLastY(tableHeight: number): boolean {
-    this.currentY += tableHeight;
-    if (this.currentY > 59/*行*/) {
-        this.currentY = 0;
-        return true;
-    } else {
-      return false;
-    }
-  }
-
-  setCurrentElements(typeHeight:number):boolean{
-    this.currentType += typeHeight;
-    if(this.currentType > 1160){
-      this.currentType = 0;
+    if (this.currentY > 59 /*行*/) {
+      this.currentY = lastHeight;
       return true;
-    }else{
+    } else {
       return false;
     }
   }

@@ -1,26 +1,37 @@
 <div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable">
-   <h2>着目点</h2>
-   <table>
-     <tr>
-       <th class="id">部材No</th>
-       <th class="long">部材長</th>
-       <th class="L1">L1</th>
-       <th class="L2">L2</th>
-       <th class="L3">L3</th>
-       <th class="L4">L4</th>
-       <th class="L5">L5</th>
-       <th class="L6">L6</th>
-     </tr>
-     <tr *ngFor="let data of notice_dataset">
-       <td class="id">{{data[0]}}</td>
-       <td class="long">{{data[1]}}</td>
-       <td class="L1">{{data[2]}}</td>
-       <td class="L2">{{data[3]}}</td>
-       <td class="L3">{{data[4]}}</td>
-       <td class="L4">{{data[5]}}</td>
-       <td class="L5">{{data[6]}}</td>
-       <td class="L6">{{data[7]}}</td>
-     </tr>
-   </table>
- </div>
+    <h2>着目点</h2>
+    <div *ngFor="let dataset of notice_dataset index as i">
+        <div *ngIf="i > 0" class="pagerBreak"></div>
+        <table>
+            <tr>
+                <th class="id">部材No</th>
+                <th class="long">部材長</th>
+                <th class="L1">L1</th>
+                <th class="L2">L2</th>
+                <th class="L3">L3</th>
+                <th class="L4">L4</th>
+                <th class="L5">L5</th>
+                <th class="L6">L6</th>
+                <th class="L7">L7</th>
+                <th class="L8">L8</th>
+                <th class="L9">L9</th>
+                <th class="L10">L10</th>
+            </tr>
+            <tr *ngFor="let data of dataset">
+                <td class="id">{{data[0]}}</td>
+                <td class="long">{{data[1]}}</td>
+                <td class="L1">{{data[2]}}</td>
+                <td class="L2">{{data[3]}}</td>
+                <td class="L3">{{data[4]}}</td>
+                <td class="L4">{{data[5]}}</td>
+                <td class="L5">{{data[6]}}</td>
+                <td class="L6">{{data[7]}}</td>
+                <td class="L7">{{data[8]}}</td>
+                <td class="L8">{{data[9]}}</td>
+                <td class="L8">{{data[10]}}</td>
+                <td class="L8">{{data[11]}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

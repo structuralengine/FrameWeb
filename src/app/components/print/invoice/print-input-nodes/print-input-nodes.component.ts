@@ -19,7 +19,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number;
+  countTotal: number = 3;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -30,13 +30,14 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   public node_page = [];
 
   public judge: boolean;
-  public judgeLast: boolean;
   public headerShow: boolean;
 
   constructor(
     private InputData: InputDataService,
     private countArea: DataCountService
-  ) {}
+  ) {
+    this.judge = false;
+  }
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);
@@ -49,8 +50,9 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       if (tables.page === 1) {
         this.headerShow = false;
       }
-      this.judge = this.countArea.setCurrentY(tables.this);
-      this.judgeLast = this.countArea.setCurrentY(tables.lastArrayCount);
+      this.judge = this.countArea.setCurrentY(tables.this, 
+        tables.last
+        );
     }
   }
 
@@ -135,9 +137,14 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       }
       splid.push(body);
     }
+
+    //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
     const lastArrayCount = lastArray.length;
-    this.countTotal = (keys.length + 1) * 20 + 40;
-    return { page, splid, this: this.countTotal, lastArrayCount };
+
+    //全部の行数を取得している。
+    this.countTotal = keys.length;
+
+    return { page, splid, this: this.countTotal, last: lastArrayCount };
   }
 }

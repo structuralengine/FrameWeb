@@ -1,30 +1,33 @@
-<div *ngIf="judge" class="pagerBreak"></div> 
+<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable fixMember">
-  <h2>バネデータ</h2>
-  <div *ngFor="let title  of fixMember_typeNum; let i = index">
-    <h3>タイプ{{title}}</h3>
-    <table>
-      <tr>
-        <th class="id">部材No</th>
-        <th class="TX">TX</th>
-        <th class="TY">TY</th>
-        <th class="TZ">TZ</th>
-        <th class="TR">TR</th>
-      </tr>
-      <tr>
-        <th class="id"></th>
-        <th class="TX">(kN/m)</th>
-        <th class="TY">(kN/m)</th>
-        <th class="TZ">(kN/m)</th>
-        <th class="TR">(kN/rad)</th>
-      </tr>
-      <tr *ngFor="let data of fixMember_dataset[i]">
-        <td class="id">{{data[0]}}</td>
-        <td class="TX">{{data[1]}}</td>
-        <td class="TY">{{data[2]}}</td>
-        <td class="TZ">{{data[3]}}</td>
-        <td class="TR">{{data[4]}}</td>
-      </tr>
-    </table>
-  </div>
-</div>
+    <h2>バネデータ</h2>
+    <div *ngFor="let title of fixMember_typeNum; index as i">
+        <div *ngIf="fixMember_break[i]" class="pagerBreak"></div>
+        <h3>タイプ{{title}}</h3>
+        <div *ngFor="let fixMember_dataset of fixMember_table[i] index as j">
+            <div *ngIf="j > 0" class="pagerBreak"></div>
+            <table>
+                <tr>
+                    <th class="id">部材No</th>
+                    <th class="TX">TX</th>
+                    <th class="TY">TY</th>
+                    <th class="TZ">TZ</th>
+                    <th class="TR">TR</th>
+                </tr>
+                <tr>
+                    <th class="id"></th>
+                    <th class="TX">(kN/m)</th>
+                    <th class="TY">(kN/m)</th>
+                    <th class="TZ">(kN/m)</th>
+                    <th class="TR">(kN/rad)</th>
+                </tr>
+                <tr *ngFor="let data of fixMember_dataset">
+                    <td class="id">{{data[0]}}</td>
+                    <td class="TX">{{data[1]}}</td>
+                    <td class="TY">{{data[2]}}</td>
+                    <td class="TZ">{{data[3]}}</td>
+                    <td class="TR">{{data[4]}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
