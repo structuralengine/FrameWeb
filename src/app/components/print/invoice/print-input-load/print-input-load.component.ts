@@ -30,7 +30,6 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
   public load_node = [];
 
   public load_data = [];
-  public load_flg = [];
   public load_break = [];
   public load_typeNum = [];
 
@@ -80,9 +79,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     let countCell_node: number = 0;
 
     let lenlenMember: number = 0;
-    let rowMember: number = 0;
     let lenlenNode: number = 0;
-    let rowNode: number = 0;
 
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
@@ -140,40 +137,17 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         let de = ROW_m + ROW_n;
         let r = (de % 57) + 6;
         ROW_mn = r + 1;
-        // let r = (ROW_mn % 57) + 6;
-        //   ROW_mn = r + 1;
-        //   ROW_m = 0;
-        //   ROW_n = 0;
-        // if (ROW_m === 0) {
-        //   ROW_mn = ROW_mn % 57;
-        // } else if (ROW_n === 0) {
-        //   let b = Math.floor(ROW_m / 61);
-        //   let c = ROW_m + b * 3;
-
-        //   ROW_mn = ROW_mn % 57;
-        // } else {
-        //   ROW_mn = ROW_mn % 57;
-        //   ROW_m = 0;
-        //   ROW_n = 0;
-        // }
       }
     }
 
-    // 全体の高さを計算する
     let TotalDataCount: number = 0;
     let mloadCount: number = 0;
     let ploadCount: number = 0;
 
-    let body: any = [];
+
     let data1: any = [];
     let data2: any = [];
-    let ROWSum: number = 0;
     const splidDataTotal: any = [];
-
-    //let flg: any = [];
-    //const splidFlg: any = [];
-    const title: any = [];
-    let lenArray: any = [];
 
     lenlenMember = 0;
 
@@ -183,12 +157,15 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       const splidData_part: any = [];
       const memberTable: any = [];
       const nodeTable: any = [];
-
+      
       let row = 2; // タイトル行
       console.log(index + "番目まで終わり");
       const elist = json[index]; // 1テーブル分のデータを取り出す
-
+      
+      // タイトルを表示させる。
       splidData_part.push(["Case " + index, elist.name]);
+
+       // 全体の高さを計算する
       if ("load_member" in elist) {
         mloadCount = elist.load_member.length;
       } else {
@@ -202,8 +179,6 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       }
 
       TotalDataCount += mloadCount + ploadCount + 2;
-
-      //title.push(["Case " + index, elist.name]);
 
       // テーブル
 
@@ -223,29 +198,21 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           data1.push(line);
           // flg.push(0);
           row++;
-          //１テーブルで59行以上データがあるならば
+          //１テーブルで60行以上データがあるならば
           if (row > 59) {
             splidData_member.push(data1);
-            //splidFlg.push(flg);
             data1 = [];
-            // flg = [];
             row = 3;
           }
         }
-        console.log(row, "row1");
-        // row = 3;
-        console.log(row, "row2");
         if (data1.length > 0) {
           splidData_member.push(data1);
-          //splidFlg.push(flg);
           lenlenMember = data1.slice(-1)[0].length + 3;
           row = lenlenMember;
         }
         memberTable.push(splidData_member);
       }
-      console.log(row, "row3");
       row = 3 + lenlenMember;
-      console.log(row, "row4");
 
       // 節点荷重
       if (ploadCount > 0) {
@@ -268,14 +235,12 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           line[6] = ry.toFixed(2);
           line[7] = rz.toFixed(2);
           data2.push(line);
-          //   flg.push(1);
           row++;
-          //１テーブルで59行以上データがあるならば
+
+          //１テーブルで60行以上データがあるならば
           if (row > 59) {
             splidData_node.push(data2);
-            //splidFlg.push(flg);
             data2 = [];
-            //flg = [];
             row = 3;
           }
         }
@@ -288,35 +253,12 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         console.log(nodeTable);
       }
 
-      // if (data.length > 0) {
-      //   splidData.push(data);
-      //   splidFlg.push(flg);
-      //   data = [];
-      //   flg = [];
-      // }
-
-      // lenArray.push(splidData.length - 1);
-
       splidData_part.push(memberTable, nodeTable);
       splidDataTotal.push(splidData_part);
-
-      // タイトル
-      // splidData0.push(["Case " + index, elist.name]);
 
       if (mloadCount === 0 && ploadCount === 0) {
         continue;
       }
-
-      // let ROWSum = row;
-
-      // //１テーブルで59行以上データがあるならば
-      // if (ROWSum > 59) {
-      //   splid1.push(memberData);
-      //   splid2.push(nodeData);
-      //   memberData = [];
-      //   nodeData = [];
-      //   row = 2;
-      // }
     }
 
     let countHead = keys.length * 2;
@@ -328,10 +270,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
     return {
       tableData: splidDataTotal, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
-      // tableFlg: splidFlg,
-      //title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
       this: countTotal, // 全体の高さ
-      titleArrayLength: lenArray,
       last: lastArrayCount, //最後のページのcurrentYの行数
       break_after: break_after, // 各タイプの前に改ページ（break_after）が必要かどうか判定
     };
