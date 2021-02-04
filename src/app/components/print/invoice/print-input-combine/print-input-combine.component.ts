@@ -25,6 +25,8 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
   invoiceDetails: Promise<any>[];
 
   public comb_tables = [];
+  public comb_dataset = [];
+  public comb_page = [];
 
   public judge: boolean;
 
