@@ -85,17 +85,70 @@ export class ThreeLoadService {
     this.AllCaseLoadList = {};
     this.currentIndex = null;
 
+  }
+
+  // ファイルを読み込むなど、再セットする
+  public reSetData(): void {
+
+    this.ClearData();
+
     // ファイルを開いたときの処理
     // 荷重を作成する
     for (const id of Object.keys(this.load.load)) {
       this.addCase(id);
     }
 
+    // 格点データを入手
+    const nodeData = this.node.getNodeJson(0);
+    if (Object.keys(nodeData).length <= 0) {
+      return; // 格点がなければ 以降の処理は行わない
+    }
+    // 節点荷重データを入手
+    const nodeLoadData = this.load.getNodeLoadJson(0);
+    // 要素データを入手
+    const memberData = this.member.getMemberJson(0);
+    // 要素荷重データを入手
+    const memberLoadData = (Object.keys(memberData).length > 0) ? this.load.getMemberLoadJson(0, this.currentIndex) : {};
+
     // 荷重図を非表示のまま作成する
     for (const id of Object.keys(this.AllCaseLoadList)) {
+
+      const LoadList = this.AllCaseLoadList[id];
       this.currentIndex = id; // カレントデータをセット
-      this.changeData(); // 荷重図を追加する
+
+      // 節点荷重 --------------------------------------------
+      const targetNodeLoad = nodeLoadData[id];
+      // 節点荷重の最大値を調べる
+      this.setMaxNodeLoad(targetNodeLoad);
+      // 節点荷重を作成する
+      this.createPointLoad(
+        targetNodeLoad,
+        nodeData,
+        LoadList.ThreeObject,
+        LoadList.pointLoadList
+      );
+
+      // 要素荷重 --------------------------------------------
+      if (Object.keys(memberData).length > 0) {
+        const targetMemberLoad = memberLoadData[id];
+        // 要素荷重の最大値を調べる
+        this.setMaxMemberLoad(targetMemberLoad);      
+        // 要素荷重を作成する
+        this.createMemberLoad(
+          targetMemberLoad,
+          nodeData,
+          memberData,
+          LoadList.ThreeObject,
+          LoadList.memberLoadList
+        );
+      }
+
+      // 重なりを調整する
+      this.setOffset();
+ 
     }
+
+
   }
 
   // 表示ケースを変更する
@@ -168,6 +221,7 @@ export class ThreeLoadService {
   }
 
   public changeData(row: number = -1): void {
+
     // データになカレントデータがなければ
     if (!(this.currentIndex in this.load.load)) {
       this.removeCase(this.currentIndex);
@@ -192,36 +246,24 @@ export class ThreeLoadService {
 
       // 対象業(row) に入力されている部材番号を調べる
       let targetNodeLoad = [];
-      if (row < 0) {
-        // 全データ対象の場合
-        targetNodeLoad = tempNodeLoad;
-        for (const key of Object.keys(LoadList.pointLoadList)) {
-          for (const item of LoadList.pointLoadList[key]) {
-            LoadList.ThreeObject.remove(item);
-          }
-          LoadList.pointLoadList[key] = [];
+      for (const load of tempNodeLoad) {
+        if (load.row === row) {
+          targetNodeLoad.push(load);
         }
-      } else {
-        // 変更する行に指定がある場合
-        for (const load of tempNodeLoad) {
-          if (load.row === row) {
-            targetNodeLoad.push(load);
-          }
-        }
-        for (const key of Object.keys(LoadList.pointLoadList)) {
-          const list = LoadList.pointLoadList[key];
-          for (const k of ["tx", "ty", "tz", "rx", "ry", "rz"]) {
-            for (let i = list[k].length - 1; i >= 0; i--) {
-              const item = list[k][i];
-              if (item.row === row) {
-                LoadList.ThreeObject.remove(item);
-                list[k].splice(i, 1);
-              }
+      }
+      for (const key of Object.keys(LoadList.pointLoadList)) {
+        const list = LoadList.pointLoadList[key];
+        for (const k of ["tx", "ty", "tz", "rx", "ry", "rz"]) {
+          for (let i = list[k].length - 1; i >= 0; i--) {
+            const item = list[k][i];
+            if (item.row === row) {
+              LoadList.ThreeObject.remove(item);
+              list[k].splice(i, 1);
             }
           }
         }
       }
-
+      
       this.createPointLoad(
         targetNodeLoad,
         nodeData,
@@ -254,31 +296,21 @@ export class ThreeLoadService {
       this.setMaxMemberLoad(tempMemberLoad);
 
       let targetMemberLoad = [];
-      if (row < 0) {
-        // 全データ対象の場合
-        targetMemberLoad = tempMemberLoad;
-        for (const key of Object.keys(LoadList.memberLoadList)) {
-          for (const item of LoadList.memberLoadList[key]) {
-            LoadList.ThreeObject.remove(item);
-          }
-          LoadList.memberLoadList[key] = [];
+
+      // 変更する行に指定がある場合
+      for (const load of tempMemberLoad) {
+        if (load.row === row) {
+          targetMemberLoad.push(load);
         }
-      } else {
-        // 変更する行に指定がある場合
-        for (const load of tempMemberLoad) {
-          if (load.row === row) {
-            targetMemberLoad.push(load);
-          }
-        }
-        for (const key of Object.keys(LoadList.memberLoadList)) {
-          const list = LoadList.memberLoadList[key];
-          for (const k of ["wgy", "wgz", "wr", "wx", "wy", "wz"]) {
-            for (let i = list[k].length - 1; i >= 0; i--) {
-              const item = list[k][i];
-              if (item.row === row) {
-                LoadList.ThreeObject.remove(item);
-                list[k].splice(i, 1);
-              }
+      }
+      for (const key of Object.keys(LoadList.memberLoadList)) {
+        const list = LoadList.memberLoadList[key];
+        for (const k of ["wgy", "wgz", "wr", "wx", "wy", "wz"]) {
+          for (let i = list[k].length - 1; i >= 0; i--) {
+            const item = list[k][i];
+            if (item.row === row) {
+              LoadList.ThreeObject.remove(item);
+              list[k].splice(i, 1);
             }
           }
         }
@@ -303,13 +335,10 @@ export class ThreeLoadService {
 
     // サイズや重なりを調整する
     this.onResize();
-    if (row < 0) {
-      // 全書き換えの時は、レンダリングしない
-    } else {
-      this.scene.render();
-      // 表示フラグを ON にする
-      this.isVisible.object = true;
-    }
+    // レンダリング
+    this.scene.render();
+    // 表示フラグを ON にする
+    this.isVisible.object = true;
   }
 
   // 節点荷重の矢印を描く
@@ -729,4 +758,96 @@ export class ThreeLoadService {
 
     //this.scene.render();
   }
+
+  // スケールを反映する
+  private setOffset(): void {
+
+    if (!(this.currentIndex in this.AllCaseLoadList)) {
+      return;
+    }
+
+    const loadList = this.AllCaseLoadList[this.currentIndex];
+
+    const pointLoadList = loadList.pointLoadList;
+    for (const n of Object.keys(pointLoadList)) {
+      const dict = pointLoadList[n];
+      for (let direction of Object.keys(dict)) {
+        for (const item of dict[direction]) {
+          if (item.visible == false) {
+            continue;
+          }
+
+          /* 配置位置（その他の荷重とぶつからない位置）を決定する
+          const offset = new THREE.Vector2(0, 0);
+          for (const a of target[key]) {
+            if (a.visible === false) {
+              continue;
+            }
+            const child: any = a.getObjectByName("child");
+            const direction: boolean = Math.round(child.rotation.x) < 0;
+            if (value < 0 && direction === true) {
+              // マイナス
+              offset.x += child.scale.x;
+            }
+            if (value > 0 && direction === false) {
+              // プラスの荷重
+              offset.x -= child.scale.x;
+            }
+          }
+          */
+
+          const scale2: number = this.baseScale();
+          let scale3: number = item.value;
+          if (item.name === "PointLoad") {
+            scale3 /= loadList.pMax;
+          } else if (item.name === "MomentLoad") {
+            scale3 /= loadList.mMax;
+          }
+          const scale: number = scale1 * scale2 * scale3;
+          item.scale.set(scale, scale, scale);
+        }
+      }
+    }
+
+    // 要素荷重のスケールを変更する
+    const memberLoadList = loadList.memberLoadList;
+    for (const m of Object.keys(memberLoadList)) {
+      const dict = memberLoadList[m];
+      for (const direction of ["wgy", "wgz", "wr", "wx", "wy", "wz"]) {
+        for (const item of dict[direction]) {
+          if (item.visible == false) {
+            continue;
+          }
+          /* 配置位置（その他の荷重とぶつからない位置）を決定する
+          let offset = 0;
+          for (const a of target[dir]) {
+            if (a.visible === false) {
+              continue;
+            }
+
+            const group: any = a.getObjectByName("group");
+            const Pmax: number = a.Pmax;
+            if (P1 + P2 > 0 && Pmax > 0) {
+              offset += a.scale.y; // プラス側にオフセット
+            } else if (P1 + P2 < 0 && Pmax < 0) {
+              offset -= a.scale.y; // マイナス側にオフセット
+            }
+          }
+          */
+          const scale2: number = this.baseScale();
+          let scale3: number = Math.abs(item.Pmax);
+
+          if (item.name === "DistributeLoad") {
+            scale3 /= loadList.wMax;
+
+            const scale: number = scale1 * scale2 * scale3;
+            item.scale.set(1, scale, scale);
+          } else if (item.name === "") {
+          }
+        }
+      }
+    }
+
+  }
+
 }
