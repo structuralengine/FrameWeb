@@ -74,9 +74,9 @@ export class ResultPickupReacComponent implements OnInit {
 
     // コンバインデータがあればボタンを表示する
     if (this.comb.isChange === false) {
-      this.btnCombine = "btn btn-outline-primary";
+      this.btnCombine = "btn-change";
     } else {
-      this.btnCombine = "btn btn-outline-primary disabled";
+      this.btnCombine = "btn-change disabled";
     }
 
     // テーブルの高さを計算する

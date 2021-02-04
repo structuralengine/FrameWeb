@@ -1,23 +1,8 @@
 <div class="btn-group">
   <nav>
-    <a
-      routerLink="/result-reac"
-      routerLinkActive="selected-item"
-      class="btn btn-outline-primary"
-      >基本ケース</a
-    >
-    <a
-      routerLink="/result-comb_reac"
-      routerLinkActive="selected-item"
-      class="btn btn-outline-primary active"
-      >COMBINE</a
-    >
-    <a
-      routerLink="/result-pic_reac"
-      routerLinkActive="selected-item"
-      [class]="btnPickup"
-      >PICKUP</a
-    >
+    <a routerLink="/result-reac" class="btn-change">基本ケース</a>
+    <a routerLink="/result-comb_reac" class="btn-change active">COMBINE</a>
+    <a routerLink="/result-pic_reac" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
 

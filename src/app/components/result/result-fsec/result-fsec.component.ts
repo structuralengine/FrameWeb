@@ -44,15 +44,15 @@ export class ResultFsecComponent implements OnInit {
 
     // コンバインデータがあればボタンを表示する
     if (this.comb.isChange === false) {
-      this.btnCombine = "btn btn-outline-primary";
+      this.btnCombine = "btn-change";
     } else {
-      this.btnCombine = "btn btn-outline-primary disabled";
+      this.btnCombine = "btn-change disabled";
     }
     // ピックアップデータがあればボタンを表示する
     if (this.pic.isChange === false) {
-      this.btnPickup = "btn btn-outline-primary";
+      this.btnPickup = "btn-change";
     } else {
-      this.btnPickup = "btn btn-outline-primary disabled";
+      this.btnPickup = "btn-change disabled";
     }
   }
 

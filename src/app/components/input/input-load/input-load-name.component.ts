@@ -123,6 +123,7 @@ export class InputLoadNameComponent implements OnInit {
     height: this.tableHeight(),
     numberCell: {
       show: true, // 行番号
+      width:45
     },
     colModel: this.columnHeaders,
     animModel: {
