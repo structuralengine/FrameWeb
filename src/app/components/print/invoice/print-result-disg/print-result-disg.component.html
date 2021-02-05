@@ -1,35 +1,39 @@
+<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable disg">
     <h2>変位量</h2>
-    <div *ngFor="let title of disg_typeNum; let i = index">
-      <h3>{{title[0]}}</h3>
-      <table>
-        <tr>
-            <th>節点</th>
-            <th>X-Disp</th>
-            <th>Y-Disp</th>
-            <th>Z-disp</th>
-            <th>X-Rotation</th>
-            <th>Y-Rotation</th>
-            <th>Z-Rotation</th>
-        </tr>
-        <tr>
-          <th>No.</th>
-          <th>(mm)</th>
-          <th>(mm)</th>
-          <th>(mm)</th>
-          <th>(mmrad)</th>
-          <th>(mmrad)</th>
-          <th>(mmrad)</th>
-        </tr>
-        <tr *ngFor="let data of disg_dataset[i]">
-          <td>{{data[0]}}</td>
-          <td>{{data[1]}}</td>
-          <td>{{data[2]}}</td>
-          <td>{{data[3]}}</td>
-          <td>{{data[4]}}</td>
-          <td>{{data[5]}}</td>
-          <td>{{data[6]}}</td>
-        </tr>
-      </table>
+    <div *ngFor="let title of disg_typeNum; index as i">
+        <div *ngIf="disg_break[i]" class="pagerBreak"></div>
+        <h3>{{title}}</h3>
+        <div *ngFor="let dataset of disg_table[i] index as j">
+            <div *ngIf="j > 0" class="pagerBreak"></div>
+            <table>
+                <tr>
+                    <th>節点</th>
+                    <th>X-Disp</th>
+                    <th>Y-Disp</th>
+                    <th>Z-disp</th>
+                    <th>X-Rotation</th>
+                    <th>Y-Rotation</th>
+                    <th>Z-Rotation</th>
+                </tr>
+                <tr>
+                    <th>No.</th>
+                    <th>(mm)</th>
+                    <th>(mm)</th>
+                    <th>(mm)</th>
+                    <th>(mmrad)</th>
+                    <th>(mmrad)</th>
+                    <th>(mmrad)</th>
+                </tr>
+                <tr *ngFor="let data of dataset">
+                    <td>{{data[0]}}</td>
+                    <td>{{data[1]}}</td>
+                    <td>{{data[2]}}</td>
+                    <td>{{data[3]}}</td>
+                    <td>{{data[4]}}</td>
+                    <td>{{data[5]}}</td>
+                    <td>{{data[6]}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
-  </div>
