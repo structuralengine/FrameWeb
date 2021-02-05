@@ -10,37 +10,41 @@
     table {
         width: 100%;
         margin-top: 16px;
+        border-collapse: collapse;
+        border-spacing: 0;
 
         &.acd {
             margin: 0;
         }
-
-        // thead,
-        // tbody {
-        //     display: block;
-        // }
 
         tr {
             th,
             td {
                 table-layout: fixed;
                 border: 0.5px solid #83abcd;
+                padding: 0;
+                line-height: 16px;
             }
 
             td {
                 font-size: 16px;
+                text-align: right;
+                padding: 4px;
             }
             th {
                 font-size: 12px;
                 font-weight: initial;
                 color: #333333;
-                &.mx,
-                &.my,
-                &.mz {
-                    font-size: 11px;
-                }
+                text-align: center;
+                padding: 4px 3px;
+                vertical-align: middle;
             }
         }
+
+        caption {
+            text-align: left;
+        }
+
         tbody {
             overflow-y: scroll;
             height: 300px;
@@ -60,60 +64,14 @@
         }
     }
 
-    &.disg {
-        .id {
-            width: 62px;
-            min-width: 62px;
-        }
-
-        .dx,
-        .dy,
-        .dz,
-        .rx,
-        .ry,
-        .rz,
-        .case {
-            width: 100px;
-            min-width: 100px;
-        }
+    .result-sm {
+        width: 62px;
+        min-width: 62px;
     }
 
-    &.reac {
-        .id {
-            width: 62px;
-            min-width: 62px;
-        }
-
-        .tx,
-        .ty,
-        .tz,
-        .mx,
-        .my,
-        .mz,
-        .case {
-            width: 100px;
-            min-width: 100px;
-        }
-    }
-
-    &.fsec {
-        .m,
-        .n {
-            width: 62px;
-            min-width: 62px;
-        }
-
-        .l,
-        .fx,
-        .fy,
-        .fz,
-        .mx,
-        .my,
-        .mz,
-        .case {
-            width: 100px;
-            min-width: 100px;
-        }
+    .result-lg {
+        width: 100px;
+        min-width: 100px;
     }
 }
 
@@ -164,4 +122,29 @@
 .fa-sort-down {
     float: right;
     font-size: 20px;
+}
+
+.btn-group {
+    display: flex;
+    padding: 0 16px;
+    margin-right: auto;
+    margin-top: 16px !important;
+    .ngb-pagination {
+        float: left;
+    }
+}
+
+.pager {
+    margin-bottom: 16px;
+    margin-left: 0.5px;
+    margin-right: 0.5px;
+    .pager-title {
+        float: left;
+    }
+}
+.datasheet {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 10px;
+    z-index: 1;
 }
