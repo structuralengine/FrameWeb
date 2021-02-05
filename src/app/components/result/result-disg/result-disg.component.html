@@ -44,15 +44,15 @@
         <th class="result-lg">z軸回りの<br />回転量</th>
       </tr>
     </thead>
-    <tbody style="height: 300px; overflow: scroll">
+    <tbody>
       <tr *ngFor="let resultData of dataset; index as i">
-        <td>{{ resultData.id }}</td>
-        <td>{{ resultData.dx }}</td>
-        <td>{{ resultData.dy }}</td>
-        <td>{{ resultData.dz }}</td>
-        <td>{{ resultData.rx }}</td>
-        <td>{{ resultData.ry }}</td>
-        <td>{{ resultData.rz }}</td>
+        <td class="result-sm">{{ resultData.id }}</td>
+        <td class="result-lg">{{ resultData.dx }}</td>
+        <td class="result-lg">{{ resultData.dy }}</td>
+        <td class="result-lg">{{ resultData.dz }}</td>
+        <td class="result-lg">{{ resultData.rx }}</td>
+        <td class="result-lg">{{ resultData.ry }}</td>
+        <td class="result-lg">{{ resultData.rz }}</td>
       </tr>
     </tbody>
   </table>
