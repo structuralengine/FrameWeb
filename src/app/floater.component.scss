@@ -6,8 +6,9 @@
 }
 
 .result_table {
-    padding: 0 16px;
+    padding: 0 16px 16px;
     table {
+        word-break: break-all;
         width: 100%;
         margin-top: 16px;
         border-collapse: collapse;
@@ -30,6 +31,7 @@
                 font-size: 16px;
                 text-align: right;
                 padding: 4px;
+                word-break: break-all;
             }
             th {
                 font-size: 12px;
@@ -44,10 +46,13 @@
         caption {
             text-align: left;
         }
-
+        thead {
+            display: block;
+        }
         tbody {
-            overflow-y: scroll;
-            height: 300px;
+            overflow-y: auto;
+            max-height: 250px;
+            display: block;
             tr {
                 &:nth-child(2n + 1) {
                     background-color: #ebf6f7;
@@ -135,7 +140,7 @@
 }
 
 .pager {
-    margin-bottom: 16px;
+    // margin-bottom: 16px;
     margin-left: 0.5px;
     margin-right: 0.5px;
     .pager-title {

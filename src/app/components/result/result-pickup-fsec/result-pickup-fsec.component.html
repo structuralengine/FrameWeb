@@ -31,35 +31,50 @@
   <div class="load-name">{{load_name}}</div> -->
 </div>
 
-<div class="result_table">
-  <table>
-    <thead>
-      <tr>
-        <th class="result-sm">部材No</th>
-        <th class="result-sm">節点No</th>
-        <th class="result-lg">着目位置</th>
-        <th class="result-lg">軸方向力</th>
-        <th class="result-lg">y方向の<br />せん断力</th>
-        <th class="result-lg">z方向の<br />せん断力</th>
-        <th class="result-lg">ねじり<br />モーメント</th>
-        <th class="result-lg">y軸回りの<br />曲げモーメント</th>
-        <th class="result-lg">z軸回りの<br />曲げモーメント</th>
-        <th class="result-lg">組み合わせ</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let resultData of dataset; index as i">
-        <td>{{ resultData.m }}</td>
-        <td>{{ resultData.n }}</td>
-        <td>{{ resultData.l }}</td>
-        <td>{{ resultData.fx }}</td>
-        <td>{{ resultData.fy }}</td>
-        <td>{{ resultData.fz }}</td>
-        <td>{{ resultData.mx }}</td>
-        <td>{{ resultData.my }}</td>
-        <td>{{ resultData.mz }}</td>
-        <td>{{ resultData.case }}</td>
-      </tr>
-    </tbody>
-  </table>
+<div *ngFor="let r of KEYS; index as i">
+  <input
+    id="{{ TITLES[i] }}"
+    class="acd-check"
+    type="checkbox"
+    [checked]="i == 0"
+  />
+  <label class="acd-label" for="{{ TITLES[i] }}">
+    <div class="conbine-title acd">
+      {{ TITLES[i] }}<i class="fas fa-sort-down"></i>
+    </div>
+  </label>
+  <div class="acd-content">
+    <div class="result_table">
+      <table class="acd">
+        <thead>
+          <tr>
+            <th class="result-sm">部材No</th>
+            <th class="result-sm">節点No</th>
+            <th class="result-lg">着目位置</th>
+            <th class="result-lg">軸方向力</th>
+            <th class="result-lg">y方向の<br />せん断力</th>
+            <th class="result-lg">z方向の<br />せん断力</th>
+            <th class="result-lg">ねじり<br />モーメント</th>
+            <th class="result-lg">y軸回りの<br />曲げモーメント</th>
+            <th class="result-lg">z軸回りの<br />曲げモーメント</th>
+            <th class="result-lg">組み合わせ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let resultData of dataset[i]; index as i">
+            <td class="result-sm">{{ resultData.m }}</td>
+            <td class="result-sm">{{ resultData.n }}</td>
+            <td class="result-lg">{{ resultData.l }}</td>
+            <td class="result-lg">{{ resultData.fx }}</td>
+            <td class="result-lg">{{ resultData.fy }}</td>
+            <td class="result-lg">{{ resultData.fz }}</td>
+            <td class="result-lg">{{ resultData.mx }}</td>
+            <td class="result-lg">{{ resultData.my }}</td>
+            <td class="result-lg">{{ resultData.mz }}</td>
+            <td class="result-lg">{{ resultData.case }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
