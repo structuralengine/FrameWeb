@@ -41,26 +41,31 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     const defineJson: any = this.InputData.define.getDefineJson();
     if (Object.keys(defineJson).length > 0) {
       const tables = this.printDefine(defineJson);
-      this.define_dataset = tables.body;
-      this.judge = this.countArea.setCurrentY(tables.this,
-        tables.last
-        );
+      this.define_dataset = tables.splid;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     }
   }
 
-  ngAfterViewInit() {
-  
-  }
+  ngAfterViewInit() {}
 
   // DEFINEデータ  を印刷する
   private printDefine(json): any {
     //let printAfterInfo: any;
 
     const dataCount: number = Object.keys(json).length;
+    let row: number;
+    let body: any = [];
 
-    const body: any = [];
-    const splid : any = [];
+    // 全部の行数を取得している
+    this.countTotal = dataCount;
+
+    const splid: any = [];
     for (const index of Object.keys(json)) {
+      if (index === "1") {
+        row = 3;
+      } else {
+        row = 1;
+      }
       const item = json[index]; // 1行分のnodeデータを取り出す
 
       // 印刷する1行分のリストを作る
@@ -77,18 +82,28 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
           counter = 0;
           line = new Array();
           line.push(""); // DefineNo
+          row++;
         }
       }
       if (counter > 0) {
         body.push(line); // 表の1行 登録
       }
+      //１テーブルで59行以上  になったら
+      if (row > 59) {
+        splid.push(body);
+        body = [];
+        row = 2;
+      }
+      row++;
     }
-    this.countTotal = dataCount;
+    if (body.length > 0) {
+      splid.push(body);
+    }
 
     //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
     const lastArrayCount = lastArray.length;
 
-    return { body, this: this.countTotal,last: lastArrayCount };
+    return { splid, this: this.countTotal, last: lastArrayCount };
   }
 }

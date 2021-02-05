@@ -41,10 +41,8 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
     const pickupJson: any = this.InputData.pickup.getPickUpJson();
     if (Object.keys(pickupJson).length > 0) {
       const tables = this.printPickup(pickupJson);
-      this.pickup_dataset = tables.body;
-      this.judge = this.countArea.setCurrentY(tables.this,
-        tables.last
-         );
+      this.pickup_dataset = tables.splid;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     }
   }
 
@@ -55,9 +53,17 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
     const keys: string[] = Object.keys(json);
-    const body: any = [];
+    let body: any = [];
     const splid: any = [];
+    let row: number;
+
     for (const index of keys) {
+      if (index === "1") {
+        row = 2;
+      } else {
+        row = 1;
+      }
+
       const item = json[index]; // 1行分のnodeデータを取り出す
 
       // 印刷する1行分のリストを作る
@@ -84,18 +90,32 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
           counter = 0;
           line = new Array();
           line.push(""); // PickUpNo
+          row++;
         }
       }
       if (counter > 0) {
         body.push(line); // 表の1行 登録
       }
+
+      //１テーブルで59行以上  になったら
+      if (row > 59) {
+        splid.push(body);
+        body = [];
+        row = 2;
+      }
+
+      row++;
     }
+    if (body.length > 0) {
+      splid.push(body);
+    }
+
     this.countTotal = keys.length * 2;
 
     //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
     const lastArrayCount = lastArray.length;
 
-    return { body, this: this.countTotal, last: lastArrayCount };
+    return { splid, this: this.countTotal, last: lastArrayCount };
   }
 }

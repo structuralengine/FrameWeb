@@ -25,6 +25,8 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
   invoiceDetails: Promise<any>[];
 
   public comb_tables = [];
+  public comb_dataset = [];
+  public comb_page = [];
 
   public judge: boolean;
 
@@ -36,31 +38,14 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.comb_tables =[];
+    this.comb_tables = [];
     const inputJson: any = this.InputData.getInputJson(0);
 
     const combineJson: any = this.InputData.combine.getCombineJson();
     if (Object.keys(combineJson).length > 0) {
-      let comb_dataset = [];
-
       const tables = this.printCombine(combineJson);
-      let row = 0;
-      for(const line of tables.body) {
-        comb_dataset.push(line);
-        row ++;
-        if ( row > 60){ // とりあえず60行超えたらとする
-          this.comb_tables.push(comb_dataset);
-          comb_dataset = [];
-          row = 0;
-        }
-      }
-      if(comb_dataset.length > 0){
-        this.comb_tables.push(comb_dataset);
-      } 
-
-      this.judge = this.countArea.setCurrentY(tables.this,
-         tables.last
-        );
+      this.comb_dataset = tables.splid;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     }
   }
 
@@ -68,32 +53,45 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
 
   // COMBINEデータ  を印刷する
   private printCombine(json): any {
+    let body: any = [];
+    let page: number = 0;
+    // const temp =  this.InputData.combine.getCombineJson();// inputJsonからnodeだけを取り出す
+    // const json1 = {};
+    // let i = 1;
+
+    // while (json1.length < Object.keys(json).length) {
+    //   const item = temp.find((element) => element["row"] === i);
+    //   if (item !== undefined) {
+    //     json1.push(item);
+    //   }
+    //   i++;
+    // }
 
     // テストコード
-    for(let i = 3; i < 10; i++){
-      const temp = json['1'];
-      const key = i.toString();
-      temp['row'] =i
-      for(let j = 1; j < i; j++){
-        const Ckey = 'C' + key;
-        temp[ Ckey] = j
-      }
-      json[key] = temp;
-    }
-
+    // for(let i = 3; i < 10; i++){
+    //   const temp = json['1'];
+    //   const key = i.toString();
+    //   temp['row'] =i
+    //   for(let j = 1; j < i; j++){
+    //     const Ckey = 'C' + key;
+    //     temp[ Ckey] = j
+    //   }
+    //   json[key] = temp;
+    // }
 
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
+    const splid: any = [];
+    let row: number;
 
-    const body: any = [];
-
-    const splid:any = [];
     for (const index of Object.keys(json)) {
-      const item = json[index]; // 1行分のnodeデータを取り出す
-
-      if (index == "3") {
-        console.log("2番目の処理が正常に完了");
+      if (index === "1") {
+        row = 3;
+      } else {
+        row = 2;
       }
+
+      const item = json[index]; // 1行分のnodeデータを取り出す
 
       // 印刷する1行分のリストを作る
       let line1: any[] = new Array();
@@ -123,7 +121,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
         line1.push(key.replace("C", ""));
         line2.push(item[key]);
         counter += 1;
-        if (counter === 8) {
+        if (counter === 10) {
           body.push(line1); // 表の1行 登録
           body.push(line2);
           counter = 0;
@@ -133,18 +131,32 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
           line2.push("");
           line1.push(""); // 荷重名称
           line2.push("");
+          row++;
         }
       }
       if (counter > 0) {
         body.push(line1); // 表の1行 登録
         body.push(line2);
       }
-    }
-    this.countTotal = dataCount * 2 ;
 
-     //最後のページの行数だけ取得している
-     const lastArray = splid.slice(-1)[0];
-     const lastArrayCount = lastArray.length;
-    return { body, this: this.countTotal,last :lastArrayCount };
+      //１テーブルで59行以上  になったら
+      if (row > 59) {
+        splid.push(body);
+        body = [];
+        row = 2;
+      }
+
+      row++;
+    }
+    if (body.length > 0) {
+      splid.push(body);
+    }
+
+    this.countTotal = dataCount * 2;
+
+    //最後のページの行数だけ取得している
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
+    return { splid, this: this.countTotal, last: lastArrayCount };
   }
 }
