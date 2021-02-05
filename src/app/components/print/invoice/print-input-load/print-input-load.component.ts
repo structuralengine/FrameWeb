@@ -73,7 +73,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     let ROW_n: number; //node全部の行数
     let page_over_member: number = 0;
     let page_over_node: number = 0;
-    
+
     let countCell_member: number = 0;
     let countCell_node: number = 0;
 
@@ -138,6 +138,8 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     let TotalDataCount: number = 0;
     let mloadCount: number = 0;
     let ploadCount: number = 0;
+    let splidTypeCount:number = 0;
+
 
     let mload: any = [];
     let pload: any = [];
@@ -151,6 +153,8 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       const splidData_part: any = [];
       const memberTable: any = [];
       const nodeTable: any = [];
+      let splidDataCount_member:number = 0;
+      let splidDataCount_node:number = 0;
 
       let row: number;
       if (index === "1") {
@@ -210,6 +214,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           lenlenMember = mload.slice(-1)[0].length + 3;
           row = lenlenMember;
         }
+        splidDataCount_member += splidData_member.length;
         memberTable.push(splidData_member);
       }
       row = 3 + lenlenMember;
@@ -249,6 +254,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           splidData_node.push(pload);
           lenlenNode = pload.slice(-1)[0] + 3;
         }
+        splidDataCount_node += splidData_node.length;
         nodeTable.push(splidData_node);
         console.log(nodeTable);
       }
@@ -261,15 +267,16 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       if (mloadCount === 0 && ploadCount === 0) {
         continue;
       }
+     
+      splidTypeCount += splidDataCount_member * 3 + splidDataCount_node * 2;
     }
 
     let countHead = keys.length * 2;
-    const countTotal = TotalDataCount + countHead;
-
+    const countTotal = TotalDataCount + countHead + splidTypeCount;
+    
     //最後のページにどれだけデータが残っているかを求める
-    const lastSplid = splidDataTotal.slice(-1)[0];
-    const lastArray = lastSplid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+
+    let lastArrayCount:number = countTotal % 61;
 
     return {
       tableData: splidDataTotal, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
