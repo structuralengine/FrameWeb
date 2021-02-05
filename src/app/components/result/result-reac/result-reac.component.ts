@@ -59,6 +59,8 @@ export class ResultReacComponent implements OnInit {
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
     this.dataset.splice(0);
+    let pageNew:number = eventData;
+    this.loadPage(pageNew);
   }
 
   loadPage(currentPage: number) {
