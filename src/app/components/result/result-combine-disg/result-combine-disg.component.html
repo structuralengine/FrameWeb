@@ -29,30 +29,30 @@
     </div>
   </label>
   <div class="acd-content">
-    <div class="result_table disg">
+    <div class="result_table">
       <table class="acd">
         <thead>
           <tr>
-            <th class="id">No</th>
-            <th class="dx">x方向の移動量</th>
-            <th class="dy">y方向の移動量</th>
-            <th class="dz">z方向の移動量</th>
-            <th class="rx">x軸回りの<br />回転量</th>
-            <th class="ry">y軸回りの<br />回転量</th>
-            <th class="rz">z軸回りの<br />回転量</th>
-            <th class="case">組み合わせ</th>
+            <th class="result-sm">No</th>
+            <th class="result-lg">x方向の<br />移動量</th>
+            <th class="result-lg">y方向の<br />移動量</th>
+            <th class="result-lg">z方向の<br />移動量</th>
+            <th class="result-lg">x軸回りの<br />回転量</th>
+            <th class="result-lg">y軸回りの<br />回転量</th>
+            <th class="result-lg">z軸回りの<br />回転量</th>
+            <th class="result-lg">組み合わせ</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let resultData of dataset[i]; index as i">
-            <td class="id">{{ resultData.id }}</td>
-            <td class="dx">{{ resultData.dx }}</td>
-            <td class="dy">{{ resultData.dy }}</td>
-            <td class="dz">{{ resultData.dz }}</td>
-            <td class="rx">{{ resultData.rx }}</td>
-            <td class="ry">{{ resultData.ry }}</td>
-            <td class="rz">{{ resultData.rz }}</td>
-            <td class="case">{{ resultData.case }}</td>
+            <td >{{ resultData.id }}</td>
+            <td >{{ resultData.dx }}</td>
+            <td >{{ resultData.dy }}</td>
+            <td >{{ resultData.dz }}</td>
+            <td >{{ resultData.rx }}</td>
+            <td >{{ resultData.ry }}</td>
+            <td >{{ resultData.rz }}</td>
+            <td >{{ resultData.case }}</td>
           </tr>
         </tbody>
       </table>

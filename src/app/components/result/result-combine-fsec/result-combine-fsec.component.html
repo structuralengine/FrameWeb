@@ -29,34 +29,34 @@
     </div>
   </label>
   <div class="acd-content">
-    <div class="result_table fsec">
+    <div class="result_table">
       <table class="acd">
         <thead>
           <tr>
-            <th class="m">部材No</th>
-            <th class="n">節点No</th>
-            <th class="l">着目位置</th>
-            <th class="fx">軸方向力</th>
-            <th class="fy">y方向のせん断力</th>
-            <th class="fz">z方向のせん断力</th>
-            <th class="mx">ねじりモーメント</th>
-            <th class="my">y軸周りの<br />曲げモーメント</th>
-            <th class="mz">z軸周りの<br />曲げモーメント</th>
-            <th class="case">組み合わせ</th>
+            <th class="result-sm">部材No</th>
+            <th class="result-sm">節点No</th>
+            <th class="result-lg">着目位置</th>
+            <th class="result-lg">軸方向力</th>
+            <th class="result-lg">y方向の<br/>せん断力</th>
+            <th class="result-lg">z方向の<br/>せん断力</th>
+            <th class="result-lg">ねじり<br/>モーメント</th>
+            <th class="result-lg">y軸周りの<br />曲げモーメント</th>
+            <th class="result-lg">z軸周りの<br />曲げモーメント</th>
+            <th class="result-lg">組み合わせ</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let resultData of dataset[i]; index as i">
-            <td class="m">{{ resultData.m }}</td>
-            <td class="n">{{ resultData.n }}</td>
-            <td class="l">{{ resultData.l }}</td>
-            <td class="fx">{{ resultData.fx }}</td>
-            <td class="fy">{{ resultData.fy }}</td>
-            <td class="fz">{{ resultData.fz }}</td>
-            <td class="mx">{{ resultData.mx }}</td>
-            <td class="my">{{ resultData.my }}</td>
-            <td class="mz">{{ resultData.mz }}</td>
-            <td class="case">{{ resultData.case }}</td>
+            <td>{{ resultData.m }}</td>
+            <td>{{ resultData.n }}</td>
+            <td>{{ resultData.l }}</td>
+            <td>{{ resultData.fx }}</td>
+            <td>{{ resultData.fy }}</td>
+            <td>{{ resultData.fz }}</td>
+            <td>{{ resultData.mx }}</td>
+            <td>{{ resultData.my }}</td>
+            <td>{{ resultData.mz }}</td>
+            <td>{{ resultData.case }}</td>
           </tr>
         </tbody>
       </table>

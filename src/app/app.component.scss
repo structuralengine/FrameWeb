@@ -809,7 +809,6 @@ caption {
 
 td,
 th {
-
   vertical-align: top;
   padding: 0;
   line-height: 16px;
@@ -822,7 +821,7 @@ td {
 
 th {
   text-align: center;
-  font-size: 11px !important;
+  font-size: 11px;
   // font-weight: bold;
   font-weight: 400;
   padding: 4px 3px;
