@@ -54,11 +54,11 @@ export class ThreeLoadPoint {
     }
     child.scale.set(length, length, length);
 
-    const group = new THREE.Group();
+    const group0 = new THREE.Group();
 
     // 文字を追加する
     const textStr: string = value.toFixed(2);
-    const size: number = 0.2;
+    const size: number = 0.1;
     const vartical: string = 'bottom';
     let horizontal: string;
     let pos: THREE.Vector2;
@@ -71,13 +71,18 @@ export class ThreeLoadPoint {
     }
     const text = this.text.create(textStr, pos, size, horizontal, vartical);
     text.name = "text";
-    group.add(text);
+    group0.add(text);
 
     child.position.y = offset;
 
-    group.add(child);
+    group0.add(child);
+    group0.name = "group";
+
+    const group = new THREE.Group();
+    group.add(group0);
+
     group.name = "PointLoad";
-    group['value'] = Math.abs(value); //値を保存
+    group['value'] = value; //値を保存
 
     // 向きを変更する
     if (direction === "ty") {
@@ -89,9 +94,26 @@ export class ThreeLoadPoint {
     // 位置を修正する
     group.position.set(node.x, node.y, node.z);
 
-
     return group;
   }
 
+  // 大きさを反映する
+  public setSize(group: any, size: number): void {
+    for (const item of group.children) {
+      item.scale.set(size, size, size);
+    }
+  }
+
+  // オフセットを反映する
+  public setOffset(group: THREE.Group, offset: number): void {
+    for (const item of group.children) {
+      item.position.x = offset;
+    }
+  }
+
+  // スケールを反映する
+  public setScale(group: any, scale: number): void {
+    group.scale.set(scale, scale, scale);
+  }
 
 }

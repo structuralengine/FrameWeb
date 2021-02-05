@@ -74,7 +74,7 @@ export class ThreeLoadMoment {
     }
     child.scale.set(radius, radius, radius);
 
-    const group = new THREE.Group();
+    const group0 = new THREE.Group();
 
     // 文字を追加する
     const textStr: string = value.toFixed(2);
@@ -91,25 +91,50 @@ export class ThreeLoadMoment {
     }
     const text = this.text.create(textStr, pos, size, horizontal, vartical);
     text.name = "text";
-    group.add(text);
+    group0.add(text);
 
     child.position.z = offset;
 
     // 向きを変更する
     if (direction === "rx") {
-      group.rotation.x = Math.PI / 2;
-      group.rotation.y = -Math.PI / 2;
+      group0.rotation.x = Math.PI / 2;
+      group0.rotation.y = -Math.PI / 2;
     } else  if (direction === "ry") {
-      group.rotation.x = Math.PI / 2;
+      group0.rotation.x = Math.PI / 2;
     }
+
+    group0.add(child);
+    group0.name = "group";
+
+    const group = new THREE.Group();
+    group.add(group0);
 
     // 位置を修正する
     group.position.set(node.x, node.y, node.z);
 
-    group.add(child);
     group.name = "MomentLoad";
     group['value'] = Math.abs(value); //値を保存
+
     return group;
   }
+
+  // 大きさを反映する
+  public setSize(group: any, scale: number): void {
+    for (const item of group.children) {
+      item.scale.set(scale, scale, scale);
+    }
+  }
+  // オフセットを反映する
+  public setOffset(group: THREE.Group, offset: number): void {
+    for (const item of group.children) {
+      item.position.z = offset;
+    }
+  }
+
+  // スケールを反映する
+  public setScale(group: any, scale: number): void {
+    group.scale.set(scale, scale, scale);
+  }
+
 
 }

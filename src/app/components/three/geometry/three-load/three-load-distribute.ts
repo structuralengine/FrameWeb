@@ -62,12 +62,6 @@ export class ThreeLoadDistribute {
     // 線
     child.add(this.getLine(my_color, points));
 
-    // 矢印 
-    // コメントアウト：スケールで x軸方向は伸縮しないため くずれる
-    //for(const arrow of this.getArrow(my_color, points)){
-    //  child.add(arrow);
-    //}
-
     // 寸法線
     child.add(this.getDim(points, L1, L, L2));
 
@@ -87,14 +81,12 @@ export class ThreeLoadDistribute {
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
-    group.name = "DistributeLoad";
-    group['Pmax'] = p.Pmax; // 大きい方の値をほそｎ　
+    group['value'] = p.Pmax; // 大きい方の値を保存　
     
     group.position.set(nodei.x, nodei.y, nodei.z);
 
     // 全体の向きを修正する
 
-    // x軸方向 に対する回転
     let q: THREE.Quaternion;
     if (direction.indexOf('g') < 0){
       const foward = new THREE.Vector3(localAxis.x.x, localAxis.x.y, localAxis.x.z).normalize();
@@ -113,7 +105,6 @@ export class ThreeLoadDistribute {
       group.rotation.x = Math.asin(-Math.PI/2);
 
     }
-
 
     group.name = "DistributeLoad";
 
@@ -245,38 +236,6 @@ export class ThreeLoadDistribute {
     return line;
   }
 
-  // 両端の矢印
-  private getArrow(
-    my_color: number , points: THREE.Vector3[]): THREE.ArrowHelper[] {
-
-
-      const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
-      const length = 1; // 長さ
-
-      const child: THREE.ArrowHelper[] = new Array();
-
-      const origin1 = new THREE.Vector3(0, 1, 0);
-      const arrow1 = new THREE.ArrowHelper(dir, origin1, length, my_color);
-      arrow1.position.x = points[0].x;
-      const y1 = points[1].y;
-      arrow1.position.y = y1;
-      arrow1.scale.set(y1, y1, y1);
-      arrow1.name = "arrow1";
-      child.push(arrow1);
-
-      const origin2 = new THREE.Vector3(1, 1, 0);
-      const arrow2 = new THREE.ArrowHelper(dir, origin2, length, my_color);
-      arrow2.position.x = points[3].x;
-      const y3 = points[3].y;
-      arrow2.position.y = y3;
-      arrow2.scale.set(y3, y3, y3);
-      arrow2.name = "arrow2";
-      child.push(arrow2);
-
-      return child;
-
-  }
-
   // 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L: number, L2: number): THREE.Group {
@@ -384,6 +343,32 @@ export class ThreeLoadDistribute {
     }
 
     return result;
+  }
+
+
+  // 大きさを反映する
+  public setSize(group: any, scale: number): void {
+    for (const item of group.children) {
+      item.scale.set(1, scale, scale);
+    }
+  }
+
+  // オフセットを反映する
+  public setOffset(group: THREE.Group, offset: number): void {
+    for (const item of group.children) {
+      item.position.x = offset;
+    }
+  }
+  public setGlobalOffset(group: THREE.Group, offset: number, key: string): void {
+    const k = key.replace('wg', '');
+    for (const item of group.children) {
+      item.position[k] = offset;
+    }
+  }
+
+  // 大きさを反映する
+  public setScale(group: any, scale: number): void {
+    group.scale.set(1, scale, scale);
   }
 
 

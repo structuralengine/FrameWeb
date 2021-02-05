@@ -49,18 +49,18 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   public fileload(): void {
 
-        // ファイルを読み込んだ
-        this.node.changeData();
-        this.member.changeData();
-        this.fixNode.ClearData();
-        this.fixMember.ClearData();
-        this.joint.ClearData();
-        this.load.ClearData();
-        this.disg.ClearData();
-        this.reac.ClearData();
-        this.fsec.ClearData();
+    // ファイルを読み込んだ
+    this.node.changeData();
+    this.member.changeData();
+    this.fixNode.ClearData();
+    this.fixMember.ClearData();
+    this.joint.ClearData();
+    this.load.ResetData();
+    this.disg.ClearData();
+    this.reac.ClearData();
+    this.fsec.ClearData();
 
-        this.scene.render();
+    this.scene.render();
   }
 
   //////////////////////////////////////////////////////
