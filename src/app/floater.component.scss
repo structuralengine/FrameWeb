@@ -12,11 +12,9 @@
         margin-top: 16px;
         border-collapse: collapse;
         border-spacing: 0;
-
         &.acd {
             margin: 0;
         }
-
         tr {
             th,
             td {
@@ -25,7 +23,6 @@
                 padding: 0;
                 line-height: 16px;
             }
-
             td {
                 font-size: 16px;
                 text-align: right;
@@ -40,11 +37,9 @@
                 vertical-align: middle;
             }
         }
-
         caption {
             text-align: left;
         }
-
         tbody {
             overflow-y: scroll;
             height: 300px;
@@ -63,12 +58,10 @@
             }
         }
     }
-
     .result-sm {
         width: 62px;
         min-width: 62px;
     }
-
     .result-lg {
         width: 100px;
         min-width: 100px;
@@ -78,6 +71,7 @@
 .acd-check {
     display: none;
 }
+
 .acd-label {
     background: #ffffff;
     color: #333333;
@@ -86,11 +80,12 @@
     padding: 10px;
     border-bottom: 2px solid #f5f5f5;
     position: relative;
-    :hover {
+     :hover {
         cursor: pointer;
         opacity: 0.7;
     }
 }
+
 .acd-label:after {
     background: #808080;
     box-sizing: border-box;
@@ -102,6 +97,7 @@
     right: 0;
     top: 0px;
 }
+
 .acd-content {
     border: 0 1px solid #333;
     display: block;
@@ -112,7 +108,7 @@
     visibility: hidden;
 }
 
-.acd-check:checked + .acd-label + .acd-content {
+.acd-check:checked+.acd-label+.acd-content {
     height: auto;
     opacity: 1;
     padding: 16px 8px;
@@ -141,7 +137,11 @@
     .pager-title {
         float: left;
     }
+    .load-name {
+        margin-top: 16px;
+    }
 }
+
 .datasheet {
     padding-left: 5px;
     padding-right: 5px;
