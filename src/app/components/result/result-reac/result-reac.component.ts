@@ -61,6 +61,7 @@ export class ResultReacComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.three.ChangeMode('reac', currentPage);
+    this.three.ChangeMode('reac');
+    this.three.ChangePage(currentPage);
   }
 }

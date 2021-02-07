@@ -61,7 +61,8 @@ export class ResultCombineFsecComponent implements OnInit {
     }
     this.load_name = this.comb.getCombineName(currentPage);
 
-    this.three.ChangeMode('comb_fsec',  currentPage);
+    this.three.ChangeMode('comb_fsec');
+    this.three.ChangePage(currentPage);
   }
 }
 

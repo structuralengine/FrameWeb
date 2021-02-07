@@ -61,7 +61,9 @@ export class ResultPickupFsecComponent implements OnInit {
       this.dataset.push(this.data.getPickupFsecColumns(this.page, key));
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
-    this.three.ChangeMode('pik_fsec', currentPage);
+
+    this.three.ChangeMode('pik_fsec');
+    this.three.ChangePage(currentPage);
   }
 }
 

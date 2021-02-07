@@ -151,10 +151,71 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // 編集モードの変更通知を処理する
   //////////////////////////////////////////////////////
-  public ChangeMode(ModeName: string, currentPage: number = 1): void {
+  public ChangePage(currentPage: number): void { 
 
-    if (this.mode !== ModeName) {
-      this.currentIndex = -1;
+    if (this.currentIndex === currentPage) {
+      return;
+    }
+
+    switch (this.mode) {
+
+      case 'elements':
+        break;
+
+      case 'joints':
+        this.joint.changeData(currentPage);
+
+      case 'fix_nodes':
+          this.fixNode.changeData(currentPage);
+        break;
+
+      case 'fix_member':
+        this.fixMember.changeData(currentPage);
+        break;
+
+      case 'load_names':
+        this.load.changeCase(currentPage);
+        break;
+
+      case 'load_values':
+        this.load.changeCase(currentPage);
+        break;
+
+      case 'disg':
+        this.disg.changeData(currentPage);
+        break;
+
+      case 'comb_disg':
+        break;
+      case 'pik_disg':
+        break;
+
+      case 'reac':
+        this.reac.changeData(currentPage);
+        break;
+
+      case 'comb_reac':
+        break;
+      case 'pik_reac':
+        break;
+
+      case 'fsec':
+      case 'comb_fsec':
+      case 'pik_fsec':
+        this.fsec.changeData(currentPage, this.mode);
+        break;
+
+    }
+    this.currentIndex = currentPage;
+
+    // 再描画
+    this.scene.render();
+  }
+
+  public ChangeMode(ModeName: string): void {
+
+    if (this.mode === ModeName) {
+      return;
     }
 
     switch (ModeName) {
@@ -197,9 +258,6 @@ export class ThreeService {
         break;
 
       case 'joints':
-        if (this.currentIndex !== currentPage) {
-          this.joint.changeData(currentPage);
-        }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -212,9 +270,6 @@ export class ThreeService {
         break;
 
       case 'fix_nodes':
-        if (this.currentIndex !== currentPage) {
-          this.fixNode.changeData(currentPage);
-        }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(true);
@@ -228,9 +283,6 @@ export class ThreeService {
         break;
 
       case 'fix_member':
-        if (this.currentIndex !== currentPage) {
-          this.fixMember.changeData(currentPage);
-        }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -243,8 +295,6 @@ export class ThreeService {
         break;
 
       case 'load_names':
-        this.load.changeCase(currentPage);
-
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(true);
@@ -257,8 +307,6 @@ export class ThreeService {
         break;
 
       case 'load_values':
-        this.load.changeCase(currentPage);
-
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -271,9 +319,6 @@ export class ThreeService {
         break;
 
       case 'disg':
-        if (this.currentIndex !== currentPage) {
-          this.disg.changeData(currentPage);
-        }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(false);
@@ -300,9 +345,6 @@ export class ThreeService {
         break;
 
       case 'reac':
-        if (this.currentIndex !== currentPage) {
-          this.reac.changeData(currentPage);
-        }
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(false);
@@ -331,9 +373,6 @@ export class ThreeService {
       case 'fsec':
       case 'comb_fsec':
       case 'pik_fsec':
-        if (this.currentIndex !== currentPage) {
-          this.fsec.changeData(currentPage, ModeName);
-        }
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -348,7 +387,7 @@ export class ThreeService {
     }
 
     this.mode = ModeName;
-    this.currentIndex = currentPage;
+    this.currentIndex = -1;
 
     // 再描画
     this.scene.render();

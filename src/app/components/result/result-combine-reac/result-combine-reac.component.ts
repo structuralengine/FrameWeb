@@ -66,7 +66,8 @@ export class ResultCombineReacComponent implements OnInit {
     }
     this.load_name = this.comb.getCombineName(currentPage);
 
-    this.three.ChangeMode('comb_reac', currentPage);
+    this.three.ChangeMode('comb_reac');
+    this.three.ChangePage(currentPage);
   }
 }
 

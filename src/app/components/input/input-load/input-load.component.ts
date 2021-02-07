@@ -150,7 +150,8 @@ export class InputLoadComponent implements OnInit {
     this.loadPage(1, this.ROWS_COUNT);
     const load_name = this.data.getLoadNameColumns(1);
     this.load_name = load_name.name;
-    this.three.ChangeMode("load_values", 1);
+    this.three.ChangeMode("load_values");
+    this.three.ChangePage(1);
   }
 
   //　pager.component からの通知を受け取る
@@ -160,7 +161,7 @@ export class InputLoadComponent implements OnInit {
     this.grid.refreshDataAndView();
     const load_name = this.data.getLoadNameColumns(eventData);
     this.load_name = load_name.name;
-    this.three.ChangeMode("load_values", eventData);
+    this.three.ChangePage(eventData);
   }
 
   //

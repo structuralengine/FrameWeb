@@ -61,6 +61,7 @@ export class ResultDisgComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.three.ChangeMode('disg', currentPage);
+    this.three.ChangeMode('disg');
+    this.three.ChangePage(currentPage);
   }
 }

@@ -38,7 +38,8 @@ export class InputFixNodeComponent implements OnInit {
   ngOnInit() {
     this.ROWS_COUNT = this.rowsCount();
     this.loadPage(1, this.ROWS_COUNT);
-    this.three.ChangeMode("fix_nodes", 1);
+    this.three.ChangeMode("fix_nodes");
+    this.three.ChangePage(1);
   }
 
   //　pager.component からの通知を受け取る
@@ -46,7 +47,7 @@ export class InputFixNodeComponent implements OnInit {
     this.dataset.splice(0);
     this.loadPage(eventData, this.ROWS_COUNT);
     this.grid.refreshDataAndView();
-    this.three.ChangeMode("fix_nodes", eventData);
+    this.three.ChangePage(eventData);
   }
   
   // 

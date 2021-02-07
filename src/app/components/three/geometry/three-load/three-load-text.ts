@@ -52,6 +52,8 @@ export class ThreeLoadText {
     } else if (horizontal === 'right') {
       text.position.x -= 0.5 * width;
     }
+    text.rotateZ(Math.PI);
+    text.rotateY(Math.PI);
 
     const group = new THREE.Group();
     group.add(text);

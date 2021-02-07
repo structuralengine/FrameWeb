@@ -26,15 +26,19 @@ export class ThreeLoadMoment {
     offset: number,
     value: number,
     radius: number,
-    direction: string
+    direction: string,
+    color: number = null
   ): THREE.Group {
 
     //線の色を決める
-    let line_color = 0xff0000;
-    if (direction === "ry") {
-      line_color = 0x00ff00;
-    } else if (direction === "rz") {
-      line_color = 0x0000ff;
+    let line_color = color;
+    if (color === null) {
+      line_color = 0xff0000;
+      if (direction === "ry") {
+        line_color = 0x00ff00;
+      } else if (direction === "rz") {
+        line_color = 0x0000ff;
+      }
     }
 
     const child = new THREE.Group();

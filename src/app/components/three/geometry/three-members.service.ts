@@ -5,6 +5,7 @@ import { InputMembersService } from "../../../components/input/input-members/inp
 import { ThreeNodesService } from "./three-nodes.service";
 import * as THREE from "three";
 import { CSS2DObject } from "../libs/CSS2DRenderer.js";
+import { Vector3 } from "three";
 
 @Injectable({
   providedIn: "root",
@@ -337,21 +338,21 @@ export class ThreeMembersService {
     const t3 = this.dot(t1, t2);
     const tt = this.getInverse(t3);
 
-    const X = {
-      x: tt[0][0] * xM[0] + tt[0][1] * xM[1] + tt[0][2] * xM[2],
-      y: tt[1][0] * xM[0] + tt[1][1] * xM[1] + tt[1][2] * xM[2],
-      z: tt[2][0] * xM[0] + tt[2][1] * xM[1] + tt[2][2] * xM[2],
-    };
-    const Y = {
-      x: tt[0][0] * yM[0] + tt[0][1] * yM[1] + tt[0][2] * yM[2],
-      y: tt[1][0] * yM[0] + tt[1][1] * yM[1] + tt[1][2] * yM[2],
-      z: tt[2][0] * yM[0] + tt[2][1] * yM[1] + tt[2][2] * yM[2],
-    };
-    const Z = {
-      x: tt[0][0] * zM[0] + tt[0][1] * zM[1] + tt[0][2] * zM[2],
-      y: tt[1][0] * zM[0] + tt[1][1] * zM[1] + tt[1][2] * zM[2],
-      z: tt[2][0] * zM[0] + tt[2][1] * zM[1] + tt[2][2] * zM[2],
-    };
+    const X = new Vector3(
+      tt[0][0] * xM[0] + tt[0][1] * xM[1] + tt[0][2] * xM[2],
+      tt[1][0] * xM[0] + tt[1][1] * xM[1] + tt[1][2] * xM[2],
+      tt[2][0] * xM[0] + tt[2][1] * xM[1] + tt[2][2] * xM[2],
+    );
+    const Y = new Vector3(
+      tt[0][0] * yM[0] + tt[0][1] * yM[1] + tt[0][2] * yM[2],
+      tt[1][0] * yM[0] + tt[1][1] * yM[1] + tt[1][2] * yM[2],
+      tt[2][0] * yM[0] + tt[2][1] * yM[1] + tt[2][2] * yM[2],
+    );
+    const Z = new Vector3(
+      tt[0][0] * zM[0] + tt[0][1] * zM[1] + tt[0][2] * zM[2],
+      tt[1][0] * zM[0] + tt[1][1] * zM[1] + tt[1][2] * zM[2],
+      tt[2][0] * zM[0] + tt[2][1] * zM[1] + tt[2][2] * zM[2],
+    );
     const result = {
       x: X,
       y: Y,

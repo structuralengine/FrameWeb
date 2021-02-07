@@ -55,11 +55,11 @@ export class ThreeLoadDimension {
     const x = points[1].x + (points[2].x - points[1].x) / 2;
     const y = points[1].y + (points[2].y - points[1].y) / 2;
     const horizontal: string = 'center';
-    let vartical: string = 'bottom';
+     let vartical: string = 'top';
     if(points[1].y >= 0 ){
-      if( points[1].y < points[0].y) vartical = 'top';
+      if (points[1].y < points[0].y) vartical = 'bottom';
     } else {
-      if( points[1].y > points[0].y) vartical = 'top';
+      if (points[1].y > points[0].y) vartical = 'bottom';
     }
 
     const text = this.text.create(textStr, new THREE.Vector2(x, y), 0.1, horizontal, vartical);
