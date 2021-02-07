@@ -77,6 +77,7 @@ export class ResultFsecComponent implements OnInit {
     }
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.three.ChangeMode("fsec", currentPage);
+    this.three.ChangeMode('fsec');
+    this.three.ChangePage(currentPage);
   }
 }

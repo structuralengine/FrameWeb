@@ -100,6 +100,7 @@ export class ResultPickupReacComponent implements OnInit {
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
 
-    this.three.ChangeMode("pik_reac", currentPage);
+    this.three.ChangeMode('pik_reac');
+    this.three.ChangePage(currentPage);
   }
 }

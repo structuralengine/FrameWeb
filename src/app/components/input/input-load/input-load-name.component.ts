@@ -92,7 +92,8 @@ export class InputLoadNameComponent implements OnInit {
   ngOnInit() {
     this.ROWS_COUNT = this.rowsCount();
     // three.js にモードの変更を通知する
-    this.three.ChangeMode("load_names", 1);
+    this.three.ChangeMode('load_names');
+    this.three.ChangePage(1);
   }
 
   // 指定行row 以降のデータを読み取る
@@ -147,7 +148,7 @@ export class InputLoadNameComponent implements OnInit {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1;
       const caseNo = row + 1;
-      this.three.ChangeMode("load_names", caseNo);
+      this.three.ChangePage(caseNo);
     },
     change: (evt, ui) => {
       const target = ui.updateList[0];

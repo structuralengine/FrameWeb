@@ -100,6 +100,7 @@ export class ResultPickupDisgComponent implements OnInit {
     }
     this.load_name = this.pickup.getPickUpName(currentPage);
 
-    this.three.ChangeMode("pik_disg", currentPage);
-  }
+    this.three.ChangeMode('pik_disg');
+    this.three.ChangePage(currentPage);
+ }
 }

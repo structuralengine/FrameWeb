@@ -1172,7 +1172,7 @@ export class ThreeLoadService {
       const cb = item.check_box;  // 荷重の重なりを判定するためのプロパティ
       const m: string = cb.m;     // 部材番号
 
-      if (cb.direction === 'wr' || cb.direction === 'wx') {
+      if (cb.direction === 'r' || cb.direction === 'x') {
         // markが2 の 分布回転モーメント荷重, 軸方向荷重 は座標を登録するだけ
         if (!(m in check_box)) {
           check_box[m] = { check_point: [], check_load: [] };

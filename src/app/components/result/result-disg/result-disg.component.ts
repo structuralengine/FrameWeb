@@ -70,6 +70,8 @@ export class ResultDisgComponent implements OnInit {
     }
     this.dataset = this.data.getDisgColumns(this.page);
     this.load_name = this.load.getLoadName(currentPage);
-    this.three.ChangeMode("disg", currentPage);
+
+    this.three.ChangeMode('disg');
+    this.three.ChangePage(currentPage);
   }
 }

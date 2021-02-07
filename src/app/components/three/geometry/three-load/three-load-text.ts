@@ -18,7 +18,7 @@ export class ThreeLoadText {
     position: THREE.Vector2,
     size: number,
     horizontal = 'center',
-    vartical = 'bottom'): THREE.Mesh {
+    vartical = 'bottom'): THREE.Group {
 
     const text_geo = new THREE.TextGeometry(textString, {
       font: this.font,
@@ -39,27 +39,27 @@ export class ThreeLoadText {
 
     text.position.set(position.x, position.y, 0);
 
+    const height = Math.abs(text.geometry.boundingBox.max.y - text.geometry.boundingBox.min.y);
+    const width = Math.abs(text.geometry.boundingBox.max.x - text.geometry.boundingBox.min.x);
+
     if (vartical === 'bottom') {
-      text.position.y +=
-        0.5 *
-        (text.geometry.boundingBox.max.y - text.geometry.boundingBox.min.y);
+      text.position.y += 0.5 * height;
     } else if (vartical === 'top') {
-      text.position.y -=
-        0.5 *
-        (text.geometry.boundingBox.max.y - text.geometry.boundingBox.min.y);
+      text.position.y -= 0.5 * height;
     }
     if (horizontal === 'left') {
-      text.position.x +=
-        0.5 *
-        (text.geometry.boundingBox.max.x - text.geometry.boundingBox.min.x);
+      text.position.x += 0.5 * width;
     } else if (horizontal === 'right') {
-      text.position.x -=
-        0.5 *
-        (text.geometry.boundingBox.max.x - text.geometry.boundingBox.min.x);
+      text.position.x -= 0.5 * width;
     }
+    text.rotateZ(Math.PI);
+    text.rotateY(Math.PI);
 
+    const group = new THREE.Group();
+    group.add(text);
+    group.name = "text";
 
-    return text;
+    return group;
   }
 
 }

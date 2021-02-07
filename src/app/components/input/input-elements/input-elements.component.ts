@@ -39,7 +39,8 @@ export class InputElementsComponent implements OnInit {
   ngOnInit() {
     this.ROWS_COUNT = this.rowsCount();
     this.loadPage(1, this.ROWS_COUNT);
-    this.three.ChangeMode("elements", 1);
+    this.three.ChangeMode("elements");
+    this.three.ChangePage(1);
    }
 
   //　pager.component からの通知を受け取る
@@ -47,7 +48,7 @@ export class InputElementsComponent implements OnInit {
     this.dataset.splice(0);
     this.loadPage(eventData, this.ROWS_COUNT);
     this.grid.refreshDataAndView();
-    this.three.ChangeMode("elements", eventData);
+    this.three.ChangePage(eventData);
   }
 
   loadPage(currentPage: number, row: number) {

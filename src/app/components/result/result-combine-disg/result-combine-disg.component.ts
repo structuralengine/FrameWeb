@@ -100,6 +100,7 @@ export class ResultCombineDisgComponent implements OnInit {
     }
     this.load_name = this.comb.getCombineName(currentPage);
 
-    this.three.ChangeMode("comb_disg", currentPage);
+    this.three.ChangeMode('comb_disg');
+    this.three.ChangePage(currentPage);
   }
 }
