@@ -60,14 +60,14 @@
         </thead>
         <tbody>
           <tr *ngFor="let resultData of dataset[i]; index as i">
-            <td>{{ resultData.id }}</td>
-            <td>{{ resultData.tx }}</td>
-            <td>{{ resultData.ty }}</td>
-            <td>{{ resultData.tz }}</td>
-            <td>{{ resultData.mx }}</td>
-            <td>{{ resultData.my }}</td>
-            <td>{{ resultData.mz }}</td>
-            <td>{{ resultData.case }}</td>
+            <td class="result-sm">{{ resultData.id }}</td>
+            <td class="result-lg">{{ resultData.tx }}</td>
+            <td class="result-lg">{{ resultData.ty }}</td>
+            <td class="result-lg">{{ resultData.tz }}</td>
+            <td class="result-lg">{{ resultData.mx }}</td>
+            <td class="result-lg">{{ resultData.my }}</td>
+            <td class="result-lg">{{ resultData.mz }}</td>
+            <td class="result-lg">{{ resultData.case }}</td>
           </tr>
         </tbody>
       </table>
