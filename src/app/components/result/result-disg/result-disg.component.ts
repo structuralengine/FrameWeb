@@ -68,13 +68,8 @@ export class ResultDisgComponent implements OnInit {
     if (currentPage !== this.page) {
       this.page = currentPage;
     }
-    this.dataset = new Array();
-    for (let i = 0; i < this.data.DISG_ROWS_COUNT; i++) {
-      const disg = this.data.getDisgColumns(this.page, i);
-      this.dataset.push(disg);
-    }
+    this.dataset = this.data.getDisgColumns(this.page);
     this.load_name = this.load.getLoadName(currentPage);
-
     this.three.ChangeMode("disg", currentPage);
   }
 }
