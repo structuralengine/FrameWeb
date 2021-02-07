@@ -1,15 +1,15 @@
 .print-choice {
     display: flex;
     justify-content: center;
-    align-items:center;
-    margin: 16px 0;
-    padding: 16px;
+    align-items: center;
+    margin: 12px 0;
+    padding: 12px;
     background-color: #f5f5f5;
-
+    font-size: 12px;
     ul {
         text-align: left;
         li {
-            margin-bottom:8px;
+            margin-bottom: 8px;
 
             .checkbox-input {
                 display: none;
@@ -19,6 +19,7 @@
                 display: inline-block;
                 padding-left: 30px;
                 position: relative;
+                width: 100%;
             }
             .checkbox-parts::before {
                 content: "";
@@ -35,6 +36,7 @@
             .checkbox-input:hover + .checkbox-parts:hover {
                 cursor: pointer;
                 opacity: 0.7;
+                display: block;
             }
 
             .checkbox-input:checked + .checkbox-parts {
@@ -52,9 +54,39 @@
                 border-bottom: 3px solid #d01137;
                 border-right: 3px solid #d01137;
             }
-            &:last-child{
-                margin:0;
+            &:last-child {
+                margin: 0;
             }
         }
     }
+}
+
+.printdata-choice {
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.print-ing {
+    input,
+    button,
+    textarea,
+    select {
+        // background: none;
+        border: 0.5px solid #83abcd;
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 8px 20px;
+        background-color: #669987;
+        color: #ffffff;
+    }
+    margin-bottom: 12px;
+    :hover {
+        cursor: pointer;
+        opacity: 0.7;
+        background-color: #669987;
+    }
+    font-size: 12px;
 }

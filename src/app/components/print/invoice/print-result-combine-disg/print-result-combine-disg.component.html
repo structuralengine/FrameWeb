@@ -1,42 +1,57 @@
+<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable combDisg">
-  <h2>COMBINE　変位量</h2>
-  <div *ngFor="let title of combDisg_title; let i = index">
-    <p>{{title[0]}}</p>
-    <div *ngFor="let type of combDisg_type[i]; let k = index">
-      <p>{{type}}</p>
-      <table>
-        <tr>
-          <th>節点</th>
-          <th>X-Disp</th>
-          <th>Y-Disp</th>
-          <th>Z-Disp</th>
-          <th>X-Rotation</th>
-          <th>Y-Rotation</th>
-          <th>Z-Rotation</th>
-          <th>comb</th>
-        </tr>
-        <tr>
-          <th>No.</th>
-          <th>(mm)</th>
-          <th>(mm)</th>
-          <th>(mm)</th>
-          <th>(mmrad)</th>
-          <th>(mmrad)</th>
-          <th>(mmrad)</th>
-          <th></th>
-        </tr>
+    <h2>COMBINE　変位量</h2>
+    <!--combDisg_titleからtitleごとにデータを取り出す-->
+    <div *ngFor="let title of combDisg_title; index as i">
+        <div *ngIf="combDisg_case_break[i]" class="pagerBreak"></div>
+        <h3>{{title}}</h3>
+        <!--combDisg_datasetからdxmaxなどを取り出す-->
+        <div *ngFor="let dataset of combDisg_dataset[i]; index as j">
+            <div *ngIf="combDisg_type_break[j]" class="pagerBreak"></div>
+            <h3>{{dataset[0]}}</h3>
+            <!--dxmaxなどからcase[0]が名称のため飛ばす-->
+            <div *ngFor="let case of dataset; index as k">
+                <div *ngIf="k > 0">
+                    <div *ngFor="let branch of case; index as l">
+                        <div *ngFor="let datas of branch; index as m">
+                            <table>
+                                <tr>
+                                    <th>節点</th>
+                                    <th>X-Disp</th>
+                                    <th>Y-Disp</th>
+                                    <th>Z-Disp</th>
+                                    <th>X-Rotation</th>
+                                    <th>Y-Rotation</th>
+                                    <th>Z-Rotation</th>
+                                    <th>comb</th>
+                                </tr>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>(mm)</th>
+                                    <th>(mm)</th>
+                                    <th>(mm)</th>
+                                    <th>(mmrad)</th>
+                                    <th>(mmrad)</th>
+                                    <th>(mmrad)</th>
+                                    <th></th>
+                                </tr>
 
-        <tr *ngFor="let data of combDisg_dataset[i][k]">
-          <td>{{data[0]}}</td>
-          <td>{{data[1]}}</td>
-          <td>{{data[2]}}</td>
-          <td>{{data[3]}}</td>
-          <td>{{data[4]}}</td>
-          <td>{{data[5]}}</td>
-          <td>{{data[6]}}</td>
-          <td>{{data[7]}}</td>
-        </tr>
-      </table>
+                                <tr *ngFor="let data of datas">
+                                    <td>{{data[0]}}</td>
+                                    <td>{{data[1]}}</td>
+                                    <td>{{data[2]}}</td>
+                                    <td>{{data[3]}}</td>
+                                    <td>{{data[4]}}</td>
+                                    <td>{{data[5]}}</td>
+                                    <td>{{data[6]}}</td>
+                                    <td>{{data[7]}}</td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

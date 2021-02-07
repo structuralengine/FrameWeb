@@ -118,7 +118,8 @@ export class ResultDataService {
     } else {
       // define データがない時は基本ケース＝defineケースとなる
       for (const caseNo of Object.keys(load)) {
-        defList[caseNo] = new Array(caseNo);
+        const n: number = this.helper.toNumber(caseNo);
+        defList[caseNo] = (n === null) ? [] : new Array(n);
       }
     }
 
@@ -146,12 +147,13 @@ export class ResultDataService {
         let count: number = combines.length;
         for (let i = 0; i < count; i++) {
           const base = combines[i];
+          console.log("def.length",def.length);
 
           // defineNo が複数あった場合に配列を複製する
           for (let j = 1; j < def.length; j++)  {
             const oomb = base.slice(0, base.length);
 
-            let caseNo1: string = def[j];
+            let caseNo1: string = def[j].toString();
             let coef1: number = coef;
             if ( caseNo1 === '0') {
               combines.push(oomb);
@@ -165,7 +167,7 @@ export class ResultDataService {
             combines.push(oomb);
           }
 
-          let caseNo: string = def[0];
+          let caseNo: string = def[0].toString();
           if ( caseNo !== '0') { 
             if (caseNo.indexOf('-') >= 0) {
               caseNo = caseNo.replace('-', '');
@@ -173,7 +175,6 @@ export class ResultDataService {
             }
             base.push({ caseNo, coef });
           }
-
         }
 
       }

@@ -1,34 +1,37 @@
-  <div class="invoicetTable pickup">
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable pickup">
     <h2>PICKUPデータ</h2>
-    <table>
-      <tr>
-        <th class="id">No.</th>
-        <th class="sign">荷重名称</th>
-        <th class="name">C1</th>
-        <th class="name">C2</th>
-        <th class="name">C3</th>
-        <th class="node">C4</th>
-        <th class="section">C5</th>
-        <th class="spring">C6</th>
-        <th class="conection">C7</th>
-        <th class="conection">C8</th>
-        <th class="conection">C9</th>
-        <th class="conection">C10</th>
-      </tr>
-      <tr *ngFor="let data of pickup_dataset">
-        <td class="id">{{data[0]}}</td>
-        <td class="k">{{data[1]}}</td>
-        <td class="sign">{{data[2]}}</td>
-        <td class="name">{{data[3]}}</td>
-        <td class="node">{{data[4]}}</td>
-        <td class="section">{{data[5]}}</td>
-        <td class="spring">{{data[6]}}</td>
-        <td class="conection">{{data[7]}}</td>
-        <td class="conection">{{data[8]}}</td>
-        <td class="conection">{{data[9]}}</td>
-        <td class="conection">{{data[10]}}</td>
-        <td class="conection">{{data[11]}}</td>
+    <div *ngFor="let dataset of pickup_dataset index as i">
+        <div *ngIf="i > 0" class="pagerBreak"></div>
+        <table>
+            <tr>
+                <th class="id">No.</th>
+                <th class="sign">荷重名称</th>
+                <th class="name">C1</th>
+                <th class="name">C2</th>
+                <th class="name">C3</th>
+                <th class="node">C4</th>
+                <th class="section">C5</th>
+                <th class="spring">C6</th>
+                <th class="conection">C7</th>
+                <th class="conection">C8</th>
+                <th class="conection">C9</th>
+                <th class="conection">C10</th>
+            </tr>
+            <tr *ngFor="let data of dataset">
+                <td class="id">{{data[0]}}</td>
+                <td class="k">{{data[1]}}</td>
+                <td class="sign">{{data[2]}}</td>
+                <td class="name">{{data[3]}}</td>
+                <td class="node">{{data[4]}}</td>
+                <td class="section">{{data[5]}}</td>
+                <td class="spring">{{data[6]}}</td>
+                <td class="conection">{{data[7]}}</td>
+                <td class="conection">{{data[8]}}</td>
+                <td class="conection">{{data[9]}}</td>
+                <td class="conection">{{data[10]}}</td>
+                <td class="conection">{{data[11]}}</td>
 
-      </tr>
-    </table>
-  </div>
+            </tr>
+        </table>
+    </div>

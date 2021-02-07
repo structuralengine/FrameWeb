@@ -1,17 +1,30 @@
+<!-- <div *ngIf="judge" class="pagerBreak"></div> -->
 <div class="invoicetTable node">
   <h2>格点データ</h2>
-  <table>
-    <tr>
-      <th class="id">No</th>
-      <th class="x">X</th>
-      <th class="y">Y</th>
-      <th class="z">Z</th>
-    </tr>
-    <tr *ngFor="let data of node_dataset">
-      <td class="id">{{data[0]}}</td>
-      <td class="x">{{data[1]}}</td>
-      <td class="y">{{data[2]}}</td>
-      <td class="z">{{data[3]}}</td>
-    </tr>
-  </table>
+  <div *ngFor="let dataset of node_dataset index as i">
+    <div *ngIf="i > 0" class="pagerBreak"></div>
+    <table>
+      <tr>
+        <th class="id">No</th>
+        <th class="x">X</th>
+        <th class="y">Y</th>
+        <th class="z">Z</th>
+        <th class="id">No</th>
+        <th class="x">X</th>
+        <th class="y">Y</th>
+        <th class="z">Z</th>
+
+      </tr>
+      <tr *ngFor="let data of dataset">
+        <td class="id">{{data[0]}}</td>
+        <td class="x">{{data[1]}}</td>
+        <td class="y">{{data[2]}}</td>
+        <td class="z">{{data[3]}}</td>
+        <td class="id">{{data[4]}}</td>
+        <td class="x">{{data[5]}}</td>
+        <td class="y">{{data[6]}}</td>
+        <td class="z">{{data[7]}}</td>
+      </tr>
+    </table>
+  </div>
 </div>

@@ -1,82 +1,85 @@
 <div class="invoice">
-  <!-- 格点データ -->
-  <div *ngIf="myContentEditable[0] === true">
-    <app-print-input-nodes>
-    </app-print-input-nodes>
-    <!-- 部材データ -->
-    <app-print-input-members>
-    </app-print-input-members>
-    <!-- 材料データ -->
-    <app-print-input-elements>
-    </app-print-input-elements>
-    <!-- 支点データ -->
-    <app-print-input-fix-node>
-    </app-print-input-fix-node>
-    <!-- 結合データ -->
-    <app-print-input-joint>
-    </app-print-input-joint>
-    <!-- 着目点 -->
-    <app-print-input-notice-points>
-    </app-print-input-notice-points>
-    <!-- バネデータ -->
-    <app-print-input-fix-member>
-    </app-print-input-fix-member>
-    <!-- 荷重データ -->
-    <app-print-input-load>
-    </app-print-input-load>
-    <!-- DEFINEデータ -->
-    <app-print-input-define>
-    </app-print-input-define>
-    <!-- COMBINEデータ -->
-    <app-print-input-combine>
-    </app-print-input-combine>
-    <!-- PICKUPデータ -->
-    <app-print-input-pickup>
-    </app-print-input-pickup>
-  </div>
-  <!-- 変位 -->
-  <div *ngIf="myContentEditable[1] === true">
-    <app-print-result-disg>
-    </app-print-result-disg>
-  </div>
-  <!-- 変位combine -->
-  <div *ngIf="myContentEditable[2] === true">
-    <app-print-result-combine-disg>
-    </app-print-result-combine-disg>
-  </div>
-  <!-- 変位pickup -->
-  <div *ngIf="myContentEditable[3] === true">
-    <app-print-result-pickup-disg>
-    </app-print-result-pickup-disg>
-  </div>
-  <!-- 支点反力 -->
-  <div *ngIf="myContentEditable[4] === true">
-    <app-print-result-reac>
-    </app-print-result-reac>
-  </div>
-  <!-- 支点反力combine -->
-  <div *ngIf="myContentEditable[5] === true">
-    <app-print-result-combine-reac>
-    </app-print-result-combine-reac>
-  </div>
-  <!-- 支点反力pickup -->
-  <div *ngIf="myContentEditable[6] === true">
-    <app-print-result-pickup-reac>
-    </app-print-result-pickup-reac>
-  </div>
-  <!-- 断面力 -->
-  <div *ngIf="myContentEditable[7] === true">
-    <app-print-result-fsec>
-    </app-print-result-fsec>
-  </div>
-  <!-- 断面力combine -->
-  <div *ngIf="myContentEditable[8] === true">
-    <app-print-result-combine-fsec>
-    </app-print-result-combine-fsec>
-  </div>
-  <!-- 断面力pickup -->
-  <div *ngIf="myContentEditable[9] === true">
-    <app-print-result-pickup-fsec>
-    </app-print-result-pickup-fsec>
-  </div>
+    <!-- 格点データ -->
+    <div *ngIf="myContentEditable[0] === true">
+        <app-print-input-nodes>
+        </app-print-input-nodes>
+        <!-- 部材データ -->
+        <app-print-input-members>
+        </app-print-input-members>
+        <!-- 材料データ -->
+        <app-print-input-elements>
+        </app-print-input-elements>
+        <!-- 支点データ -->
+        <app-print-input-fix-node>
+        </app-print-input-fix-node>
+        <!-- 結合データ -->
+        <app-print-input-joint>
+        </app-print-input-joint>
+        <!-- 着目点 -->
+        <app-print-input-notice-points>
+        </app-print-input-notice-points>
+        <!-- バネデータ -->
+        <app-print-input-fix-member>
+        </app-print-input-fix-member>
+        <!-- 荷重名称データ -->
+        <app-print-input-load-name>
+        </app-print-input-load-name>
+        <!-- 実荷重データ -->
+        <app-print-input-load>
+        </app-print-input-load>
+        <!-- DEFINEデータ -->
+        <app-print-input-define>
+        </app-print-input-define>
+        <!-- COMBINEデータ -->
+        <app-print-input-combine>
+        </app-print-input-combine>
+        <!-- PICKUPデータ -->
+        <app-print-input-pickup>
+        </app-print-input-pickup>
+    </div>
+    <!-- 変位 -->
+    <div *ngIf="myContentEditable[1] === true">
+        <app-print-result-disg>
+        </app-print-result-disg>
+    </div>
+    <!-- 変位combine -->
+    <div *ngIf="myContentEditable[2] === true">
+        <app-print-result-combine-disg>
+        </app-print-result-combine-disg>
+    </div>
+    <!-- 変位pickup -->
+    <div *ngIf="myContentEditable[3] === true">
+        <app-print-result-pickup-disg>
+        </app-print-result-pickup-disg>
+    </div>
+    <!-- 支点反力 -->
+    <div *ngIf="myContentEditable[4] === true">
+        <app-print-result-reac>
+        </app-print-result-reac>
+    </div>
+    <!-- 支点反力combine -->
+    <div *ngIf="myContentEditable[5] === true">
+        <app-print-result-combine-reac>
+        </app-print-result-combine-reac>
+    </div>
+    <!-- 支点反力pickup -->
+    <div *ngIf="myContentEditable[6] === true">
+        <app-print-result-pickup-reac>
+        </app-print-result-pickup-reac>
+    </div>
+    <!-- 断面力 -->
+    <div *ngIf="myContentEditable[7] === true">
+        <app-print-result-fsec>
+        </app-print-result-fsec>
+    </div>
+    <!-- 断面力combine -->
+    <div *ngIf="myContentEditable[8] === true">
+        <app-print-result-combine-fsec>
+        </app-print-result-combine-fsec>
+    </div>
+    <!-- 断面力pickup -->
+    <div *ngIf="myContentEditable[9] === true">
+        <app-print-result-pickup-fsec>
+        </app-print-result-pickup-fsec>
+    </div>
 </div>

@@ -1,38 +1,92 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { InputLoadService } from './input-load.service';
-import { ThreeService } from '../../three/three.service';
-import { DataHelperModule } from '../../../providers/data-helper.module';
-import { SheetComponent } from '../sheet/sheet.component';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { InputLoadService } from "./input-load.service";
+import { ThreeService } from "../../three/three.service";
+import { DataHelperModule } from "../../../providers/data-helper.module";
+import { SheetComponent } from "../sheet/sheet.component";
 import pq from "pqgrid";
-import { AppComponent } from 'src/app/app.component';
+import { AppComponent } from "src/app/app.component";
 
 @Component({
-  selector: 'app-input-load-name',
-  templateUrl: './input-load-name.component.html',
-  styleUrls: ['./input-load-name.component.scss', '../../../app.component.scss']
+  selector: "app-input-load-name",
+  templateUrl: "./input-load-name.component.html",
+  styleUrls: [
+    "./input-load-name.component.scss",
+    "../../../app.component.scss",
+  ],
 })
 export class InputLoadNameComponent implements OnInit {
-
-  @ViewChild('grid') grid: SheetComponent;
+  @ViewChild("grid") grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
-    { title: "割増し係数", dataType: "float",  format: "#.000", dataIndx: "rate",       sortable: false, width: 100 },
-    { title: "記号",      dataType: "string",                  dataIndx: "symbol",     sortable: false, width: 80 },
-    { title: "名　　　称", dataType: "string",                  dataIndx: "name",       sortable: false, width: 300 },
-    { title: "支点",     dataType: "integer",                  dataIndx: "fix_node",   sortable: false, width: 30 },
-    { title: "バネ",     dataType: "integer",                  dataIndx: "fix_member", sortable: false, width: 30 },
-    { title: "断面",     dataType: "integer",                  dataIndx: "element",    sortable: false, width: 30 },
-    { title: "結合",     dataType: "integer",                  dataIndx: "joint",      sortable: false, width: 30 },
+  private columnHeaders = [
+    {
+      title: "割増し係数",
+      dataType: "float",
+      format: "#.000",
+      dataIndx: "rate",
+      sortable: false,
+      width: 100,
+      align: "right",
+    },
+    {
+      title: "記号",
+      dataType: "string",
+      dataIndx: "symbol",
+      sortable: false,
+      width: 80,
+      align: "left",
+    },
+    {
+      title: "名称",
+      dataType: "string",
+      dataIndx: "name",
+      sortable: false,
+      width: 300,
+      align: "left",
+    },
+    {
+      title: "支点",
+      dataType: "integer",
+      dataIndx: "fix_node",
+      sortable: false,
+      width: 30,
+      align: "right",
+    },
+    {
+      title: "バネ",
+      dataType: "integer",
+      dataIndx: "fix_member",
+      sortable: false,
+      width: 30,
+      align: "right",
+    },
+    {
+      title: "断面",
+      dataType: "integer",
+      dataIndx: "element",
+      sortable: false,
+      width: 30,
+      align: "right",
+    },
+    {
+      title: "結合",
+      dataType: "integer",
+      dataIndx: "joint",
+      sortable: false,
+      width: 30,
+      align: "right",
+    },
   ];
 
   private ROWS_COUNT = 15;
 
-  constructor(private data: InputLoadService,
-              private three: ThreeService,
-              private app: AppComponent,
-              private helper: DataHelperModule) {
-    this.loadData(this.ROWS_COUNT)
+  constructor(
+    private data: InputLoadService,
+    private three: ThreeService,
+    private app: AppComponent,
+    private helper: DataHelperModule
+  ) {
+    this.loadData(this.ROWS_COUNT);
   }
 
   ngOnInit() {
@@ -69,20 +123,21 @@ export class InputLoadNameComponent implements OnInit {
     locale: "jp",
     height: this.tableHeight(),
     numberCell: {
-      show: true // 行番号
+      show: true, // 行番号
+      width:45
     },
     colModel: this.columnHeaders,
     animModel: {
-      on: true
+      on: true,
     },
     dataModel: {
-      data: this.dataset
+      data: this.dataset,
     },
     beforeTableView: (evt, ui) => {
       const finalV = ui.finalV;
       const dataV = this.dataset.length;
       if (ui.initV == null) {
-          return;
+        return;
       }
       if (finalV >= dataV - 1) {
         this.loadData(dataV + this.ROWS_COUNT);
@@ -97,8 +152,7 @@ export class InputLoadNameComponent implements OnInit {
     },
     change: (evt, ui) => {
       const target = ui.updateList[0];
-      this.three.changeData('load_names', target.rowIndx);
-    }
+      this.three.changeData("load_names", target.rowIndx);
+    },
   };
-
 }

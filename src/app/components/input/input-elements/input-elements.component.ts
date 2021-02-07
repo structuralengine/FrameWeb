@@ -19,7 +19,7 @@ export class InputElementsComponent implements OnInit {
   private dataset = [];
   private columnHeaders =[
     { title: "弾性係数", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
-    { title: "せん断弾性係数", dataType: "float", format: "#,##0", dataIndx: "G", sortable: false, width: 120 },
+    { title: "せん断弾性係数", dataType: "float", format: "#,##0", dataIndx: "G", sortable: false, width: 130 },
     { title: "膨張係数", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
     { title: "断面積", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
     { title: "ねじり定数", dataType: "float", format: "#.0000", dataIndx: "J", sortable: false, width: 100 },
@@ -80,7 +80,8 @@ export class InputElementsComponent implements OnInit {
     locale: "jp",
     height: this.tableHeight(),
     numberCell: {
-      show: true // 行番号
+      show: true, // 行番号
+      width:45
     },
     colModel: this.columnHeaders,
     animModel: {

@@ -3,24 +3,30 @@
     <ul>
       <li>
         <div ngbDropdown>
-          <a class="icon file" id="dropdownBasic1" ngbDropdownToggle onfocus="this.blur();"><i
-              class="far fa-file"></i></a>
+          <a
+            class="icon file"
+            id="dropdownBasic1"
+            ngbDropdownToggle
+            onfocus="this.blur();"
+            ><i class="far fa-file"></i
+          ></a>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <button ngbDropdownItem (click)="renew()">新規作成</button>
-            <label style="width: 100%;margin: 0px;">
-              <span ngbDropdownItem style="padding: 8px;">
+            <label style="width: 100%; margin: 0px">
+              <span ngbDropdownItem style="padding: 8px">
                 ファイルを開く
-                <input type="file" accept="application/fwj" (change)="open($event)" style="display:none" />
+                <input
+                  type="file"
+                  accept="application/fwj"
+                  (change)="open($event)"
+                  style="display: none"
+                />
               </span>
             </label>
-            <!-- <button ngbDropdownItem (change)="open($event)" accept="application/fwj">
-              <label>
-                ファイルを開く
-                <input type="file" accept="application/fwj" style="display:none" />
-              </label>
-            </button> -->
             <button ngbDropdownItem (click)="save()">ファイルを保存</button>
-            <button ngbDropdownItem (click)="pickup()">ピックアップファイル出力</button>
+            <button ngbDropdownItem (click)="pickup()">
+              ピックアップファイル出力
+            </button>
           </div>
         </div>
       </li>
@@ -31,17 +37,17 @@
         <a routerLink="./print"><i class="fi fi-print"></i></a>
       </li>
       <li>
-        <a onClick="window.open('https://doboku-design-program.slack.com/archives/C0199TMHMA9','_blank')"><i
-            class="far fa-question-circle"></i></a>
+        <a
+          onClick="window.open('https://doboku-design-program.slack.com/archives/C0199TMHMA9','_blank')"
+          ><i class="far fa-question-circle"></i
+        ></a>
       </li>
     </ul>
   </div>
 
-
   <div class="title">
-    <h1>{{fileName}}</h1>
+    <h1>{{ fileName }}</h1>
   </div>
-
 
   <div class="login-area">
     <div *ngIf="!loggedIn">
@@ -55,38 +61,31 @@
       <div ngbDropdown>
         <a id="dropdownBasic2" class="login-item" ngbDropdownToggle>
           <i class="far fa-user-circle"></i>
-          {{loginUserName}}さん
+          {{ loginUserName }}さん
         </a>
-        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" style="cursor : default !important;">
-          <p ngbDropdownItem style="pointer-events: none;cursor : default !important;">保有ポイント:{{userPoint}}ポイント</p>
-          <button (click)="logOut()" ngbDropdownItem style=" cursor:pointer !important;">ログアウト</button>
+        <div
+          ngbDropdownMenu
+          aria-labelledby="dropdownBasic2"
+          style="cursor: default !important"
+        >
+          <p
+            ngbDropdownItem
+            style="pointer-events: none; cursor: default !important"
+          >
+            保有ポイント:{{ userPoint }}ポイント
+          </p>
+          <button
+            (click)="logOut()"
+            ngbDropdownItem
+            style="cursor: pointer !important"
+          >
+            ログアウト
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- <div class="title-and-menu" id="disTitle">
     <div class="icon-area">

@@ -1,95 +1,150 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { AfterViewInit } from '@angular/core';
-
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { AfterViewInit } from "@angular/core";
+import { DataCountService } from "../dataCount.service";
+// import { table } from "console";
 
 @Component({
-  selector: 'app-print-input-nodes',
-  templateUrl: './print-input-nodes.component.html',
-  styleUrls: ['./print-input-nodes.component.scss', '../../../../app.component.scss','../invoice.component.scss']
+  selector: "app-print-input-nodes",
+  templateUrl: "./print-input-nodes.component.html",
+  styleUrls: [
+    "./print-input-nodes.component.scss",
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+  ],
 })
 export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number = 3;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
+  bottomCell: number = 59;
 
   public node_dataset = [];
+  public node_page = [];
 
+  public judge: boolean;
+  public headerShow: boolean;
 
   constructor(
-    private InputData: InputDataService
-  ) {}
+    private InputData: InputDataService,
+    private countArea: DataCountService
+  ) {
+    this.judge = false;
+  }
 
   ngOnInit(): void {
-  }
-
-
-  ngAfterViewInit() {
-
     const inputJson: any = this.InputData.getInputJson(0);
 
-    if ('node' in inputJson) {
-      this.node_dataset = this.printNode(inputJson);
+    if ("node" in inputJson) {
+      const tables = this.printNode(inputJson);
+      this.node_dataset = tables.splid;
+      this.node_page = tables.page;
+      this.headerShow = true;
+      if (tables.page === 1) {
+        this.headerShow = false;
+      }
+      this.judge = this.countArea.setCurrentY(tables.this, 
+        tables.last
+        );
     }
   }
+
+  ngAfterViewInit() {}
 
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
-    const minCount: number = 5; // これ以上なら２行書きとする
-    const body: any = [];
-    const json: {} = inputJson['node']; // inputJsonからnodeだけを取り出す
+    // const minCount: number = 52; // これ以上なら２行書きとする
+    let body: any = [];
+    const splid: any = [];
+    let page: number = 0;
+    const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
 
-    let head: string[];
+    let break_flg = true;
+    if (keys.length > this.bottomCell * 2) {
+      while (break_flg) {
+        for (let i = 0; i < this.bottomCell; i++) {
+          const line = ["", "", "", "", "", "", "", ""];
 
-    if (keys.length < minCount) {
-      head = ['No.', 'X(m)', 'Y(m)', 'Z(m)'];
-      for (const index of keys) {
-        const item = json[index]; // 1行分のnodeデータを取り出す
-        // 印刷する1行分のリストを作る
-        const line: string[] = new Array();
-        line.push(index);
-        line.push(item.x.toFixed(3));
-        line.push(item.y.toFixed(3));
-        line.push(item.z.toFixed(3));
-        body.push(line);
+          const j = page * this.bottomCell * 2 + i;
+          const s = j + 1;
+
+          if (s > keys.length) {
+            break_flg = false;
+            break;
+          }
+          const index1: string = keys[j];
+          const item1 = json[index1];
+          line[0] = index1;
+          line[1] = item1.x.toFixed(3);
+          line[2] = item1.y.toFixed(3);
+          line[3] = item1.z.toFixed(3);
+
+          const k = j + this.bottomCell;
+
+          if (k < keys.length) {
+            const index2: string = keys[k];
+            const item2 = json[index2];
+            line[4] = index2;
+            line[5] = item2.x.toFixed(3);
+            line[6] = item2.y.toFixed(3);
+            line[7] = item2.z.toFixed(3);
+          }
+          body.push(line);
+        }
+        if (body.length === 0) {
+          break;
+        }
+        splid.push(body);
+        body = [];
+        page++;
       }
     } else {
-      // 2列表示
-      head = ['No.', 'X(m)', 'Y(m)', 'Z(m)', 'No.', 'X(m)', 'Y(m)', 'Z(m)'];
-      const n = Math.ceil(keys.length / 2); // 分割位置
+      this.bottomCell = keys.length / 2;
+      const n = Math.ceil(this.bottomCell);
+
       for (let i = 0; i < n; i++) {
-        const line: string[] = new Array();
-        // 左側
+        const line = ["", "", "", "", "", "", "", ""];
+
         const index1: string = keys[i];
         const item1 = json[index1];
-        line.push(index1);
-        line.push(item1.x.toFixed(3));
-        line.push(item1.y.toFixed(3));
-        line.push(item1.z.toFixed(3));
-        // 右側
-        if (keys.length > n + i) {
+        line[0] = index1;
+        line[1] = item1.x.toFixed(3);
+        line[2] = item1.y.toFixed(3);
+        line[3] = item1.z.toFixed(3);
+        if (keys.length < n + i + 1) {
+          line[4] = "";
+          line[5] = "";
+          line[6] = "";
+          line[7] = "";
+        } else {
           const index2: string = keys[n + i];
           const item2 = json[index2];
-          line.push(index2);
-          line.push(item2.x.toFixed(3));
-          line.push(item2.y.toFixed(3));
-          line.push(item2.z.toFixed(3));
-        } else {
-          line.push('');
-          line.push('');
-          line.push('');
-          line.push('');
+          line[4] = index2;
+          line[5] = item2.x.toFixed(3);
+          line[6] = item2.y.toFixed(3);
+          line[7] = item2.z.toFixed(3);
         }
+
         body.push(line);
       }
-
+      splid.push(body);
     }
-    return body;
-  }
 
+    //最後のページの行数だけ取得している
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
+
+    //全部の行数を取得している。
+    this.countTotal = keys.length;
+
+    return { page, splid, this: this.countTotal, last: lastArrayCount };
+  }
 }

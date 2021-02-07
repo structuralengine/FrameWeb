@@ -1,89 +1,83 @@
+<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable loadBasic">
-    <h2>基本荷重データ</h2>
-    <table>
-      <tr>
-        <th class="case" colspan="4">Case</th>
-        <th class="conditions" colspan="4">構造系条件</th>
-      </tr>
-      <tr>
-        <th class="id">No</th>
-        <th class="k">割増係数</th>
-        <th class="sign">記号</th>
-        <th class="name">荷重名称</th>
-        <th class="node">支点</th>
-        <th class="section">断面</th>
-        <th class="spring">バネ</th>
-        <th class="conection">結合</th>
-      </tr>
-      <tr *ngFor="let data of loadName_dataset">
-        <td class="id">{{data[0]}}</td>
-        <td class="k">{{data[1]}}</td>
-        <td class="sign">{{data[2]}}</td>
-        <td class="name">{{data[3]}}</td>
-        <td class="node">{{data[4]}}</td>
-        <td class="section">{{data[5]}}</td>
-        <td class="spring">{{data[6]}}</td>
-        <td class="conection">{{data[7]}}</td>
-      </tr>
-    </table>
-  </div>
-  <div class="invoicetTable loadBasic">
     <h2>実荷重データ</h2>
+    <!--load_dataからcaseごとにデータを取り出す-->
+    <div *ngFor="let case of load_data; index as i">
+        <div *ngIf="load_break[i]" class="pagerBreak"></div>
+        <h3>{{case[0]}}</h3>
+        <!--caseから荷重名称、menber、nodeごとにデータを取り出す-->
+        <div *ngFor="let branch of case; index as j">
+            <!--荷重名称が０だから飛ばす-->
+            <div *ngIf="j > 0">
+                <!--memberだけを取り出す-->
+                <div *ngIf="j === 1">
+                    <!--memberを５８行ごとに分ける-->
+                    <div *ngFor="let page_member of branch; index as k">
+                        <!--５８行の詳細を確認-->
+                        <div *ngFor="let dataset_member of page_member; index as l">
+                            <!--５８行たったらページを切り替える-->
+                            <div *ngIf="l > 0" class="pagerBreak"></div>
+                            <table style="margin-bottom:16px;">
+                                <tr>
+                                    <th class="load" colspa>部材荷重</th>
+                                    <th class="number" colspan="8">部材番号</th>
+                                </tr>
+                                <tr>
+                                    <th class="k">スタート</th>
+                                    <th class="sign">エンド</th>
+                                    <th class="name">方向</th>
+                                    <th class="node">マーク</th>
+                                    <th class="section">L1</th>
+                                    <th class="spring">L2</th>
+                                    <th class="conection">P1</th>
+                                    <th class="conection">P2</th>
+                                </tr>
+                                <tr *ngFor="let data_member of dataset_member">
+                                    <td class="id">{{data_member[0]}}</td>
+                                    <td class="k">{{data_member[1]}}</td>
+                                    <td class="sign">{{data_member[2]}}</td>
+                                    <td class="name"> {{data_member[3]}}</td>
+                                    <td class="node"> {{data_member[4]}}</td>
+                                    <td class="section"> {{data_member[5]}}</td>
+                                    <td class="spring"> {{data_member[6]}}</td>
+                                    <td class="conection">{{data_member[7]}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--nodeだけを取り出す-->
+                <div *ngIf="j === 2">
+                    <div *ngFor="let page_node of branch; index as m">
+                        <div *ngFor="let dataset_node of page_node; index as n">
+                            <div *ngIf="n > 0" class="pagerBreak"></div>
+                            <table style="margin-bottom:16px;">
+                                <tr>
+                                    <th class="id">節点荷重</th>
+                                    <th class="k">節点番号</th>
+                                    <th class="sign">Fx</th>
+                                    <th class="name">Fy</th>
+                                    <th class="node">Fz</th>
+                                    <th class="section">Mx</th>
+                                    <th class="spring">My</th>
+                                    <th class="conection">Mz</th>
+                                </tr>
 
-    <div *ngFor="let title of load_title; let i = index">
-      <p>{{title[0]}}</p>
-      <table>
-        <tr>
-          <th class="load" colspa>部材荷重</th>
-          <th class="number" colspan="8">部材番号</th>
-        </tr>
-        <tr>
-          <th class="id"></th>
-          <th class="k">スタート</th>
-          <th class="sign">エンド</th>
-          <th class="name">方向</th>
-          <th class="node">マーク</th>
-          <th class="section">L1</th>
-          <th class="spring">L2</th>
-          <th class="conection">P1</th>
-          <th class="conection">P2</th>
-        </tr>
-        <tr *ngFor="let data of load_member[i]">
-          <td class="id">{{data[0]}}</td>
-          <td class="k">{{data[1]}}</td>
-          <td class="sign">{{data[2]}}</td>
-          <td class="name">{{data[3]}}</td>
-          <td class="node">{{data[4]}}</td>
-          <td class="section">{{data[5]}}</td>
-          <td class="spring">{{data[6]}}</td>
-          <td class="conection">{{data[7]}}</td>
-          <td class="conection">{{data[8]}}</td>
-          <td class="conection">{{data[9]}}</td>
-
-        </tr>
-      </table>
-
-      <table>
-        <tr>
-          <th class="id">節点荷重</th>
-          <th class="k">節点番号</th>
-          <th class="sign">Fx</th>
-          <th class="name">Fy</th>
-          <th class="node">Fz</th>
-          <th class="section">Mx</th>
-          <th class="spring">My</th>
-          <th class="conection">Mz</th>
-        </tr>
-        <tr *ngFor="let data of load_node[i]">
-          <td class="id">{{data[0]}}</td>
-          <td class="k">{{data[1]}}</td>
-          <td class="sign">{{data[2]}}</td>
-          <td class="name">{{data[3]}}</td>
-          <td class="node">{{data[4]}}</td>
-          <td class="section">{{data[5]}}</td>
-          <td class="spring">{{data[6]}}</td>
-          <td class="spring">{{data[7]}}</td>
-        </tr>
-      </table>
+                                <tr *ngFor="let data_node of dataset_node">
+                                    <td class="id"> {{data_node[0]}}</td>
+                                    <td class="k"> {{data_node[1]}}</td>
+                                    <td class="sign">{{data_node[2]}}</td>
+                                    <td class="name">{{data_node[3]}}</td>
+                                    <td class="node">{{data_node[4]}}</td>
+                                    <td class="section">{{data_node[5]}}</td>
+                                    <td class="spring"> {{data_node[6]}}</td>
+                                    <td class="spring"> {{data_node[7]}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
