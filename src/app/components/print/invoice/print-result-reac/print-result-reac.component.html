@@ -1,26 +1,31 @@
+<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable reac">
-  <h2>反力</h2>
-  <div *ngFor="let title of reac_typeNum; let i = index">
-    <h3>{{title[0]}}</h3>
-    <table>
-      <tr>
-        <th>SUPPORT</th>
-        <th>TX</th>
-        <th>TY</th>
-        <th>TZ</th>
-        <th>MX</th>
-        <th>MY</th>
-        <th>MZ</th>
-      </tr>
-      <tr *ngFor="let data of reac_dataset[i]">
-        <td>{{data[0]}}</td>
-        <td>{{data[1]}}</td>
-        <td>{{data[2]}}</td>
-        <td>{{data[3]}}</td>
-        <td>{{data[4]}}</td>
-        <td>{{data[5]}}</td>
-        <td>{{data[6]}}</td>
-      </tr>
-    </table>
-  </div>
+    <h2>反力</h2>
+    <div *ngFor="let title of reac_typeNum; index as i">
+        <div *ngIf="reac_break[i]" class="pagerBreak"></div>
+        <h3>{{title}}</h3>
+        <div *ngFor="let dataset of reac_table[i] index as j">
+            <div *ngIf="j > 0" class="pagerBreak"></div>
+            <table>
+                <tr>
+                    <th>SUPPORT</th>
+                    <th>TX</th>
+                    <th>TY</th>
+                    <th>TZ</th>
+                    <th>MX</th>
+                    <th>MY</th>
+                    <th>MZ</th>
+                </tr>
+                <tr *ngFor="let data of dataset">
+                    <td>{{data[0]}}</td>
+                    <td>{{data[1]}}</td>
+                    <td>{{data[2]}}</td>
+                    <td>{{data[3]}}</td>
+                    <td>{{data[4]}}</td>
+                    <td>{{data[5]}}</td>
+                    <td>{{data[6]}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>

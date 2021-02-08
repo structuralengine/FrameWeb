@@ -122,6 +122,7 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
 
         if (ROW_type < 59) {
           break_after_type.push(false);
+          ROW_type += 2;
         } else {
           break_after_type.push(true);
           countCell_type = Object.keys(elist).length;

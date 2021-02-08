@@ -25,7 +25,6 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
   row: number = 0;
   key: string;
 
-  public combDisg_datase = [];
   public combDisg_dataset = [];
   public combDisg_title = [];
   public combDisg_type = [];
@@ -119,6 +118,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
 
         if (ROW_type < 59) {
           break_after_type.push(false);
+          ROW_type += 3;
         } else {
           break_after_type.push(true);
           countCell_type = Object.keys(elist).length;
