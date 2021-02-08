@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root",
@@ -6,10 +7,35 @@ import { Injectable } from "@angular/core";
 export class DataCountService {
   currentY: number;
   currentType: number;
+  dataExist: boolean[];
 
-  constructor() {
+  constructor(private router: Router) {
     this.currentY = 0;
     this.currentType = 0;
+
+    this.dataExist = [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ];
   }
 
   //全部の行の行数を管理している
@@ -21,5 +47,10 @@ export class DataCountService {
     } else {
       return false;
     }
+  }
+
+  //データが空だった時にfalseを返す
+  setData(id) {
+    this.dataExist[id] = false;
   }
 }

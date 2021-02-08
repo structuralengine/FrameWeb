@@ -46,6 +46,8 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
       this.fixMember_break = tables.break_after;
       this.fixMember_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this,tables.last);
+    }else {
+      this.countArea.setData(6);
     }
   }
 

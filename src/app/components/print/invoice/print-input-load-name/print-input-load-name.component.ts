@@ -23,6 +23,7 @@ export class PrintInputLoadNameComponent implements OnInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
+  empty:number;
 
   public loadName_dataset = [];
   public loadName_page = [];
@@ -38,16 +39,19 @@ export class PrintInputLoadNameComponent implements OnInit {
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);
-    const LoadJson: any = this.InputData.load.getLoadJson();
-    if (Object.keys(LoadJson).length > 0) {
+    const LoadNameJson: any = this.InputData.load.getLoadNameJson();
+    if (Object.keys(LoadNameJson).length > 0) {
       // 基本荷重データ
-      const tables_basic = this.printLoadName(LoadJson);
+      const tables_basic = this.printLoadName(LoadNameJson);
       this.loadName_dataset = tables_basic.splid;
       this.loadName_page = tables_basic.page;
       this.judge = this.countArea.setCurrentY(
         tables_basic.this,
         tables_basic.last
       );
+      this.countArea.setData(tables_basic.empty);
+    }else{
+      this.countArea.setData(7);
     }
   }
  
@@ -72,12 +76,18 @@ export class PrintInputLoadNameComponent implements OnInit {
         const item = json[index]; // 1行分のnodeデータを取り出す
         const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
         const j = page * 59 + i + 1;
-        const s = j + 1;
 
-        if (s > keys.length) {
+        if(keys.length === 0){
+          this.empty = 7;
+          break_flg = false;
+          break;
+        }else if(keys.length === 1 && i === 0){
+          break_flg = true;
+        }else if(j > keys.length){
           break_flg = false;
           break;
         }
+        
 
         const rate: number = item.rate !== null ? item.rate : 1;
         const fix_node: number = item.fix_node !== null ? item.fix_node : 1;
@@ -110,6 +120,6 @@ export class PrintInputLoadNameComponent implements OnInit {
     const lastArray = splid.slice(-1)[0];
     const lastArrayCount = lastArray.length;
 
-    return { page, splid, this: this.countTotal, last: lastArrayCount };
+    return { empty:this.empty ,page, splid, this: this.countTotal, last: lastArrayCount };
   }
 }
