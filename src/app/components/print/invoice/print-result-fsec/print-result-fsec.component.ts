@@ -3,6 +3,7 @@ import { InputDataService } from '../../../../providers/input-data.service';
 import { ResultDataService } from '../../../../providers/result-data.service';
 import { AfterViewInit } from '@angular/core';
 import { JsonpClientBackend } from '@angular/common/http';
+import { DataCountService } from "../dataCount.service";
 
 @Component({
   selector: 'app-print-result-fsec',
@@ -18,122 +19,135 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public fesc_dataset = [];
-  public fesc_typeNum = [];
+  public fsec_table = [];
+  public fsec_break = [];
+  public fsec_typeNum = [];
 
-  constructor(private InputData: InputDataService,
-    private ResultData: ResultDataService) {
+  public judge: boolean;
+
+  constructor(
+    private InputData: InputDataService,
+    private ResultData: ResultDataService,
+    private countArea: DataCountService
+  ) {
+    this.judge = false;
   }
 
   ngOnInit(): void {
+    // const json: {} = this.ResultData.fsec.getDisgJson();
+    const resultjson: any = this.ResultData.fsec.getFsecJson();
+    const tables = this.printForce(resultjson);
+    this.fsec_table = tables.table;
+    this.fsec_break = tables.break_after;
+    this.fsec_typeNum = tables.title;
+    this.judge = this.countArea.setCurrentY(tables.this, tables.last);
   }
 
   ngAfterViewInit() {
-
-    // const json: {} = this.ResultData.disg.getDisgJson();
-    const resultjson: any = this.ResultData.fsec.getFsecJson();
-    const tables = this.printForce(resultjson);
-    this.fesc_dataset = tables.body;
-    this.fesc_typeNum = tables.titleSum;
   }
 
   // 断面力データを印刷する
   private printForce(json): any {
-    const titleSum: any = [];
-    const body: any = new Array();
+    const keys: string[] = Object.keys(json);
 
-    // const fontsize: number = 10;
-    // doc.setFontSize(fontsize);
+    // 全体の高さを計算する
+    let countCell = 0;
+    for (const index of keys) {
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      countCell += Object.keys(elist).length + 1;
+    }
 
-    // const currentY = this.margine.top + fontsize;
-    // let pageHeight = doc.internal.pageSize.height; // 841.89
+    const countHead = keys.length * 2;
+    const countTotal = countCell + countHead + 2;
 
-    // doc.text(this.margine.left, currentY, "断面力")
+    //　各タイプの前に改ページ(break_after)が必要かどうかを判定する。
+    const break_after: boolean[] = new Array();
+    let ROW = 0;
+    for (const index of keys) {
+      ROW += 2; // 行
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      const countCell = Object.keys(elist).length;
+      ROW += countCell;
 
-    for (const index of Object.keys(json)) {
-      const elist = json[index]; // 1行分のnodeデータを取り出す
-      if (!Array.isArray(elist)) {
-        continue;
+      if (ROW < 59) {
+        break_after.push(false);
+      } else {
+        if (index === "1") {
+          break_after.push(false);
+        } else {
+          break_after.push(true);
+        }
+        ROW = 0;
       }
+    }
+
+    // テーブル
+    const splid: any = [];
+    const titleSum: string[] = new Array();
+    let row: number = 0;
+    for (const index of keys) {
+      if (index === "1") {
+        row = 3;
+      } else {
+        row = 2;
+      }
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      const table: any = []; // この時点でリセット、再定義 一旦空にする
 
       // 荷重名称
       const title: any = [];
-      let loadName: string = '';
+      let loadName: string = "";
       const l: any = this.InputData.load.getLoadNameJson(null, index);
       if (index in l) {
         loadName = l[index].name;
-        title.push(['Case' + index, loadName]);
+        title.push(["Case" + index, loadName]);
       }
+      titleSum.push(title);
 
-      const table: any = [];
-
-      // あらかじめテーブルの高さを計算する
-      // daraCount += elist.length;
-      // const TableHeight: number = (daraCount + 2) * (fontsize * 2.3);
-      // if(body.length > 0){
-      //   // はみ出るなら改ページ
-      //   if (currentY + fontsize + TableHeight >= (pageHeight - this.margine.top - this.margine.bottom)) {
-      //     doc.autoTable({
-      //       theme: ['plain'],
-      //       margin: {
-      //         left: this.margine.left,
-      //         right: this.margine.right
-      //       },
-      //       styles: { font: 'default', halign: "right" },
-      //       startY: fontsize + currentY,
-      //       head: [
-      //         ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'],
-      //         ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
-      //       ],
-      //       body: body,
-      //     })
-      //     body = new Array();
-      //     daraCount = 0;
-      //     doc.addPage();
-      //   }
-      // }
-
-      //  body.push(['Case ' + index, { content: loadName, styles: { halign: "left" }, colSpan: 8 }]);
+      let body: any = [];
 
       for (const key of Object.keys(elist)) {
         const item = elist[key];
-        // 印刷する1行分のリストを作る
-        const line: string[] = new Array();
-        line.push(item.m);
-        line.push(item.n);
-        line.push(item.l.toFixed(3));
-        line.push(item.fx.toFixed(2));
-        line.push(item.fy.toFixed(2));
-        line.push(item.fz.toFixed(2));
-        line.push(item.mx.toFixed(2));
-        line.push(item.my.toFixed(2));
-        line.push(item.mz.toFixed(2));
-        table.push(line);
+
+        const line = ["", "", "", "", "", "", "", ""];
+        line[0] = item.m;
+        line[1] = item.n;
+        line[2] = item.l .toFixed(3);
+        line[3] = item.fx.toFixed(2);
+        line[4] = item.fy.toFixed(2);
+        line[5] = item.fz.toFixed(2);
+        line[6] = item.mx.toFixed(2);
+        line[7] = item.my.toFixed(2);
+        line[8] = item.mz.toFixed(2);
+        body.push(line);
+        row++;
+
+        //１テーブルで59行以上データがあるならば
+        if (row > 59) {
+          table.push(body);
+          body = [];
+          row = 2;
+        }
       }
-      titleSum.push(title);
-      console.log("titlesum--------", titleSum)
-      body.push(table);
+
+      if (body.length > 0) {
+        table.push(body);
+      }
+      splid.push(table);
     }
 
-    // if(body.length > 0){
-    //   doc.autoTable({
-    //     theme: ['plain'],
-    //     margin: {
-    //       left: this.margine.left,
-    //       right: this.margine.right
-    //     },
-    //     styles: { font: 'default', halign: "right" },
-    //     startY: fontsize + currentY,
-    //     head: [
-    //       ['部材', '節点', '', 'FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'],
-    //       ['No.', 'No.', 'DIST', '(kN)', '(kN)', '(kN)', '(kN・m)', '(kN・m)', '(kN・m)']
-    //     ],
-    //     body: body,
-    //   })
-    // }
-    return { titleSum, body };
-  }
+    //最後のページの行数だけ取得している
+    const lastArray = splid.slice(-1)[0];
+    const lastArrayCount = lastArray.length;
 
+    return {
+      table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
+      title: titleSum, // [タイプ１のタイトル, タイプ２のタイトル, ... ]
+      this: countTotal, // 全体の高さ
+      last: lastArrayCount, // 最後のページの高さ
+      break_after: break_after, // 各タイプの前に改ページ（break_after）が必要かどうか判定
+    };
+  }
 }
 
 

@@ -42,7 +42,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combfsec.fsecCombine;
-    const tables = this.printPickForce(resultjson);
+    const tables = this.printCombForce(resultjson);
     this.combFsec_dataset = tables.splid;
     this.combFsec_title = tables.titleSum;
     // this.combFsec_type = tables.typeSum;
@@ -54,7 +54,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {}
 
   // 変位量データを印刷する
-  private printPickForce(json): any {
+  private printCombForce(json): any {
     const titleSum: any = [];
     const body: any[] = new Array();
     const typeSum: any = [];
@@ -118,6 +118,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
 
         if (ROW_type < 59) {
           break_after_type.push(false);
+          ROW_type += 3;
         } else {
           break_after_type.push(true);
           countCell_type = Object.keys(elist).length;
@@ -126,7 +127,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
           // } else {
           //   break_after_type.push(true);
           // }
-          ROW_type = 4+ countCell_type;
+          ROW_type = 4 + countCell_type;
         }
       }
       //荷重タイプごとに分割するかどうか
