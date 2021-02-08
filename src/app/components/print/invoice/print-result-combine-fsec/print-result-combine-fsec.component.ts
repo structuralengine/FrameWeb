@@ -42,6 +42,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combfsec.fsecCombine;
+    if (this.ResultData.combfsec.fsecCombine.length > 0) {
     const tables = this.printCombForce(resultjson);
     this.combFsec_dataset = tables.splid;
     this.combFsec_title = tables.titleSum;
@@ -49,6 +50,9 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     this.combFsec_case_break = tables.break_after_case;
     this.combFsec_type_break = tables.break_after_type;
     this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    }else{
+      this.countArea.setData(19);
+    }
   }
 
   ngAfterViewInit() {}
