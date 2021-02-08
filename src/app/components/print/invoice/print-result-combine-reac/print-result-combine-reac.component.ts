@@ -46,6 +46,7 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combreac.reacCombine;
+    if (this.ResultData.combdisg.disgCombine.length > 0) {
     const tables = this.printCombReact(resultjson);
     this.combReac_dataset = tables.splid;
     this.combReac_title = tables.titleSum;
@@ -53,7 +54,10 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
     this.combReac_case_break = tables.break_after_case;
     this.combReac_type_break = tables.break_after_type;
     this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+  }else {
+    this.countArea.setData(16);
   }
+}
 
   ngAfterViewInit() {}
 

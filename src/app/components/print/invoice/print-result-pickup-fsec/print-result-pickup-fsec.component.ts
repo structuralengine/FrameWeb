@@ -46,6 +46,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combfsec.fsecCombine;
+    if (this.ResultData.combfsec.fsecCombine > 0) {
     const tables = this.printPickForce(resultjson);
     this.pickFsec_dataset = tables.splid;
     this.pickFsec_title = tables.titleSum;
@@ -53,7 +54,10 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
     this.pickFsec_case_break = tables.break_after_case;
     this.pickFsec_type_break = tables.break_after_type;
     this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+  }else {
+    this.countArea.setData(20);
   }
+}
 
   ngAfterViewInit() {}
 
