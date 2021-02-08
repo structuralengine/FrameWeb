@@ -36,7 +36,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
       this.joint_break = tables.break_after;
       this.joint_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-    }else {
+    } else {
       this.countArea.setData(4);
     }
   }
@@ -59,7 +59,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
-    let ROW = 0;
+    let ROW = 7;
     for (const index of keys) {
       ROW += 2; // 行
       const elist = json[index]; // 1テーブル分のデータを取り出す
@@ -69,14 +69,20 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
       if (ROW < 59) {
         break_after.push(false);
       } else {
-        break_after.push(true);
-        ROW = 0;
+        if (index === "1") {
+          break_after.push(false);
+          ROW = 2;
+        } else {
+          break_after.push(true);
+          ROW = 0;
+        }
       }
     }
 
     // テーブル
     const splid: any = [];
     const title: string[] = new Array();
+    let row: number = 7;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
       const table: any = []; // この時点でリセット、再定義 一旦空にする
@@ -84,7 +90,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
       title.push(index.toString());
 
       let body: any = [];
-      let row = 2; // タイトル行
+
       for (const key of Object.keys(elist)) {
         const item = elist[key];
 
