@@ -58,7 +58,7 @@ export class ThreeLoadService {
       this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
       this.momentLoad = new ThreeLoadMoment(text); // 節点モーメントのテンプレート
       this.distributeLoad = new ThreeLoadDistribute(text, dim); // 分布荷重のテンプレート
-      this.axialLoad = new ThreeLoadAxial(text); // 軸方向荷重のテンプレート
+      this.axialLoad = new ThreeLoadAxial(text, dim); // 軸方向荷重のテンプレート
       this.torsionLoad = new ThreeLoadTorsion(text, dim, this.momentLoad); // ねじり分布荷重のテンプレート
       this.temperatureLoad = new ThreeLoadTemperature(text, dim); // 温度荷重のテンプレート
     });
@@ -593,6 +593,9 @@ export class ThreeLoadService {
 
         } else if (direction === "x") { 
           // 軸方向分布荷重
+          arrow = this.axialLoad.create(
+            nodei, nodej, localAxis,
+            direction, load.L1, load.L2, P1, P2);
         }
 
       } else if (load.mark === 1) {
@@ -812,7 +815,9 @@ export class ThreeLoadService {
       });
 
       //部材軸方向荷重
-      // const k = "x";
+      for (const item of list['x']) {
+        this.axialLoad.setSize(item, 0.1);
+      }
 
     }
 
