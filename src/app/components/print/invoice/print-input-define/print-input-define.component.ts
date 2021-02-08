@@ -43,6 +43,8 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
       const tables = this.printDefine(defineJson);
       this.define_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    }else {
+      this.countArea.setData(9);
     }
   }
 

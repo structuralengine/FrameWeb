@@ -46,6 +46,8 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       this.notice_dataset = tables.table;
       //this.notice_page = tables.page;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
+      this.countArea.setData(5);
     }
   }
 
@@ -73,12 +75,12 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
 
     // テーブル
     const splid: any = [];
-     let row = 2; // タイトル行
+    let row = 2; // タイトル行
     for (const item of json) {
       //const item = json[index]; // 1行分のnodeデータを取り出す
       let line: string[] = new Array();
       const len: number = this.InputData.member.getMemberLength(item.m); // 部材長さ
-  
+
       if (len !== null) {
         line.push(len.toFixed(3));
       } else {

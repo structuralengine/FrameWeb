@@ -49,6 +49,8 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       this.judge = this.countArea.setCurrentY(tables.this,
       tables.last
         );
+    }else {
+      this.countArea.setData(3);
     }
   }
 

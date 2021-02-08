@@ -35,6 +35,8 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
       this.elements_break = tables.break_after;
       this.elements_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    }else {
+      this.countArea.setData(2);
     }
   }
 

@@ -36,6 +36,8 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
       this.joint_break = tables.break_after;
       this.joint_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    }else {
+      this.countArea.setData(4);
     }
   }
 

@@ -45,12 +45,16 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combdisg.disgCombine;
-    const tables = this.printCombDisg(resultjson);
-    this.combDisg_dataset = tables.splid;
-    this.combDisg_title = tables.titleSum;
-    this.combDisg_case_break = tables.break_after_case;
-    this.combDisg_type_break = tables.break_after_type;
-    this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    if (this.ResultData.combdisg.disgCombine.length > 0) {
+      const tables = this.printCombDisg(resultjson);
+      this.combDisg_dataset = tables.splid;
+      this.combDisg_title = tables.titleSum;
+      this.combDisg_case_break = tables.break_after_case;
+      this.combDisg_type_break = tables.break_after_type;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
+      this.countArea.setData(13);
+    }
   }
 
   ngAfterViewInit() {}
