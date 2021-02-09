@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
   }
   // アクティブになっているボタンを全て非アクティブにする
   deactiveButtons() {
-    for (let i = 0; i <= 12; i++) {
+    for (let i = 0; i <= 13; i++) {
       const data = document.getElementById(i + '');
       if (data != null) {
         if (data.classList.contains('active')) {

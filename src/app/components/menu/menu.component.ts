@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
+import { PrintService } from '../print/print.service';
 
 import { Router } from '@angular/router';
 
@@ -29,15 +29,17 @@ export class MenuComponent implements OnInit {
   userPoint: string;
   loggedIn: boolean;
   fileName: string;
+  isCalculated: boolean;
 
   constructor(private modalService: NgbModal,
     private app: AppComponent,
     private router: Router,
-    private user: UserInfoService,
+    public user: UserInfoService,
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private http: HttpClient,
-    private three: ThreeService
+    private three: ThreeService,
+    public printService: PrintService
     ) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
@@ -45,6 +47,7 @@ export class MenuComponent implements OnInit {
 
   ngOnInit() {
     this.fileName = "立体骨組構造解析ソフトver1.1.0"
+    this.user.isContentsDailogShow = false;
   }
 
 
@@ -239,6 +242,30 @@ export class MenuComponent implements OnInit {
   logOut(): void {
     this.loggedIn = false;
     this.user.clear();
+  }
+
+  //　印刷フロート画面用
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+  }
+
+  public contentsDailogShow(id): void {
+    this.deactiveButtons();
+    document.getElementById(id).classList.add('active');
+    this.user.isContentsDailogShow = true;
+    //this.setDialogHeight();
+  }
+
+   // アクティブになっているボタンを全て非アクティブにする
+   deactiveButtons() {
+    for (let i = 0; i <= 13; i++) {
+      const data = document.getElementById(i + '');
+      if (data != null) {
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
+        }
+      }
+    }
   }
 
 }

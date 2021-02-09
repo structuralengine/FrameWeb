@@ -46,6 +46,8 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
       const tables = this.printCombine(combineJson);
       this.comb_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    }else {
+      this.countArea.setData(10);
     }
   }
 

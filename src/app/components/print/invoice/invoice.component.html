@@ -1,85 +1,128 @@
 <div class="invoice">
-    <!-- 格点データ -->
     <div *ngIf="myContentEditable[0] === true">
-        <app-print-input-nodes>
-        </app-print-input-nodes>
+        <!-- 格点データ -->
+        <div *ngIf="dataExists[0] === true">
+            <app-print-input-nodes>
+            </app-print-input-nodes>
+        </div>
         <!-- 部材データ -->
-        <app-print-input-members>
-        </app-print-input-members>
+        <div *ngIf="dataExists[1] === true">
+            <app-print-input-members>
+            </app-print-input-members>
+        </div>
         <!-- 材料データ -->
-        <app-print-input-elements>
-        </app-print-input-elements>
+        <div *ngIf="dataExists[2] === true">
+            <app-print-input-elements>
+            </app-print-input-elements>
+        </div>
         <!-- 支点データ -->
-        <app-print-input-fix-node>
-        </app-print-input-fix-node>
+        <div *ngIf="dataExists[3] === true">
+            <app-print-input-fix-node>
+            </app-print-input-fix-node>
+        </div>
         <!-- 結合データ -->
-        <app-print-input-joint>
-        </app-print-input-joint>
+        <div *ngIf="dataExists[4] === true">
+            <app-print-input-joint>
+            </app-print-input-joint>
+        </div>
         <!-- 着目点 -->
-        <app-print-input-notice-points>
-        </app-print-input-notice-points>
+        <div *ngIf="dataExists[5] === true">
+            <app-print-input-notice-points>
+            </app-print-input-notice-points>
+        </div>
         <!-- バネデータ -->
-        <app-print-input-fix-member>
-        </app-print-input-fix-member>
+        <div *ngIf="dataExists[6] === true">
+            <app-print-input-fix-member>
+            </app-print-input-fix-member>
+        </div>
         <!-- 荷重名称データ -->
-        <app-print-input-load-name>
-        </app-print-input-load-name>
+        <div *ngIf="dataExists[7] === true">
+            <app-print-input-load-name>
+            </app-print-input-load-name>
+        </div>
         <!-- 実荷重データ -->
-        <app-print-input-load>
-        </app-print-input-load>
+        <div *ngIf="dataExists[8] === true">
+            <app-print-input-load>
+            </app-print-input-load>
+        </div>
         <!-- DEFINEデータ -->
-        <app-print-input-define>
-        </app-print-input-define>
+        <div *ngIf="dataExists[9] === true">
+            <app-print-input-define>
+            </app-print-input-define>
+        </div>
         <!-- COMBINEデータ -->
-        <app-print-input-combine>
-        </app-print-input-combine>
+        <div *ngIf="dataExists[10] === true">
+            <app-print-input-combine>
+            </app-print-input-combine>
+        </div>
         <!-- PICKUPデータ -->
-        <app-print-input-pickup>
-        </app-print-input-pickup>
+        <div *ngIf="dataExists[11] === true">
+            <app-print-input-pickup>
+            </app-print-input-pickup>
+        </div>
     </div>
     <!-- 変位 -->
     <div *ngIf="myContentEditable[1] === true">
-        <app-print-result-disg>
-        </app-print-result-disg>
+        <div *ngIf="dataExists[12] === true">
+            <app-print-result-disg>
+            </app-print-result-disg>
+        </div>
+
     </div>
     <!-- 変位combine -->
     <div *ngIf="myContentEditable[2] === true">
-        <app-print-result-combine-disg>
-        </app-print-result-combine-disg>
+        <div *ngIf="dataExists[13] === true">
+            <app-print-result-combine-disg>
+            </app-print-result-combine-disg>
+        </div>
     </div>
     <!-- 変位pickup -->
     <div *ngIf="myContentEditable[3] === true">
-        <app-print-result-pickup-disg>
-        </app-print-result-pickup-disg>
+        <div *ngIf="dataExists[14] === true">
+            <app-print-result-pickup-disg>
+            </app-print-result-pickup-disg>
+        </div>
     </div>
     <!-- 支点反力 -->
     <div *ngIf="myContentEditable[4] === true">
-        <app-print-result-reac>
-        </app-print-result-reac>
+        <div *ngIf="dataExists[15] === true">
+            <app-print-result-reac>
+            </app-print-result-reac>
+        </div>
     </div>
     <!-- 支点反力combine -->
     <div *ngIf="myContentEditable[5] === true">
-        <app-print-result-combine-reac>
-        </app-print-result-combine-reac>
+        <div *ngIf="dataExists[16] === true">
+            <app-print-result-combine-reac>
+            </app-print-result-combine-reac>
+        </div>
     </div>
     <!-- 支点反力pickup -->
     <div *ngIf="myContentEditable[6] === true">
-        <app-print-result-pickup-reac>
-        </app-print-result-pickup-reac>
+        <div *ngIf="dataExists[17] === true">
+            <app-print-result-pickup-reac>
+            </app-print-result-pickup-reac>
+        </div>
     </div>
     <!-- 断面力 -->
     <div *ngIf="myContentEditable[7] === true">
-        <app-print-result-fsec>
-        </app-print-result-fsec>
+        <div *ngIf="dataExists[18] === true">
+            <app-print-result-fsec>
+            </app-print-result-fsec>
+        </div>
     </div>
     <!-- 断面力combine -->
     <div *ngIf="myContentEditable[8] === true">
-        <app-print-result-combine-fsec>
-        </app-print-result-combine-fsec>
+        <div *ngIf="dataExists[19] === true">
+            <app-print-result-combine-fsec>
+            </app-print-result-combine-fsec>
+        </div>
     </div>
     <!-- 断面力pickup -->
     <div *ngIf="myContentEditable[9] === true">
-        <app-print-result-pickup-fsec>
-        </app-print-result-pickup-fsec>
+        <div *ngIf="dataExists[20] === true">
+            <app-print-result-pickup-fsec>
+            </app-print-result-pickup-fsec>
+        </div>
     </div>
 </div>

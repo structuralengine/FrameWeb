@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PrintService } from '../print.service';
+import { DataCountService } from "./dataCount.service";
 
 import { InputDataService } from '../../../providers/input-data.service';
 import { ResultDataService } from '../../../providers/result-data.service';
@@ -77,6 +78,8 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
 
   myContentEditable : boolean[];
 
+  dataExists : boolean[];
+
 
   constructor(route: ActivatedRoute,
     public app : AppComponent,
@@ -106,6 +109,8 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
     private pickFsec : ResultPickupFsecService,
     private pickReac : ResultPickupReacService,
 
+    private countArea: DataCountService,
+
     private three: ThreeService,
     private scene: SceneService,
 
@@ -117,6 +122,7 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.myContentEditable = this.printService.contentEditable1;
+    this.dataExists = this.countArea.dataExist;
     this.invoiceDetails = this.invoiceIds
       .map(id => this.getInvoiceDetails(id));
     Promise.all(this.invoiceDetails)

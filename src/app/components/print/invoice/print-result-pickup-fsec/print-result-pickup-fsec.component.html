@@ -1,48 +1,61 @@
-<div class="invoicetTable fsecPickup">
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable pickfsec">
     <h2>PICKUP 断面力</h2>
-    <div *ngFor="let title of pickFsec_title; let i = index">
-      <p>{{title[0]}}</p>
-      <div *ngFor="let type of pickFsec_type[i]; let k = index">
-        <p>{{type}}</p>
-        <table>
-          <tr>
-            <th>部材</th>
-            <th>節点</th>
-            <th></th>
-            <th>FX</th>
-            <th>FY</th>
-            <th>FZ</th>
-            <th>MX</th>
-            <th>MY</th>
-            <th>MZ</th>
-          </tr>
-          <tr>
-            <th>No.</th>
-            <th>No.</th>
-            <th>DIST</th>
-            <th>(kN)</th>
-            <th>(kN)</th>
-            <th>(kN)</th>
-            <th>(kN・m)</th>
-            <th>(kN・m)</th>
-            <th>(kN・m)</th>
-            <th></th>
-          </tr>
-  
-          <tr *ngFor="let data of pickFsec_dataset[i][k]">
-            <td>{{data[0]}}</td>
-            <td>{{data[1]}}</td>
-            <td>{{data[2]}}</td>
-            <td>{{data[3]}}</td>
-            <td>{{data[4]}}</td>
-            <td>{{data[5]}}</td>
-            <td>{{data[6]}}</td>
-            <td>{{data[7]}}</td>
-            <td>{{data[8]}}</td>
-            <td>{{data[9]}}</td>
-          </tr>
-        </table>
-      </div>
+    <!--pickFsec_titileからtitleごとにデータを取り出す-->
+    <div *ngFor="let title of pickFsec_title; index as i">
+        <div *ngIf="pickFsec_case_break[i]" class="pagerBreak"></div>
+        <h3>{{ title }}</h3>
+        <!--pickFsec_datasetからfxmaxなどを取り出す-->
+        <div *ngFor="let dataset of pickFsec_dataset[i]; index as j">
+            <div *ngIf="pickFsec_type_break[j]" class="pagerBreak"></div>
+            <h3>{{ dataset[0] }}</h3>
+            <!--fxmaxなどからcase[0]が名称のため飛ばす-->
+            <div *ngFor="let case of dataset; index as k">
+                <div *ngIf="k > 0">
+                    <div *ngFor="let branch of case; index as l">
+                        <div *ngFor="let datas of branch; index as m">
+                            <table>
+                                <tr>
+                                    <th>部材</th>
+                                    <th>節点</th>
+                                    <th></th>
+                                    <th>FX</th>
+                                    <th>FY</th>
+                                    <th>FZ</th>
+                                    <th>MX</th>
+                                    <th>MY</th>
+                                    <th>MZ</th>
+                                </tr>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>No.</th>
+                                    <th>DIST</th>
+                                    <th>(kN)</th>
+                                    <th>(kN)</th>
+                                    <th>(kN)</th>
+                                    <th>(kN・m)</th>
+                                    <th>(kN・m)</th>
+                                    <th>(kN・m)</th>
+                                    <th></th>
+                                </tr>
+
+                                <tr *ngFor="let data of datas">
+                                    <td>{{data[0]}}</td>
+                                    <td>{{data[1]}}</td>
+                                    <td>{{data[2]}}</td>
+                                    <td>{{data[3]}}</td>
+                                    <td>{{data[4]}}</td>
+                                    <td>{{data[5]}}</td>
+                                    <td>{{data[6]}}</td>
+                                    <td>{{data[7]}}</td>
+                                    <td>{{data[8]}}</td>
+                                    <td>{{data[9]}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  
+</div>
