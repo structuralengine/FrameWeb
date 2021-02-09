@@ -1,6 +1,6 @@
-$height_header: 40px;
+$height_header: 32px;
 $height_semiHeader: 32px;
-$height_content: 20px;
+$height_content: 16px;
 // .invoice {
 //   page-break-after: always;
 // }
@@ -24,9 +24,11 @@ $height_content: 20px;
     display: none;
 }
 
+//h2が3行、h3が2行、th/tdが1行
 .invoicetTable {
     h2 {
         height: $height_header;
+        margin-top:16px;
         line-height: 32px;
         font-size: 16px;
         font-weight: 400;
