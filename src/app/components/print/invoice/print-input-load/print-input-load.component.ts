@@ -35,6 +35,9 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
   public load_titleArray = [];
 
+  public mload: any = [];
+  public pload: any = [];
+
   public judge: boolean;
 
   constructor(
@@ -53,6 +56,8 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     this.load_break = new Array();
     this.load_typeNum = new Array();
     this.load_titleArray = new Array();
+    this.mload = new Array();
+    this.pload = new Array();
   }
 
   ngOnInit(): void {
@@ -152,8 +157,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     let ploadCount: number = 0;
     let splidTypeCount: number = 0;
 
-    let mload: any[] = new Array();
-    let pload: any[] = new Array();
+    
     const splidDataTotal: any[] = new Array();
 
     lenlenMember = 0;
@@ -201,7 +205,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
       // 部材荷重
       if (mloadCount > 0) {
-        mload = [];
+        this.mload = [];
         for (const item of elist.load_member) {
           const line = ["", "", "", "", "", "", "", ""];
           line[0] = item.m1;
@@ -212,19 +216,19 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           line[5] = item.L2;
           line[6] = item.P1 === null ? "" : item.P1.toFixed(2);
           line[7] = item.P2 === null ? "" : item.P1.toFixed(2);
-          mload.push(line);
+          this.mload.push(line);
           // flg.push(0);
           row++;
           //１テーブルで60行以上データがあるならば
           if (row > 58) {
-            splidData_member.push(mload);
-            mload = [];
+            splidData_member.push(this.mload);
+            this.mload = [];
             row = 4;
           }
         }
-        if (mload.length > 0) {
-          splidData_member.push(mload);
-          lenlenMember = mload.slice(-1)[0].length + 3;
+        if (this.mload.length > 0) {
+          splidData_member.push(this.mload);
+          lenlenMember = this.mload.slice(-1)[0].length + 3;
           row = lenlenMember;
         }
         splidDataCount_member += splidData_member.length;
@@ -234,7 +238,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
       // 節点荷重
       if (ploadCount > 0) {
-        pload = [];
+        this.pload = [];
         for (const item of elist.load_node) {
           const tx = item.tx !== null ? item.tx : 0;
           const ty = item.ty !== null ? item.ty : 0;
@@ -252,20 +256,20 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           line[5] = rx.toFixed(2);
           line[6] = ry.toFixed(2);
           line[7] = rz.toFixed(2);
-          pload.push(line);
+          this.pload.push(line);
           row++;
 
           //１テーブルで60行以上データがあるならば
           if (row > 58) {
-            splidData_node.push(pload);
-            pload = [];
+            splidData_node.push(this.pload);
+            this.pload = [];
             row = 4;
           }
         }
 
-        if (pload.length > 0) {
-          splidData_node.push(pload);
-          lenlenNode = pload.slice(-1)[0] + 3;
+        if (this.pload.length > 0) {
+          splidData_node.push(this.pload);
+          lenlenNode = this.pload.slice(-1)[0] + 3;
         }
         splidDataCount_node += splidData_node.length;
         nodeTable.push(splidData_node);

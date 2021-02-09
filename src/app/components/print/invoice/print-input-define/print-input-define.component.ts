@@ -33,7 +33,12 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
   }
+
+  public clear(): void{
+    this.define_dataset = new Array();
+}
 
   ngOnInit(): void {
     const inputJson: any = this.InputData.getInputJson(0);

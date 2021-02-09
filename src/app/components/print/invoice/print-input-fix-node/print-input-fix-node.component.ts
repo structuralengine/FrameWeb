@@ -36,6 +36,13 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.fixNode_table = new Array();
+    this.fixNode_break = new Array();
+    this.fixNode_typeNum = new Array();
   }
 
   ngOnInit(): void {
@@ -52,7 +59,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // 支点データ fix_node を印刷する
   private printFixnode(inputJson): any {
@@ -91,7 +98,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const title: string[] = new Array();
     let row: number = 7;
     for (const index of keys) {

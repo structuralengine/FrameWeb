@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
+import { ArrayCamera } from "three";
 
 @Component({
   selector: "app-print-input-elements",
@@ -35,6 +36,13 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.elements_table = new Array();
+    this.elements_break = new Array();
+    this.elements_typeNum = new Array();
   }
 
   ngOnInit(): void {
@@ -51,7 +59,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // 材料データ element を印刷する
   private printElement(inputJson): any {
@@ -76,7 +84,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
-      if (ROW < 59) {
+      if (ROW < 58) {
         break_after.push(false);
       } else {
         if (index === "1") {
@@ -90,7 +98,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const title: string[] = new Array();
     let row: number = 7;
     for (const index of keys) {
@@ -116,7 +124,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
         row++;
 
         //１テーブルで59行以上データがあるならば
-        if (row > 59) {
+        if (row > 58) {
           table.push(body);
           body = [];
           row = 2;

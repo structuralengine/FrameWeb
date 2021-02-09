@@ -62,13 +62,13 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
     // const minCount: number = 52; // これ以上なら２行書きとする
     let body: any = [];
-    const splid: any = [];
+    const splid: any[] = new Array();
     let page: number = 0;
     const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);

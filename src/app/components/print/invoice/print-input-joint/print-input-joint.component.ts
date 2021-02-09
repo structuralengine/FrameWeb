@@ -25,6 +25,13 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.joint_table = new Array();
+    this.joint_break = new Array();
+    this.joint_typeNum = new Array();
   }
 
   ngOnInit(): void {
@@ -41,7 +48,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // 結合データ を印刷する
   private printjoint(inputJson): any {
@@ -80,7 +87,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const title: string[] = new Array();
     let row: number = 7;
     for (const index of keys) {
