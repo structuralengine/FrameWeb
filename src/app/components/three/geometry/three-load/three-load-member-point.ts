@@ -4,21 +4,27 @@ import { Vector2 } from 'three';
 
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
+import { ThreeLoadPoint } from './three-load-point';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ThreeLoadDistribute {
+export class ThreeLoadMemberPoint {
 
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
+  private point: ThreeLoadPoint;
 
-  constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
+  constructor(
+    text: ThreeLoadText,
+    dim: ThreeLoadDimension,
+    point: ThreeLoadPoint) {
     this.text = text;
     this.dim = dim;
+    this.point = point;
   }
 
-  /// 等分布荷重を編集する
+  /// 部材途中集中荷重を編集する
   // target: 編集対象の荷重,
   // nodei: 部材始点,
   // nodej: 部材終点,
@@ -58,11 +64,10 @@ export class ThreeLoadDistribute {
     const L  = p.L;
     const L2 = p.L2;
 
-    // 面
-    child.add(this.getFace(my_color, points));
-
-    // 線
-    child.add(this.getLine(my_color, points));
+    // 矢印
+    for(const arrow of this.getArrow(direction, my_color, points)){
+      child.add(arrow);
+    }
 
     // 寸法線
     child.add(this.getDim(points, L1, L, L2));
@@ -84,7 +89,7 @@ export class ThreeLoadDistribute {
     const group = new THREE.Group();
     group.add(group0);
     group['value'] = p.Pmax; // 大きい方の値を保存　
-    
+
     group.position.set(nodei.x, nodei.y, nodei.z);
 
     // 全体の向きを修正する
@@ -103,7 +108,7 @@ export class ThreeLoadDistribute {
       } else if (direction === "y") {
         group.rotateX(Math.PI);
       }
-      
+
     } else if (direction === "gx") {
       group.rotation.z = Math.asin(-Math.PI/2);
 
@@ -111,8 +116,7 @@ export class ThreeLoadDistribute {
       group.rotation.x = Math.asin(-Math.PI/2);
 
     }
-
-    group.name = "DistributeLoad";
+    group.name = "MemberPointLoad";
 
     return group;
   }
@@ -172,30 +176,22 @@ export class ThreeLoadDistribute {
     // 荷重の各座標
     let x1 = L1;
     let x3 = L1 + L;
-    let x2 = (x1 + x3) / 2;
 
     // y座標 値の大きい方が１となる
     const Pmax = (Math.abs(P1) > Math.abs(P2)) ? P1 : P2;
 
     let bigP = Math.abs(Pmax);
-    const y1 = (P1 / bigP) * height + y0;
-    const y3 = (P2 / bigP) * height + y0;
-    let y2 = (y1 + y3) / 2;
-
-    const sg1 = Math.sign(P1);
-    const sg2 = Math.sign(P2);
-    if (sg1 !== sg2 && sg1 * sg2 !== 0) {
-      const pp1 = Math.abs(P1);
-      const pp2 = Math.abs(P2);
-      x2 = L * pp1 / (pp1 + pp2)
-      y2 = 0;
+    let y1 = (P1 / bigP) * height + y0;
+    let y3 = (P2 / bigP) * height + y0;
+    if (direction === "x") {
+      y1 = (height / 10) + y0;
+      y3 = (height / 10) + y0;
     }
 
     return {
       points:[
         new THREE.Vector3(x1, y0, 0),
         new THREE.Vector3(x1, y1, 0),
-        new THREE.Vector3(x2, y2, 0),
         new THREE.Vector3(x3, y3, 0),
         new THREE.Vector3(x3, y0, 0),
       ],
@@ -203,44 +199,52 @@ export class ThreeLoadDistribute {
       L,
       L2,
       Pmax
-    };  
+    };
   }
 
-  // 面
-  private getFace(
-    my_color: number , points: THREE.Vector3[]): THREE.Mesh {
 
-    const face_mat = new THREE.MeshBasicMaterial({
-      transparent: true,
-      side: THREE.DoubleSide,
-      color: my_color,
-      opacity: 0.3,
-    });
+  // 両端の矢印
+  private getArrow(direction: string,
+                    my_color: number,
+                    points: THREE.Vector3[]): THREE.ArrowHelper[] {
 
-    const face_geo = new THREE.Geometry();
-    face_geo.vertices = points;
+      const p1 = new THREE.Vector3(points[0].x, points[1].y, 0);
+      this.point.create(p1, 0, P1, 1, "")
 
-    face_geo.faces.push(new THREE.Face3(0, 1, 2));
-    face_geo.faces.push(new THREE.Face3(2, 3, 4));
-    face_geo.faces.push(new THREE.Face3(0, 2, 4));
+      const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
+      const length = 1; // 長さ
 
-    const mesh = new THREE.Mesh(face_geo, face_mat);
-    mesh.name = "face";
-    return mesh;
+      const child: THREE.ArrowHelper[] = new Array();
+
+      const origin1 = new THREE.Vector3(0, 1, 0);
+      const arrow1 = new THREE.ArrowHelper(dir, origin1, length, my_color);
+      arrow1.position.x = points[0].x;
+      const y1 = points[1].y;
+      arrow1.position.y = y1;
+      arrow1.scale.set(y1, y1, y1);
+      arrow1.name = "arrow1";
+      child.push(arrow1);
+
+      const origin2 = new THREE.Vector3(1, 1, 0);
+      const arrow2 = new THREE.ArrowHelper(dir, origin2, length, my_color);
+      arrow2.position.x = points[2].x;
+      const y3 = points[2].y;
+      arrow2.position.y = y3;
+      arrow2.scale.set(y3, y3, y3);
+      arrow2.name = "arrow2";
+      child.push(arrow2);
+
+      if (direction === "x") {
+        child.forEach(arrow => {
+          arrow.position.x -= arrow.scale.x;
+          arrow.rotateZ(-Math.PI / 2);
+        });
+      }
+
+      return child;
 
   }
 
-  // 枠線
-  private getLine(
-    my_color: number , points: THREE.Vector3[]): THREE.Line {
-
-    const line_mat = new THREE.LineBasicMaterial({ color: my_color });
-    const line_geo = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(line_geo, line_mat);
-    line.name = "line";
-
-    return line;
-  }
 
   // 寸法線
   private getDim(points: THREE.Vector3[],
@@ -335,13 +339,13 @@ export class ThreeLoadDistribute {
       if (P2 > 0){
         text = this.text.create(P2.toFixed(2), pos, size, 'left', 'top');
         text.rotateZ(Math.PI/2);
-        text.position.x = points[3].x;
-        text.position.y = points[3].y;
+        text.position.x = points[2].x;
+        text.position.y = points[2].y;
       } else {
         text = this.text.create(P2.toFixed(2), pos, size, 'right', 'top');
         text.rotateZ(-Math.PI/2);
-        text.position.x = points[3].x;
-        text.position.y = points[3].y;
+        text.position.x = points[2].x;
+        text.position.y = points[2].y;
       }
       text.name = "text2";
       result.push(text);

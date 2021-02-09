@@ -468,7 +468,7 @@ export class InputLoadService {
           const P1 = this.helper.toNumber(row['P1']);
           const P2 = this.helper.toNumber(row['P2']);
 
-          if ((m1 != null || m2 != null) && direction != '' && mark != null
+          if ((m1 != null || m2 != null)  && mark != null //&& direction != ''
             && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
             const tmp = {
