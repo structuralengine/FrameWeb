@@ -37,6 +37,12 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.node_dataset = new Array();
+    this.node_page = new Array();
   }
 
   ngOnInit(): void {
@@ -73,7 +79,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
         for (let i = 0; i < this.bottomCell; i++) {
           const line = ["", "", "", "", "", "", "", ""];
 
-          const j = page * this.bottomCell * 2 + i;
+          const j = page * this.bottomCell * 2 + i + 1;
           const s = j + 1;
 
           if (s > keys.length) {
@@ -144,7 +150,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     const lastArrayCount = lastArray.length;
 
     //全部の行数を取得している。
-    this.countTotal = keys.length ;
+    this.countTotal = keys.length;
 
     return { page, splid, this: this.countTotal, last: lastArrayCount };
   }

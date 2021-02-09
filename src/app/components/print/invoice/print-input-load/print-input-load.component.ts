@@ -42,6 +42,17 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.load_title = new Array();
+    this.load_member = new Array();
+    this.load_node = new Array();
+    this.load_data = new Array();
+    this.load_break = new Array();
+    this.load_typeNum = new Array();
+    this.load_titleArray = new Array();
   }
 
   ngOnInit(): void {
@@ -141,18 +152,18 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     let ploadCount: number = 0;
     let splidTypeCount: number = 0;
 
-    let mload: any = [];
-    let pload: any = [];
-    const splidDataTotal: any = [];
+    let mload: any[] = new Array();
+    let pload: any[] = new Array();
+    const splidDataTotal: any[] = new Array();
 
     lenlenMember = 0;
 
     for (const index of keys) {
-      const splidData_member: any = [];
-      const splidData_node: any = [];
-      const splidData_part: any = [];
-      const memberTable: any = [];
-      const nodeTable: any = [];
+      const splidData_member: any[] = new Array();
+      const splidData_node: any[] = new Array();
+      const splidData_part: any[] = new Array();
+      const memberTable: any[] = new Array();
+      const nodeTable: any[] = new Array();
       let splidDataCount_member: number = 0;
       let splidDataCount_node: number = 0;
 
