@@ -71,6 +71,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
         if (s > keys.length) {
           break_flg = false;
+          this.countHead = page;
           break;
         }
 
@@ -97,7 +98,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
     const lastArrayCount = lastArray.length;
 
     //全部の行数を取得している。
-    this.countTotal = keys.length;
+    this.countTotal = keys.length + this.countHead;
 
     return { page, splid, this: this.countTotal, last: lastArrayCount };
   }

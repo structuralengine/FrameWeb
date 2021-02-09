@@ -13,6 +13,17 @@ import { DataCountService } from "../dataCount.service";
   ],
 })
 export class PrintInputElementsComponent implements OnInit, AfterViewInit {
+  page: number;
+  load_name: string;
+  collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number = 3;
+  btnPickup: string;
+  tableHeight: number;
+  invoiceIds: string[];
+  invoiceDetails: Promise<any>[];
+
   public elements_table = [];
   public elements_break = [];
   public elements_typeNum = [];
@@ -54,7 +65,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
       countCell += Object.keys(elist).length + 1;
     }
     const countHead = keys.length * 2;
-    const countTotal = countCell + countHead + 2;
+    const countTotal = countCell + countHead + 3;
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
@@ -81,7 +92,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     // テーブル
     const splid: any = [];
     const title: string[] = new Array();
-    let row:number = 7;
+    let row: number = 7;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
       const table: any = []; // この時点でリセット、再定義 一旦空にする

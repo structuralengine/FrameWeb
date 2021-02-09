@@ -18,7 +18,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number = 2;
+  countTotal: number = 3;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -65,7 +65,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
       countCell += Object.keys(elist).length + 1;
     }
     const countHead = keys.length * 2;
-    const countTotal = countCell + countHead;
+    const countTotal = countCell + countHead + 3;
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();

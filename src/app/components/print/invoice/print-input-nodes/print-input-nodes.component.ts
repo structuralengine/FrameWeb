@@ -24,7 +24,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
-  bottomCell: number = 59;
+  bottomCell: number = 55;
 
   public node_dataset = [];
   public node_page = [];
@@ -50,10 +50,8 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       if (tables.page === 1) {
         this.headerShow = false;
       }
-      this.judge = this.countArea.setCurrentY(tables.this, 
-        tables.last
-        );
-    }else {
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
       this.countArea.setData(0);
     }
   }
@@ -80,6 +78,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
 
           if (s > keys.length) {
             break_flg = false;
+            // this.countHead = page;
             break;
           }
           const index1: string = keys[j];
@@ -145,7 +144,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     const lastArrayCount = lastArray.length;
 
     //全部の行数を取得している。
-    this.countTotal = keys.length;
+    this.countTotal = keys.length ;
 
     return { page, splid, this: this.countTotal, last: lastArrayCount };
   }
