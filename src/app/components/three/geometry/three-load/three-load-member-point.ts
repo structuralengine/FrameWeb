@@ -50,9 +50,6 @@ export class ThreeLoadMemberPoint {
     const offset: number = 0;
     const height: number = 1;
 
-    // 線の色を決める
-    const my_color = this.getColor(direction);
-
     const child = new THREE.Group();
 
     // 長さを決める
@@ -61,16 +58,15 @@ export class ThreeLoadMemberPoint {
 
     const points: THREE.Vector3[] = p.points;
     const L1 = p.L1;
-    const L  = p.L;
     const L2 = p.L2;
 
     // 矢印
-    for(const arrow of this.getArrow(direction, my_color, points)){
+    for (const arrow of this.getArrow(direction, [P1, P2], [L1, L2])) {
       child.add(arrow);
     }
 
     // 寸法線
-    child.add(this.getDim(points, L1, L, L2));
+    child.add(this.getDim(points, L1, L2));
 
     // 全体
     child.name = "child";
@@ -79,11 +75,6 @@ export class ThreeLoadMemberPoint {
     const group0 = new THREE.Group();
     group0.add(child);
     group0.name = "group";
-
-    // 文字を追加する
-    for(const text of this.getText(points, P1, P2)){
-      group0.add(text);
-    }
 
     // 全体の位置を修正する
     const group = new THREE.Group();
@@ -121,15 +112,6 @@ export class ThreeLoadMemberPoint {
     return group;
   }
 
-  private getColor(direction: string): number {
-    let my_color = 0xff0000;
-    if (direction === "y" || direction === "gy") {
-      my_color = 0x00ff00;
-    } else if (direction === "z" || direction === "gz") {
-      my_color = 0x0000ff;
-    }
-    return my_color;
-  }
 
   // 座標
   private getPoints(
@@ -157,46 +139,28 @@ export class ThreeLoadMemberPoint {
     }
     const L1 = pL1 * len / LL;
     const L2 = pL2 * len / LL;
-    const L: number = len - L1 - L2;
-
-    // 荷重原点
-    let y0 = 0;
-    // 絶対座標系における荷重原点
-    if (direction === "gx") {
-      const xHeight = Math.abs(nodei.x - nodej.x);
-      y0 = xHeight  * (L / len) * (LL / len);
-    } else if (direction === "gy") {
-      const yHeight = Math.abs(nodei.y - nodej.y);
-      y0 = yHeight  * (L / len) * (LL / len);
-    } else if (direction === "gz") {
-      const zHeight = Math.abs(nodei.z - nodej.z);
-      y0 = zHeight  * (L / len) * (LL / len);
-    }
 
     // 荷重の各座標
-    let x1 = L1;
-    let x3 = L1 + L;
+    const x1 = L1;
+    const x2 = L2;
 
     // y座標 値の大きい方が１となる
     const Pmax = (Math.abs(P1) > Math.abs(P2)) ? P1 : P2;
 
-    let bigP = Math.abs(Pmax);
-    let y1 = (P1 / bigP) * height + y0;
-    let y3 = (P2 / bigP) * height + y0;
+    const bigP = Math.abs(Pmax);
+    let y1 = (P1 / bigP) * height;
+    let y2 = (P2 / bigP) * height;
     if (direction === "x") {
-      y1 = (height / 10) + y0;
-      y3 = (height / 10) + y0;
+      y1 = (height / 10);
+      y2 = (height / 10);
     }
 
     return {
       points:[
-        new THREE.Vector3(x1, y0, 0),
         new THREE.Vector3(x1, y1, 0),
-        new THREE.Vector3(x3, y3, 0),
-        new THREE.Vector3(x3, y0, 0),
+        new THREE.Vector3(x2, y2, 0),
       ],
       L1,
-      L,
       L2,
       Pmax
     };
@@ -204,73 +168,66 @@ export class ThreeLoadMemberPoint {
 
 
   // 両端の矢印
-  private getArrow(direction: string,
-                    my_color: number,
-                    points: THREE.Vector3[]): THREE.ArrowHelper[] {
+  private getArrow(
+    direction: string,
+    value: number[],
+    points: number[]): THREE.Group[] {
 
-      const p1 = new THREE.Vector3(points[0].x, points[1].y, 0);
-      this.point.create(p1, 0, P1, 1, "")
+    const result: THREE.Group[] = new Array();
 
-      const dir = new THREE.Vector3(0, -1, 0); // 矢印の方向（単位ベクトル）
-      const length = 1; // 長さ
+    const key: string = 't' + direction;
 
-      const child: THREE.ArrowHelper[] = new Array();
+    for (let i = 0; i < 2; i++) {
 
-      const origin1 = new THREE.Vector3(0, 1, 0);
-      const arrow1 = new THREE.ArrowHelper(dir, origin1, length, my_color);
-      arrow1.position.x = points[0].x;
-      const y1 = points[1].y;
-      arrow1.position.y = y1;
-      arrow1.scale.set(y1, y1, y1);
-      arrow1.name = "arrow1";
-      child.push(arrow1);
-
-      const origin2 = new THREE.Vector3(1, 1, 0);
-      const arrow2 = new THREE.ArrowHelper(dir, origin2, length, my_color);
-      arrow2.position.x = points[2].x;
-      const y3 = points[2].y;
-      arrow2.position.y = y3;
-      arrow2.scale.set(y3, y3, y3);
-      arrow2.name = "arrow2";
-      child.push(arrow2);
-
-      if (direction === "x") {
-        child.forEach(arrow => {
-          arrow.position.x -= arrow.scale.x;
-          arrow.rotateZ(-Math.PI / 2);
-        });
+      const Px = value[i];
+      if (Px === 0) {
+        continue;
       }
 
-      return child;
+      const pos1 = new THREE.Vector3(points[i], 0, 0);
+      if (direction === 'x') {
+        pos1.y = 0.1;
+      }
+
+      const arrow_1 = this.point.create(pos1, 0, Px, 1, key)
+
+      if (direction === 'y') {
+        arrow_1.rotation.z += Math.PI;
+      } else if (direction === 'z') {
+        arrow_1.rotation.x += Math.PI / 2;
+      }
+
+      result.push(arrow_1);
+    }
+
+    return result;
 
   }
 
 
   // 寸法線
   private getDim(points: THREE.Vector3[],
-                L1: number, L: number, L2: number): THREE.Group {
+                L1: number, L2: number): THREE.Group {
 
     const dim = new THREE.Group();
 
     let dim1: THREE.Group;
-    let dim2: THREE.Group;
     let dim3: THREE.Group;
 
     const size: number = 0.1; // 文字サイズ
 
-    const y1a = Math.abs(points[1].y);
-    const y3a = Math.abs(points[3].y);
+    const y1a = Math.abs(points[0].y);
+    const y3a = Math.abs(points[1].y);
     const y4a = Math.max(y1a, y3a) + (size * 10);
-    const a = (y1a > y3a) ? Math.sign(points[1].y) : Math.sign(points[3].y);
+    const a = (y1a > y3a) ? Math.sign(points[0].y) : Math.sign(points[1].y);
     const y4 = a * y4a;
 
     if(L1 > 0){
-      const x0 = points[1].x - L1;
       const p = [
-        new THREE.Vector2(x0, 0),
-        new THREE.Vector2(x0, y4),
-        new THREE.Vector2(points[1].x, y4),
-        new THREE.Vector2(points[1].x, points[1].y),
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(0, y4),
+        new THREE.Vector2(L1, y4),
+        new THREE.Vector2(L1, points[0].y),
       ];
       dim1 = this.dim.create(p, L1.toFixed(3))
       dim1.visible = true;
@@ -278,24 +235,12 @@ export class ThreeLoadMemberPoint {
       dim.add(dim1);
     }
 
-    const p = [
-      new THREE.Vector2(points[1].x, points[1].y),
-      new THREE.Vector2(points[1].x, y4),
-      new THREE.Vector2(points[3].x, y4),
-      new THREE.Vector2(points[3].x, points[3].y),
-    ];
-    dim2 = this.dim.create(p, L.toFixed(3))
-    dim2.visible = true;
-    dim2.name = "Dimension2";
-    dim.add(dim2);
-
     if(L2 > 0){
-      const x4 = points[3].x + L2;
       const p = [
-        new THREE.Vector2(points[3].x, points[3].y),
-        new THREE.Vector2(points[3].x, y4),
-        new THREE.Vector2(x4, y4),
-        new THREE.Vector2(x4, 0),
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(0, y4),
+        new THREE.Vector2(L2, y4),
+        new THREE.Vector2(L2, points[0].y),
       ];
       dim3 = this.dim.create(p, L2.toFixed(3))
       dim3.visible = true;
@@ -307,51 +252,6 @@ export class ThreeLoadMemberPoint {
     dim.name = "Dimension";
 
     return dim;
-  }
-
-  // 文字
-  private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
-
-    const result = [];
-
-    const size: number = 0.1; // 文字サイズ
-
-    const pos = new THREE.Vector2(0, 0);
-    if(P1 !== 0) {
-      let text: THREE.Group;
-      if (P1 > 0){
-        text = this.text.create(P1.toFixed(2), pos, size, 'left', 'bottom');
-        text.rotateZ(Math.PI/2);
-        text.position.x = points[1].x;
-        text.position.y = points[1].y;
-      } else {
-        text = this.text.create(P1.toFixed(2), pos, size, 'right', 'bottom');
-        text.rotateZ(-Math.PI/2);
-        text.position.x = points[1].x;
-        text.position.y = points[1].y;
-      }
-      text.name = "text1";
-      result.push(text);
-    }
-
-    if(P2 !== 0) {
-      let text: THREE.Group;
-      if (P2 > 0){
-        text = this.text.create(P2.toFixed(2), pos, size, 'left', 'top');
-        text.rotateZ(Math.PI/2);
-        text.position.x = points[2].x;
-        text.position.y = points[2].y;
-      } else {
-        text = this.text.create(P2.toFixed(2), pos, size, 'right', 'top');
-        text.rotateZ(-Math.PI/2);
-        text.position.x = points[2].x;
-        text.position.y = points[2].y;
-      }
-      text.name = "text2";
-      result.push(text);
-    }
-
-    return result;
   }
 
 
