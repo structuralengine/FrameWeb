@@ -14,6 +14,17 @@ import { Data } from "@angular/router";
   ],
 })
 export class PrintInputJointComponent implements OnInit, AfterViewInit {
+  page: number;
+  load_name: string;
+  collectionSize: number;
+  countCell: number;
+  countHead: number;
+  countTotal: number = 3;
+  btnPickup: string;
+  tableHeight: number;
+  invoiceIds: string[];
+  invoiceDetails: Promise<any>[];
+
   public joint_table = [];
   public joint_break = [];
   public joint_typeNum = [];
@@ -55,25 +66,16 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
     const json: {} = inputJson["joint"]; // inputJsonからjointだけ取り出す
     const keys: string[] = Object.keys(json);
 
-    // 全体の高さを計算する
-    let countCell = 0;
-    for (const index of keys) {
-      const elist = json[index]; // 1テーブル分のデータを取り出す
-      countCell += Object.keys(elist).length + 1;
-    }
-    const countHead = keys.length * 2;
-    const countTotal = countCell + countHead;
-
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
-    let ROW = 7;
-    for (const index of keys) {
-      ROW += 2; // 行
+    let ROW = 5;
+     for (const index of keys) {
+      ROW += 4; // 行
       const elist = json[index]; // 1テーブル分のデータを取り出す
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
-      if (ROW < 59) {
+      if (ROW < 54) {
         break_after.push(false);
       } else {
         if (index === "1") {
@@ -96,7 +98,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
 
       title.push(index.toString());
 
-      let body: any[] = new Array;
+      let body: any[] = new Array();
 
       for (const key of Object.keys(elist)) {
         const item = elist[key];
@@ -113,7 +115,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
         row++;
 
         //１テーブルで59行以上データがあるならば
-        if (row > 59) {
+        if (row > 54) {
           table.push(body);
           body = [];
           row = 2;
@@ -127,8 +129,26 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
     }
 
     //最後のページの行数だけ取得している
-    const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+    // const lastArray = splid.slice(-1)[0];
+    // const lastArrayCount = lastArray.length;
+
+     // 全体の高さを計算する
+     let countCell = 0;
+     for (const index of keys) {
+       const elist = json[index]; // 1テーブル分のデータを取り出す
+       countCell += Object.keys(elist).length + 1;
+     }
+     const countHead = keys.length * 2;
+     const countSemiHead = splid.length * 2 ;
+     const countTotal = countCell + countHead + countSemiHead;
+     
+     //最後のページの行数だけ取得している
+     let lastArrayCount = countTotal % 54;
+     if(lastArrayCount === 0){
+       lastArrayCount = 54;
+     }else { 
+      lastArrayCount = countTotal % 54;
+     }
 
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]

@@ -80,9 +80,9 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
-    let ROW = 7;
+    let ROW = 5;
     for (const index of keys) {
-      ROW += 2; // 行
+      ROW += 4; // 行
       const elist = json[index]; // 1テーブル分のデータを取り出す
       const countCell = Object.keys(elist).length;
       ROW += countCell;
