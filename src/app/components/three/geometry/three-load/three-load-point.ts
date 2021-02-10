@@ -22,7 +22,7 @@ export class ThreeLoadPoint {
   // length: 表示上の長さ,
   // direction: 荷重の向き(tx, ty, tz)
   public create(
-    node: any,
+    position: any,
     offset: number,
     value: number,
     length: number,
@@ -92,7 +92,7 @@ export class ThreeLoadPoint {
     }
 
     // 位置を修正する
-    group.position.set(node.x, node.y, node.z);
+    group.position.set(position.x, position.y, position.z);
 
     return group;
   }

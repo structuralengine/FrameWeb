@@ -364,6 +364,7 @@ export class ThreeLoadDistribute {
       item.position.y = offset;
     }
   }
+
   public setGlobalOffset(group: THREE.Group, offset: number, key: string): void {
     const k = key.replace('wg', '');
     for (const item of group.children) {
