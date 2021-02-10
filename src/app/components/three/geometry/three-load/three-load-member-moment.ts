@@ -4,24 +4,24 @@ import { Vector2 } from 'three';
 
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
-import { ThreeLoadPoint } from './three-load-point';
+import { ThreeLoadMoment } from './three-load-moment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ThreeLoadMemberPoint {
+export class ThreeLoadMemberMoment {
 
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
-  private point: ThreeLoadPoint;
+  private moment: ThreeLoadMoment;
 
   constructor(
     text: ThreeLoadText,
     dim: ThreeLoadDimension,
-    point: ThreeLoadPoint) {
-    this.text = text;
-    this.dim = dim;
-    this.point = point;
+    moment: ThreeLoadMoment) {
+      this.text = text;
+      this.dim = dim;
+      this.moment = moment;
   }
 
   /// 部材途中集中荷重を編集する
@@ -190,7 +190,7 @@ export class ThreeLoadMemberPoint {
         pos1.y = 0.1;
       }
 
-      const arrow_1 = this.point.create(pos1, 0, Px, 1, key)
+      const arrow_1 = this.moment.create(pos1, 0, Px, 1, key)
 
       if (direction === 'y') {
         arrow_1.rotation.z += Math.PI;

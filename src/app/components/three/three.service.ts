@@ -10,7 +10,7 @@ import { ThreeMembersService } from './geometry/three-members.service';
 import { ThreeFixNodeService } from './geometry/three-fix-node.service';
 import { ThreeFixMemberService } from './geometry/three-fix-member.service';
 import { ThreeJointService } from './geometry/three-joint.service';
-import { ThreeLoadService } from './geometry/three-load.service';
+import { ThreeLoadService } from './geometry/three-load/three-load.service';
 
 import { ThreeDisplacementService } from './geometry/three-displacement.service';
 import { ThreeSectionForceService } from './geometry/three-section-force.service';
@@ -420,7 +420,8 @@ export class ThreeService {
         break;
 
       case 'load_values':
-        this.member.detectObject(raycaster, action);
+        this.load.detectObject(raycaster, action);
+        // this.member.detectObject(raycaster, action);
         break;
 
       case 'load_names':

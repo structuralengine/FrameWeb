@@ -1,28 +1,30 @@
 import { Injectable } from "@angular/core";
-import { SceneService } from "../scene.service";
-import { InputNodesService } from "../../input/input-nodes/input-nodes.service";
-import { InputMembersService } from "../../input/input-members/input-members.service";
-import { InputLoadService } from "../../input/input-load/input-load.service";
-import { ThreeNodesService } from "./three-nodes.service";
+import { SceneService } from "../../scene.service";
+import { InputNodesService } from "../../../input/input-nodes/input-nodes.service";
+import { InputMembersService } from "../../../input/input-members/input-members.service";
+import { InputLoadService } from "../../../input/input-load/input-load.service";
+import { ThreeNodesService } from "../three-nodes.service";
 
 import * as THREE from "three";
-import { ThreeMembersService } from "./three-members.service";
+import { ThreeMembersService } from "../three-members.service";
 
-import { ThreeLoadText } from "./three-load/three-load-text";
-import { ThreeLoadDimension } from "./three-load/three-load-dimension";
-import { ThreeLoadPoint } from "./three-load/three-load-point";
-import { ThreeLoadDistribute } from "./three-load/three-load-distribute";
-import { ThreeLoadAxial } from "./three-load/three-load-axial";
-import { ThreeLoadTorsion } from "./three-load/three-load-torsion";
-import { ThreeLoadMoment } from "./three-load/three-load-moment";
-import { ThreeLoadTemperature } from "./three-load/three-load-temperature";
-import { ThreeLoadMemberPoint } from "./three-load/three-load-member-point";
+import { ThreeLoadText } from "./three-load-text";
+import { ThreeLoadDimension } from "./three-load-dimension";
+import { ThreeLoadPoint } from "./three-load-point";
+import { ThreeLoadDistribute } from "./three-load-distribute";
+import { ThreeLoadAxial } from "./three-load-axial";
+import { ThreeLoadTorsion } from "./three-load-torsion";
+import { ThreeLoadMoment } from "./three-load-moment";
+import { ThreeLoadTemperature } from "./three-load-temperature";
+import { ThreeLoadMemberPoint } from "./three-load-member-point";
+import { ThreeLoadMemberMoment } from "./three-load-member-moment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ThreeLoadService {
   private isVisible = { object: false, gui: false };
+  private selectionItem: THREE.Object3D; // 選択中のアイテム
 
   // 全ケースの荷重を保存
   private AllCaseLoadList: {};
@@ -36,13 +38,14 @@ export class ThreeLoadService {
   private pointLoad: ThreeLoadPoint; // 節点荷重のテンプレート
   private momentLoad: ThreeLoadMoment; // 節点モーメントのテンプレート
   private memberPointLoad: ThreeLoadMemberPoint; // 部材の途中にある節点荷重のテンプレート
+  private memberMomentLoad: ThreeLoadMemberMoment; // 部材の途中にある節点モーメントのテンプレート
 
   // 大きさを調整するためのスケール
   private LoadScale: number;
   private params: any; // GUIの表示制御
   private gui: any;
 
-
+  // 初期化
   constructor(
     private scene: SceneService,
     private nodeThree: ThreeNodesService,
@@ -64,7 +67,10 @@ export class ThreeLoadService {
       this.torsionLoad = new ThreeLoadTorsion(text, dim, this.momentLoad); // ねじり分布荷重のテンプレート
       this.temperatureLoad = new ThreeLoadTemperature(text, dim); // 温度荷重のテンプレート
       this.memberPointLoad = new ThreeLoadMemberPoint(text, dim, this.pointLoad); // 部材の途中にある節点荷重のテンプレート
+      this.memberMomentLoad = new ThreeLoadMemberMoment(text, dim, this.momentLoad); // 部材の途中にある節点モーメントのテンプレート
     });
+    this.AllCaseLoadList = {};
+    this.currentIndex = null;
 
     // gui
     this.LoadScale = 100;
@@ -72,9 +78,6 @@ export class ThreeLoadService {
       LoadScale: this.LoadScale,
     };
     this.gui = {};
-
-    this.AllCaseLoadList = {};
-    this.currentIndex = null;
   }
 
   // 荷重を再設定する
@@ -89,7 +92,7 @@ export class ThreeLoadService {
 
   }
 
-  // ファイルを読み込むなど、再セットする
+  // ファイルを読み込むなど、りセットする
   public ResetData(): void {
 
     this.ClearData();
@@ -608,8 +611,6 @@ export class ThreeLoadService {
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2);
         }
-
-
       } else if (load.mark === 9) {
         // 温度荷重
         arrow = this.temperatureLoad.create(
@@ -622,6 +623,14 @@ export class ThreeLoadService {
           arrow = this.memberPointLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2);
+        }
+      } else if (load.mark === 11) {
+        // モーメント荷重
+        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0 ){
+          arrow = this.memberMomentLoad.create(
+            nodei, nodej, localAxis,
+            direction, load.L1, load.L2, P1, P2);
+          direction = 'r';
         }
       }
 
@@ -639,7 +648,6 @@ export class ThreeLoadService {
   }
 
   public visibleChange(flag: boolean, gui: boolean): void {
-    console.log("three load!", "visible", "pass");
 
     // 非表示にする
     if (flag === false) {
@@ -653,6 +661,19 @@ export class ThreeLoadService {
     if (gui === true) {
       this.guiEnable();
     } else {
+      // 黒に戻す
+      this.selectionItem = null;
+      /*
+      this.memberList.children.map((item) => {
+        // 元の色にする
+        const material = item['material'];
+        material["color"].setHex(0x000000);
+        material["opacity"] = 1.0;
+      });
+      this.axisList.map((item) => {
+        item.visible = false;
+      });
+      */
       this.guiDisable();
     }
     this.isVisible.gui = gui;
@@ -741,6 +762,9 @@ export class ThreeLoadService {
           } else if (item.name === "MemberPointLoad") {
             // 部材途中集中荷重
             this.memberPointLoad.setScale(item, scale);
+          } else if (item.name === "MemberMomentLoad") {
+            // 部材途中モーメント
+            this.memberMomentLoad.setScale(item, scale);
           }
         });
       }
@@ -797,10 +821,15 @@ export class ThreeLoadService {
       // ねじりモーメント
       let offset0 = 0;
       for (const item of list['r']){
-        // 大きさを変更する
-        const scale: number = 1 * Math.abs(item.value / loadList.rMax);
-        this.torsionLoad.setSize(item, scale);
-        offset0 += (scale * 0.5);
+        if (item.name === "MemberMomentLoad") {
+          const scale: number = 1 * Math.abs(item.value) / loadList.mMax;
+          this.memberMomentLoad.setSize(item, scale);
+        } else if (item.name === "TorsionLoad") {
+          // 大きさを変更する
+          const scale: number = 1 * Math.abs(item.value / loadList.rMax);
+          this.torsionLoad.setSize(item, scale);
+          offset0 += (scale * 0.5);
+        }
       }
 
       // 分布荷重（部材軸座標方向）
@@ -887,5 +916,87 @@ export class ThreeLoadService {
     }
 
   }
+
+
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(raycaster: THREE.Raycaster, action: string): void {
+    
+    if (!(this.currentIndex in this.AllCaseLoadList)) {
+      return; // 対象がなければ何もしない
+    }
+    const targetLoad = this.AllCaseLoadList[this.currentIndex];
+    const ThreeObject: THREE.Object3D = targetLoad.ThreeObject;
+
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(ThreeObject.children);
+    if ( intersects.length <= 0 ){
+      return;
+    }
+
+    switch (action) {
+      case "click":
+        ThreeObject.children.map((item) => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            /* 色を赤くする
+            const material = item['material'];
+            material["color"].setHex(0xff0000);
+            material["opacity"] = 1.0;
+            */
+          }
+        });
+        break;
+
+      case "select":
+        if (intersects.length > 0) {
+          this.selectionItem = null;
+          ThreeObject.children.map((item) => {
+            const material = item['material'];
+            if (item === intersects[0].object) {
+              /*/ 色を赤くする
+              material["color"].setHex(0xff0000);
+              material["opacity"] = 1.0;
+              this.selectionItem = item;
+              */
+            } else {
+              /*/ それ以外は元の色にする
+              material["color"].setHex(0x000000);
+              material["opacity"] = 1.0;
+              */
+            }
+          });
+        }
+        break;
+
+      case "hover":
+        ThreeObject.children.map((item) => {
+          const material = item['material'];
+          if (intersects.length > 0 && item === intersects[0].object) {
+            /* 色を赤くする
+            material["color"].setHex(0xff0000);
+            material["opacity"] = 0.25;
+            */
+          } else {
+            if (item === this.selectionItem) {
+              /*
+              material["color"].setHex(0xff0000);
+              material["opacity"] = 1.0;
+              */
+            } else {
+              /* それ以外は元の色にする
+              material["color"].setHex(0x000000);
+              material["opacity"] = 1.0;
+              */
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
+    }
+    this.scene.render();
+  }
+
+
 
 }
