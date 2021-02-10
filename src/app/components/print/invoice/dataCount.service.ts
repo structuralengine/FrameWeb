@@ -41,7 +41,7 @@ export class DataCountService {
   //全部の行の行数を管理している
   setCurrentY(tableHeight: number, lastHeight: number): boolean {
     this.currentY += tableHeight;
-    if (this.currentY > 59 /*行*/) {
+    if (this.currentY > 54 /*行*/) {
       this.currentY = lastHeight;
       return true;
     } else {

@@ -18,7 +18,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number = 2;
+  countTotal: number = 3;
   fixNode_countArea: number;
   btnPickup: string;
   tableHeight: number;
@@ -73,7 +73,10 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       countCell += Object.keys(elist).length + 1;
     }
     const countHead = keys.length * 2;
-    const countTotal = countCell + countHead;
+    const countTotal = countCell + countHead + 3;
+
+     //最後のページの行数だけ取得している
+     const lastArrayCount = countTotal % 54;
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
@@ -84,7 +87,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
-      if (ROW < 59) {
+      if (ROW < 54) {
         break_after.push(false);
       } else {
         if (index === "1") {
@@ -124,7 +127,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
         row++;
 
         //１テーブルで59行以上データがあるならば
-        if (row > 59) {
+        if (row > 54) {
           table.push(body);
           body = [];
           row = 2;
@@ -137,9 +140,6 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
 
       splid.push(table);
     }
-
-    const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
 
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]

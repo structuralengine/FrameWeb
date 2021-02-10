@@ -75,6 +75,9 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     const countHead = keys.length * 2;
     const countTotal = countCell + countHead + 3;
 
+    //最後のページの行数だけ取得している
+    const lastArrayCount = countTotal % 54;
+
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
     let ROW = 7;
@@ -84,7 +87,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
-      if (ROW < 58) {
+      if (ROW < 54) {
         break_after.push(false);
       } else {
         if (index === "1") {
@@ -124,7 +127,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
         row++;
 
         //１テーブルで59行以上データがあるならば
-        if (row > 58) {
+        if (row > 54) {
           table.push(body);
           body = [];
           row = 2;
@@ -137,10 +140,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
       splid.push(table);
     }
 
-    //最後のページの行数だけ取得している
-    const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
-
+  
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
       title: title, // [タイプ１のタイトル, タイプ２のタイトル, ... ]

@@ -36,7 +36,6 @@ $height_content: 16px;
 .invoicetTable {
     h2 {
         height: $height_header;
-        margin-top: 16px;
         line-height: 32px;
         font-size: 16px;
         font-weight: 400;
@@ -51,6 +50,7 @@ $height_content: 16px;
     table {
         font-family: "ＭＳ 明朝";
         font-size: 16px;
+        margin-bottom: 16px;
         // page-break-after: auto;
         th {
             height: $height_content;

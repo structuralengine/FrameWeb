@@ -82,7 +82,7 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
 
     // テーブル
     const splid: any[] = new Array();
-    let row = 2; // タイトル行
+    let row:number = 6; // タイトル行
     for (const item of json) {
       //const item = json[index]; // 1行分のnodeデータを取り出す
       let line: string[] = new Array();
@@ -112,10 +112,10 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       }
 
       //１テーブルで59行以上  になったら
-      if (row > 59) {
+      if (row > 54) {
         splid.push(body);
         body = [];
-        row = 2;
+        row = 3;
       }
 
       row++;
