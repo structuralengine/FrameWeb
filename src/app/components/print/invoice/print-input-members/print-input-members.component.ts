@@ -33,6 +33,12 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.member_dataset = new Array();
+    this.member_page = new Array();
   }
 
   ngOnInit(): void {
@@ -43,17 +49,17 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
       this.member_dataset = tables.splid;
       this.member_page = tables.page;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-    }else {
+    } else {
       this.countArea.setData(1);
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   //要素データ member を印刷する
   private printMember(inputJson): any {
     let body: any = [];
-    const splid: any = [];
+    const splid: any[] = new Array();
     let page: number = 0;
     const json: {} = inputJson["member"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
@@ -71,6 +77,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
         if (s > keys.length) {
           break_flg = false;
+          this.countHead = page;
           break;
         }
 
@@ -97,7 +104,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
     const lastArrayCount = lastArray.length;
 
     //全部の行数を取得している。
-    this.countTotal = keys.length;
+    this.countTotal = keys.length + this.countHead;
 
     return { page, splid, this: this.countTotal, last: lastArrayCount };
   }

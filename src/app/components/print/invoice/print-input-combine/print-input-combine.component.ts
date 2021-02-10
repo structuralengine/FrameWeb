@@ -35,6 +35,13 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.comb_tables = new Array();
+    this.comb_dataset = new Array();
+    this.comb_page = new Array();
   }
 
   ngOnInit(): void {
@@ -46,12 +53,12 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
       const tables = this.printCombine(combineJson);
       this.comb_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-    }else {
+    } else {
       this.countArea.setData(10);
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // COMBINEデータ  を印刷する
   private printCombine(json): any {

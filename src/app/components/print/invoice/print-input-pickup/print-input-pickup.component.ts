@@ -33,6 +33,11 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void{
+    this.pickup_dataset = new Array();
   }
 
   ngOnInit(): void {
@@ -56,7 +61,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
     const dataCount: number = Object.keys(json).length;
     const keys: string[] = Object.keys(json);
     let body: any = [];
-    const splid: any = [];
+    const splid: any []=new Array();
     let row: number;
 
     for (const index of keys) {
