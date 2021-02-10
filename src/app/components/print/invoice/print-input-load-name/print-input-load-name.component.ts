@@ -65,7 +65,7 @@ export class PrintInputLoadNameComponent implements OnInit {
 
   // 基本荷重データ load name を印刷する
   private printLoadName(json): any {
-    let body: any = [];
+    let body: any[] = new Array();
     const splid: any[] = new Array();
     let page: number = 0;
     const keys: string[] = Object.keys(json);

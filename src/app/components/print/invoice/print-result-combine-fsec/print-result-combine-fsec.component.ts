@@ -21,11 +21,8 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   row: number = 0;
   key: string;
 
-  public combFsec_datase = [];
   public combFsec_dataset = [];
   public combFsec_title = [];
-  public combFsec_type = [];
-
   public combFsec_case_break = [];
   public combFsec_type_break = [];
 
@@ -36,21 +33,27 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
-    this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.combFsec_dataset    = new Array();
+    this.combFsec_title      = new Array();
+    this.combFsec_case_break = new Array();
+    this.combFsec_type_break = new Array();
   }
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combfsec.fsecCombine;
     if (this.ResultData.combfsec.fsecCombine.length > 0) {
-    const tables = this.printCombForce(resultjson);
-    this.combFsec_dataset = tables.splid;
-    this.combFsec_title = tables.titleSum;
-    // this.combFsec_type = tables.typeSum;
-    this.combFsec_case_break = tables.break_after_case;
-    this.combFsec_type_break = tables.break_after_type;
-    this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-    }else{
+      const tables = this.printCombForce(resultjson);
+      this.combFsec_dataset = tables.splid;
+      this.combFsec_title = tables.titleSum;
+      this.combFsec_case_break = tables.break_after_case;
+      this.combFsec_type_break = tables.break_after_type;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
       this.countArea.setData(19);
     }
   }
@@ -59,9 +62,9 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
 
   // 変位量データを印刷する
   private printCombForce(json): any {
-    const titleSum: any = [];
+    const titleSum: any[] = new Array();
     const body: any[] = new Array();
-    const typeSum: any = [];
+    const typeSum: any [] = new Array();
 
     const KEYS = [
       "fx_max",
@@ -151,17 +154,17 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     }
 
     //　テーブル
-    const splid: any = [];
-    let table1: any = [];
-    let table2: any = [];
-    let table3: any = [];
-    let table4: any = [];
+    const splid:  any[] = new Array();
+    let   table1: any[] = new Array();
+    let   table2: any[] = new Array();
+    let   table3: any[] = new Array();
+    let   table4: any[] = new Array();
     this.row = 0;
-    
+
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
 
-      const typeName: any = [];
+      const typeName: any[] = new Array();
 
       // 荷重名称
       const title: any = [];
@@ -183,8 +186,8 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
 
       //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
-      let table: any = [];
-      let type: any = [];
+      let table: any[] = new Array();
+      let type:  any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
         table3.push(this.key);
@@ -255,53 +258,3 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     };
   }
 }
-
-//     for (const index of Object.keys(json)) {
-//       const typeName: any = [];
-//       // 荷重名称
-//       const title: any = [];
-//       let loadName: string = "";
-//       //const l: any = this.InputData.load.getLoadNameJson(null, index);
-//       const combineJson: any = this.InputData.combine.getCombineJson();
-//       if (index in combineJson) {
-//         if ("name" in combineJson[index]) {
-//           loadName = combineJson[index].name;
-//           title.push(["Case" + index, loadName]);
-//         } else {
-//           title.push(["Case" + index]);
-//         }
-//       }
-//       titleSum.push(title);
-
-//       const table1: any = [];
-//       for (let i = 0; i < KEYS.length; i++) {
-//         const key: string = KEYS[i];
-//         const elieli = json[index]; // 1行分のnodeデータを取り出す
-//         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
-//         const table: any = [];
-
-//         for (const k of Object.keys(elist)) {
-//           const item = elist[k];
-//           // 印刷する1行分のリストを作る
-//           const line: string[] = new Array();
-//           line.push(item.m);
-//           line.push(item.n);
-//           line.push(item.l.toFixed(3));
-//           line.push(item.fx.toFixed(2));
-//           line.push(item.fy.toFixed(2));
-//           line.push(item.fz.toFixed(2));
-//           line.push(item.mx.toFixed(2));
-//           line.push(item.my.toFixed(2));
-//           line.push(item.mz.toFixed(2));
-//           line.push(item.case);
-//           table.push(line);
-//         }
-//         typeName.push(key);
-//         table1.push(table);
-//       }
-//       body.push(table1);
-//       typeSum.push(typeName);
-//     }
-//     return { titleSum, body, typeSum };
-//   }
-// }

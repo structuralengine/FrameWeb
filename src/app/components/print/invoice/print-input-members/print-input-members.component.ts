@@ -58,7 +58,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
   //要素データ member を印刷する
   private printMember(inputJson): any {
-    let body: any = [];
+    let body: any[] = new Array();
     const splid: any[] = new Array();
     let page: number = 0;
     const json: {} = inputJson["member"]; // inputJsonからnodeだけを取り出す
@@ -67,17 +67,17 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
     let break_flg = true;
 
     while (break_flg) {
-      for (let i = 0; i < 55; i++) {
+      for (let i = 0; i < 50; i++) {
         const line = ["", "", "", "", "", ""];
         let index: string = keys[i];
         const item = json[index]; // 1行分のnodeデータを取り出す
         const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
-        const j = page * 55 + i + 1;
+        const j = page * 50 + i + 1;
         const s = j + 1;
 
         if (s > keys.length) {
           break_flg = false;
-          this.countHead = page;
+          this.countHead = page * 2;
           break;
         }
 

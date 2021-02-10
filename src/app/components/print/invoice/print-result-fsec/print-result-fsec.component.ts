@@ -1,14 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { InputDataService } from '../../../../providers/input-data.service';
-import { ResultDataService } from '../../../../providers/result-data.service';
-import { AfterViewInit } from '@angular/core';
-import { JsonpClientBackend } from '@angular/common/http';
+import { Component, OnInit } from "@angular/core";
+import { InputDataService } from "../../../../providers/input-data.service";
+import { ResultDataService } from "../../../../providers/result-data.service";
+import { AfterViewInit } from "@angular/core";
+import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 
 @Component({
-  selector: 'app-print-result-fsec',
-  templateUrl: './print-result-fsec.component.html',
-  styleUrls: ['../../../../app.component.scss', '../invoice.component.scss', '../invoice.component.scss']
+  selector: "app-print-result-fsec",
+  templateUrl: "./print-result-fsec.component.html",
+  styleUrls: [
+    "../../../../app.component.scss",
+    "../invoice.component.scss",
+    "../invoice.component.scss",
+  ],
 })
 export class PrintResultFsecComponent implements OnInit, AfterViewInit {
   page: number;
@@ -30,7 +34,13 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
-    this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.fsec_table   = new Array();
+    this.fsec_break   = new Array();
+    this.fsec_typeNum = new Array();
   }
 
   ngOnInit(): void {
@@ -43,8 +53,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
     this.judge = this.countArea.setCurrentY(tables.this, tables.last);
   }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   // 断面力データを印刷する
   private printForce(json): any {
@@ -82,7 +91,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const titleSum: string[] = new Array();
     let row: number = 0;
     for (const index of keys) {
@@ -92,7 +101,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
         row = 2;
       }
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      const table: any = []; // この時点でリセット、再定義 一旦空にする
+      const table: any[] = new Array(); // この時点でリセット、再定義 一旦空にする
 
       // 荷重名称
       const title: any = [];
@@ -104,7 +113,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
       }
       titleSum.push(title);
 
-      let body: any = [];
+      let body: any[] = new Array();
 
       for (const key of Object.keys(elist)) {
         const item = elist[key];
@@ -112,7 +121,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
         const line = ["", "", "", "", "", "", "", ""];
         line[0] = item.m;
         line[1] = item.n;
-        line[2] = item.l .toFixed(3);
+        line[2] = item.l.toFixed(3);
         line[3] = item.fx.toFixed(2);
         line[4] = item.fy.toFixed(2);
         line[5] = item.fz.toFixed(2);
@@ -149,5 +158,3 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
     };
   }
 }
-
-

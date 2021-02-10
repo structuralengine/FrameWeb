@@ -60,7 +60,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
     const keys: string[] = Object.keys(json);
-    let body: any = [];
+    let body: any [] = new Array();
     const splid: any []=new Array();
     let row: number;
 

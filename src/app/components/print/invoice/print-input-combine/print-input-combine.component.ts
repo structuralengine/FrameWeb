@@ -62,35 +62,12 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
 
   // COMBINEデータ  を印刷する
   private printCombine(json): any {
-    let body: any = [];
+    let body: any [] = new Array();
     let page: number = 0;
-    // const temp =  this.InputData.combine.getCombineJson();// inputJsonからnodeだけを取り出す
-    // const json1 = {};
-    // let i = 1;
-
-    // while (json1.length < Object.keys(json).length) {
-    //   const item = temp.find((element) => element["row"] === i);
-    //   if (item !== undefined) {
-    //     json1.push(item);
-    //   }
-    //   i++;
-    // }
-
-    // テストコード
-    // for(let i = 3; i < 10; i++){
-    //   const temp = json['1'];
-    //   const key = i.toString();
-    //   temp['row'] =i
-    //   for(let j = 1; j < i; j++){
-    //     const Ckey = 'C' + key;
-    //     temp[ Ckey] = j
-    //   }
-    //   json[key] = temp;
-    // }
-
+    
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
-    const splid: any = [];
+    const splid: any[] = new Array();
     let row: number;
 
     for (const index of Object.keys(json)) {

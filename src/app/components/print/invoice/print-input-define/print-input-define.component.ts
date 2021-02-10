@@ -33,6 +33,7 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    countArea.dataExists[9] = true;
     this.clear();
   }
 
@@ -61,12 +62,12 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
 
     const dataCount: number = Object.keys(json).length;
     let row: number;
-    let body: any = [];
+    let body: any[] = new Array();
 
     // 全部の行数を取得している
     this.countTotal = dataCount;
 
-    const splid: any = [];
+    const splid: any[] = new Array();
     for (const index of Object.keys(json)) {
       if (index === "1") {
         row = 3;
@@ -79,7 +80,7 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
       let line: string[] = new Array();
       line.push(index); // DefineNo
       let counter: number = 0;
-      const table: any = [];
+
       for (const key of Object.keys(item)) {
         //  if (key === 'row') { continue; }
         line.push(item[key]);

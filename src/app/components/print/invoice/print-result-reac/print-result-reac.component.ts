@@ -19,8 +19,8 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
 
-  public reac_table = [];
-  public reac_break = [];
+  public reac_table   = [];
+  public reac_break   = [];
   public reac_typeNum = [];
 
   public judge: boolean;
@@ -30,8 +30,14 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
-    this.judge = false;
+    this.clear();
   }
+
+  public clear(): void {
+   this.reac_table    = new Array();
+   this.reac_break   = new Array();
+   this.reac_typeNum = new Array();
+  } 
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.reac.getDisgJson();
@@ -80,7 +86,7 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const titleSum: string[] = new Array();
     let row: number = 0;
     for (const index of keys) {
@@ -90,7 +96,7 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
         row = 2;
       }
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      const table: any = []; // この時点でリセット、再定義 一旦空にする
+      const table: any[] = new Array(); // この時点でリセット、再定義 一旦空にする
 
       // 荷重名称
       const title: any = [];
@@ -102,7 +108,7 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
       }
       titleSum.push(title);
 
-      let body: any = [];
+      let body: any[] = new Array();
 
       for (const key of Object.keys(elist)) {
         const item = elist[key];

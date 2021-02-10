@@ -36,10 +36,11 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    // countArea.dataExists[5] = true;
     this.clear();
   }
 
-  public clear(): void{
+  public clear(): void {
     this.notice_dataset = new Array();
     this.notice_page = new Array();
   }
@@ -51,17 +52,17 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       const tables = this.printNoticepoints(inputJson); // {body, title}
       this.notice_dataset = tables.table;
       //this.notice_page = tables.page;
-      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-    } else {
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);}
+    else {
       this.countArea.setData(5);
-    }
+     }
   }
 
   ngAfterViewInit() {}
 
   // 着目点データ notice_points を印刷する
   private printNoticepoints(inputJson): any {
-    let body: any = [];
+    let body: any[] = new Array();
     let page: number = 0;
     const temp: [] = inputJson["notice_points"]; // inputJsonからnodeだけを取り出す
     const json = [];
@@ -80,8 +81,8 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
     this.countTotal = json.length;
 
     // テーブル
-    const splid: any  []=new Array();
-    let row = 2; // タイトル行
+    const splid: any[] = new Array();
+    let row:number = 6; // タイトル行
     for (const item of json) {
       //const item = json[index]; // 1行分のnodeデータを取り出す
       let line: string[] = new Array();
@@ -111,10 +112,10 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       }
 
       //１テーブルで59行以上  になったら
-      if (row > 59) {
+      if (row > 54) {
         splid.push(body);
         body = [];
-        row = 2;
+        row = 3;
       }
 
       row++;

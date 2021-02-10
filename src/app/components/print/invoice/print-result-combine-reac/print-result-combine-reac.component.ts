@@ -14,7 +14,7 @@ import { DataCountService } from "../dataCount.service";
     "../invoice.component.scss",
   ],
 })
-export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
+export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
@@ -25,11 +25,8 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
   row: number = 0;
   key: string;
 
-  public combReac_datase = [];
   public combReac_dataset = [];
   public combReac_title = [];
-  public combReac_type = [];
-
   public combReac_case_break = [];
   public combReac_type_break = [];
 
@@ -40,32 +37,38 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
-    this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.combReac_dataset = new Array();
+    this.combReac_title = new Array();
+    this.combReac_case_break = new Array();
+    this.combReac_type_break = new Array();
   }
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combreac.reacCombine;
     if (this.ResultData.combdisg.disgCombine.length > 0) {
-    const tables = this.printCombReact(resultjson);
-    this.combReac_dataset = tables.splid;
-    this.combReac_title = tables.titleSum;
-    // this.combReac_type = tables.typeSum;
-    this.combReac_case_break = tables.break_after_case;
-    this.combReac_type_break = tables.break_after_type;
-    this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-  }else {
-    this.countArea.setData(16);
+      const tables = this.printCombReact(resultjson);
+      this.combReac_dataset = tables.splid;
+      this.combReac_title = tables.titleSum;
+      this.combReac_case_break = tables.break_after_case;
+      this.combReac_type_break = tables.break_after_type;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
+      this.countArea.setData(16);
+    }
   }
-}
 
   ngAfterViewInit() {}
 
   // 変位量データを印刷する
   private printCombReact(json): any {
-    const titleSum: any = [];
+    const titleSum: any[] = new Array();
     const body: any[] = new Array();
-    const typeSum: any = [];
+    const typeSum: any[] = new Array();
 
     const KEYS = [
       "tx_max",
@@ -160,20 +163,20 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
     }
 
     //　テーブル
-    const splid: any = [];
-    let table1: any = [];
-    let table2: any = [];
-    let table3: any = [];
-    let table4: any = [];
+    const splid:  any[] = new Array();
+    let   table1: any[] = new Array();
+    let   table2: any[] = new Array();
+    let   table3: any[] = new Array();
+    let   table4: any[] = new Array();
     //const titleSum: string[] = new Array();
     this.row = 0;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
 
-      const typeName: any = [];
+      const typeName: any[] = new Array();
 
       // 荷重名称
-      const title: any = [];
+      const title: any[] = new Array();
       let loadName: string = "";
       //const l: any = this.InputData.load.getLoadNameJson(null, index);
       const combineJson: any = this.InputData.combine.getCombineJson();
@@ -192,15 +195,15 @@ export class PrintResultCombineReacComponent implements OnInit , AfterViewInit {
 
       //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
-      let table: any = [];
-      let type: any = [];
+      let table: any[] = new Array();
+      let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
-        let body: any = [];
+        let body: any[] = new Array();
         if (i === 0) {
           this.row = 3;
         } else {

@@ -24,7 +24,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
-  bottomCell: number = 55;
+  bottomCell: number = 50;
 
   public node_dataset = [];
   public node_page = [];
@@ -67,7 +67,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
     // const minCount: number = 52; // これ以上なら２行書きとする
-    let body: any = [];
+    let body: any[] = new Array();
     const splid: any[] = new Array();
     let page: number = 0;
     const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
@@ -79,7 +79,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
         for (let i = 0; i < this.bottomCell; i++) {
           const line = ["", "", "", "", "", "", "", ""];
 
-          const j = page * this.bottomCell * 2 + i + 1;
+          const j = page * this.bottomCell * 2 + i ;
           const s = j + 1;
 
           if (s > keys.length) {
@@ -147,10 +147,13 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
 
     //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+    const lastArrayCount = lastArray.length + 2;
 
     //全部の行数を取得している。
-    this.countTotal = keys.length;
+    this.countHead = (keys.length / 50) * 2;
+    this.countTotal = keys.length + this.countHead;
+    
+
 
     return { page, splid, this: this.countTotal, last: lastArrayCount };
   }

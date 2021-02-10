@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit, AfterViewInit } from "@angular/core";
 import { Router } from "@angular/router";
 
 @Injectable({
@@ -7,13 +7,12 @@ import { Router } from "@angular/router";
 export class DataCountService {
   currentY: number;
   currentType: number;
-  dataExist: boolean[];
+  dataExists:any = [];
 
   constructor(private router: Router) {
     this.currentY = 0;
     this.currentType = 0;
-
-    this.dataExist = [
+    this.dataExists = [
       true,
       true,
       true,
@@ -38,10 +37,11 @@ export class DataCountService {
     ];
   }
 
+
   //全部の行の行数を管理している
   setCurrentY(tableHeight: number, lastHeight: number): boolean {
     this.currentY += tableHeight;
-    if (this.currentY > 59 /*行*/) {
+    if (this.currentY > 54 /*行*/) {
       this.currentY = lastHeight;
       return true;
     } else {
@@ -49,8 +49,34 @@ export class DataCountService {
     }
   }
 
+  public clear(): void {
+    this.dataExists = [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ];
+  }
+
   //データが空だった時にfalseを返す
   setData(id) {
-    this.dataExist[id] = false;
+    this.dataExists[id] = false;
   }
 }

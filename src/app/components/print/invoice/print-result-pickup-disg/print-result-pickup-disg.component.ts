@@ -27,8 +27,6 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
 
   public pickDisg_dataset = [];
   public pickDisg_title = [];
-  public pickDisg_type = [];
-
   public pickDisg_case_break = [];
   public pickDisg_type_break = [];
 
@@ -39,20 +37,27 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
-    this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.pickDisg_dataset   = new Array();
+    this.pickDisg_title     = new Array() ;
+    this.pickDisg_case_break= new Array();
+    this.pickDisg_type_break= new Array();
   }
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.pickdisg.disgPickup;
     if (this.ResultData.pickdisg.disgPickup.length > 0) {
-    const tables = this.printPickDisg(resultjson);
-    this.pickDisg_dataset = tables.splid;
-    this.pickDisg_title = tables.titleSum;
-    this.pickDisg_case_break = tables.break_after_case;
-    this.pickDisg_type_break = tables.break_after_type;
-    this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-    }else{
+      const tables = this.printPickDisg(resultjson);
+      this.pickDisg_dataset = tables.splid;
+      this.pickDisg_title = tables.titleSum;
+      this.pickDisg_case_break = tables.break_after_case;
+      this.pickDisg_type_break = tables.break_after_type;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
       this.countArea.setData(14);
     }
   }
@@ -61,9 +66,9 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
 
   // 変位量データを印刷する
   private printPickDisg(json): any {
-    const titleSum: any = [];
+    const titleSum:any[] = new Array();
     let body: any[] = new Array();
-    const typeSum: any = [];
+    const typeSum: any[] = new Array();
 
     const KEYS = [
       "dx_max",
@@ -79,24 +84,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
       "rz_max",
       "rz_min",
     ];
-    // const TITLES = ['x方向の移動量 最大', 'x方向の移動量 最小', 'y方向の移動量 最大', 'y方向の移動量 最小', 'z方向の移動量 最大', 'Z方向の移動量 最小',
-    //   'x軸回りの回転角 最大', 'x軸回りの回転角 最小', 'y軸回りの回転角 最大', 'y軸回りの回転角 最小', 'z軸回りの回転角 最大', 'Z軸回りの回転角 最小'];
-
-    // let jsonData: object;
-    // if (mode === 'COMBINE') {
-    //   jsonData = this.ResultData.combdisg.disgCombine;
-    // } else {
-    //   jsonData = this.ResultData.pickdisg.disgPickup;
-    // }
-
-    // const fontsize: number = 10;
-
-    // let currentY = this.margine.top + fontsize;
-    // const pageHeight = doc.internal.pageSize.height; // 841.89
-    // const LineFeed = fontsize * 2;
-
-    // doc.text(this.margine.left, currentY, mode + " 変位量");
-
+   
     const keys: string[] = Object.keys(json);
     let countHead: number = 0;
     let countSemiHead: number = 0;
@@ -173,17 +161,17 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     }
 
     //　テーブル
-    const splid: any = [];
-    let table1: any = [];
-    let table2: any = [];
-    let table3: any = [];
-    let table4: any = [];
+    const splid:  any[] = new Array();
+    let   table1: any[] = new Array();
+    let   table2: any[] = new Array();
+    let   table3: any[] = new Array();
+    let   table4: any[] = new Array();
     //const titleSum: string[] = new Array();
     this.row = 0;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
 
-      const typeName: any = [];
+      const typeName: any[] = new Array();
 
       // 荷重名称
       const title: any = [];
@@ -205,15 +193,15 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
 
       //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
-      let table: any = [];
-      let type: any = [];
+      let table: any[] = new Array();
+      let type : any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
-        let body: any = [];
+        let body: any[] = new Array();
         if (i === 0) {
           this.row = 3;
         } else {
@@ -287,4 +275,3 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     };
   }
 }
-

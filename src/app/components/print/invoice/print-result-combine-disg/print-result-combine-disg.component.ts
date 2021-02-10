@@ -27,8 +27,6 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
 
   public combDisg_dataset = [];
   public combDisg_title = [];
-  public combDisg_type = [];
-
   public combDisg_case_break = [];
   public combDisg_type_break = [];
 
@@ -40,6 +38,14 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void{
+    this.combDisg_dataset    = new Array();
+    this.combDisg_title      = new Array();
+    this.combDisg_case_break = new Array();
+    this.combDisg_type_break = new Array();
   }
 
   ngOnInit(): void {
@@ -61,9 +67,9 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
 
   // 変位量データを印刷する
   private printCombDisg(json): any {
-    const titleSum: any = [];
+    const titleSum: any[] = new Array();
     let body: any[] = new Array();
-    const typeSum: any = [];
+    const typeSum: any[] = new Array();
 
     const KEYS = [
       "dx_max",
@@ -156,20 +162,20 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
     }
 
     //　テーブル
-    const splid: any = [];
-    let table1: any = [];
-    let table2: any = [];
-    let table3: any = [];
-    let table4: any = [];
+    const splid:  any[] = new Array();
+    let   table1: any[] = new Array();
+    let   table2: any[] = new Array();
+    let   table3: any[] = new Array();
+    let   table4: any[] = new Array();
     //const titleSum: string[] = new Array();
     this.row = 0;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
 
-      const typeName: any = [];
+      const typeName :any[] = new Array();
 
       // 荷重名称
-      const title: any = [];
+      const title: any[] = new Array();
       let loadName: string = "";
       //const l: any = this.InputData.load.getLoadNameJson(null, index);
       const combineJson: any = this.InputData.combine.getCombineJson();
@@ -188,15 +194,15 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
 
       //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
-      let table: any = [];
-      let type: any = [];
+      let table: any[] = new Array();
+      let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
-        let body: any = [];
+        let body: any[] = new Array();
         if (i === 0) {
           this.row = 3;
         } else {

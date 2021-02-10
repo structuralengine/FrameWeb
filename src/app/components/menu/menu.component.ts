@@ -17,6 +17,7 @@ import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
 
 import * as pako from 'pako';
+import { DataCountService } from '../print/invoice/dataCount.service';
 
 @Component({
   selector: 'app-menu',
@@ -39,7 +40,8 @@ export class MenuComponent implements OnInit {
     private ResultData: ResultDataService,
     private http: HttpClient,
     private three: ThreeService,
-    public printService: PrintService
+    public printService: PrintService,
+    public countArea:DataCountService
     ) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
@@ -63,6 +65,12 @@ export class MenuComponent implements OnInit {
 
   // ファイルを開く
   open(evt) {
+    this.app.dialogClose(); // 現在表示中の画面を閉じる
+    this.InputData.clear();
+    this.ResultData.clear();
+    this.app.isCalculated = false;
+    this.three.ClearData();
+    this.countArea.clear();
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const file = evt.target.files[0];
