@@ -103,11 +103,11 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
     let row: number = 7;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      const table: any = []; // この時点でリセット、再定義 一旦空にする
+      const table: any[] = new Array(); // この時点でリセット、再定義 一旦空にする
 
       title.push(index.toString());
 
-      let body: any = [];
+      let body: any[] = new Array();
       for (const key of Object.keys(elist)) {
         const item = elist[key];
 

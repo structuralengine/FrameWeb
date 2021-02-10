@@ -5,6 +5,7 @@ import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 
 import { JsonpClientBackend } from "@angular/common/http";
+import { ArrayCamera } from "three";
 
 @Component({
   selector: "app-print-result-disg",
@@ -35,13 +36,19 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
-    this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.disg_table   = new Array();
+    this.disg_break   = new Array();
+    this.disg_typeNum = new Array();
   }
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.disg.getDisgJson();
-    if(resultjson === undefined){
+    if (resultjson === undefined) {
       this.countArea.setData(12);
     }
     const tables = this.printDisg(resultjson);
@@ -89,7 +96,7 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const titleSum: string[] = new Array();
     let row: number = 0;
     for (const index of keys) {
@@ -99,7 +106,7 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
         row = 2;
       }
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      const table: any = []; // この時点でリセット、再定義 一旦空にする
+      const table: any[] = new Array(); // この時点でリセット、再定義 一旦空にする
 
       // 荷重名称
       const title: any = [];
@@ -111,7 +118,7 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
       }
       titleSum.push(title);
 
-      let body: any = [];
+      let body: any[] = new Array();
 
       for (const key of Object.keys(elist)) {
         const item = elist[key];

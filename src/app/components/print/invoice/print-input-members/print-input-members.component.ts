@@ -58,7 +58,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
   //要素データ member を印刷する
   private printMember(inputJson): any {
-    let body: any = [];
+    let body: any[] = new Array();
     const splid: any[] = new Array();
     let page: number = 0;
     const json: {} = inputJson["member"]; // inputJsonからnodeだけを取り出す

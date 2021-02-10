@@ -14,9 +14,17 @@ $height_content: 16px;
     #contents-dialog-id {
         display: none;
     }
+    @page {
+        size: A4;
+    }
+}
+
+@page {
+    size: A4;
 }
 
 .pagerBreak {
+    size: A4;
     page-break-before: always;
 }
 
@@ -28,7 +36,7 @@ $height_content: 16px;
 .invoicetTable {
     h2 {
         height: $height_header;
-        margin-top:16px;
+        margin-top: 16px;
         line-height: 32px;
         font-size: 16px;
         font-weight: 400;

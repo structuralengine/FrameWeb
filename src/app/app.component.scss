@@ -6,6 +6,9 @@ $border-color: #428bca; // ボーダーライン
     #contents-dialog-id {
         display: none;
     }
+    @page {
+        size: A4;
+    }
 }
 
 .header {
@@ -59,41 +62,38 @@ $border-color: #428bca; // ボーダーライン
 }
 
 .btn-change {
-  text-decoration: none;
-  min-width: 100px !important;
-  min-height: 36px;
-  padding: 8px 0;
-  line-height: normal;
-  margin: 0;
-  font-size: 12px;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  background-color: #f5f5f5;
-  // border-radius: 3px;
-  border: 0.5px solid #c0c0c0;
-
-  &:first-child {
-    border-radius: 4px 0 0 4px;
-  }
-  &:last-child {
-    border-radius: 0 4px 4px 0;
-  }
-
-  &:hover {
-    cursor: pointer;
-    opacity: 0.7;
-    color: #ffffff;
-    background-color: #669987;
-  }
-
-  &:active {
-    background-color: #669987;
-  }
-  &:not(:disabled):not(.disabled).active {
-    color: #ffffff;
-    background-color: #669987;
-  }
+    text-decoration: none;
+    min-width: 100px !important;
+    min-height: 36px;
+    padding: 8px 0;
+    line-height: normal;
+    margin: 0;
+    font-size: 12px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #f5f5f5;
+    // border-radius: 3px;
+    border: 0.5px solid #c0c0c0;
+    &:first-child {
+        border-radius: 4px 0 0 4px;
+    }
+    &:last-child {
+        border-radius: 0 4px 4px 0;
+    }
+    &:hover {
+        cursor: pointer;
+        opacity: 0.7;
+        color: #ffffff;
+        background-color: #669987;
+    }
+    &:active {
+        background-color: #669987;
+    }
+    &:not(:disabled):not(.disabled).active {
+        color: #ffffff;
+        background-color: #669987;
+    }
 }
 
 .btn-blue {
@@ -802,23 +802,19 @@ summary {
 //     border-collapse: collapse;
 //     border-spacing: 0;
 // }
-
 // caption {
 //     text-align: left;
 // }
-
 // td,
 // th {
 //   vertical-align: top;
 //   padding: 0;
 //   line-height: 16px;
 // }
-
 // td {
 //     text-align: right;
 //     padding: 4px;
 // }
-
 // th {
 //   text-align: center;
 //   font-size: 11px;
@@ -827,7 +823,6 @@ summary {
 //   padding: 4px 3px;
 //   vertical-align: middle;
 // }
-
 
 /* Misc */
 
