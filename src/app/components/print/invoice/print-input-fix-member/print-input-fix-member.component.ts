@@ -18,7 +18,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number;
   countHead: number;
-  countTotal: number = 2;
+  countTotal: number = 3;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -35,6 +35,13 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.fixMember_table = new Array();
+    this.fixMember_break = new Array();
+    this.fixMember_typeNum = new Array();
   }
 
   ngOnInit(): void {
@@ -51,7 +58,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // バネデータ fix_member を印刷する
   private printFixmember(inputJson): any {
@@ -65,7 +72,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
       countCell += Object.keys(elist).length + 1;
     }
     const countHead = keys.length * 2;
-    const countTotal = countCell + countHead;
+    const countTotal = countCell + countHead + 3;
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
@@ -76,12 +83,12 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
-      if (ROW < 59) {
+      if (ROW < 58) {
         break_after.push(false);
       } else {
         if (index === "1") {
           break_after.push(false);
-          ROW = 2;
+          ROW = 3;
         } else {
           break_after.push(true);
           ROW = 0;
@@ -90,7 +97,7 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
     }
 
     // テーブル
-    const splid: any = [];
+    const splid: any[] = new Array();
     const title: string[] = new Array();
     let row: number = 7;
     for (const index of keys) {
@@ -114,10 +121,10 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
         row++;
 
         //１テーブルで59行以上データがあるならば
-        if (row > 59) {
+        if (row > 58) {
           table.push(body);
           body = [];
-          row = 2;
+          row = 4;
         }
       }
 

@@ -24,7 +24,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
-  bottomCell: number = 59;
+  bottomCell: number = 55;
 
   public node_dataset = [];
   public node_page = [];
@@ -37,6 +37,12 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.node_dataset = new Array();
+    this.node_page = new Array();
   }
 
   ngOnInit(): void {
@@ -50,21 +56,19 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       if (tables.page === 1) {
         this.headerShow = false;
       }
-      this.judge = this.countArea.setCurrentY(tables.this, 
-        tables.last
-        );
-    }else {
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
       this.countArea.setData(0);
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // 格子点データ node を印刷する
   private printNode(inputJson): any {
     // const minCount: number = 52; // これ以上なら２行書きとする
     let body: any = [];
-    const splid: any = [];
+    const splid: any[] = new Array();
     let page: number = 0;
     const json: {} = inputJson["node"]; // inputJsonからnodeだけを取り出す
     const keys: string[] = Object.keys(json);
@@ -75,11 +79,12 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
         for (let i = 0; i < this.bottomCell; i++) {
           const line = ["", "", "", "", "", "", "", ""];
 
-          const j = page * this.bottomCell * 2 + i;
+          const j = page * this.bottomCell * 2 + i + 1;
           const s = j + 1;
 
           if (s > keys.length) {
             break_flg = false;
+            // this.countHead = page;
             break;
           }
           const index1: string = keys[j];

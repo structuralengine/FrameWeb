@@ -23,7 +23,7 @@ export class PrintInputLoadNameComponent implements OnInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
-  empty:number;
+  empty: number;
 
   public loadName_dataset = [];
   public loadName_page = [];
@@ -35,6 +35,12 @@ export class PrintInputLoadNameComponent implements OnInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void {
+    this.loadName_dataset = new Array();
+    this.loadName_page = new Array();
   }
 
   ngOnInit(): void {
@@ -50,17 +56,17 @@ export class PrintInputLoadNameComponent implements OnInit {
         tables_basic.last
       );
       this.countArea.setData(tables_basic.empty);
-    }else{
+    } else {
       this.countArea.setData(7);
     }
   }
- 
-  ngAfterViewInit() {}
+
+  ngAfterViewInit() { }
 
   // 基本荷重データ load name を印刷する
   private printLoadName(json): any {
     let body: any = [];
-    const splid: any = [];
+    const splid: any[] = new Array();
     let page: number = 0;
     const keys: string[] = Object.keys(json);
 
@@ -77,17 +83,17 @@ export class PrintInputLoadNameComponent implements OnInit {
         const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
         const j = page * 59 + i + 1;
 
-        if(keys.length === 0){
+        if (keys.length === 0) {
           this.empty = 7;
           break_flg = false;
           break;
-        }else if(keys.length === 1 && i === 0){
+        } else if (keys.length === 1 && i === 0) {
           break_flg = true;
-        }else if(j > keys.length){
+        } else if (j > keys.length) {
           break_flg = false;
           break;
         }
-        
+
 
         const rate: number = item.rate !== null ? item.rate : 1;
         const fix_node: number = item.fix_node !== null ? item.fix_node : 1;
@@ -120,6 +126,6 @@ export class PrintInputLoadNameComponent implements OnInit {
     const lastArray = splid.slice(-1)[0];
     const lastArrayCount = lastArray.length;
 
-    return { empty:this.empty ,page, splid, this: this.countTotal, last: lastArrayCount };
+    return { empty: this.empty, page, splid, this: this.countTotal, last: lastArrayCount };
   }
 }

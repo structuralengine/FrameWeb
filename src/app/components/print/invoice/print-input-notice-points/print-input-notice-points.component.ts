@@ -36,6 +36,12 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
+    this.clear();
+  }
+
+  public clear(): void{
+    this.notice_dataset = new Array();
+    this.notice_page = new Array();
   }
 
   ngOnInit(): void {
@@ -74,7 +80,7 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
     this.countTotal = json.length;
 
     // テーブル
-    const splid: any = [];
+    const splid: any  []=new Array();
     let row = 2; // タイトル行
     for (const item of json) {
       //const item = json[index]; // 1行分のnodeデータを取り出す
