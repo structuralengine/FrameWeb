@@ -105,7 +105,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
       countHead += Object.keys(json).length;
     }
 
-    const countTotal = countCell + countHead + countSemiHead + 2;
+    const countTotal = countCell + countHead + countSemiHead + 3;
 
     //　各荷重状態の前に改ページ(break_after)が必要かどうかを判定する。
     const break_after_case: boolean[] = new Array();

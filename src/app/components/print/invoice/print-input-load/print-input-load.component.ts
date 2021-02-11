@@ -24,6 +24,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
+  remainCount: number = 0;
 
   public load_title = [];
   public load_member = [];
@@ -105,8 +106,8 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       ROW_mn += 2;
       if ("load_member" in elist) {
         countCell_member = elist.load_member.length;
-        if (countCell_member > 58) {
-          page_over_member = Math.floor(countCell_member / 58);
+        if (countCell_member > 54) {
+          page_over_member = Math.floor(countCell_member / 54);
           ROW_m = countCell_member + Math.floor(countCell_member / 58) * 3 + 2;
         } else {
           ROW_m = countCell_member + 3;
@@ -117,8 +118,8 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
       if ("load_node" in elist) {
         countCell_node = elist.load_node.length;
-        if (countCell_node > 58) {
-          page_over_node = Math.floor(countCell_node / 58);
+        if (countCell_node > 54) {
+          page_over_node = Math.floor(countCell_node / 54);
           ROW_n = countCell_node + page_over_node * 3 + 2;
         } else {
           ROW_n = countCell_node + 3;
@@ -129,14 +130,14 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
       ROW_mn += ROW_m + ROW_n;
 
-      if (ROW_mn < 58) {
+      if (ROW_mn < 54) {
         break_after.push(false);
         ROW_mn = ROW_mn;
         ROW_m = 0;
         ROW_n = 0;
-      } else if (ROW_mn === 58) {
+      } else if (ROW_mn === 54) {
         break_after.push(false);
-        ROW_mn = 100;
+        ROW_mn = 54;
         ROW_m = 0;
         ROW_n = 0;
       } else {
@@ -147,9 +148,11 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         }
         ROW_mn = 0;
         let reROW = ROW_m + ROW_n;
-        ROW_mn = reROW % 59;
+        ROW_mn = reROW % 55;
       }
     }
+
+    this.remainCount = ROW_mn;
 
     // 実際のデータを作成する
     let TotalDataCount: number = 0;
@@ -157,7 +160,6 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
     let ploadCount: number = 0;
     let splidTypeCount: number = 0;
 
-    
     const splidDataTotal: any[] = new Array();
 
     lenlenMember = 0;
@@ -220,7 +222,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           // flg.push(0);
           row++;
           //１テーブルで60行以上データがあるならば
-          if (row > 58) {
+          if (row > 54) {
             splidData_member.push(this.mload);
             this.mload = [];
             row = 4;
@@ -260,7 +262,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           row++;
 
           //１テーブルで60行以上データがあるならば
-          if (row > 58) {
+          if (row > 54) {
             splidData_node.push(this.pload);
             this.pload = [];
             row = 4;
@@ -288,12 +290,12 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       splidTypeCount += splidDataCount_member * 3 + splidDataCount_node * 2;
     }
 
-    let countHead = keys.length * 2;
-    const countTotal = TotalDataCount + countHead + splidTypeCount + 3;
+    let countHead = keys.length * 3;
+    const countTotal =
+      TotalDataCount + countHead + splidTypeCount + 3;
 
     //最後のページにどれだけデータが残っているかを求める
-
-    let lastArrayCount: number = countTotal % 58;
+    let lastArrayCount: number = this.remainCount;
 
     return {
       tableData: splidDataTotal, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]

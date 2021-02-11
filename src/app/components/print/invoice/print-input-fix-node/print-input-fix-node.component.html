@@ -5,6 +5,7 @@
         <div *ngIf="fixNode_break[i]" class="pagerBreak"></div>
         <h3>タイプ {{title}}</h3>
         <div *ngFor="let fixNode_dataset of fixNode_table[i]; index as j">
+            <div *ngIf="j > 0" class="pagerBreak"></div>
             <table>
                 <tr>
                     <th class="id">格点No</th>

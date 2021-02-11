@@ -77,7 +77,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
         if (s > keys.length) {
           break_flg = false;
-          this.countHead = page * 2;
+          this.countHead = page * 3;
           break;
         }
 
@@ -101,7 +101,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
     //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+    const lastArrayCount = lastArray.length + 2;
 
     //全部の行数を取得している。
     this.countTotal = keys.length + this.countHead;

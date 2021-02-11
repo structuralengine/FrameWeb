@@ -24,6 +24,8 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
+  reROW : number = 0;
+  remainCount : number = 0;
 
   public joint_table = [];
   public joint_break = [];
@@ -68,25 +70,38 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
 
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
-    let ROW = 5;
+    let ROW = 8;
      for (const index of keys) {
-      ROW += 4; // 行
+      this.reROW = 0;
       const elist = json[index]; // 1テーブル分のデータを取り出す
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
       if (ROW < 54) {
         break_after.push(false);
+        this.reROW = ROW + 5;
+        ROW = ROW + 5;
       } else {
         if (index === "1") {
           break_after.push(false);
-          ROW = 2;
+          let countHead_break = Math.floor((countCell / 54) *3 +2);
+          this.reROW = ROW % 55;
+          ROW += countHead_break;
+          ROW = ROW % 54;
+          ROW += 5;
         } else {
           break_after.push(true);
           ROW = 0;
+          let countHead_break = Math.floor((countCell / 54) *3 + 2);
+          ROW += countHead_break + countCell;
+          ROW = ROW % 54;
+          this.reROW = ROW % 55;
+          ROW += 5;
         }
       }
     }
+
+    this.remainCount = this.reROW;
 
     // テーブル
     const splid: any[] = new Array();
@@ -118,7 +133,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
         if (row > 54) {
           table.push(body);
           body = [];
-          row = 2;
+          row = 3;
         }
       }
 
@@ -126,6 +141,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
         table.push(body);
       }
       splid.push(table);
+      row = 5;
     }
 
     //最後のページの行数だけ取得している
@@ -136,19 +152,14 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
      let countCell = 0;
      for (const index of keys) {
        const elist = json[index]; // 1テーブル分のデータを取り出す
-       countCell += Object.keys(elist).length + 1;
+       countCell += Object.keys(elist).length;
      }
-     const countHead = keys.length * 2;
+     const countHead = keys.length * 3;
      const countSemiHead = splid.length * 2 ;
-     const countTotal = countCell + countHead + countSemiHead;
+     const countTotal = countCell + countHead + countSemiHead + 3;
      
-     //最後のページの行数だけ取得している
-     let lastArrayCount = countTotal % 54;
-     if(lastArrayCount === 0){
-       lastArrayCount = 54;
-     }else { 
-      lastArrayCount = countTotal % 54;
-     }
+   //最後のページにどれだけデータが残っているかを求める
+   let lastArrayCount: number = this.remainCount;
 
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]

@@ -150,7 +150,11 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
     const lastArrayCount = lastArray.length + 2;
 
     //全部の行数を取得している。
-    this.countHead = (keys.length / 50) * 2;
+    if(keys.length === 0){
+      this.countHead = 0 ;
+    }else if(keys.length > 0){
+      this.countHead = Math.floor((keys.length / 50) * 3) + 3 ;
+    }
     this.countTotal = keys.length + this.countHead;
     
 
