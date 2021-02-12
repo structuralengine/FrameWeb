@@ -77,9 +77,6 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
 
     //const keys: string[] = Object.keys(json);
 
-    //全部の行数を取得している。
-    this.countTotal = json.length;
-
     // テーブル
     const splid: any[] = new Array();
     let row:number = 6; // タイトル行
@@ -125,9 +122,12 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       splid.push(body);
     }
 
+    //全部の行数を取得している。
+    this.countTotal = json.length + splid.length * 2;
+
     //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+    const lastArrayCount = lastArray.length + 2;
 
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
