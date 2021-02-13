@@ -120,12 +120,12 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
 
         const line = ["", "", "", "", "", "", ""];
         line[0] = item.m;
-        line[1] = item.xi.toFixed(4);
-        line[2] = item.yi.toExponential(2);
-        line[3] = item.zi.toExponential(2);
-        line[4] = item.xj.toExponential(2);
-        line[5] = item.yj.toFixed(6);
-        line[6] = item.zj.toFixed(6);
+        line[1] = item.xi.toFixed(0);
+        line[2] = item.yi.toFixed(0);
+        line[3] = item.zi.toFixed(0);
+        line[4] = item.xj.toFixed(0);
+        line[5] = item.yj.toFixed(0);
+        line[6] = item.zj.toFixed(0);
         body.push(line);
         row++;
 

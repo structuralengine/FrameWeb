@@ -45,7 +45,7 @@ export class PrintResultPickupReacComponent implements OnInit {
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
-    const resultjson: any = this.ResultData.combreac.reacCombine;
+    const resultjson: any = this.ResultData.pickreac.reacPickup;
     const keys: string[] = Object.keys(resultjson);
     if (keys.length > 0) {
     const tables = this.printPickReact(resultjson);
