@@ -131,38 +131,13 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        let elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
-          this.row = 10;
+          this.row = 8;
         } else {
-          this.row =  7;
+          this.row =  5;
         }
-
-        //テストデータ
-        for (let a = 1; a < 104; a++) {
-          const a1 = "da";
-          const a2 = a * Math.random();
-          const a3 = a * Math.random();
-          const a4 = a * Math.random();
-          const a5 = a * Math.random();
-          const a6 = a * Math.random();
-          const a7 = a * Math.random();
-          const a8 = a * Math.random();
-          let key: string = a.toString();
-          key += "a";
-          elist[key] = {
-            id: a1,
-            tx: a2,
-            ty: a3,
-            tz: a4,
-            mx: a5,
-            my: a6,
-            mz: a7,
-            case: a8,
-          };
-        }
-
 
 
         for (const k of Object.keys(elist)) {
@@ -185,7 +160,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
           if (this.row > 54) {
             table.push(body);
             body = [];
-            this.row = 3;
+            this.row = 2;
           }
         }
         if (body.length > 0) {
@@ -201,16 +176,6 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         table3 = [];
         table1 = [];
         table2 = [];
-
-        // if (this.row > 59) {
-        //    table1.push(table);
-        //    table = [];
-        //   this.row = 2;
-        // }
-
-        // table1.push(table);
-        // table = [];
-        // this.row += 2;
       }
 
       splid.push(table4);
@@ -241,8 +206,8 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     //　各荷重状態の前に改ページ(break_after)が必要かどうかを判定する。
     const break_after_case: boolean[] = new Array();
     const break_after_type: boolean[] = new Array();
-    let ROW_type = 7; // 行
-    let ROW_case = 10;
+    let ROW_type = 5; // 行
+    let ROW_case = 8;
     let countCell_type: number = 0;
     let countCell_case: number = 0;
     for (const index of Object.keys(json)) {
@@ -259,14 +224,14 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
 
         if (ROW_type < 54) {
           break_after_type.push(false);
-          ROW_type += 5;
+          ROW_type += 4;
         } else {
           if (i === 0) {
             break_after_type.push(false);
-            ROW_type += 5;
+            ROW_type += 4;
           } else {
             break_after_type.push(true);
-            ROW_type = 5 ;
+            ROW_type = 4 ;
           }
         }
       }
@@ -275,20 +240,20 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
       ROW_case += countCell_case;
       if (ROW_case < 54) {
         break_after_case.push(false);
-        ROW_case += 7;
+        ROW_case += 6;
       } else {
         if (index === "1") {
           break_after_case.push(false);
-          ROW_case += 7;
+          ROW_case += 6;
         } else {
           break_after_case.push(true);
-          ROW_case = 7;
+          ROW_case = 6;
         }
       }
     }
 
     //最後のページの行数だけ取得している
-    let lastArrayCount: number = countTotal % 61;
+    let lastArrayCount: number = countTotal % 54;
 
     return {
       titleSum,

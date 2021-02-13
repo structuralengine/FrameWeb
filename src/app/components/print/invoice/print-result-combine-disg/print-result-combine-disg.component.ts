@@ -129,7 +129,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        let elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
           this.row = 10;
