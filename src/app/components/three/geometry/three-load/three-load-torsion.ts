@@ -62,7 +62,9 @@ export class ThreeLoadTorsion {
     }
 
     // 寸法線
-    child.add(this.getDim(points, L1, L, L2));
+    const dim = this.getDim(points, L1, L, L2);
+    dim.visible = false;
+    child.add(dim);
 
     // 全体
     child.name = "child";

@@ -71,6 +71,7 @@ export class ThreeLoadPoint {
     }
     const text = this.text.create(textStr, pos, size, horizontal, vartical);
     text.name = "text";
+    text.visible = false;
     group0.add(text);
 
     child.position.y = offset;
