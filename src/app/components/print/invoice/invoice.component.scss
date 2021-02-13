@@ -54,7 +54,7 @@ $height_content: 16px;
         // page-break-after: auto;
         th {
             height: $height_content;
-            padding: 4px 8px;
+            // padding: 4px 8px;
             text-align: center;
             font-size: 16px;
             font-weight: 400;
@@ -63,11 +63,47 @@ $height_content: 16px;
         }
         td {
             height: $height_content;
-            padding: 4px 8px;
+            // padding: 4px 8px;
             font-size: 16px;
             text-align: right;
             page-break-inside: avoid;
             //page-break-after:auto;
+        }
+
+
+        
+    //印刷結果表示のtableのpadding
+        &.print-md {
+            th,
+            td {
+                padding: 4px 16px;
+            }
+        }
+
+     //pickup,comb,define
+        &.print-sm {
+            th,
+            td {
+                padding: 4px 12px;
+            }
+        }
+
+     //load
+        &.print-load {
+            th,
+            td {
+                padding: 4px 16px;
+                margin-bottom: 16px;
+            }
+        }
+
+     //荷重名称が長い場合の改行指定
+        td {
+            &.word {
+                max-width: 400px;
+                word-wrap: break-word;
+                text-align: left;
+            }
         }
     }
 }

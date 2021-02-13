@@ -17,7 +17,7 @@
                         <div *ngFor="let dataset_member of page_member; index as l">
                             <!--５８行たったらページを切り替える-->
                             <div *ngIf="l > 0" class="pagerBreak"></div>
-                            <table style="margin-bottom:16px;">
+                            <table class="print-load">
                                 <tr>
                                     <th class="load" colspa>部材荷重</th>
                                     <th class="number" colspan="8">部材番号</th>
@@ -51,7 +51,7 @@
                     <div *ngFor="let page_node of branch; index as m">
                         <div *ngFor="let dataset_node of page_node; index as n">
                             <div *ngIf="n > 0" class="pagerBreak"></div>
-                            <table style="margin-bottom:16px;">
+                            <table class="print-load" >
                                 <tr>
                                     <th class="id">節点荷重</th>
                                     <th class="k">節点番号</th>
