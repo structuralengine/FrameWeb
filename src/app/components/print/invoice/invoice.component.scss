@@ -76,19 +76,19 @@ $height_content: 16px;
         &.print-md {
             th,
             td {
+                padding: 4px 20px;
+            }
+        }
+
+     //input-pickup,comb,define
+        &.print-sm {
+            th,
+            td {
                 padding: 4px 16px;
             }
         }
 
-     //pickup,comb,define
-        &.print-sm {
-            th,
-            td {
-                padding: 4px 12px;
-            }
-        }
-
-     //load
+     //input-load
         &.print-load {
             th,
             td {
