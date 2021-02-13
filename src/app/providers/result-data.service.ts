@@ -122,7 +122,7 @@ export class ResultDataService {
         defList[caseNo] = (n === null) ? [] : new Array(n);
       }
     }
-
+    /*
     // combine を集計
     const combList = {};
     for (const combNo of Object.keys(combine)) {
@@ -180,7 +180,25 @@ export class ResultDataService {
       }
       combList[combNo] = combines;
     }
-
+    */
+    // combine を集計
+    const combList = {};
+    for (const combNo of Object.keys(combine)) {
+      const c: object = combine[combNo];
+      const defines = new Array();
+      for (const cKey of Object.keys(c)) {
+        if( cKey === 'row'){ 
+          continue;
+        }
+        const caseNo: string = cKey.replace('C', '').replace('D', '');
+        const coef: number = this.helper.toNumber(c[cKey]);
+        if (!(caseNo in defList) || coef === null) {
+          continue; // なければ飛ばす
+        }
+        defines.push({caseNo, coef});
+      }
+      combList[combNo] = defines;
+    }
 
     // pickup を集計
     const pickList = {};
