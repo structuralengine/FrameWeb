@@ -137,30 +137,6 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
           this.row = 7;
         }
 
-        //テストデータ
-        for (let a = 1; a < 104; a++) {
-          const a1 = a * Math.random();
-          const a2 = a * Math.random();
-          const a3 = a * Math.random();
-          const a4 = a * Math.random();
-          const a5 = a * Math.random();
-          const a6 = a * Math.random();
-          const a7 = a * Math.random();
-          const a8 = a * Math.random();
-          let key: string = a.toString();
-          key += "a";
-          elist[key] = {
-            id: a1,
-            dx: a2,
-            dy: a3,
-            dz: a4,
-            rx: a5,
-            ry: a6,
-            rz: a7,
-            case: a8,
-          };
-        }
-
         for (const k of Object.keys(elist)) {
           const item = elist[k];
 
