@@ -65,7 +65,9 @@ export class ThreeLoadDistribute {
     child.add(this.getLine(my_color, points));
 
     // 寸法線
-    child.add(this.getDim(points, L1, L, L2));
+    const dim = this.getDim(points, L1, L, L2);
+    dim.visible = false;
+    child.add(dim);
 
     // 全体
     child.name = "child";
@@ -77,6 +79,7 @@ export class ThreeLoadDistribute {
 
     // 文字を追加する
     for(const text of this.getText(points, P1, P2)){
+      text.visible = false;
       group0.add(text);
     }
 
@@ -326,7 +329,7 @@ export class ThreeLoadDistribute {
         text.position.x = points[1].x;
         text.position.y = points[1].y;
       }
-      text.name = "text1";
+      text.name = "text";
       result.push(text);
     }
 
@@ -343,7 +346,7 @@ export class ThreeLoadDistribute {
         text.position.x = points[3].x;
         text.position.y = points[3].y;
       }
-      text.name = "text2";
+      text.name = "text";
       result.push(text);
     }
 
