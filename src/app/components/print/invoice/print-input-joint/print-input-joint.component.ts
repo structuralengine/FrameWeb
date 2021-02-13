@@ -14,6 +14,19 @@ import { Data } from "@angular/router";
   ],
 })
 export class PrintInputJointComponent implements OnInit, AfterViewInit {
+  page: number;
+  load_name: string;
+  collectionSize: number;
+  countCell: number = 0;
+  countHead: number = 0;
+  countTotal: number = 0;
+  btnPickup: string;
+  tableHeight: number;
+  invoiceIds: string[];
+  invoiceDetails: Promise<any>[];
+  reROW : number = 0;
+  remainCount : number = 0;
+
   public joint_table = [];
   public joint_break = [];
   public joint_typeNum = [];
@@ -55,36 +68,40 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
     const json: {} = inputJson["joint"]; // inputJsonからjointだけ取り出す
     const keys: string[] = Object.keys(json);
 
-    // 全体の高さを計算する
-    let countCell = 0;
-    for (const index of keys) {
-      const elist = json[index]; // 1テーブル分のデータを取り出す
-      countCell += Object.keys(elist).length + 1;
-    }
-    const countHead = keys.length * 2;
-    const countTotal = countCell + countHead;
-
     // 各タイプの前に改ページ（break_after）が必要かどうか判定する
     const break_after: boolean[] = new Array();
-    let ROW = 7;
-    for (const index of keys) {
-      ROW += 2; // 行
+    let ROW = 8;
+     for (const index of keys) {
+      this.reROW = 0;
       const elist = json[index]; // 1テーブル分のデータを取り出す
       const countCell = Object.keys(elist).length;
       ROW += countCell;
 
-      if (ROW < 59) {
+      if (ROW < 54) {
         break_after.push(false);
+        this.reROW = ROW + 5;
+        ROW = ROW + 5;
       } else {
         if (index === "1") {
           break_after.push(false);
-          ROW = 2;
+          let countHead_break = Math.floor((countCell / 54) *3 +2);
+          this.reROW = ROW % 55;
+          ROW += countHead_break;
+          ROW = ROW % 54;
+          ROW += 5;
         } else {
           break_after.push(true);
           ROW = 0;
+          let countHead_break = Math.floor((countCell / 54) *3 + 2);
+          ROW += countHead_break + countCell;
+          ROW = ROW % 54;
+          this.reROW = ROW % 55;
+          ROW += 5;
         }
       }
     }
+
+    this.remainCount = this.reROW;
 
     // テーブル
     const splid: any[] = new Array();
@@ -96,7 +113,7 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
 
       title.push(index.toString());
 
-      let body: any[] = new Array;
+      let body: any[] = new Array();
 
       for (const key of Object.keys(elist)) {
         const item = elist[key];
@@ -113,10 +130,10 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
         row++;
 
         //１テーブルで59行以上データがあるならば
-        if (row > 59) {
+        if (row > 54) {
           table.push(body);
           body = [];
-          row = 2;
+          row = 3;
         }
       }
 
@@ -124,11 +141,25 @@ export class PrintInputJointComponent implements OnInit, AfterViewInit {
         table.push(body);
       }
       splid.push(table);
+      row = 5;
     }
 
     //最後のページの行数だけ取得している
-    const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+    // const lastArray = splid.slice(-1)[0];
+    // const lastArrayCount = lastArray.length;
+
+     // 全体の高さを計算する
+     let countCell = 0;
+     for (const index of keys) {
+       const elist = json[index]; // 1テーブル分のデータを取り出す
+       countCell += Object.keys(elist).length;
+     }
+     const countHead = keys.length * 3;
+     const countSemiHead = splid.length * 2 ;
+     const countTotal = countCell + countHead + countSemiHead + 3;
+     
+   //最後のページにどれだけデータが残っているかを求める
+   let lastArrayCount: number = this.remainCount;
 
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]

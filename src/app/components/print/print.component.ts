@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DataCountService } from './invoice/dataCount.service';
 import { PrintService } from './print.service';
 
 @Component({
@@ -7,8 +8,9 @@ import { PrintService } from './print.service';
   styleUrls: ['./print.component.scss','../../app.component.scss']
 })
 export class PrintComponent implements OnInit {
+  currentY : number = 0;
 
-  constructor(public printService: PrintService) {
+  constructor(public printService: PrintService,public countArea: DataCountService) {
    }
 
   ngOnInit(): void {
@@ -16,6 +18,7 @@ export class PrintComponent implements OnInit {
 
   public onPrintInvoice() {
     const invoiceIds = ['101'];
+    this.countArea.clear();
     this.printService
       .printDocument('invoice', invoiceIds);
   }

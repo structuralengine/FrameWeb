@@ -4,8 +4,8 @@ import { Router } from "@angular/router";
 @Injectable({
   providedIn: "root",
 })
-export class DataCountService {
-  currentY: number;
+export class DataCountService implements OnInit, AfterViewInit {
+  currentY: number = 0;
   currentType: number;
   dataExists:any = [];
 
@@ -37,18 +37,15 @@ export class DataCountService {
     ];
   }
 
-
-  //全部の行の行数を管理している
-  setCurrentY(tableHeight: number, lastHeight: number): boolean {
-    this.currentY += tableHeight;
-    if (this.currentY > 54 /*行*/) {
-      this.currentY = lastHeight;
-      return true;
-    } else {
-      return false;
-    }
+  ngOnInit(){
+    this.currentY = 0;
   }
 
+  ngAfterViewInit(){
+    this.currentY = 0;
+  }
+
+  //全部の行の行数を管理している
   public clear(): void {
     this.dataExists = [
       true,
@@ -73,7 +70,20 @@ export class DataCountService {
       true,
       true,
     ];
+
+    this.currentY = 0;
   }
+  
+  setCurrentY(tableHeight: number, lastHeight: number): boolean {
+    this.currentY += tableHeight;
+    if (this.currentY > 54 /*行*/) {
+      this.currentY = lastHeight;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   //データが空だった時にfalseを返す
   setData(id) {

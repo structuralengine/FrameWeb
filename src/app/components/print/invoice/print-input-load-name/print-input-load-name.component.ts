@@ -16,9 +16,9 @@ export class PrintInputLoadNameComponent implements OnInit {
   page: number;
   load_name: string;
   collectionSize: number;
-  countCell: number;
-  countHead: number;
-  countTotal: number = 3;
+  countCell: number  = 0;
+  countHead: number  = 0;
+  countTotal: number = 0;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -61,7 +61,7 @@ export class PrintInputLoadNameComponent implements OnInit {
     }
   }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
 
   // 基本荷重データ load name を印刷する
   private printLoadName(json): any {
@@ -70,30 +70,28 @@ export class PrintInputLoadNameComponent implements OnInit {
     let page: number = 0;
     const keys: string[] = Object.keys(json);
 
-    //全部の行数を取得している。
-    this.countTotal = keys.length;
-
     let break_flg = true;
 
     while (break_flg) {
-      for (let i = 0; i < 59; i++) {
+      for (let i = 0; i < 47; i++) {
         const line = ["", "", "", "", "", ""];
         let index: string = keys[i];
         const item = json[index]; // 1行分のnodeデータを取り出す
         const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
-        const j = page * 59 + i + 1;
+        const j = page * 47 + i + 1;
 
         if (keys.length === 0) {
           this.empty = 7;
           break_flg = false;
+          this.countHead =  3;
           break;
         } else if (keys.length === 1 && i === 0) {
           break_flg = true;
         } else if (j > keys.length) {
           break_flg = false;
+          this.countHead = page * 2;
           break;
         }
-
 
         const rate: number = item.rate !== null ? item.rate : 1;
         const fix_node: number = item.fix_node !== null ? item.fix_node : 1;
@@ -124,8 +122,17 @@ export class PrintInputLoadNameComponent implements OnInit {
 
     //最後のページの行数だけ取得している
     const lastArray = splid.slice(-1)[0];
-    const lastArrayCount = lastArray.length;
+    const lastArrayCount = lastArray.length + 3;
 
-    return { empty: this.empty, page, splid, this: this.countTotal, last: lastArrayCount };
+    //全部の行数を取得している。
+    this.countTotal = keys.length + this.countHead;
+
+    return {
+      empty: this.empty,
+      page,
+      splid,
+      this: this.countTotal,
+      last: lastArrayCount,
+    };
   }
 }
