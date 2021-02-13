@@ -37,6 +37,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     private ResultData: ResultDataService,
     private countArea: DataCountService
   ) {
+    this.judge = false;
     this.clear();
   }
 
@@ -50,7 +51,8 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combreac.reacCombine;
-    if (this.ResultData.combdisg.disgCombine.length > 0) {
+    const keys: string[] = Object.keys(resultjson);
+    if (keys.length > 0) {
       const tables = this.printCombReact(resultjson);
       this.combReac_dataset = tables.splid;
       this.combReac_title = tables.titleSum;
@@ -88,79 +90,6 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     //   'x軸回りの回転反力 最大', 'x軸回りの回転反力 最小', 'y軸回りの回転反力 最大', 'y軸回りの回転反力 最小', 'z軸回りの回転反力 最大', 'Z軸回りの回転反力 最小'];
 
     const keys: string[] = Object.keys(json);
-    let countHead: number = 0;
-    let countSemiHead: number = 0;
-    // 全体の高さを計算する
-    let countCell = 0;
-    for (const index of keys) {
-      const elist = json[index]; // 1テーブル分のデータを取り出す
-      for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
-        const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
-        for (const k of Object.keys(elist)) {
-          countCell += Object.keys(elist).length;
-        }
-        countSemiHead += Object.keys(elieli).length * 2;
-      }
-      countHead += Object.keys(json).length;
-    }
-
-    const countTotal = countCell + countHead + countSemiHead + 2;
-
-    //　各荷重状態の前に改ページ(break_after)が必要かどうかを判定する。
-    const break_after_case: boolean[] = new Array();
-    const break_after_type: boolean[] = new Array();
-    let ROW_type = 6; // 行
-    let ROW_case = 1;
-    let countCell_type: number = 0;
-    let countCell_case: number = 0;
-    for (const index of Object.keys(json)) {
-      const elieli = json[index]; // 1行分のnodeデータを取り出す
-      for (let i = 0; i < KEYS.length; i++) {
-        const key: string = KEYS[i];
-        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
-
-        // x方向Max,minなどのタイプでの分割
-        countCell_type = Object.keys(elist).length;
-
-        ROW_type += countCell_type;
-        ROW_case += countCell_type;
-
-        if (ROW_type < 59) {
-          break_after_type.push(false);
-          ROW_type += 2;
-        } else {
-          break_after_type.push(true);
-          countCell_type = Object.keys(elist).length;
-          // if (i === 0) {
-          //   break_after_type.push(false);
-          // } else {
-          //   break_after_type.push(true);
-          // }
-          ROW_type = 4 + countCell_type;
-        }
-      }
-      //荷重タイプごとに分割するかどうか
-      countCell_case += Object.keys(elieli).length;
-      ROW_case += countCell_case;
-      if (ROW_case < 59) {
-        break_after_case.push(false);
-      } else {
-        if (index === "1") {
-          break_after_case.push(false);
-          ROW_type += 2;
-        } else {
-          break_after_case.push(true);
-          ROW_case = 1;
-        }
-        // if (i === 0) {
-        //   break_after_case.push(false);
-        // } else {
-        //   break_after_case.push(true);
-        // }
-      }
-    }
 
     //　テーブル
     const splid:  any[] = new Array();
@@ -202,13 +131,39 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        let elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
-          this.row = 3;
+          this.row = 10;
         } else {
-          this.row = 2;
+          this.row =  7;
         }
+
+        //テストデータ
+        for (let a = 1; a < 104; a++) {
+          const a1 = "da";
+          const a2 = a * Math.random();
+          const a3 = a * Math.random();
+          const a4 = a * Math.random();
+          const a5 = a * Math.random();
+          const a6 = a * Math.random();
+          const a7 = a * Math.random();
+          const a8 = a * Math.random();
+          let key: string = a.toString();
+          key += "a";
+          elist[key] = {
+            id: a1,
+            tx: a2,
+            ty: a3,
+            tz: a4,
+            mx: a5,
+            my: a6,
+            mz: a7,
+            case: a8,
+          };
+        }
+
+
 
         for (const k of Object.keys(elist)) {
           const item = elist[k];
@@ -227,10 +182,10 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
           this.row++;
 
           //１テーブルで59行以上データがあるならば
-          if (this.row > 59) {
+          if (this.row > 54) {
             table.push(body);
             body = [];
-            this.row = 2;
+            this.row = 3;
           }
         }
         if (body.length > 0) {
@@ -262,6 +217,76 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
       table4 = [];
       // body.push(table1);
     }
+
+    let countHead: number = 0;
+    let countSemiHead: number = 0;
+    // 全体の高さを計算する
+    let countCell = 0;
+    for (const index of keys) {
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      for (let i = 0; i < KEYS.length; i++) {
+        this.key = KEYS[i];
+        const elieli = json[index]; // 1行分のnodeデータを取り出す
+        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        for (const k of Object.keys(elist)) {
+          countCell += Object.keys(elist).length;
+        }
+        countSemiHead += Object.keys(elieli).length * 3;
+      }
+      countHead += Object.keys(json).length;
+    }
+
+    const countTotal = countCell + countHead + countSemiHead + 3;
+
+    //　各荷重状態の前に改ページ(break_after)が必要かどうかを判定する。
+    const break_after_case: boolean[] = new Array();
+    const break_after_type: boolean[] = new Array();
+    let ROW_type = 7; // 行
+    let ROW_case = 10;
+    let countCell_type: number = 0;
+    let countCell_case: number = 0;
+    for (const index of Object.keys(json)) {
+      const elieli = json[index]; // 1行分のnodeデータを取り出す
+      for (let i = 0; i < KEYS.length; i++) {
+        const key: string = KEYS[i];
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
+
+        // x方向Max,minなどのタイプでの分割
+        countCell_type = Object.keys(elist).length;
+
+        ROW_type += countCell_type;
+        ROW_case += countCell_type;
+
+        if (ROW_type < 54) {
+          break_after_type.push(false);
+          ROW_type += 5;
+        } else {
+          if (i === 0) {
+            break_after_type.push(false);
+            ROW_type += 5;
+          } else {
+            break_after_type.push(true);
+            ROW_type = 5 ;
+          }
+        }
+      }
+      //荷重タイプごとに分割するかどうか
+      countCell_case += Object.keys(elieli).length;
+      ROW_case += countCell_case;
+      if (ROW_case < 54) {
+        break_after_case.push(false);
+        ROW_case += 7;
+      } else {
+        if (index === "1") {
+          break_after_case.push(false);
+          ROW_case += 7;
+        } else {
+          break_after_case.push(true);
+          ROW_case = 7;
+        }
+      }
+    }
+
     //最後のページの行数だけ取得している
     let lastArrayCount: number = countTotal % 61;
 
