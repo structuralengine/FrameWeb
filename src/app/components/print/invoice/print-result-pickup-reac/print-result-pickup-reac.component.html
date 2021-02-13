@@ -14,6 +14,7 @@
                 <div *ngIf="k > 0">
                     <div *ngFor="let branch of case; index as l">
                         <div *ngFor="let datas of branch; index as m">
+                            <div *ngIf="m > 0" class="pagerBreak"></div>
                             <table  class="print-md">
                                 <tr>
                                     <th>SUPPORT</th>

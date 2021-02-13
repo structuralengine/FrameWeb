@@ -76,7 +76,7 @@ $height_content: 16px;
         &.print-md {
             th,
             td {
-                padding: 4px 20px;
+                padding: 4px 28px;
             }
         }
 
@@ -97,10 +97,17 @@ $height_content: 16px;
             }
         }
 
+        &.print-lg{
+            th,td{
+                padding: 4px 24px;
+            }
+        }
+
      //荷重名称が長い場合の改行指定
         td {
             &.word {
                 max-width: 400px;
+                min-width: 200px;
                 word-wrap: break-word;
                 text-align: left;
             }

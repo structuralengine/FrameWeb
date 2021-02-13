@@ -46,7 +46,8 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.combfsec.fsecCombine;
-    if (this.ResultData.combfsec.fsecCombine > 0) {
+    const keys: string[] = Object.keys(resultjson);
+    if (keys.length > 0) {
     const tables = this.printPickForce(resultjson);
     this.pickFsec_dataset = tables.splid;
     this.pickFsec_title = tables.titleSum;
