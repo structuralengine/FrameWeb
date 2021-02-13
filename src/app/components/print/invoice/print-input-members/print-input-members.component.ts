@@ -15,9 +15,9 @@ import { DataCountService } from "../dataCount.service";
 export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   load_name: string;
   collectionSize: number;
-  countCell: number;
-  countHead: number;
-  countTotal: number = 3;
+  countCell: number  = 0;
+  countHead: number  = 0;
+  countTotal: number = 0;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
@@ -77,7 +77,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
         if (s > keys.length) {
           break_flg = false;
-          this.countHead = page * 3;
+          this.countHead = (page + 1) * 3;
           break;
         }
 
@@ -104,7 +104,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
     const lastArrayCount = lastArray.length + 2;
 
     //全部の行数を取得している。
-    this.countTotal = keys.length + this.countHead;
+    this.countTotal = keys.length + this.countHead + 3;
 
     return { page, splid, this: this.countTotal, last: lastArrayCount };
   }

@@ -46,6 +46,7 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
+  currentY : number = 0;
 
   public node_dataset = [];
   public comb_dataset = [];

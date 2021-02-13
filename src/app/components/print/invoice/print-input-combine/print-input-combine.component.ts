@@ -16,9 +16,9 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
-  countCell: number;
-  countHead: number;
-  countTotal: number = 3;
+  countCell: number  = 0;
+  countHead: number  = 0;
+  countTotal: number = 0;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
