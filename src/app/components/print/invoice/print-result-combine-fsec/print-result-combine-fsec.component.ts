@@ -129,40 +129,12 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
         table3.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        let elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
           this.row = 10;
         } else {
           this.row = 7;
-        }
-
-        //テストデータ
-        for (let a = 1; a < 104; a++) {
-          const a1 = "da";
-          const a2 = "dad";
-          const a3 = a * Math.random();
-          const a4 = a * Math.random();
-          const a5 = a * Math.random();
-          const a6 = a * Math.random();
-          const a7 = a * Math.random();
-          const a8 = a * Math.random();
-          const a9 = a * Math.random();
-          const a10 = a * Math.random();
-          let key: string = a.toString();
-          key += "a";
-          elist[key] = {
-            m: a1,
-            n: a2,
-            l: a3,
-            fx: a4,
-            fy: a5,
-            fz: a6,
-            mx: a7,
-            my: a8,
-            mz: a9,
-            case: a10,
-          };
         }
 
         for (const k of Object.keys(elist)) {
