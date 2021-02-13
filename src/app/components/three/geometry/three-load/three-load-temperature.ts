@@ -73,7 +73,9 @@ export class ThreeLoadTemperature {
     child.name = "child";
 
     // 寸法線
-    child.add(this.getDim(L, offset));
+    const dim = this.getDim(L, offset);
+    dim.visible = false;
+    child.add(dim);
 
     // 全体
     child.name = "child";
@@ -84,7 +86,9 @@ export class ThreeLoadTemperature {
     group0.name = "group";
 
     // 文字を追加する
-    group0.add(this.getText(P1, L, offset));
+    const text = this.getText(P1, L, offset);
+    text.visible = false;
+    group0.add(text);
 
     // 全体の位置を修正する
     const group = new THREE.Group();
@@ -135,12 +139,12 @@ export class ThreeLoadTemperature {
     const size: number = 0.1; // 文字サイズ
 
     const pos = new THREE.Vector2(0, 0);
-    const title = P1.toFixed(2) + '℃';
+    const title = P1.toFixed(2) + 'ｰ';
     const text = this.text.create(title, pos, size);
     text.rotateZ(Math.PI / 2);
     text.position.x = L/2;
     text.position.y = offset;
-    text.name = "text1";
+    text.name = "text";
 
     return text;
   }

@@ -80,7 +80,9 @@ export class ThreeLoadAxial {
     child.name = "child";
 
     // 寸法線
-    child.add(this.getDim(L1, L, L2, offset));
+    const dim = this.getDim(L1, L, L2, offset);
+    dim.visible = false;
+    child.add(dim);
 
     // 全体
     child.name = "child";
@@ -92,6 +94,7 @@ export class ThreeLoadAxial {
 
     // 文字を追加する
     for (const text of this.getText(P1, P2, L1, L1 + L, offset)) {
+      text.visible = false;
       group0.add(text);
     }
 
@@ -181,7 +184,7 @@ export class ThreeLoadAxial {
       text.rotateZ(Math.PI / 2);
       text.position.x = pos1;
       text.position.y = offset;
-      text.name = "text1";
+      text.name = "text";
       result.push(text);
     }
 
@@ -190,7 +193,7 @@ export class ThreeLoadAxial {
       text.rotateZ(Math.PI / 2);
       text.position.x = pos2;
       text.position.y = offset;
-      text.name = "text2";
+      text.name = "text";
       result.push(text);
     }
 

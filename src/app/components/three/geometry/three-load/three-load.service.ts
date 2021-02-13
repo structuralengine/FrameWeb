@@ -928,67 +928,31 @@ export class ThreeLoadService {
     const ThreeObject: THREE.Object3D = targetLoad.ThreeObject;
 
     // 交差しているオブジェクトを取得
-    const intersects = raycaster.intersectObjects(ThreeObject.children);
+    const intersects = raycaster.intersectObjects(ThreeObject.children, true);
     if ( intersects.length <= 0 ){
       return;
     }
 
+    //
+    const target: any = this.getParent(intersects[0].object);
+   
+
     switch (action) {
       case "click":
-        ThreeObject.children.map((item) => {
-          if (intersects.length > 0 && item === intersects[0].object) {
-            /* 色を赤くする
-            const material = item['material'];
-            material["color"].setHex(0xff0000);
-            material["opacity"] = 1.0;
-            */
-          }
-        });
-        break;
-
       case "select":
-        if (intersects.length > 0) {
-          this.selectionItem = null;
+      case "hover":
+          if (intersects.length > 0) {
           ThreeObject.children.map((item) => {
-            const material = item['material'];
-            if (item === intersects[0].object) {
-              /*/ 色を赤くする
-              material["color"].setHex(0xff0000);
-              material["opacity"] = 1.0;
+            if (item === target) {
+              // 寸法線を表示する
+              this.textVisible(item, true);
               this.selectionItem = item;
-              */
             } else {
-              /*/ それ以外は元の色にする
-              material["color"].setHex(0x000000);
-              material["opacity"] = 1.0;
-              */
+              // それ以外は寸法線を非表示にする
+              this.textVisible(item, false);
             }
           });
         }
-        break;
-
-      case "hover":
-        ThreeObject.children.map((item) => {
-          const material = item['material'];
-          if (intersects.length > 0 && item === intersects[0].object) {
-            /* 色を赤くする
-            material["color"].setHex(0xff0000);
-            material["opacity"] = 0.25;
-            */
-          } else {
-            if (item === this.selectionItem) {
-              /*
-              material["color"].setHex(0xff0000);
-              material["opacity"] = 1.0;
-              */
-            } else {
-              /* それ以外は元の色にする
-              material["color"].setHex(0x000000);
-              material["opacity"] = 1.0;
-              */
-            }
-          }
-        });
         break;
 
       default:
@@ -997,6 +961,37 @@ export class ThreeLoadService {
     this.scene.render();
   }
 
+  private getParent(item): any {
 
+    if(['AxialLoad',
+      'DistributeLoad',
+      'MemberMomentLoad',
+      'MemberPointLoad',
+      'MomentLoad',
+      'PointLoad',
+      'TemperatureLoad',
+      'TorsionLoad'].indexOf(item.name) >= 0 ){
+      return item;
+    } else {
+      return this.getParent(item.parent);
+    }
+  }
+
+  private textVisible(item: any, flag: boolean): void {
+    if('name' in item){
+      if(item.name === 'Dimension'){
+        item.visible = flag;
+      }
+      if(item.name === 'text'){
+        item.visible = flag;
+      }
+    }
+    if(!('children' in item)){
+      return;
+    }
+    for(const child of item.children){
+      this.textVisible(child, flag);
+    }
+  }
 
 }

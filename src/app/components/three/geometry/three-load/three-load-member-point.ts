@@ -66,7 +66,9 @@ export class ThreeLoadMemberPoint {
     }
 
     // 寸法線
-    child.add(this.getDim(points, L1, L2));
+    const dim = this.getDim(points, L1, L2);
+    dim.visible = false;
+    child.add(dim);
 
     // 全体
     child.name = "child";
