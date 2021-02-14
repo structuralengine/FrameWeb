@@ -213,41 +213,56 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
         const key: string = KEYS[i];
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
 
-        // x方向Max,minなどのタイプでの分割
-        countCell_type = Object.keys(elist).length;
+      // x方向Max,minなどのタイプでの分割
+      countCell_type = Object.keys(elist).length;
 
-        ROW_type += countCell_type;
-        ROW_case += countCell_type;
+      ROW_type += countCell_type;
+      ROW_case += countCell_type;
 
-        if (ROW_type < 54) {
+      if (ROW_type < 54) {
+        break_after_type.push(false);
+        ROW_type += 5;
+      } else {
+        if (i === 0) {
           break_after_type.push(false);
+          let countHead_break = Math.floor((countCell_type / 54) * 3 + 2);
+          ROW_type += countCell_type + countHead_break;
+          ROW_type = ROW_type % 54;
           ROW_type += 5;
         } else {
-          if (i === 0) {
-            break_after_type.push(false);
-            ROW_type += 5;
-          } else {
-            break_after_type.push(true);
-            ROW_type = 5 ;
-          }
-        }
-      }
-      //荷重タイプごとに分割するかどうか
-      countCell_case += Object.keys(elieli).length;
-      ROW_case += countCell_case;
-      if (ROW_case < 54) {
-        break_after_case.push(false);
-        ROW_case += 7;
-      } else {
-        if (index === "1") {
-          break_after_case.push(false);
-          ROW_case += 7;
-        } else {
-          break_after_case.push(true);
-          ROW_case = 7;
+          break_after_type.push(true);
+          ROW_type = 0;
+          let countHead_break = Math.floor((countCell_type / 54) * 3 + 2);
+          ROW_type += countCell_type + countHead_break;
+          ROW_type = ROW_type % 54;
+          ROW_type += 5;
         }
       }
     }
+
+    //荷重タイプごとに分割するかどうか
+    countCell_case += Object.keys(elieli).length;
+    ROW_case += countCell_case;
+    if (ROW_case < 54) {
+      break_after_case.push(false);
+      ROW_case += 7;
+    } else {
+      if (index === "1") {
+        break_after_case.push(false);
+        let countHead_breakLoad = Math.floor((countCell_type / 54) * 3 + 5);
+        ROW_case += countCell_type + countHead_breakLoad;
+        ROW_case = ROW_type % 54;
+        ROW_case += 7;
+      } else {
+        break_after_case.push(true);
+        let countHead_breakLoad = Math.floor((countCell_type / 54) * 3 + 5);
+        ROW_case += countCell_type + countHead_breakLoad;
+        ROW_case = ROW_type % 54;
+        ROW_case += 7;
+      }
+    }
+  }
+  
     //最後のページの行数だけ取得している
     let lastArrayCount: number = countTotal % 54;
 
