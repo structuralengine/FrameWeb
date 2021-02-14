@@ -4,7 +4,7 @@
     <div *ngFor="let title of elements_typeNum; index as i">
         <div *ngIf="elements_break[i]" class="pagerBreak"></div>
         <h3>タイプ {{title}}</h3>
-        <div *ngFor="let elements_dataset of elements_table[i] index as j">
+        <div *ngFor="let dataset of elements_table[i] index as j">
             <div *ngIf="j > 0" class="pagerBreak"></div>
             <table class="print-sm">
                 <tr>
@@ -26,7 +26,7 @@
                     <th class="I">z軸周り</th>
                     <th class="twist"></th>
                 </tr>
-                <tr *ngFor="let data of elements_dataset">
+                <tr *ngFor="let data of dataset">
                     <td class="id">{{data[0]}}</td>
                     <td class="A">{{data[1]}}</td>
                     <td class="E">{{data[2]}}</td>

@@ -19,6 +19,7 @@ export class PrintService {
       false,
       false,
       false,
+      false
     ];
   }
 

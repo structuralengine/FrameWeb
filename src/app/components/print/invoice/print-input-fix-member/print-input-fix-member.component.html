@@ -4,7 +4,7 @@
     <div *ngFor="let title of fixMember_typeNum; index as i">
         <div *ngIf="fixMember_break[i]" class="pagerBreak"></div>
         <h3>タイプ{{title}}</h3>
-        <div *ngFor="let fixMember_dataset of fixMember_table[i] index as j">
+        <div *ngFor="let dataset of fixMember_table[i] index as j">
             <div *ngIf="j > 0" class="pagerBreak"></div>
             <table class="print-lg">
                 <tr>
@@ -21,7 +21,7 @@
                     <th class="TZ">(kN/m)</th>
                     <th class="TR">(kN/rad)</th>
                 </tr>
-                <tr *ngFor="let data of fixMember_dataset">
+                <tr *ngFor="let data of dataset">
                     <td class="id">{{data[0]}}</td>
                     <td class="TX">{{data[1]}}</td>
                     <td class="TY">{{data[2]}}</td>

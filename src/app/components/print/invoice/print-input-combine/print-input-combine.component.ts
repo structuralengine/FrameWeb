@@ -16,8 +16,8 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
   collectionSize: number;
-  countCell: number  = 0;
-  countHead: number  = 0;
+  countCell: number = 0;
+  countHead: number = 0;
   countTotal: number = 0;
   btnPickup: string;
   tableHeight: number;
@@ -58,13 +58,13 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
 
   // COMBINEデータ  を印刷する
   private printCombine(json): any {
-    let body: any [] = new Array();
+    let body: any[] = new Array();
     let page: number = 0;
-    
+
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
     const splid: any[] = new Array();
@@ -72,7 +72,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
 
     for (const index of Object.keys(json)) {
       if (index === "1") {
-        row = 3;
+        row = 5;
       } else {
         row = 2;
       }
@@ -126,7 +126,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
       }
 
       //１テーブルで59行以上  になったら
-      if (row > 59) {
+      if (row > 54) {
         splid.push(body);
         body = [];
         row = 2;
