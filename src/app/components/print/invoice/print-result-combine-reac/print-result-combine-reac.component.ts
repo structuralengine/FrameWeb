@@ -134,9 +134,9 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
-          this.row = 8;
+          this.row = 9;
         } else {
-          this.row =  4;
+          this.row = 6;
         }
 
 
@@ -207,7 +207,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     const break_after_case: boolean[] = new Array();
     const break_after_type: boolean[] = new Array();
     let ROW_type = 4; // 行
-    let ROW_case = 8;
+    let ROW_case = 9;
     let countCell_type: number = 0;
     let countCell_case: number = 0;
     for (const index of Object.keys(json)) {
