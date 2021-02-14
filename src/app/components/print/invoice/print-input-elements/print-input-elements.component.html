@@ -6,7 +6,7 @@
         <h3>タイプ {{title}}</h3>
         <div *ngFor="let elements_dataset of elements_table[i] index as j">
             <div *ngIf="j > 0" class="pagerBreak"></div>
-            <table class="print-md">
+            <table class="print-sm">
                 <tr>
                     <th class="id">No</th>
                     <th class="A">A</th>
@@ -22,7 +22,7 @@
                     <th class="E">(kN/㎡)</th>
                     <th class="G">(kN/㎡)</th>
                     <th class="ESP"></th>
-                    <th class="I">y軸周り</th>
+                    <th class="y1">y軸周り</th>
                     <th class="I">z軸周り</th>
                     <th class="twist"></th>
                 </tr>
@@ -32,7 +32,7 @@
                     <td class="E">{{data[2]}}</td>
                     <td class="G">{{data[3]}}</td>
                     <td class="ESP">{{data[4]}}</td>
-                    <td class="I">{{data[5]}}</td>
+                    <td class="y1">{{data[5]}}</td>
                     <td class="I">{{data[6]}}</td>
                     <td class="twist">{{data[7]}}</td>
                 </tr>
