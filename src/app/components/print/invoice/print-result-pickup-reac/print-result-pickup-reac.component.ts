@@ -44,21 +44,19 @@ export class PrintResultPickupReacComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.pickreac.reacPickup;
     const keys: string[] = Object.keys(resultjson);
     if (keys.length > 0) {
-    const tables = this.printPickReact(resultjson);
-    this.pickReac_dataset = tables.splid;
-    this.pickReac_title = tables.titleSum;
-    // this.pickReac_type = tables.typeSum;
-    this.pickReac_case_break = tables.break_after_case;
-    this.pickReac_type_break = tables.break_after_type;
-    this.judge = this.countArea.setCurrentY(tables.this, tables.last);
-  } else {
-    this.countArea.setData(17);
+      const tables = this.printPickReact(resultjson);
+      this.pickReac_dataset = tables.splid;
+      this.pickReac_title = tables.titleSum;
+      this.pickReac_case_break = tables.break_after_case;
+      this.pickReac_type_break = tables.break_after_type;
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
+      this.countArea.setData(17);
+    }
   }
-}
 
   ngAfterViewInit() {}
 
@@ -85,24 +83,20 @@ export class PrintResultPickupReacComponent implements OnInit {
     //   'x軸回りの回転反力 最大', 'x軸回りの回転反力 最小', 'y軸回りの回転反力 最大', 'y軸回りの回転反力 最小', 'z軸回りの回転反力 最大', 'Z軸回りの回転反力 最小'];
 
     const keys: string[] = Object.keys(json);
-    
+
     //　テーブル
     const splid: any = [];
-    let table1: any = [];
-    let table2: any = [];
-    let table3: any = [];
-    let table4: any = [];
-    //const titleSum: string[] = new Array();
+    let typeData: any = [];
+    let typeDefinition: any = [];
+    let typeName: any = [];
+    let typeAll: any = [];
     this.row = 0;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
 
-      const typeName: any = [];
-
       // 荷重名称
       const title: any = [];
       let loadName: string = "";
-      //const l: any = this.InputData.load.getLoadNameJson(null, index);
       const combineJson: any = this.InputData.combine.getCombineJson();
       if (index in combineJson) {
         if ("name" in combineJson[index]) {
@@ -113,17 +107,12 @@ export class PrintResultPickupReacComponent implements OnInit {
         }
       }
       titleSum.push(title);
-      //   const title: string = TITLES[i];
-
-      //   let body: any[] = new Array();
-
-      //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
       let table: any = [];
       let type: any = [];
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
-        table3.push(this.key);
+        typeName.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
@@ -150,7 +139,7 @@ export class PrintResultPickupReacComponent implements OnInit {
           body.push(line);
           this.row++;
 
-          //１テーブルで59行以上データがあるならば
+          //１テーブルで54行以上データがあるならば
           if (this.row > 54) {
             table.push(body);
             body = [];
@@ -162,19 +151,18 @@ export class PrintResultPickupReacComponent implements OnInit {
         }
 
         if (table.length > 0) {
-          table1.push(table);
+          typeData.push(table);
           table = [];
         }
-        table2.push(table3, table1);
-        table4.push(table2);
-        table3 = [];
-        table1 = [];
-        table2 = [];
+        typeDefinition.push(typeName, typeData);
+        typeAll.push(typeDefinition);
+        typeName = [];
+        typeData = [];
+        typeDefinition = [];
       }
 
-      splid.push(table4);
-      table4 = [];
-      // body.push(table1);
+      splid.push(typeAll);
+      typeAll = [];
     }
 
     let countHead: number = 0;
@@ -210,61 +198,52 @@ export class PrintResultPickupReacComponent implements OnInit {
         const key: string = KEYS[i];
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
 
-       // x方向Max,minなどのタイプでの分割
-       countCell_type = Object.keys(elist).length;
+        // x方向Max,minなどのタイプでの分割
+        countCell_type = Object.keys(elist).length;
 
-       ROW_type += countCell_type;
-       ROW_case += countCell_type;
+        ROW_type += countCell_type;
+        ROW_case += countCell_type;
 
-       if (ROW_type < 54) {
-         break_after_type.push(false);
-         ROW_type += 4;
-       } else {
-         if (i === 0) {
-           break_after_type.push(false);
-           let countHead_break = Math.floor((countCell_type / 54) * 2 + 2);
-           ROW_type += countCell_type + countHead_break;
-           ROW_type = ROW_type % 54;
-           ROW_type += 4;
-         } else {
-           break_after_type.push(true);
-           ROW_type = 0;
-           let countHead_break = Math.floor((countCell_type / 54) * 2 + 2);
-           ROW_type += countCell_type + countHead_break;
-           ROW_type = ROW_type % 54;
-           ROW_type += 4;
-         }
-       }
-     }
+        if (ROW_type < 54) {
+          break_after_type.push(false);
+          ROW_type += 4;
+        } else {
+          if (i === 0) {
+            break_after_type.push(false);
+          } else {
+            break_after_type.push(true);
+            ROW_type = 0;
+          }
+          let countHead_break = Math.floor((countCell_type / 54) * 2 + 2);
+          ROW_type += countCell_type + countHead_break;
+          ROW_type = ROW_type % 54;
+          ROW_type += 4;
+        }
+      }
 
-     //荷重タイプごとに分割するかどうか
-     countCell_case += Object.keys(elieli).length;
-     ROW_case += countCell_case;
-     if (ROW_case < 54) {
-       break_after_case.push(false);
-       ROW_case += 6;
-     } else {
-       if (index === "1") {
-         break_after_case.push(false);
-         let countHead_breakLoad = Math.floor((countCell_type / 54) * 2 + 5);
-         ROW_case += countCell_type + countHead_breakLoad;
-         ROW_case = ROW_type % 54;
-         ROW_case += 6;
-       } else {
-         break_after_case.push(true);
-         let countHead_breakLoad = Math.floor((countCell_type / 54) * 2+ 5);
-         ROW_case += countCell_type + countHead_breakLoad;
-         ROW_case = ROW_type % 54;
-         ROW_case += 6;
-       }
-     }
-   }
+      //荷重タイプごとに分割するかどうか
+      countCell_case += Object.keys(elieli).length;
+      ROW_case += countCell_case;
+      if (ROW_case < 54) {
+        break_after_case.push(false);
+        ROW_case += 6;
+      } else {
+        if (index === "1") {
+          break_after_case.push(false);
+        } else {
+          break_after_case.push(true);
+        }
+        let countHead_breakLoad = Math.floor((countCell_type / 54) * 2 + 5);
+        ROW_case += countCell_type + countHead_breakLoad;
+        ROW_case = ROW_type % 54;
+        ROW_case += 6;
+      }
+    }
     //最後のページの行数だけ取得している
     let lastArrayCount: number = countTotal % 54;
 
     return {
       titleSum,
-      table1,
       splid,
       typeSum,
       break_after_case,
