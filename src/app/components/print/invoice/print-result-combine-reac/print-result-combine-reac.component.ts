@@ -92,17 +92,15 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     const keys: string[] = Object.keys(json);
 
     //　テーブル
-    const splid:  any[] = new Array();
-    let   table1: any[] = new Array();
-    let   table2: any[] = new Array();
-    let   table3: any[] = new Array();
-    let   table4: any[] = new Array();
+    const splid: any[] = new Array();
+    let typeData: any[] = new Array();
+    let typeName: any[] = new Array();
+    let typeDefinition: any[] = new Array();
+    let typeAll: any[] = new Array();
     //const titleSum: string[] = new Array();
     this.row = 0;
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
-
-      const typeName: any[] = new Array();
 
       // 荷重名称
       const title: any[] = new Array();
@@ -118,17 +116,12 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         }
       }
       titleSum.push(title);
-      //   const title: string = TITLES[i];
-
-      //   let body: any[] = new Array();
-
-      //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
       let table: any[] = new Array();
       let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
-        table3.push(this.key);
+        typeName.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
@@ -138,7 +131,6 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         } else {
           this.row = 6;
         }
-
 
         for (const k of Object.keys(elist)) {
           const item = elist[k];
@@ -168,19 +160,18 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         }
 
         if (table.length > 0) {
-          table1.push(table);
+          typeData.push(table);
           table = [];
         }
-        table2.push(table3, table1);
-        table4.push(table2);
-        table3 = [];
-        table1 = [];
-        table2 = [];
+        typeDefinition.push(typeName, typeData);
+        typeAll.push(typeDefinition);
+        typeData = [];
+        typeName = [];
+        typeDefinition = [];
       }
 
-      splid.push(table4);
-      table4 = [];
-      // body.push(table1);
+      splid.push(typeAll);
+      typeAll = [];
     }
 
     let countHead: number = 0;
@@ -216,62 +207,53 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
         const key: string = KEYS[i];
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
 
-       // x方向Max,minなどのタイプでの分割
-       countCell_type = Object.keys(elist).length;
+        // x方向Max,minなどのタイプでの分割
+        countCell_type = Object.keys(elist).length;
 
-       ROW_type += countCell_type;
-       ROW_case += countCell_type;
+        ROW_type += countCell_type;
+        ROW_case += countCell_type;
 
-       if (ROW_type < 54) {
-         break_after_type.push(false);
-         ROW_type += 4;
-       } else {
-         if (i === 0) {
-           break_after_type.push(false);
-           let countHead_break = Math.floor((countCell_type / 54) * 2 + 2);
-           ROW_type += countCell_type + countHead_break;
-           ROW_type = ROW_type % 54;
-           ROW_type += 4;
-         } else {
-           break_after_type.push(true);
-           ROW_type = 0;
-           let countHead_break = Math.floor((countCell_type / 54) * 2 + 2);
-           ROW_type += countCell_type + countHead_break;
-           ROW_type = ROW_type % 54;
-           ROW_type += 4;
-         }
-       }
-     }
+        if (ROW_type < 54) {
+          break_after_type.push(false);
+          ROW_type += 4;
+        } else {
+          if (i === 0) {
+            break_after_type.push(false);
+          } else {
+            break_after_type.push(true);
+            ROW_type = 0;
+          }
+          let countHead_break = Math.floor((countCell_type / 54) * 2 + 2);
+          ROW_type += countCell_type + countHead_break;
+          ROW_type = ROW_type % 54;
+          ROW_type += 4;
+        }
+      }
 
-     //荷重タイプごとに分割するかどうか
-     countCell_case += Object.keys(elieli).length;
-     ROW_case += countCell_case;
-     if (ROW_case < 54) {
-       break_after_case.push(false);
-       ROW_case += 6;
-     } else {
-       if (index === "1") {
-         break_after_case.push(false);
-         let countHead_breakLoad = Math.floor((countCell_type / 54) * 2 + 5);
-         ROW_case += countCell_type + countHead_breakLoad;
-         ROW_case = ROW_type % 54;
-         ROW_case += 6;
-       } else {
-         break_after_case.push(true);
-         let countHead_breakLoad = Math.floor((countCell_type / 54) * 2+ 5);
-         ROW_case += countCell_type + countHead_breakLoad;
-         ROW_case = ROW_type % 54;
-         ROW_case += 6;
-       }
-     }
-   }
+      //荷重タイプごとに分割するかどうか
+      countCell_case += Object.keys(elieli).length;
+      ROW_case += countCell_case;
+      if (ROW_case < 54) {
+        break_after_case.push(false);
+        ROW_case += 6;
+      } else {
+        if (index === "1") {
+          break_after_case.push(false);
+        } else {
+          break_after_case.push(true);
+        }
+        let countHead_breakLoad = Math.floor((countCell_type / 54) * 2 + 5);
+        ROW_case += countCell_type + countHead_breakLoad;
+        ROW_case = ROW_type % 54;
+        ROW_case += 6;
+      }
+    }
 
     //最後のページの行数だけ取得している
     let lastArrayCount: number = countTotal % 54;
 
     return {
       titleSum,
-      table1,
       splid,
       typeSum,
       break_after_case,
@@ -281,51 +263,3 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     };
   }
 }
-
-//     for (const index of Object.keys(json)) {
-//       const typeName: any = [];
-//       // 荷重名称
-//       const title: any = [];
-//       let loadName: string = "";
-//       //const l: any = this.InputData.load.getLoadNameJson(null, index);
-//       const combineJson: any = this.InputData.combine.getCombineJson();
-//       if (index in combineJson) {
-//         if ("name" in combineJson[index]) {
-//           loadName = combineJson[index].name;
-//           title.push(["Case" + index, loadName]);
-//         } else {
-//           title.push(["Case" + index]);
-//         }
-//       }
-//       titleSum.push(title);
-
-//       const table1: any = [];
-//       for (let i = 0; i < KEYS.length; i++) {
-//         const key: string = KEYS[i];
-//         const elieli = json[index]; // 1行分のnodeデータを取り出す
-//         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
-//         const table: any = [];
-//         for (const k of Object.keys(elist)) {
-//           const item = elist[k];
-//           // 印刷する1行分のリストを作る
-//           const line: string[] = new Array();
-//           line.push(item.id.toString());
-//           line.push(item.tx.toFixed(2));
-//           line.push(item.ty.toFixed(2));
-//           line.push(item.tz.toFixed(2));
-//           line.push(item.mx.toFixed(2));
-//           line.push(item.my.toFixed(2));
-//           line.push(item.mz.toFixed(2));
-//           line.push(item.case);
-//           table.push(line);
-//         }
-//         typeName.push(key);
-//         table1.push(table);
-//       }
-//       body.push(table1);
-//       typeSum.push(typeName);
-//     }
-
-//     return { titleSum, body, typeSum };
-//   }
-// }

@@ -145,20 +145,15 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
      } else {
        if (index === "1") {
          break_after.push(false);
-         let countHead_break = Math.floor((countCell / 54) * 3 + 2);
-         this.reROW = ROW % 55;
-         ROW += countHead_break;
-         ROW = ROW % 54;
-         ROW += 5;
        } else {
          break_after.push(true);
          ROW = 0;
-         let countHead_break = Math.floor((countCell / 54) * 3 + 2);
-         this.reROW = ROW % 55;
-         ROW += countHead_break + countCell;
-         ROW = ROW % 54;
-         ROW += 5;
-       }
+        }
+        let countHead_break = Math.floor((countCell / 54) * 3 + 2);
+        this.reROW = ROW % 55;
+        ROW += countHead_break + countCell;
+        ROW = ROW % 54;
+        ROW += 5;
      }
    }
 

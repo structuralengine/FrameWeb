@@ -136,49 +136,4 @@ export class InvoiceComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {}
 
-  // public printData(mode: string): any {
-  //  switch (mode) {
-
-  //     case 'result-disg':
-  //       this.printDisg(doc);
-  //       break;
-  //     case 'result-comb_disg':
-  //       this.printCombDisg(doc);
-  //       break;
-  //     case 'result-pic_disg':
-  //       this.printCombDisg(doc, 'PICKUP');
-  //       break;
-  //     case 'result-reac':
-  //       this.printReact(doc);
-  //       break;
-  //     case 'result-comb_reac':
-  //       this.printCombReact(doc);
-  //       break;
-  //     case 'result-pic_reac':
-  //       this.printCombReact(doc, 'PICKUP');
-  //       break;
-
-  //     case 'result-fsec':
-  //       this.printForce(doc);
-  //       break;
-  //     case 'result-comb_fsec':
-  //       this.printCombForce(doc);
-  //       break;
-  //     case 'result-pic_fsec':
-  //       this.printCombForce(doc, 'PICKUP');
-  //       break;
-
-  //     /*
-  //     case 'input-loads':
-  //       // 荷重図を描画する
-  //       break;
-  //     */
-
-  //     default:
-  //       this.printInputData(doc);
-  //       break;
-  //   }
-
-  //   return doc;
-  // }
 }
