@@ -91,21 +91,18 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     
     //　テーブル
     const splid:  any[] = new Array();
-    let   table1: any[] = new Array();
-    let   table2: any[] = new Array();
-    let   table3: any[] = new Array();
-    let   table4: any[] = new Array();
+    let typeData: any = [];
+    let typeName:  any = [];
+    let typeDefinition: any = [];
+    let typeAll: any = [];
     this.row = 0;
 
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
 
-      const typeName: any[] = new Array();
-
       // 荷重名称
       const title: any [] = new Array();
       let loadName: string = "";
-      //const l: any = this.InputData.load.getLoadNameJson(null, index);
       const combineJson: any = this.InputData.combine.getCombineJson();
       if (index in combineJson) {
         if ("name" in combineJson[index]) {
@@ -116,17 +113,12 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
         }
       }
       titleSum.push(title);
-      //   const title: string = TITLES[i];
-
-      //   let body: any[] = new Array();
-
-      //   doc.text(this.margine.left + (fontsize / 2), currentY + LineFeed, title);
 
       let table: any[] = new Array();
       let type:  any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         this.key = KEYS[i];
-        table3.push(this.key);
+        typeName.push(this.key);
 
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
@@ -167,17 +159,17 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
         }
 
         if (table.length > 0) {
-          table1.push(table);
+          typeData.push(table);
           table = [];
         }
-        table2.push(table3, table1);
-        table4.push(table2);
-        table3 = [];
-        table1 = [];
-        table2 = [];
+        typeDefinition.push(typeName, typeData);
+        typeAll.push(typeDefinition);
+        typeName = [];
+        typeData = [];
+        typeDefinition = [];
       }
-      splid.push(table4);
-      table4 = [];
+      splid.push(typeAll);
+      typeAll = [];
     }
 
     let countHead: number = 0;
@@ -225,18 +217,14 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       } else {
         if (i === 0) {
           break_after_type.push(false);
-          let countHead_break = Math.floor((countCell_type / 54) * 3 + 2);
-          ROW_type += countCell_type + countHead_break;
-          ROW_type = ROW_type % 54;
-          ROW_type += 5;
         } else {
           break_after_type.push(true);
           ROW_type = 0;
-          let countHead_break = Math.floor((countCell_type / 54) * 3 + 2);
-          ROW_type += countCell_type + countHead_break;
-          ROW_type = ROW_type % 54;
-          ROW_type += 5;
         }
+        let countHead_break = Math.floor((countCell_type / 54) * 3 + 2);
+        ROW_type += countCell_type + countHead_break;
+        ROW_type = ROW_type % 54;
+        ROW_type += 5;
       }
     }
 
@@ -249,17 +237,13 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     } else {
       if (index === "1") {
         break_after_case.push(false);
-        let countHead_breakLoad = Math.floor((countCell_type / 54) * 3 + 5);
-        ROW_case += countCell_type + countHead_breakLoad;
-        ROW_case = ROW_type % 54;
-        ROW_case += 7;
       } else {
         break_after_case.push(true);
-        let countHead_breakLoad = Math.floor((countCell_type / 54) * 3 + 5);
-        ROW_case += countCell_type + countHead_breakLoad;
-        ROW_case = ROW_type % 54;
-        ROW_case += 7;
       }
+      let countHead_breakLoad = Math.floor((countCell_type / 54) * 3 + 5);
+      ROW_case += countCell_type + countHead_breakLoad;
+      ROW_case = ROW_type % 54;
+      ROW_case += 7;
     }
   }
   
@@ -268,7 +252,6 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
 
     return {
       titleSum,
-      table1,
       table:splid,
       typeSum,
       break_after_case,
