@@ -66,9 +66,9 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     const splid: any[] = new Array();
     for (const index of Object.keys(json)) {
       if (index === "1") {
-        row = 3;
+        row = 5;
       } else {
-        row = 1;
+        row = 2;
       }
       const item = json[index]; // 1行分のnodeデータを取り出す
 

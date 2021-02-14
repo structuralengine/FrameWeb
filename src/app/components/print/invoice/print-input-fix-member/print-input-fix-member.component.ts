@@ -68,41 +68,6 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
     const json: {} = inputJson["fix_member"];
     const keys: string[] = Object.keys(json);
 
-    // 各タイプの前に改ページ（break_after）が必要かどうか判定する
-    const break_after: boolean[] = new Array();
-    let ROW = 8;
-    for (const index of keys) {
-      this.reROW = 0;
-      const elist = json[index]; // 1テーブル分のデータを取り出す
-      let countCell = Object.keys(elist).length;
-      ROW += countCell;
-      
-      if (ROW < 54) {
-        break_after.push(false);
-        this.reROW = ROW + 5;
-        ROW = ROW + 5;
-      } else {
-        if (index === "1") {
-          break_after.push(false);
-          let countHead_break = Math.floor((countCell / 54) *3 +2);
-          ROW += countHead_break;
-          ROW = ROW % 54;
-          this.reROW = ROW % 55;
-          ROW += 5;
-        } else {
-          break_after.push(true);
-          ROW = 0;
-          let countHead_break = Math.floor((countCell / 54) *3 + 2);
-          ROW += countHead_break + countCell;
-          ROW = ROW % 54;
-          this.reROW = ROW % 55;
-          ROW += 5;
-        }
-      }
-    }
-
-    this.remainCount = this.reROW;
-
     // テーブル
     const splid: any[] = new Array();
     const title: string[] = new Array();
@@ -151,6 +116,36 @@ export class PrintInputFixMemberComponent implements OnInit, AfterViewInit {
     const countSemiHead = splid.length * 2 ;
     const countTotal = countCell + countHead + countSemiHead + 3;
     
+    
+    // 各タイプの前に改ページ（break_after）が必要かどうか判定する
+    const break_after: boolean[] = new Array();
+    let ROW = 8;
+    for (const index of keys) {
+      this.reROW = 0;
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      let countCell = Object.keys(elist).length;
+      ROW += countCell;
+      
+      if (ROW < 54) {
+        break_after.push(false);
+        this.reROW = ROW + 5;
+        ROW = ROW + 5;
+      } else {
+        if (index === "1") {
+          break_after.push(false);
+        } else {
+          break_after.push(true);
+          ROW = 0;
+        }
+        let countHead_break = Math.floor((countCell / 54) *3 + 2);
+        ROW += countHead_break + countCell;
+        ROW = ROW % 54;
+        this.reROW = ROW % 55;
+        ROW += 5;
+      }
+    }
+
+    this.remainCount = this.reROW;
    
     //最後のページにどれだけデータが残っているかを求める
     let lastArrayCount: number = this.remainCount;

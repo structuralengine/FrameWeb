@@ -66,9 +66,9 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
 
     for (const index of keys) {
       if (index === "1") {
-        row = 2;
+        row = 5;
       } else {
-        row = 1;
+        row = 2;
       }
 
       const item = json[index]; // 1行分のnodeデータを取り出す
@@ -105,7 +105,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
       }
 
       //１テーブルで59行以上  になったら
-      if (row > 59) {
+      if (row > 54) {
         splid.push(body);
         body = [];
         row = 2;

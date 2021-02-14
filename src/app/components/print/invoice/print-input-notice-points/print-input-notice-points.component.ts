@@ -75,8 +75,6 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       i++;
     }
 
-    //const keys: string[] = Object.keys(json);
-
     // テーブル
     const splid: any[] = new Array();
     let row:number = 6; // タイトル行
@@ -136,59 +134,3 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
     };
   }
 }
-
-//     while (break_flg) {
-//       for (let i = 0; i < 59; i++) {
-//         let line: string[] = new Array();
-//         let index: string = keys[i];
-//         const item = json[index]; // 1行分のnodeデータを取り出す
-//         const len: number = this.InputData.member.getMemberLength(item.m); // 部材長さ
-//         const j = page * 59 + i + 1;
-//         const s = j + 1;
-
-//         if (s > keys.length) {
-//           break_flg = false;
-//           break;
-//         }
-
-//         if (len !== null) {
-//           line.push(len.toFixed(3));
-//         } else {
-//           line.push("");
-//         }
-
-//         let counter: number = 0;
-//         for (const key of Object.keys(item.Points)) {
-//           line.push(item.Points[key].toFixed(3));
-//           counter += 1;
-//           if (counter === 9) {
-//             body.push(line); // 表の1行 登録
-//             counter = 0;
-//             line = new Array();
-//             line.push(""); // 部材No
-//             line.push(""); // 部材長
-//           }
-//         }
-//         if (counter > 0) {
-//           body.push(line); // 表の1行 登録
-//         }
-//       }
-
-//       if (body.length === 0) {
-//         break;
-//       }
-//       splid.push(body);
-//       body = [];
-//       page++;
-//     }
-
-//     //最後のページの行数だけ取得している
-//     const lastArray = splid.slice(-1)[0];
-//     const lastArrayCount = lastArray.length;
-
-//     //全部の行数を取得している。
-//     this.countTotal = keys.length;
-
-//     return { page, splid, this: this.countTotal, last: lastArrayCount };
-//   }
-// }

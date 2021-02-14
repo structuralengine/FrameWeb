@@ -100,9 +100,6 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
-      if (index === "12") {
-        console.log("d");
-      }
       ROW_mn += 2;
       if ("load_member" in elist) {
         countCell_member = elist.load_member.length;

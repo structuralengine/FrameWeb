@@ -18,14 +18,14 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   collectionSize: number;
   countCell: number = 0;
   countHead: number = 0;
-  countTotal: number= 0;
+  countTotal: number = 0;
   fixNode_countArea: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
-  reROW : number = 0;
-  remainCount : number = 0;
+  reROW: number = 0;
+  remainCount: number = 0;
 
   public fixNode_table = [];
   public fixNode_break = [];
@@ -61,47 +61,12 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
 
   // 支点データ fix_node を印刷する
   private printFixnode(inputJson): any {
     const json: {} = inputJson["fix_node"];
     const keys: string[] = Object.keys(json);
-
-    // 各タイプの前に改ページ（break_after）が必要かどうか判定する
-    const break_after: boolean[] = new Array();
-    let ROW = 8;
-    for (const index of keys) {
-      this.reROW = 0;
-      const elist = json[index]; // 1テーブル分のデータを取り出す
-      let countCell = Object.keys(elist).length;
-      ROW += countCell;
-      
-      if (ROW < 54) {
-        break_after.push(false);
-        this.reROW = ROW + 5;
-        ROW = ROW + 5;
-      } else {
-        if (index === "1") {
-          break_after.push(false);
-          let countHead_break = Math.floor((countCell / 54) *3 + 2);
-          this.reROW = ROW % 55;
-          ROW += countHead_break;
-          ROW = ROW % 54;
-          ROW += 5;
-        } else {
-          break_after.push(true);
-          ROW = 0;
-          let countHead_break = Math.floor((countCell / 54) *3 + 2);
-          this.reROW = ROW % 55;
-          ROW += countHead_break+ countCell;
-          ROW = ROW % 54;
-          ROW += 5;
-        }
-      }
-    }
-
-    this.remainCount = this.reROW;
 
     // テーブル
     const splid: any[] = new Array();
@@ -141,7 +106,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
         table.push(body);
       }
       splid.push(table);
-      row = 5; 
+      row = 5;
     }
 
     // 全体の高さを計算する
@@ -151,12 +116,41 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       countCell += Object.keys(elist).length;
     }
     const countHead = keys.length * 3;
-    const countSemiHead = splid.length * 2 ;
+    const countSemiHead = splid.length * 2;
     const countTotal = countCell + countHead + countSemiHead + 3;
-    
+
+    // 各タイプの前に改ページ（break_after）が必要かどうか判定する
+    const break_after: boolean[] = new Array();
+    let ROW = 8;
+    for (const index of keys) {
+      this.reROW = 0;
+      const elist = json[index]; // 1テーブル分のデータを取り出す
+      let countCell = Object.keys(elist).length;
+      ROW += countCell;
+
+      if (ROW < 54) {
+        break_after.push(false);
+        this.reROW = ROW + 5;
+        ROW = ROW + 5;
+      } else {
+        if (index === "1") {
+          break_after.push(false);
+        } else {
+          break_after.push(true);
+          ROW = 0;
+        }
+        let countHead_break = Math.floor((countCell / 54) * 3 + 2);
+        this.reROW = ROW % 55;
+        ROW += countHead_break + countCell;
+        ROW = ROW % 54;
+        ROW += 5;
+      }
+    }
+
+    this.remainCount = this.reROW;
+
     //最後のページにどれだけデータが残っているかを求める
     let lastArrayCount: number = this.remainCount;
-    
 
     return {
       table: splid, // [タイプ１のテーブルリスト[], タイプ２のテーブルリスト[], ...]
