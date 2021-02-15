@@ -66,7 +66,7 @@ export class ResultCombineFsecService {
 
   }
 
-  public setFsecCombineJson(combList: any, pickList: any): void {
+  public setFsecCombineJson(defList: any, combList: any, pickList: any): void {
 
     // 全ケースで共通する着目点のみ対象とする
     const noticePoints = {};
@@ -96,7 +96,7 @@ export class ResultCombineFsecService {
       fsec: this.fsec.fsec,
       noticePoints
     };
-
+    /*
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
@@ -111,9 +111,26 @@ export class ResultCombineFsecService {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
     }
+    */
 
+   const fsec = this.fsec.fsec; 
+    // defineのループ
+    for(const defNo of Object.keys(defList)){
+      const resultFsec = {
+        fx_max: {}, fx_min: {}, fy_max: {}, fy_min: {}, fz_max: {}, fz_min: {},
+        mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {}
+      };
+      const defines: any[] = defList[defNo];
+      for (const caseNo of defines) {
+        const force = fsec[caseNo];
+        for( const point of force){
+          if(point.m.trim().length > 0){
+            console.log();
+          }
+        }
+      }
+    }
 
-    /*
     // combineのループ
     for (const combNo of Object.keys(combList)) {
       const resultFsec = {
@@ -127,8 +144,8 @@ export class ResultCombineFsecService {
         const combineFsec = { fx: {}, fy: {}, fz: {}, mx: {}, my: {}, mz: {} };
 
         let row: number = 0;
-        for(const m of Object.keys(noticePoints)){
-          for (const point of noticePoints[m]){
+        for (const m of Object.keys(noticePoints)) {
+          for (const point of noticePoints[m]) {
 
             let caseStr: string = '';
             for (const caseInfo of com) {
@@ -137,23 +154,23 @@ export class ResultCombineFsecService {
               } else {
                 caseStr += '-' + caseInfo.caseNo.toString();
               }
-              if (!(caseInfo.caseNo in this.fsec.fsec)) {
+              if (!(caseInfo.caseNo in fsec)) {
                 for (const key1 of Object.keys(combineFsec)) {
-                  for (const key2 of Object.keys(combineFsec[key1])){
+                  for (const key2 of Object.keys(combineFsec[key1])) {
                     combineFsec[key1][key2].case = caseStr;
                   }
                 }
                 continue;
               }
 
-              const Fsecs: any[] = this.fsec.fsec[caseInfo.caseNo];
+              const Fsecs: any[] = fsec[caseInfo.caseNo];
 
               // 同じ部材の同じ着目点位置の断面力を探す
               let f: Object = undefined;
               let mm: string;
               for (const result of Fsecs) {
                 mm = result.m.length > 0 ? result.m : mm;
-                if (mm === m && point === result.l){
+                if (mm === m && point === result.l) {
                   f = result;
                   break;
                 }
@@ -165,18 +182,18 @@ export class ResultCombineFsecService {
               // fx, fy … のループ
               for (const key1 of Object.keys(combineFsec)) {
                 const value = combineFsec[key1];
-                const temp: {} = (row.toString() in value) ? value[row.toString()] : { row: row, fx: 0, fy: 0, fz: 0, mx: 0, my: 0, mz: 0, case: '' };
+                const temp: {} = (row.toString() in value) ? value[row.toString()] : { row, fx: 0, fy: 0, fz: 0, mx: 0, my: 0, mz: 0, case: '' };
 
                 // x, y, z, 変位, 回転角 のループ
                 for (const key2 in f) {
                   if (key2 === 'row') {
                     continue;
-                  } else if (key2 === 'm' ) {
+                  } else if (key2 === 'm') {
                     temp[key2] = m;
-                  } else if (key2 === 'l' ) {
+                  } else if (key2 === 'l') {
                     temp[key2] = point;
                   } else if (key2 === 'n') {
-                    if(this.helper.toNumber(f[key2]) !== null){
+                    if (this.helper.toNumber(f[key2]) !== null) {
                       temp[key2] = f[key2];
                     }
                   } else {
@@ -190,7 +207,7 @@ export class ResultCombineFsecService {
               }
               // end caseInfo
             }
-            row++
+            row++;
             // end point
           }
           // end m
@@ -212,7 +229,7 @@ export class ResultCombineFsecService {
                 continue;
               }
               const target = current[id];
-              const comparison = old[id]
+              const comparison = old[id];
               if ((n === 0 && comparison[key1] < target[key1])
                 || (n > 0 && comparison[key1] > target[key1])) {
                 old[id] = target;
@@ -223,10 +240,9 @@ export class ResultCombineFsecService {
         }
 
       }
-      this.fsecCombine[combNo] = resultFsec;
+      // fsecCombine[combNo] = resultFsec;
     }
-    this.isChange = false;
-    */
+
   }
 
   public getFsecJson(): object {

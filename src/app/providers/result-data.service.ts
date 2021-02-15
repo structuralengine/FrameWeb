@@ -218,9 +218,9 @@ export class ResultDataService {
       pickList[pickNo] = combines;
     }
 
-    this.combdisg.setDisgCombineJson(combList, pickList);
-    this.combreac.setReacCombineJson(combList, pickList);
-    this.combfsec.setFsecCombineJson(combList, pickList);
+    this.combdisg.setDisgCombineJson(defList, combList, pickList);
+    this.combreac.setReacCombineJson(defList, combList, pickList);
+    this.combfsec.setFsecCombineJson(defList, combList, pickList);
     // this.pickdisg.setDisgPickupJson(pickList);
     // this.pickreac.setReacPickupJson(pickList);
     // this.pickfsec.setFsecPickupJson(pickList);

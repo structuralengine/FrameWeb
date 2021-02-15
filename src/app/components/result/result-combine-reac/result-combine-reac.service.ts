@@ -55,7 +55,7 @@ export class ResultCombineReacService {
     return result;
   }
 
-  public setReacCombineJson(combList: any, pickList: any): void {
+  public setReacCombineJson(defList: any, combList: any, pickList: any): void {
 
     const postData = {
       combList,

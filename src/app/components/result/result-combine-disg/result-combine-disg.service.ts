@@ -56,7 +56,7 @@ export class ResultCombineDisgService {
     return result;
   }
 
-  public setDisgCombineJson(combList: any, pickList: any): void {
+  public setDisgCombineJson(defList: any, combList: any, pickList: any): void {
 
     const postData = {
       combList,
