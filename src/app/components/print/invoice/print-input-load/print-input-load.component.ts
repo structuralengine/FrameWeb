@@ -68,7 +68,6 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       // 実荷重データ
       const tables_actual = this.printLoad(LoadJson);
       this.load_data = tables_actual.tableData;
-      this.load_titleArray = tables_actual.titleArrayLength;
       this.load_break = tables_actual.break_after;
       this.judge = this.countArea.setCurrentY(
         tables_actual.this,
@@ -105,9 +104,9 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         countCell_member = elist.load_member.length;
         if (countCell_member > 54) {
           page_over_member = Math.floor(countCell_member / 54);
-          ROW_m = countCell_member + Math.floor(countCell_member / 58) * 3 + 2;
+          ROW_m = countCell_member +  page_over_member * 4 + 2;
         } else {
-          ROW_m = countCell_member + 3;
+          ROW_m = countCell_member + 4;
         }
       } else {
         ROW_m = 0;
@@ -145,7 +144,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         }
         ROW_mn = 0;
         let reROW = ROW_m + ROW_n;
-        ROW_mn = reROW % 55;
+        ROW_mn = reROW % 54;
       }
     }
 
@@ -227,13 +226,14 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         }
         if (this.mload.length > 0) {
           splidData_member.push(this.mload);
-          lenlenMember = this.mload.slice(-1)[0].length + 3;
+          row = 0;
+          lenlenMember = splidData_member.slice(-1)[0].length + 3;
           row = lenlenMember;
         }
         splidDataCount_member += splidData_member.length;
         memberTable.push(splidData_member);
       }
-      row = 4 + lenlenMember;
+      row += 2;
 
       // 節点荷重
       if (ploadCount > 0) {
@@ -268,7 +268,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
 
         if (this.pload.length > 0) {
           splidData_node.push(this.pload);
-          lenlenNode = this.pload.slice(-1)[0] + 3;
+          lenlenNode = splidData_node.slice(-1)[0] + 2;
         }
         splidDataCount_node += splidData_node.length;
         nodeTable.push(splidData_node);
