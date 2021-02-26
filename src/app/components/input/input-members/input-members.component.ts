@@ -1,10 +1,10 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { InputMembersService } from './input-members.service';
-import { ThreeService } from '../../three/three.service';
-import{ UserInfoService } from '../../../providers/user-info.service';
 import { DataHelperModule } from '../../../providers/data-helper.module';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
+import { ThreeService } from '../../three/three.service';
+import { SheetComponent } from '../sheet/sheet.component';
+import pq from "pqgrid";
+import { AppComponent } from "src/app/app.component";
 
 @Component({
   selector: 'app-input-members',
@@ -12,152 +12,35 @@ import { MatInputModule } from '@angular/material/input';
   styleUrls: ['./input-members.component.scss','../../../app.component.scss']
 })
 
-export class InputMembersComponent implements OnInit, AfterViewInit {
-  message: string;
-  myControl: FormGroup;
-  number2: string;
-  static ROWS_COUNT = 20;
-  page: number;
-  page_1: number;
-  page_2: number;
-  page11: number;
-  page12: number;
-  page0: number;
-  dataset: any[];
+export class InputMembersComponent implements OnInit {
 
-  hotTableSettings = {
-    afterChange: (...x: any[]) => {
-      if (this.initialFlg===true){
-        return;
-      }
-      let hotInstance: any;
-      let changes: any = undefined;
-      for (let i = 0; i < x.length; i++) {
-        if (Array.isArray(x[i])) {
-          hotInstance = x[i - 1];
-          changes = x[i];
-          break;
-        }
-      }
-      if (changes === undefined) {
-        return ;
-      }
-      try {
-        for (const target of changes) {
-          const row: number = target[0];
-          const column: string = target[1];
-          const old_value: any = target[2];
-          const new_value: any = target[3];
-          if (column !== 'ni' && column !== 'nj') {
-            continue;
-          }
-          if (old_value === new_value) {
-            continue;
-          }
-          const member: {} = this.dataset[row];
-          const m: string = member['id'];
-          if (m === '') {
-            continue;
-          }
-          const l: number = this.data.getMemberLength(m);
-          if (l != null) {
-            this.dataset[row]['L'] = l.toFixed(3);
-            hotInstance.render();
-          }
-        }
-        this.three.chengeData('members');
-      } catch (e) {
-        console.log(e);
-      }
+  @ViewChild('grid') grid: SheetComponent;
 
-    }
-  };
+  private dataset = [];
+  private columnHeaders =[
+    { title: "i端",          dataType: "integer",                 dataIndx: "ni", sortable: false, minwidth: 10, width: 10 },
+    { title: "j端",          dataType: "integer",                 dataIndx: "nj", sortable: false, minwidth: 10, width: 10 },
+    { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
+    { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
+    { title: "コードアングル", dataType: "float",                   dataIndx: "cg", sortable: false, width: 130 }
+  ];
 
-  private initialFlg = true;
+  private ROWS_COUNT = 15;
+  
   constructor(private data: InputMembersService,
-              private three: ThreeService,
               private helper: DataHelperModule,
-              public user:UserInfoService) {
-     // pagenationのhtml側表示の定義
-     this.page0 = 3;
-     this.page11 = 4;
-     this.page12 = 5;
-     this.page_1 = 2;
-     this.page_2 = 1;
-  }
+              private app: AppComponent,
+              private three: ThreeService) {}
 
   ngOnInit() {
-    this.initialFlg = true;
-    this.loadPage(1);
-    this.message = 'please select button.';
-    this.myControl = new FormGroup({
-      number2: new FormControl(),
-    });
-    this.three.ChengeMode('members');
-  }
-  ngAfterViewInit() {
-    this.initialFlg = false;
-  }
-  public dialogClose(): void {
-    this.user.isContentsDailogShow = false;
-    console.log('aa')
+    this.ROWS_COUNT = this.rowsCount();
+    // three.js にモードの変更を通知する
+    this.three.ChangeMode('members');
   }
 
-  // active属性を外す
-  deactiveButtons() {
-    for (let i = 131; i <= 135; i++) {
-      const data = document.getElementById(i + '');
-      if (data != null) {
-        if (data.classList.contains('active')) {
-          data.classList.remove('active');
-        }
-      }
-    }
-  }
-
-  loadPage(currentPage: number) {
-    if (currentPage === this.page) {
-      return; // 何もしない
-    }
-
-    this.deactiveButtons();
-
-    this.page = currentPage;
-
-    if (currentPage > 2) {
-      this.page0 = currentPage;
-      this.page_1 = currentPage - 1;
-      this.page_2 = currentPage - 2;
-      this.page11 = currentPage + 1;
-      this.page12 = currentPage + 2;
-      document.getElementById('133').classList.add('active');
-    } else if (currentPage == 2) {
-      this.page0 = 3;
-      this.page_1 = 2;
-      this.page_2 = 1;
-      this.page11 = 4;
-      this.page12 = 5;
-      document.getElementById('132').classList.add('active');
-    }
-
-    else {
-      this.page0 = 3;
-      this.page_1 = 2;
-      this.page_2 = 1;
-      this.page11 = 4;
-      this.page12 = 5;
-
-      document.getElementById('131').classList.add('active');
-
-    }
-
-
-    this.dataset = new Array();
-
-    const a1: number = (currentPage - 1) * InputMembersComponent.ROWS_COUNT + 1;
-    const a2: number = a1 + InputMembersComponent.ROWS_COUNT - 1;
-
-    for (let i = a1; i <= a2; i++) {
+  // 指定行row 以降のデータを読み取る
+  private loadData(row: number): void {
+    for (let i = this.dataset.length + 1; i <= row; i++) {
       const member = this.data.getMemberColumns(i);
       const m: string = member['id'];
       if (m !== '') {
@@ -167,48 +50,73 @@ export class InputMembersComponent implements OnInit, AfterViewInit {
       this.dataset.push(member);
     }
   }
-  // ページを飛んだあと左右＜＞に移動や隣ページへの移動周辺、5ページ送り
-  public moveToNextPage(count: number, id: number): void {
-    let Next: number;
-    let additional: number;
-    let minus: number;
-    var plus: number;
 
-   // 1、2ページ目だけイレギュラーな動きをする
-    if (this.page === 1) {
-      additional = 2;
-      minus = -2;
-      plus = -1;
-    } else if (this.page === 2) {
-      additional = 1;
-      minus = -1;
-      plus = 0;
-     } else {
-      additional = 0;
-      minus = -1;
-      plus = 1;
-   }
 
-   Next = this.page + count + additional;
-    if(Next < 1){
-      Next = 1;
-    }
-
-    this.loadPage(Next);
+  // 表の高さを計算する
+  private tableHeight(): string {
+    const containerHeight = this.app.getDialogHeight();
+    return containerHeight.toString();
+  }
+  // 表高さに合わせた行数を計算する
+  private rowsCount(): number {
+    const containerHeight = this.app.getDialogHeight();
+    return Math.round(containerHeight / 30);
   }
 
-　// 見えないところにボタンを配置してある。ボタンを押すのとEnterを押すのは同じとしているのでこれが発火点となる
-  click(id = null) {
-    let value: number;
-
-    if (id === null) {
-      value = this.helper.toNumber(this.myControl.value.number2);
-    } else {
-      value = this.helper.toNumber(id);
+  // グリッドの設定
+  options: pq.gridT.options = {
+    showTop: false,
+    reactive: true,
+    sortable: false,
+    locale: "jp",
+    height: this.tableHeight(),
+    numberCell: {
+      show: true, // 行番号
+      width:45
+    },
+    colModel: this.columnHeaders,
+    animModel: {
+      on: true
+    },
+    dataModel: {
+      data: this.dataset
+    },
+    beforeTableView: (evt, ui) => {
+      const finalV = ui.finalV;
+      const dataV = this.dataset.length;
+      if (ui.initV == null) {
+          return;
+      }
+      if (finalV >= dataV - 1) {
+        this.loadData(dataV + this.ROWS_COUNT);
+        this.grid.refreshDataAndView();
+      }
+    },
+    selectEnd: (evt, ui) => {
+      const range = ui.selection.iCells.ranges;
+      const row = range[0].r1 + 1;
+      this.three.selectChange('members', row);
+    },
+    change: (evt, ui) => {
+      const changes = ui.updateList;
+      for (const target of changes) {
+        const row: number = target.rowIndx;
+        if (!('ni' in target.newRow || 'nj' in target.newRow)) {
+          continue;
+        }
+        //const new_value = target.rowData;
+        const member: {} = this.dataset[row];
+        const m: string = member['id'];
+        if (m === '') {
+          continue;
+        }
+        const l: number = this.data.getMemberLength(m);
+        if (l != null) {
+          this.dataset[row]['L'] = l.toFixed(3);
+          this.grid.refreshDataAndView();
+        }
+      }
+      this.three.changeData('members');
     }
-
-    if (value !== null) {
-      this.loadPage(value);
-    }
-  }
+  };
 }

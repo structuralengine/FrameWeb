@@ -1,0 +1,47 @@
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable reacCombine">
+    <h2>COMBINE 反力</h2>
+    <!--combReac_titleからtitleごとにデータを取り出す-->
+    <div *ngFor="let title of combReac_title; index as i">
+        <div *ngIf="combReac_case_break[i]" class="pagerBreak"></div>
+        <h3>{{ title }}</h3>
+        <!--combDisg_datasetからtxmaxなどを取り出す-->
+        <div *ngFor="let dataset of combReac_dataset[i]; index as j">
+            <div *ngIf="combReac_type_break[j]" class="pagerBreak"></div>
+            <h3>{{ dataset[0] }}</h3>
+            <!--txmaxなどからcase[0]が名称のため飛ばす-->
+            <div *ngFor="let case of dataset; index as k">
+                <div *ngIf="k > 0">
+                    <div *ngFor="let branch of case; index as l">
+                        <div *ngFor="let datas of branch; index as m">
+                            <div *ngIf="m > 0" class="pagerBreak"></div>
+                            <table class="print-lg">
+                                <tr>
+                                    <th>SUPPORT</th>
+                                    <th>TX</th>
+                                    <th>TY</th>
+                                    <th>TZ</th>
+                                    <th>MX</th>
+                                    <th>MY</th>
+                                    <th>MZ</th>
+                                    <th>comb</th>
+                                </tr>
+
+                                <tr *ngFor="let data of datas">
+                                    <td>{{ data[0] }}</td>
+                                    <td>{{ data[1] }}</td>
+                                    <td>{{ data[2] }}</td>
+                                    <td>{{ data[3] }}</td>
+                                    <td>{{ data[4] }}</td>
+                                    <td>{{ data[5] }}</td>
+                                    <td>{{ data[6] }}</td>
+                                    <td>{{ data[7] }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

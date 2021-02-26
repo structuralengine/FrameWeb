@@ -1,0 +1,33 @@
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable">
+    <h2>COMBINEデータ</h2>
+    <div *ngFor="let dataset of comb_dataset index as i">
+        <div *ngIf="i > 0" class="pagerBreak"></div>
+        <table class="print-sm">
+            <tr>
+                <th class="id">CombNo.</th>
+                <th class="sign">荷重名称</th>
+                <th class="name">C1</th>
+                <th class="name">C2</th>
+                <th class="name">C3</th>
+                <th class="node">C4</th>
+                <th class="section">C5</th>
+                <th class="spring">C6</th>
+                <th class="conection">C7</th>
+                <th class="conection">C8</th>
+            </tr>
+            <tr *ngFor="let data of dataset">
+                <td class="id">{{data[0]}}</td>
+                <td class="word">{{data[1]}}</td>
+                <td class="name">{{data[2]}}</td>
+                <td class="name">{{data[3]}}</td>
+                <td class="node">{{data[4]}}</td>
+                <td class="section">{{data[5]}}</td>
+                <td class="spring">{{data[6]}}</td>
+                <td class="conection">{{data[7]}}</td>
+                <td class="conection">{{data[8]}}</td>
+                <td class="conection">{{data[9]}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

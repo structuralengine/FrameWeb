@@ -1,0 +1,46 @@
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable fsec">
+    <h2>断面力</h2>
+    <div *ngFor="let title of fsec_typeNum; index as i">
+        <div *ngIf="fsec_break[i]" class="pagerBreak"></div>
+        <h3>{{title}}</h3>
+        <div *ngFor="let dataset of fsec_table[i] index as j">
+            <div *ngIf="j > 0" class="pagerBreak"></div>
+            <table class="print-md">
+                <tr>
+                    <th>部材</th>
+                    <th>節点</th>
+                    <th></th>
+                    <th>FX</th>
+                    <th>FY</th>
+                    <th>FZ</th>
+                    <th>MX</th>
+                    <th>MY</th>
+                    <th>MZ</th>
+                </tr>
+                <tr>
+                    <th>No.</th>
+                    <th>No.</th>
+                    <th>DIST</th>
+                    <th>(kN)</th>
+                    <th>(kN)</th>
+                    <th>(kN)</th>
+                    <th>(kN・m)</th>
+                    <th>(kN・m)</th>
+                    <th>(kN・m)</th>
+                </tr>
+                <tr *ngFor="let data of dataset">
+                    <td>{{data[0]}}</td>
+                    <td>{{data[1]}}</td>
+                    <td>{{data[2]}}</td>
+                    <td>{{data[3]}}</td>
+                    <td>{{data[4]}}</td>
+                    <td>{{data[5]}}</td>
+                    <td>{{data[6]}}</td>
+                    <td>{{data[7]}}</td>
+                    <td>{{data[8]}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

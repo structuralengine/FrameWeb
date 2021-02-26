@@ -1,154 +1,229 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { InputLoadService } from './input-load.service';
-import { ThreeService } from '../../three/three.service';
-import { DataHelperModule } from '../../../providers/data-helper.module';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { InputLoadService } from "./input-load.service";
+import { DataHelperModule } from "../../../providers/data-helper.module";
+import { ThreeService } from "../../three/three.service";
+import { SheetComponent } from "../sheet/sheet.component";
+import pq from "pqgrid";
+import { AppComponent } from "src/app/app.component";
 
 @Component({
-  selector: 'app-input-load',
-  templateUrl: './input-load.component.html',
-  styleUrls: ['./input-load.component.scss']
+  selector: "app-input-load",
+  templateUrl: "./input-load.component.html",
+  styleUrls: ["./input-load.component.scss", "../../../app.component.scss"],
 })
-export class InputLoadComponent implements OnInit, AfterViewInit {
+export class InputLoadComponent implements OnInit {
+  @ViewChild("grid") grid: SheetComponent;
 
-  ROWS_COUNT = 600;
-  collectionSize = 100;
-  dataset: any[];
-  page: number;
-  load_name: string;
-
-  hotTableSettings_point = {
-    beforeChange: (...x: any[]) => {
-      try {
-        let changes: any = undefined;
-        for (let i = 0; i < x.length; i++) {
-          if (Array.isArray(x[i])) {
-            changes = x[i];
-            break;
-          }
-        }
-        if (changes === undefined) { return; }
-        for (let i = 0; i < changes.length; i++) {
-          const value: number = this.helper.toNumber(changes[i][3]);
-          if (value !== null) {
-            switch (changes[i][1]) {
-              case "n":
-                changes[i][3] = value.toFixed(0);
-                break;
-              default:
-                changes[i][3] = value.toFixed(2);
-                break;
-            }
-          } else {
-            changes[i][3] = null;
-          }
-        }
-      } catch (e) {
-        console.log(e);
-      }
+  public load_name: string;
+  private dataset = [];
+  private columnHeaders = [
+    {
+      title: "部材1",
+      dataType: "string",
+      dataIndx: "m1",
+      sortable: false,
+      width: 30,
     },
-    afterChange: (...x: any[]) => {
-      if (this.initialFlg===true){
-        return;
-      }
-      this.three.chengeData('load_points', this.page);
-    }
-  };
-
-  hotTableSettings_member = {
-    beforeChange: (...x: any[]) => {
-      try {
-        let changes: any = undefined;
-        for (let i = 0; i < x.length; i++) {
-          if (Array.isArray(x[i])) {
-            changes = x[i];
-            break;
-          }
-        }
-        if (changes === undefined) { return; }
-        for (let i = 0; i < changes.length; i++) {
-          if (changes[i][1] === "direction") {
-
-          } else {
-            const value: number = this.helper.toNumber(changes[i][3]);
-            if (value !== null) {
-              switch (changes[i][1]) {
-                case "n":
-                  changes[i][3] = value.toFixed(0);
-                  break;
-                case "m1":
-                  changes[i][3] = value.toFixed(0);
-                  break;
-                case "m2":
-                  changes[i][3] = value.toFixed(0);
-                  break;
-                case "mark":
-                  changes[i][3] = value.toFixed(0);
-                  break;
-                case "L1":
-                  changes[i][3] = value.toFixed(3);
-                  break;
-                case "L2":
-                  changes[i][3] = value.toFixed(3);
-                  break;
-                default:
-                  changes[i][3] = value.toFixed(2);
-                  break;
-              }
-            } else {
-              changes[i][3] = null;
-            }
-          }
-        }
-      } catch (e) {
-        console.log(e);
-      }
+    {
+      title: "部材2",
+      dataType: "string",
+      dataIndx: "m2",
+      sortable: false,
+      width: 30,
     },
-    afterChange: (...x: any[]) => {
-      if (this.initialFlg===true){
-        return;
-      }
-      this.three.chengeData('load_members', this.page);
-    }
-  };
+    {
+      title: "方向",
+      dataType: "string",
+      dataIndx: "direction",
+      sortable: false,
+      width: 30,
+    },
+    {
+      title: "マーク",
+      dataType: "integer",
+      dataIndx: "mark",
+      sortable: false,
+      width: 60,
+    },
+    {
+      title: "L1",
+      dataType: "float",
+      format: "#.000",
+      dataIndx: "L1",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "L2",
+      dataType: "float",
+      format: "#.000",
+      dataIndx: "L2",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "P1",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "P1",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "P2",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "P2",
+      sortable: false,
+      width: 70,
+    },
 
-  private initialFlg = true;
-  constructor(private data: InputLoadService,
-              private three: ThreeService,
-              private helper: DataHelperModule) {
-    this.dataset = new Array();
-  }
+    {
+      title: "節点No",
+      dataType: "string",
+      dataIndx: "n",
+      sortable: false,
+      width: 30,
+    },
+    {
+      title: "X",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "tx",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "Y",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "ty",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "Z",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "tz",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "RX",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "rx",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "RY",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "ry",
+      sortable: false,
+      width: 70,
+    },
+    {
+      title: "RZ",
+      dataType: "float",
+      format: "#.00",
+      dataIndx: "rz",
+      sortable: false,
+      width: 70,
+    },
+  ];
+
+  private ROWS_COUNT = 15;
+  private page = 1;
+
+  constructor(
+    private data: InputLoadService,
+    private helper: DataHelperModule,
+    private app: AppComponent,
+    private three: ThreeService
+  ) {}
 
   ngOnInit() {
-    this.initialFlg = true;
-    let n: number = this.data.getLoadCaseCount();
-    n += 5;
-    this.collectionSize = n * 10;
-    this.loadPage(1);
+    this.ROWS_COUNT = this.rowsCount();
+    this.loadPage(1, this.ROWS_COUNT);
+    const load_name = this.data.getLoadNameColumns(1);
+    this.load_name = load_name.name;
+    this.three.ChangeMode("load_values");
+    this.three.ChangePage(1);
   }
-  ngAfterViewInit() {
-    this.initialFlg = false;
+
+  //　pager.component からの通知を受け取る
+  onReceiveEventFromChild(eventData: number) {
+    this.dataset.splice(0);
+    this.loadPage(eventData, this.ROWS_COUNT);
+    this.grid.refreshDataAndView();
+    const load_name = this.data.getLoadNameColumns(eventData);
+    this.load_name = load_name.name;
+    this.three.ChangePage(eventData);
   }
-  loadPage(currentPage: number) {
-    if (currentPage !== this.page) {
-      this.page = currentPage;
+
+  //
+  loadPage(currentPage: number, row: number) {
+    for (let i = this.dataset.length + 1; i <= row; i++) {
+      const load = this.data.getLoadColumns(currentPage, i);
+      this.dataset.push(load);
     }
-    this.dataset = new Array();
-    for (let i = 1; i <= this.ROWS_COUNT; i++) {
-      const loadColumn = this.data.getLoadColumns(this.page, i);
-      this.dataset.push(loadColumn);
+
+    this.page = currentPage;
+  }
+
+  // 表の高さを計算する
+  private tableHeight(): string {
+    const containerHeight = this.app.getDialogHeight() - 70; // pagerの分減じる
+    return containerHeight.toString();
+  }
+  // 表高さに合わせた行数を計算する
+  private rowsCount(): number {
+    const containerHeight = this.app.getDialogHeight();
+    return Math.round(containerHeight / 30);
+  }
+
+  // グリッドの設定
+  options: pq.gridT.options = {
+    showTop: false,
+    reactive: true,
+    sortable: false,
+    locale: "jp",
+    height: this.tableHeight(),
+    numberCell: {
+      show: false, // 行番号
+    },
+    colModel: this.columnHeaders,
+    animModel: {
+      on: true,
+    },
+    dataModel: {
+      data: this.dataset,
+    },
+    beforeTableView: (evt, ui) => {
+      const finalV = ui.finalV;
+      const dataV = this.dataset.length;
+      if (ui.initV == null) {
+        return;
+      }
+      if (finalV >= dataV - 1) {
+        this.loadPage(this.page, dataV + this.ROWS_COUNT);
+        this.grid.refreshDataAndView();
+      }
+    },
+    selectEnd: (evt, ui) => {
+      const range = ui.selection.iCells.ranges;
+      const row = range[0].r1 + 1;
+      this.three.selectChange("load_values", row);
+    },
+    change: (evt, ui) => {
+
+      for (const range of ui.updateList){
+        const row = range.rowIndx + 1;
+        this.three.changeData("load_values", row);
+      }
     }
-    const currentLoad: {} = this.data.getLoadNameColumns(currentPage);
-    this.load_name = currentLoad['name'];
-
-    this.three.ChengeMode('load_points', currentPage);
-  }
-
-  public loadPointsActive(): void {
-    this.three.ChengeMode('load_points');
-  }
-
-  public loadMembersActive(): void {
-    this.three.ChengeMode('load_members');
-  }
-
+  };
 }

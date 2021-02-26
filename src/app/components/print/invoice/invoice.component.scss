@@ -1,0 +1,117 @@
+$height_header: 32px;
+$height_semiHeader: 32px;
+$height_content: 16px;
+// .invoice {
+//   page-break-after: always;
+// }
+// .invoice:last-child {
+//   page-break-after: avoid;
+// }
+@media print {
+    .title-and-menu {
+        display: none;
+    }
+    #contents-dialog-id {
+        display: none;
+    }
+    @page {
+        size: A4;
+    }
+}
+
+@page {
+    size: A4;
+}
+
+.pagerBreak {
+    size: A4;
+    page-break-before: always;
+}
+
+.show {
+    display: none;
+}
+
+//h2が3行、h3が2行、th/tdが1行
+.invoicetTable {
+    h2 {
+        height: $height_header;
+        line-height: 32px;
+        font-size: 16px;
+        font-weight: 400;
+        font-family: "ＭＳ Ｐゴシック";
+    }
+    h3 {
+        height: $height_semiHeader;
+        line-height: 32px;
+        font-size: 16px;
+        font-family: "ＭＳ 明朝";
+    }
+    table {
+        font-family: "ＭＳ 明朝";
+        font-size: 16px;
+        margin-bottom: 16px;
+        // page-break-after: auto;
+        th {
+            height: $height_content;
+            // padding: 4px 8px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 400;
+            page-break-inside: avoid;
+            // page-break-after:auto;
+        }
+        td {
+            height: $height_content;
+            // padding: 4px 8px;
+            font-size: 16px;
+            text-align: right;
+            page-break-inside: avoid;
+            //page-break-after:auto;
+        }
+
+        //印刷結果表示のtableのpadding
+        &.print-sm {
+            th,
+            td {
+                padding: 4px 16px;
+            }
+        }
+        &.print-md {
+            th,
+            td {
+                padding: 4px 24px;
+            }
+        }
+        &.print-lg {
+            th,
+            td {
+                padding: 4px 28px;
+            }
+        }
+        //input-load
+        &.print-load {
+            th,
+            td {
+                padding: 4px 20px;
+            }
+        }
+
+        //荷重名称が長い場合の改行指定
+        td {
+            &.word {
+                max-width: 400px;
+                min-width: 200px;
+                word-wrap: break-word;
+                text-align: left;
+            }
+        }
+
+        th,
+        td {
+            &.y1 {
+                padding: 4px 12px;
+            }
+        }
+    }
+}

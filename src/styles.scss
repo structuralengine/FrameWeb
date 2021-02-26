@@ -1,16 +1,38 @@
-//カスタマイズしたかったのでローカルにコピーしたものを使っている
-// @import "~bootstrap/dist/css/bootstrap.css";
-// @import '~handsontable/dist/handsontable.full.css'; 
 
 html, body {
   margin: 0;
   padding: 0;
 
   height: 100%;
-  font-family: 'Lato', 'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+  // font-family: 'Lato', 'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
 }
 
+@media print {
+  body{
+    overflow-y: visible;
+    overflow-x: visible;
+    page-break-after:always;
+  }
+}
+
+@page { size: A4 portrait; }
 
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';
+
+@media print {
+  .isPrinting > * { display: none; }
+  .isPrinting app-print-layout { display: block; }
+}
+
+/* Add application styles & imports to this file! */
+@import url("https://unpkg.com/jquery-ui-pack@1.12.3/jquery-ui.css");
+
+@import url("https://unpkg.com/jquery-ui-pack@1.12.3/jquery-ui.structure.css");
+
+@import url("https://unpkg.com/jquery-ui-pack@1.12.3/jquery-ui.theme.css");
+
+@import url("https://unpkg.com/pqgrid@7.5.0/pqgrid.min.css");
+@import "~pqgrid/pqgrid.ui.min.css";
+@import "~pqgrid/themes/steelblue/pqgrid.css";
 

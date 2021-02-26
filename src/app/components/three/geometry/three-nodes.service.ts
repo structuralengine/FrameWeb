@@ -63,7 +63,7 @@ export class ThreeNodesService {
   }
 
   // データが変更された時の処理
-  public chengeData(): void {
+  public changeData(): void {
 
     // 入力データを入手
     const jsonData = this.node.getNodeJson(0);
@@ -215,7 +215,7 @@ export class ThreeNodesService {
   }
 
   // 表示設定を変更する
-  public visible(flag: boolean, text: boolean, gui: boolean): void {
+  public visibleChange(flag: boolean, text: boolean, gui: boolean): void {
 
     // 表示設定
     if (this.objVisible !== flag) {

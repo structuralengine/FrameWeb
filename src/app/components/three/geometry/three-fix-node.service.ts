@@ -40,7 +40,7 @@ export class ThreeFixNodeService {
   }
 
   // 表示設定を変更する
-  public visible(flag: boolean): void {
+  public visibleChange(flag: boolean): void {
     if (this.isVisible === flag) {
       return;
     }
@@ -93,7 +93,7 @@ export class ThreeFixNodeService {
     return this.nodeThree.center;
   }
 
-  public chengeData(index: number): void {
+  public changeData(index: number): void {
 
     this.ClearData();
 
