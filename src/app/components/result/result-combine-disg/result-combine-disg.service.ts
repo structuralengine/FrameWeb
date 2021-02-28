@@ -59,6 +59,7 @@ export class ResultCombineDisgService {
   public setDisgCombineJson(defList: any, combList: any, pickList: any): void {
 
     const postData = {
+      defList,
       combList,
       disg: this.disg.disg
     };

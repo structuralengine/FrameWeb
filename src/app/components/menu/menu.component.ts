@@ -108,7 +108,7 @@ export class MenuComponent implements OnInit {
     const inputJson: string = JSON.stringify(this.InputData.getInputJson());
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
     if (this.fileName.length === 0) {
-      this.fileName = 'frameWebForJS.fwj';
+      this.fileName = 'frameWebForJS.json';
     }
     FileSaver.saveAs(blob, this.fileName);
   }
@@ -142,8 +142,8 @@ export class MenuComponent implements OnInit {
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
 
-    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    // const url = 'http://127.0.0.1:5000';
+    // const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
+    const url = 'http://127.0.0.1:5000';
 
     // json string にする
     const json = JSON.stringify(jsonData, null, 0);
@@ -172,8 +172,12 @@ export class MenuComponent implements OnInit {
           // Pako magic
           const json = pako.ungzip(binData,{to: 'string'} );
 
-          const jsonData = JSON.parse(json);
 
+          // テスト ---------------------------------------------
+          //this.saveResult(json);
+          // --------------------------------------------- テスト
+
+          const jsonData = JSON.parse(json);
           // サーバーのレスポンスを集計する
           console.log(jsonData);
           if (!this.ResultData.loadResultData(jsonData)) {
@@ -274,4 +278,45 @@ export class MenuComponent implements OnInit {
     }
   }
 
+  
+  /*/ テスト ---------------------------------------------
+  private saveResult(text: string): void {
+    const blob = new window.Blob([text], { type: 'text/plain' });
+    FileSaver.saveAs(blob, 'frameWebResult.json');
+  }
+
+  //解析結果ファイルを開く
+  resultopen(evt) {
+    const modalRef = this.modalService.open(WaitDialogComponent);
+
+    const file = evt.target.files[0];
+    this.fileName = file.name;
+    evt.target.value = '';
+
+    this.fileToText(file)
+      .then(text => {
+
+        this.app.dialogClose(); // 現在表示中の画面を閉じる
+        this.ResultData.clear();
+        const jsonData = JSON.parse(text);
+
+        if (this.ResultData.loadResultData(jsonData)) {
+          // ユーザーポイントの更新
+          this.loadResultData(jsonData);
+          this.three.changeData();
+          this.app.isCalculated = true;
+        }
+
+        modalRef.close();
+
+      })
+      .catch(err => {
+        alert(err);
+        modalRef.close();
+      });
+  }
+  // --------------------------------------------- テスト */
+
+
 }
+

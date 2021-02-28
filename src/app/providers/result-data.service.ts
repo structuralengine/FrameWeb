@@ -108,7 +108,7 @@ export class ResultDataService {
         const d: object = define[defNo];
         const defines = new Array();
         for (const dKey of Object.keys(d)) {
-          if( dKey === 'row'){ 
+          if( dKey === 'row'){
             continue;
           }
           defines.push(d[dKey]);
@@ -168,7 +168,7 @@ export class ResultDataService {
           }
 
           let caseNo: string = def[0].toString();
-          if ( caseNo !== '0') { 
+          if ( caseNo !== '0') {
             if (caseNo.indexOf('-') >= 0) {
               caseNo = caseNo.replace('-', '');
               coef = -1 * coef;
@@ -187,7 +187,7 @@ export class ResultDataService {
       const c: object = combine[combNo];
       const defines = new Array();
       for (const cKey of Object.keys(c)) {
-        if( cKey === 'row'){ 
+        if( cKey === 'row'){
           continue;
         }
         const caseNo: string = cKey.replace('C', '').replace('D', '');
@@ -206,7 +206,7 @@ export class ResultDataService {
       const p: object = pickup[pickNo];
       const combines = new Array();
       for (const pKey of Object.keys(p)) {
-        if( pKey === 'row'){ 
+        if( pKey === 'row'){
           continue;
         }
         const comNo: string = p[pKey];
@@ -221,9 +221,6 @@ export class ResultDataService {
     this.combdisg.setDisgCombineJson(defList, combList, pickList);
     this.combreac.setReacCombineJson(defList, combList, pickList);
     this.combfsec.setFsecCombineJson(defList, combList, pickList);
-    // this.pickdisg.setDisgPickupJson(pickList);
-    // this.pickreac.setReacPickupJson(pickList);
-    // this.pickfsec.setFsecPickupJson(pickList);
 
     this.isCombinePickupChange = false;
   }
@@ -282,7 +279,7 @@ export class ResultDataService {
             point_name = point_counter.toString();
             point_counter += 1;
           }
-            
+
 
           result += No.toString();
           result += ',';

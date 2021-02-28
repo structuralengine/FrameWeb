@@ -96,6 +96,15 @@ export class ResultDisgService {
       const json: {} = caseData["disg"];
 
       for (const n of Object.keys(json)) {
+
+        const id = n.replace("node", "");
+        if( id.indexOf('n') >= 0 ){
+          continue; // 着目節点は除外する
+        }
+        if( id.indexOf('l') >= 0 ){
+          continue; // 荷重による分割点は除外する
+        }
+
         const item: {} = json[n];
 
         let dx: number = this.helper.toNumber(item["dx"]);
@@ -111,7 +120,7 @@ export class ResultDisgService {
         ry = ry == null ? 0 : ry * 1000;
         rz = rz == null ? 0 : rz * 1000;
         const result = {
-          id: n.replace("node", ""),
+          id: id,
           dx: dx,
           dy: dy,
           dz: dz,
