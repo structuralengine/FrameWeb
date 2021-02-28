@@ -259,7 +259,7 @@ export class ThreeLoadService {
       // 対象行(row) に入力されている部材番号を調べる
       const targetNodeLoad = tempNodeLoad.filter(load => load.row === row);
       // 同じ行にあった荷重を一旦削除
-      for (const n of Object.keys(LoadList.pointLoadList)) {
+      /*for (const n of Object.keys(LoadList.pointLoadList)) {
         const list = LoadList.pointLoadList[n];
         ["tx", "ty", "tz", "rx", "ry", "rz"].forEach(k => {
           for (let i = list[k].length - 1; i >= 0; i--) {
@@ -270,6 +270,18 @@ export class ThreeLoadService {
             }
           }
         });
+      }*/
+      for (const key of Object.keys(LoadList.pointLoadList)) { // 格点node
+        const list = LoadList.pointLoadList[key];
+        for (const key2 of ["tx", "ty", "tz", "rx", "ry", "rz"]) {
+          for (let i = list[key2].length - 1; i >= 0; i--) {
+            const item = list[key2][i];
+            if (item.row === row) {
+              LoadList.ThreeObject.remove(item);
+              list[key2].splice(i, 1);
+            }
+          }
+        }
       }
 
       this.createPointLoad(
@@ -280,11 +292,14 @@ export class ThreeLoadService {
       );
     } else {
       // ケースが存在しなかった
-      for (const key of Object.keys(LoadList.pointLoadList)) {
-        for (const item of LoadList.pointLoadList[key]) {
-          LoadList.ThreeObject.remove(item);
+      for (const key of Object.keys(LoadList.pointLoadList)) {//格点node
+        const list = LoadList.pointLoadList[key];
+        for (const key2 of ["tx", "ty", "tz", "rx", "ry", "rz"]) { 
+          for (const item of list[key2]){
+            LoadList.ThreeObject.remove(item);
+          }
         }
-        LoadList.pointLoadList[key] = [];
+        LoadList.pointLoadList[key] = { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
       }
     }
 
@@ -306,17 +321,17 @@ export class ThreeLoadService {
       // 対象行(row) に入力されている部材番号を調べる
       const targetMemberLoad = tempMemberLoad.filter(load => load.row === row);
       // 同じ行にあった荷重を一旦削除
-      for (const key of Object.keys(LoadList.memberLoadList)) {
+      for (const key of Object.keys(LoadList.memberLoadList)) { // 格点node
         const list = LoadList.memberLoadList[key];
-        ["gy", "gx", "gz", "x", "y", "z", "t"].forEach(k => {
-          for (let i = list[k].length - 1; i >= 0; i--) {
-            const item = list[k][i];
+        for (const key2 of ["gy", "gx", "gz", "x", "y", "z", "t", "r"]) {
+          for (let i = list[key2].length - 1; i >= 0; i--) {
+            const item = list[key2][i];
             if (item.row === row) {
               LoadList.ThreeObject.remove(item);
-              list[k].splice(i, 1);
+              list[key2].splice(i, 1);
             }
           }
-        });
+        }
       }
 
       this.createMemberLoad(
@@ -328,11 +343,14 @@ export class ThreeLoadService {
       );
     } else {
       // ケースが存在しなかった
-      for (const key of Object.keys(LoadList.memberLoadList)) {
-        for (const item of LoadList.memberLoadList[key]) {
-          LoadList.ThreeObject.remove(item);
+      for (const key of Object.keys(LoadList.memberLoadList)) { //格点node
+        const list = LoadList.memberLoadList[key];
+        for (const key2 of ["gx", "gy", "gz", "x", "y", "z", "t", "r"]){
+          for (const item of list[key2]){
+            LoadList.ThreeObject.remove(item);
+          }
         }
-        LoadList.memberLoadList[key] = [];
+        LoadList.memberLoadList[key] = {gx: [], gy: [], gz: [], x: [], y: [], z: [], t: [], r: []};
       }
     }
 
