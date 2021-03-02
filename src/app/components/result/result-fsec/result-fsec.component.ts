@@ -67,17 +67,11 @@ export class ResultFsecComponent implements OnInit {
     if (currentPage !== this.page) {
       this.page = currentPage;
     }
-    this.dataset = new Array();
-    for (let i = 1; i <= this.data.FSEC_ROWS_COUNT; i++) {
-      const reac = this.data.getFsecColumns(this.page, i);
-      if (reac === null) {
-        break;
-      }
-      this.dataset.push(reac);
-    }
+    this.dataset = this.data.getFsecColumns(this.page);
     this.load_name = this.load.getLoadName(currentPage);
 
     this.three.ChangeMode('fsec');
     this.three.ChangePage(currentPage);
   }
+
 }
