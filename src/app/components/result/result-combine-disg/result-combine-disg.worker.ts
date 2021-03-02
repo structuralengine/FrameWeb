@@ -1,86 +1,129 @@
 /// <reference lib="webworker" />
 
-addEventListener('message', ({ data }) => {
-
+addEventListener("message", ({ data }) => {
   const defList = data.defList;
   const combList = data.combList;
   const disg = data.disg;
+  const disgKeys = [
+    "dx_max",
+    "dx_min",
+    "dy_max",
+    "dy_min",
+    "dz_max",
+    "dz_min",
+    "rx_max",
+    "rx_min",
+    "ry_max",
+    "ry_min",
+    "rz_max",
+    "rz_min",
+  ];
 
   // defineのループ
   const disgDefine = {};
-  for (const defNo of Object.keys(defList)) {
-    const temp = {}
-
+  for(const defNo of Object.keys(defList)) {
+    const temp = {};
     //
-    for (const caseInfo of defList[defNo]){
-     
+    for(const caseInfo of defList[defNo]) {
       const baseNo: string = Math.abs(caseInfo).toString();
       const coef: number = Math.sign(caseInfo);
 
-      if(!(baseNo in disg)) {
+      if (!(baseNo in disg)) {
         continue;
       }
 
-      // 節点番号のループ
-      for (const d of disg[baseNo] ){
-        const nodeNo: string = d.id;
-        const obj = {
-          dx: coef * d.dx,
-          dy: coef * d.dy,
-          dz: coef * d.dz,
-          rx: coef * d.rx,
-          ry: coef * d.ry,
-          rz: coef * d.rz,
-          case: caseInfo
-        };
-        if(nodeNo in temp){
-          const a = temp[nodeNo];
-          for(const k1 of ['d', 'r']){
-            for(const k2 of ['x', 'y', 'z']){
-              const kk0 = k1+k2;
-              const kk1 = kk0+'_max';
-              if(a[kk1][kk0] < d[kk0]) {
-                a[kk1] = obj;
+      // カレントケースを集計する
+      for (const key of disgKeys) {
+        // 節点番号のループ
+        const obj = {};
+        for (const d of disg[baseNo]) {
+          obj[d.id] = {
+            dx: coef * d.dx,
+            dy: coef * d.dy,
+            dz: coef * d.dz,
+            rx: coef * d.rx,
+            ry: coef * d.ry,
+            rz: coef * d.rz,
+            case: caseInfo,
+          };
+        }
+        if (key in temp) {
+          // 大小を比較する
+          const kk = key.split('_');
+          const k1 = kk[0]; // dx, dy, dz, rx, ry, rz
+          const k2 = kk[1]; // max, min
+          for (const nodeNo of Object.keys(temp[key])) {
+            if(k2==='max'){
+              if(temp[key][nodeNo][k1] < obj[nodeNo][k1]){
+                temp[key][nodeNo] = obj[nodeNo];
               }
-              const kk2 = kk0+'_min';
-              if(a[kk2][kk0] > d[kk0]) {
-                a[kk2] = obj;
+            } else if (k2==='min'){
+              if(temp[key][nodeNo][k1] > obj[nodeNo][k1]){
+                temp[key][nodeNo] = obj[nodeNo];
               }
             }
           }
+
         } else {
-          temp[nodeNo] = {
-            dx_max: obj, dx_min: obj, dy_max: obj, dy_min: obj, dz_max: obj, dz_min: obj,
-            rx_max: obj, rx_min: obj, ry_max: obj, ry_min: obj, rz_max: obj, rz_min: obj
-          };
+          temp[key] = obj;
         }
       }
     }
     disgDefine[defNo] = temp;
   }
 
+
   // combineのループ
   const disgCombine = {};
   for (const combNo of Object.keys(combList)) {
-    const temp = {}
-
+    const temp = {};
     //
-    for (const caseInfo of combList[combNo]){
+    for (const caseInfo of combList[combNo]) {
+      const caseNo = Number(caseInfo.caseNo);
       const defNo: string = caseInfo.caseNo.toString();
       const coef: number = caseInfo.coef;
 
-      if(!(defNo in disgDefine)) {
+      if (!(defNo in disgDefine)) {
+        continue;
+      }
+      if (coef === 0) {
         continue;
       }
 
-      // 節点番号のループ
-      for (const a of disgDefine[defNo] ){
+      const disgs = disgDefine[defNo];
+      // カレントケースを集計する
+      const c2 = Math.abs(caseNo).toString().trim();
+      for (const key of disgKeys){
+        // 節点番号のループ
+        const obj = {};
+        for (const nodeNo of Object.keys(disgs[key])) {
+          const d = disgs[key][nodeNo];
+          const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
+          const caseStr = (c1 < 0 ? "-" : "+") + c2;
+          obj[nodeNo] = {
+            dx: coef * d.dx,
+            dy: coef * d.dy,
+            dz: coef * d.dz,
+            rx: coef * d.rx,
+            ry: coef * d.ry,
+            rz: coef * d.rz,
+            case: caseStr,
+          };
+        }
 
+        if (key in temp) {
+          for (const nodeNo of Object.keys(disgs[key])) {
+              for(const k of Object.keys(obj[nodeNo])){
+                temp[key][nodeNo][k] += obj[nodeNo][k];
+              }
+          }
+        } else {
+          temp[key] = obj;
+        }
       }
     }
-    disgCombine[combNo] = {};//resultDisg;
+    disgCombine[combNo] = temp;
   }
 
-  postMessage({disgCombine});
-
+  postMessage({ disgCombine });
 });
