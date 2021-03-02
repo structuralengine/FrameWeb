@@ -109,7 +109,7 @@ export class ThreeLoadMemberMoment {
       group.rotation.x = Math.asin(-Math.PI/2);
 
     }
-    group.name = "MemberPointLoad";
+    group.name = "MemberMomentLoad";
 
     return group;
   }

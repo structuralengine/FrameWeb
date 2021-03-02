@@ -117,13 +117,12 @@ export class ResultFsecService {
           };
 
           // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
-          if (old['n'] !== result['n'] || old['fx'] !== result['fx'] || old['fy'] !== result['fy'] || old['fz'] !== result['fz']
-            || old['mx'] !== result['mx'] || old['my'] !== result['my'] || old['mz'] !== result['mz']) {
-            row++;
-            result['row'] = row;
-            target.push(result);
-
-          }
+          //if (old['n'] !== result['n'] || old['fx'] !== result['fx'] || old['fy'] !== result['fy'] || old['fz'] !== result['fz']
+          //  || old['mx'] !== result['mx'] || old['my'] !== result['my'] || old['mz'] !== result['mz']) {
+          row++;
+          result['row'] = row;
+          target.push(result);
+          //}
 
           memberNo = '';
           ni = '';

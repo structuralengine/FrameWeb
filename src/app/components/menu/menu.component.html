@@ -12,7 +12,7 @@
                 ファイルを開く
                 <input
                   type="file"
-                  accept="application/fwj"
+                  accept="application/json"
                   (change)="open($event)"
                   style="display: none"
                 />
@@ -22,6 +22,21 @@
                         <button ngbDropdownItem (click)="pickup()">
               ピックアップファイル出力
             </button>
+
+            <!-- テスト用 
+            <label style="width: 100%; margin: 0px">
+              <span ngbDropdownItem style="padding: 8px">
+                解析結果ファイルを開く
+                <input
+                  type="file"
+                  accept="application/json"
+                  (change)="resultopen($event)"
+                  style="display: none"
+                />
+              </span>
+            </label>
+            テスト用 -->
+
                     </div>
                 </div>
             </li>
@@ -79,7 +94,7 @@
             <label>
               <span ngbDropdownItem>
                 ファイルを開く
-                <input type="file" accept="application/fwj" (change)="open($event)" style="display:none" />
+                <input type="file" accept="application/json" (change)="open($event)" style="display:none" />
               </span>
             </label>
             <button ngbDropdownItem (click)="save()">ファイルを保存</button>

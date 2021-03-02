@@ -108,7 +108,7 @@ export class ResultDataService {
         const d: object = define[defNo];
         const defines = new Array();
         for (const dKey of Object.keys(d)) {
-          if( dKey === 'row'){ 
+          if( dKey === 'row'){
             continue;
           }
           defines.push(d[dKey]);
@@ -122,7 +122,7 @@ export class ResultDataService {
         defList[caseNo] = (n === null) ? [] : new Array(n);
       }
     }
-
+    /*
     // combine を集計
     const combList = {};
     for (const combNo of Object.keys(combine)) {
@@ -168,7 +168,7 @@ export class ResultDataService {
           }
 
           let caseNo: string = def[0].toString();
-          if ( caseNo !== '0') { 
+          if ( caseNo !== '0') {
             if (caseNo.indexOf('-') >= 0) {
               caseNo = caseNo.replace('-', '');
               coef = -1 * coef;
@@ -180,7 +180,25 @@ export class ResultDataService {
       }
       combList[combNo] = combines;
     }
-
+    */
+    // combine を集計
+    const combList = {};
+    for (const combNo of Object.keys(combine)) {
+      const c: object = combine[combNo];
+      const defines = new Array();
+      for (const cKey of Object.keys(c)) {
+        if( cKey === 'row'){
+          continue;
+        }
+        const caseNo: string = cKey.replace('C', '').replace('D', '');
+        const coef: number = this.helper.toNumber(c[cKey]);
+        if (!(caseNo in defList) || coef === null) {
+          continue; // なければ飛ばす
+        }
+        defines.push({caseNo, coef});
+      }
+      combList[combNo] = defines;
+    }
 
     // pickup を集計
     const pickList = {};
@@ -188,7 +206,7 @@ export class ResultDataService {
       const p: object = pickup[pickNo];
       const combines = new Array();
       for (const pKey of Object.keys(p)) {
-        if( pKey === 'row'){ 
+        if( pKey === 'row'){
           continue;
         }
         const comNo: string = p[pKey];
@@ -200,12 +218,9 @@ export class ResultDataService {
       pickList[pickNo] = combines;
     }
 
-    this.combdisg.setDisgCombineJson(combList, pickList);
-    this.combreac.setReacCombineJson(combList, pickList);
-    this.combfsec.setFsecCombineJson(combList, pickList);
-    // this.pickdisg.setDisgPickupJson(pickList);
-    // this.pickreac.setReacPickupJson(pickList);
-    // this.pickfsec.setFsecPickupJson(pickList);
+    this.combdisg.setDisgCombineJson(defList, combList, pickList);
+    this.combreac.setReacCombineJson(defList, combList, pickList);
+    this.combfsec.setFsecCombineJson(defList, combList, pickList);
 
     this.isCombinePickupChange = false;
   }
@@ -264,7 +279,7 @@ export class ResultDataService {
             point_name = point_counter.toString();
             point_counter += 1;
           }
-            
+
 
           result += No.toString();
           result += ',';

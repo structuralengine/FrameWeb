@@ -1,11 +1,24 @@
 /// <reference lib="webworker" />
 
 addEventListener('message', ({ data }) => {
-
+  const defList = data.defList;
   const combList = data.combList;
   const noticePoints = data.noticePoints;
   const fsec = data.fsec;
-  const fsecCombine = {};
+  const fsecKeys = [
+    "fx_max",
+    "fx_min",
+    "fy_max",
+    "fy_min",
+    "fz_max",
+    "fz_min",
+    "mx_max",
+    "mx_min",
+    "my_max",
+    "my_min",
+    "mz_max",
+    "mz_min",
+  ];
 
   // 文字列string を数値にする
   const toNumber = (num: string) => {
@@ -21,119 +34,138 @@ addEventListener('message', ({ data }) => {
       return result;
   };
 
+  
+  // defineのループ
+  const fsecDefine = {};
+  for(const defNo of Object.keys(defList)) {
+    const temp = {};
+    //
+    for(const caseInfo of defList[defNo]) {
+      const baseNo: string = Math.abs(caseInfo).toString();
+      const coef: number = Math.sign(caseInfo);
+
+      if (!(baseNo in fsec)) {
+        continue;
+      }
+
+      // カレントケースを集計する
+      for (const key of fsecKeys) {
+        // 節点番号のループ
+        let row = 0;
+        const obj = {};
+        for (const d of fsec[baseNo]) {
+          obj[row] = {
+            m: d.m,
+            l: d.l,
+            n: d.n,
+            fx: coef * d.fx,
+            fy: coef * d.fy,
+            fz: coef * d.fz,
+            mx: coef * d.mx,
+            my: coef * d.my,
+            mz: coef * d.mz,
+            case: caseInfo,
+          };
+          row++;
+        }
+        if (key in temp) {
+
+          // 大小を比較する
+          const kk = key.split('_');
+          const k1 = kk[0]; // dx, dy, dz, rx, ry, rz
+          const k2 = kk[1]; // max, min
+
+          for (const row of Object.keys(temp[key])) {
+
+            if(k2==='max'){
+              if(temp[key][row][k1] < obj[row][k1]){
+                temp[key][row] = obj[row];
+              }
+            } else if (k2==='min'){
+              if(temp[key][row][k1] > obj[row][k1]){
+                temp[key][row] = obj[row];
+              }
+            }
+
+          }
+
+        } else {
+          temp[key] = obj;
+        }
+
+      }
+    }
+    fsecDefine[defNo] = temp;
+  }
 
 
   // combineのループ
+  const fsecCombine = {};
   for (const combNo of Object.keys(combList)) {
-    const resultFsec = {
-      fx_max: {}, fx_min: {}, fy_max: {}, fy_min: {}, fz_max: {}, fz_min: {},
-      mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {}
-    };
+    const temp = {};
+    //
+    for (const caseInfo of combList[combNo]) {
+      const caseNo = Number(caseInfo.caseNo);
+      const defNo: string = caseInfo.caseNo.toString();
+      const coef: number = caseInfo.coef;
 
-    // defineのループ
-    const combines: any[] = combList[combNo];
-    for (const com of combines) {
-      const combineFsec = { fx: {}, fy: {}, fz: {}, mx: {}, my: {}, mz: {} };
+      if (!(defNo in fsecDefine)) {
+        continue;
+      }
+      if (coef === 0) {
+        continue;
+      }
 
-      let row: number = 0;
-      for (const m of Object.keys(noticePoints)) {
-        for (const point of noticePoints[m]) {
+      const fsecs = fsecDefine[defNo];
+      // カレントケースを集計する
+      const c2 = Math.abs(caseNo).toString().trim();
+      for (const key of fsecKeys){
+        // 節点番号のループ
+        const obj = {};
+        for (const row of Object.keys(fsecs[key])) {
+          const d = fsecs[key][row];
+          const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
+          const caseStr = (c1 < 0 ? "-" : "+") + c2;
+          obj[row] = {
+            m: d.m,
+            l: d.l,
+            n: d.n,
+            fx: coef * d.fx,
+            fy: coef * d.fy,
+            fz: coef * d.fz,
+            mx: coef * d.mx,
+            my: coef * d.my,
+            mz: coef * d.mz,
+            case: caseStr,
+          };
+        }
 
-          let caseStr: string = '';
-          for (const caseInfo of com) {
-            if (caseInfo.coef >= 0) {
-              caseStr += '+' + caseInfo.caseNo.toString();
-            } else {
-              caseStr += '-' + caseInfo.caseNo.toString();
-            }
-            if (!(caseInfo.caseNo in fsec)) {
-              for (const key1 of Object.keys(combineFsec)) {
-                for (const key2 of Object.keys(combineFsec[key1])) {
-                  combineFsec[key1][key2].case = caseStr;
-                }
-              }
-              continue;
-            }
-
-            const Fsecs: any[] = fsec[caseInfo.caseNo];
-
-            // 同じ部材の同じ着目点位置の断面力を探す
-            let f: Object = undefined;
-            let mm: string;
-            for (const result of Fsecs) {
-              mm = result.m.length > 0 ? result.m : mm;
-              if (mm === m && point === result.l) {
-                f = result;
-                break;
-              }
-            }
-            if (f === undefined) {
-              break;
-            }
-
-            // fx, fy … のループ
-            for (const key1 of Object.keys(combineFsec)) {
-              const value = combineFsec[key1];
-              const temp: {} = (row.toString() in value) ? value[row.toString()] : { row, fx: 0, fy: 0, fz: 0, mx: 0, my: 0, mz: 0, case: '' };
-
-              // x, y, z, 変位, 回転角 のループ
-              for (const key2 in f) {
-                if (key2 === 'row') {
+        if (key in temp) {
+          for (const row of Object.keys(fsecs[key])) {
+              for(const k of Object.keys(obj[row])){
+                if (k === 'row') {
                   continue;
-                } else if (key2 === 'm') {
-                  temp[key2] = m;
-                } else if (key2 === 'l') {
-                  temp[key2] = point;
-                } else if (key2 === 'n') {
-                  if (toNumber(f[key2]) !== null) {
-                    temp[key2] = f[key2];
+                 } else {
+                  const value = obj[row][k];
+                  if (k === 'm' || k === 'l') {
+                    temp[key][row][k] = value;
+                  } else if (k === 'n') {
+                    temp[key][row][k] =  (toNumber(value) !== null) ? value: '';
+                  } else {
+                    temp[key][row][k] += value;
                   }
-                } else {
-                  temp[key2] += caseInfo.coef * f[key2];
                 }
               }
-              temp['case'] = caseStr;
-              value[row.toString()] = temp;
-              combineFsec[key1] = value;
-              // end key1
-            }
-            // end caseInfo
           }
-          row++;
-          // end point
-        }
-        // end m
-      }
-
-      // dx, dy … のループ
-      const k: string[] = ['_max', '_min'];
-      for (const key1 of Object.keys(combineFsec)) {
-        for (let n = 0; n < k.length; n++) {
-          let key2: string;
-          key2 = key1 + k[n];
-          const old = resultFsec[key2];
-          const current = combineFsec[key1];
-          // 節点番号のループ
-          for (const id of Object.keys(current)) {
-            if (!(id in old)) {
-              old[id] = current[id];
-              resultFsec[key2] = old;
-              continue;
-            }
-            const target = current[id];
-            const comparison = old[id];
-            if ((n === 0 && comparison[key1] < target[key1])
-              || (n > 0 && comparison[key1] > target[key1])) {
-              old[id] = target;
-              resultFsec[key2] = old;
-            }
-          }
+        } else {
+          temp[key] = obj;
         }
       }
-
     }
-    fsecCombine[combNo] = resultFsec;
+    fsecCombine[combNo] = temp;
   }
 
   postMessage({ fsecCombine });
+
+
 });

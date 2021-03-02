@@ -1,93 +1,131 @@
 /// <reference lib="webworker" />
 
 addEventListener('message', ({ data }) => {
-
+  const defList = data.defList;
   const combList = data.combList;
   const reac = data.reac;
-  const reacCombine = {};
+  const reacKeys = [
+    "tx_max",
+    "tx_min",
+    "ty_max",
+    "ty_min",
+    "tz_max",
+    "tz_min",
+    "mx_max",
+    "mx_min",
+    "my_max",
+    "my_min",
+    "mz_max",
+    "mz_min",
+  ];
 
-  // combineのループ
-  for (const combNo of Object.keys(combList)) {
-    const resultReac = {
-      tx_max: {}, tx_min: {}, ty_max: {}, ty_min: {}, tz_max: {}, tz_min: {},
-      mx_max: {}, mx_min: {}, my_max: {}, my_min: {}, mz_max: {}, mz_min: {}
-    };
+  
+  // defineのループ
+  const reacDefine = {};
+  for(const defNo of Object.keys(defList)) {
+    const temp = {};
+    //
+    for(const caseInfo of defList[defNo]) {
+      const baseNo: string = Math.abs(caseInfo).toString();
+      const coef: number = Math.sign(caseInfo);
 
-    // defineのループ
-    const combines: any[] = combList[combNo];
-    for (const com of combines) {
-      const combineReac = { tx: {}, ty: {}, tz: {}, mx: {}, my: {}, mz: {} };
-
-      // 基本ケースのループ
-      let caseStr = '';
-      for (const caseInfo  of com) {
-        if (caseInfo.coef >= 0) {
-          caseStr += '+' + caseInfo.caseNo.toString();
-        } else {
-          caseStr += '-' + caseInfo.caseNo.toString();
-        }
-
-        if (!(caseInfo.caseNo in reac)) {
-          for (const key1 of Object.keys(combineReac)) {
-            for (const key2 of Object.keys(combineReac[key1])) {
-              combineReac[key1][key2].case = caseStr;
-            }
-          }
-          continue;
-        }
-        // 節点番号のループ
-        const Reacs: any[] = reac[caseInfo.caseNo];
-        for (const result of Reacs) {
-          const id = result['id'];
-
-          // dx, dy … のループ
-          for (const key1 of Object.keys(combineReac)) {
-            const value = combineReac[key1];
-            const temp: {} = (id in value) ? value[id] : { id: id, tx: 0, ty: 0, tz: 0, mx: 0, my: 0, mz: 0, case: '' };
-
-            // x, y, z, 変位, 回転角 のループ
-            for (const key2 in result) {
-              if (key2 === 'id') {
-                continue;
-              }
-              temp[key2] += caseInfo.coef * result[key2];
-            }
-            temp['case'] = caseStr;
-            value[id] = temp;
-            combineReac[key1] = value;
-          }
-        }
+      if (!(baseNo in reac)) {
+        continue;
       }
 
-      // dx, dy … のループ
-      const k: string[] = ['_max', '_min'];
-      for (const key1 of Object.keys(combineReac)) {
-        for (let n = 0; n < k.length; n++) {
-          let key2: string;
-          key2 = key1 + k[n];
-          const old = resultReac[key2];
-          const current = combineReac[key1];
-          // 節点番号のループ
-          for (const id of Object.keys(current)) {
-            if (!(id in old)) {
-              old[id] = current[id];
-              resultReac[key2] = old;
-              continue;
-            }
-            const target = current[id];
-            const comparison = old[id]
-            if ((n === 0 && comparison[key1] < target[key1])
-              || (n > 0 && comparison[key1] > target[key1])) {
-              old[id] = target;
-              resultReac[key2] = old;
+      // カレントケースを集計する
+      for (const key of reacKeys) {
+        // 節点番号のループ
+        const obj = {};
+        for (const d of reac[baseNo]) {
+          obj[d.id] = {
+            tx: coef * d.tx,
+            ty: coef * d.ty,
+            tz: coef * d.tz,
+            mx: coef * d.mx,
+            my: coef * d.my,
+            mz: coef * d.mz,
+            case: caseInfo,
+          };
+        }
+        if (key in temp) {
+          // 大小を比較する
+          const kk = key.split('_');
+          const k1 = kk[0]; // dx, dy, dz, rx, ry, rz
+          const k2 = kk[1]; // max, min
+          for (const nodeNo of Object.keys(temp[key])) {
+            if(k2==='max'){
+              if(temp[key][nodeNo][k1] < obj[nodeNo][k1]){
+                temp[key][nodeNo] = obj[nodeNo];
+              }
+            } else if (k2==='min'){
+              if(temp[key][nodeNo][k1] > obj[nodeNo][k1]){
+                temp[key][nodeNo] = obj[nodeNo];
+              }
             }
           }
+
+        } else {
+          temp[key] = obj;
         }
       }
     }
-    reacCombine[combNo] = resultReac;
+    reacDefine[defNo] = temp;
   }
 
-  postMessage({reacCombine});
- 
+
+  // combineのループ
+  const reacCombine = {};
+  for (const combNo of Object.keys(combList)) {
+    const temp = {};
+    //
+    for (const caseInfo of combList[combNo]) {
+      const caseNo = Number(caseInfo.caseNo);
+      const defNo: string = caseInfo.caseNo.toString();
+      const coef: number = caseInfo.coef;
+
+      if (!(defNo in reacDefine)) {
+        continue;
+      }
+      if (coef === 0) {
+        continue;
+      }
+
+      const reacs = reacDefine[defNo];
+      // カレントケースを集計する
+      const c2 = Math.abs(caseNo).toString().trim();
+      for (const key of reacKeys){
+        // 節点番号のループ
+        const obj = {};
+        for (const nodeNo of Object.keys(reacs[key])) {
+          const d = reacs[key][nodeNo];
+          const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
+          const caseStr = (c1 < 0 ? "-" : "+") + c2;
+          obj[nodeNo] = {
+            tx: coef * d.tx,
+            ty: coef * d.ty,
+            tz: coef * d.tz,
+            mx: coef * d.mx,
+            my: coef * d.my,
+            mz: coef * d.mz,
+            case: caseStr,
+          };
+        }
+
+        if (key in temp) {
+          for (const nodeNo of Object.keys(reacs[key])) {
+              for(const k of Object.keys(obj[nodeNo])){
+                temp[key][nodeNo][k] += obj[nodeNo][k];
+              }
+          }
+        } else {
+          temp[key] = obj;
+        }
+      }
+    }
+    reacCombine[combNo] = temp;
+  }
+
+  postMessage({ reacCombine });
 });
+
