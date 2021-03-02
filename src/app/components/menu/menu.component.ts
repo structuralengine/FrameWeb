@@ -142,8 +142,8 @@ export class MenuComponent implements OnInit {
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
 
-    // const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    const url = 'http://127.0.0.1:5000';
+    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
+    //const url = 'http://127.0.0.1:5000';
 
     // json string にする
     const json = JSON.stringify(jsonData, null, 0);
