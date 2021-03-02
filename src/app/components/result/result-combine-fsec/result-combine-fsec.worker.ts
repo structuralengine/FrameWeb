@@ -145,12 +145,12 @@ addEventListener('message', ({ data }) => {
               for(const k of Object.keys(obj[row])){
                 if (k === 'row') {
                   continue;
-                 } else {
+                } else {
                   const value = obj[row][k];
                   if (k === 'm' || k === 'l') {
                     temp[key][row][k] = value;
                   } else if (k === 'n') {
-                    temp[key][row][k] =  (toNumber(value) !== null) ? value: '';
+                    temp[key][row][k] = (toNumber(value) !== null) ? value: '';
                   } else {
                     temp[key][row][k] += value;
                   }

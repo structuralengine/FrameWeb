@@ -19,34 +19,39 @@ export class ResultFsecService {
     this.fsec = {};
   }
 
-  public getFsecColumns(typNo: number, row: number): any {
+  public getFsecColumns(typNo: number): any {
 
-    let target: any = null;
-    let result: any = null;
+    let target2: any = null;
 
     // タイプ番号を探す
     if (typNo in this.fsec) {
-      target = this.fsec[typNo];
+      target2 = this.fsec[typNo];
     } else {
-      target = new Array();
+      target2 = new Array();
     }
 
     // 行を探す
-    for (const tmp of target) {
-      if (tmp.row === row) {
-        result = {
-          row: tmp.row,
-          m: tmp.m,
-          n: tmp.n,
-          l: tmp.l.toFixed(3),
-          fx: (Math.round(tmp.fx * 100) / 100).toFixed(2),
-          fy: (Math.round(tmp.fy * 100) / 100).toFixed(2),
-          fz: (Math.round(tmp.fz * 100) / 100).toFixed(2),
-          mx: (Math.round(tmp.mx * 100) / 100).toFixed(2),
-          my: (Math.round(tmp.my * 100) / 100).toFixed(2),
-          mz: (Math.round(tmp.mz * 100) / 100).toFixed(2)
-        };
-        break;
+    const result: any[] = new Array();
+    let m: string = null;
+    const old = {};
+    for (const target3 of target2) {
+      const item = {
+        m: (m === target3['m']) ? '' : target3['m'],
+        n: ('n' in target3) ? target3['n'] : '',
+        l: target3['l'].toFixed(3),
+        fx: (Math.round(target3.fx * 100) / 100).toFixed(2),
+        fy: (Math.round(target3.fy * 100) / 100).toFixed(2),
+        fz: (Math.round(target3.fz * 100) / 100).toFixed(2),
+        mx: (Math.round(target3.mx * 100) / 100).toFixed(2),
+        my: (Math.round(target3.my * 100) / 100).toFixed(2),
+        mz: (Math.round(target3.mz * 100) / 100).toFixed(2)
+      };
+      // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
+      if (old['n'] !== item['n'] || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
+          || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
+        result.push(item);
+        m = target3['m'];
+        Object.assign(old, item);
       }
     }
 
@@ -79,7 +84,6 @@ export class ResultFsecService {
         const js: {} = json[m];
 
         let result = {};
-        const old = {};
         const memb = this.member.getMember(memberNo);
         let ni: string = memb.ni;
         let nj = '';
@@ -116,13 +120,9 @@ export class ResultFsecService {
             mz: mzi
           };
 
-          // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
-          //if (old['n'] !== result['n'] || old['fx'] !== result['fx'] || old['fy'] !== result['fy'] || old['fz'] !== result['fz']
-          //  || old['mx'] !== result['mx'] || old['my'] !== result['my'] || old['mz'] !== result['mz']) {
           row++;
           result['row'] = row;
           target.push(result);
-          //}
 
           memberNo = '';
           ni = '';
@@ -157,7 +157,6 @@ export class ResultFsecService {
             mz: mzj
           };
 
-          Object.assign(old, result);
           row++;
           result['row'] = row;
           target.push(result);

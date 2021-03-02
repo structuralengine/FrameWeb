@@ -35,6 +35,7 @@ export class ResultPickupFsecService {
 
     const result: any[] = new Array();
     let m: string = null;
+    const old = {};
     for (const k of Object.keys(target2)) {
       const target3 = target2[k];
       const item = {
@@ -49,8 +50,13 @@ export class ResultPickupFsecService {
         mz: target3['mz'].toFixed(2),
         case: target3['case']
       };
-      result.push(item);
-      m = target3['m'];
+      // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
+      if (old['n'] !== item['n'] || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
+          || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
+        result.push(item);
+        m = target3['m'];
+        Object.assign(old, item);
+      }
     }
     return result;
   }
