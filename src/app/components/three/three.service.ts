@@ -10,7 +10,7 @@ import { ThreeMembersService } from './geometry/three-members.service';
 import { ThreeFixNodeService } from './geometry/three-fix-node.service';
 import { ThreeFixMemberService } from './geometry/three-fix-member.service';
 import { ThreeJointService } from './geometry/three-joint.service';
-import { ThreeLoadService } from './geometry/three-load.service';
+import { ThreeLoadService } from './geometry/three-load/three-load.service';
 
 import { ThreeDisplacementService } from './geometry/three-displacement.service';
 import { ThreeSectionForceService } from './geometry/three-section-force.service';
@@ -45,32 +45,38 @@ export class ThreeService {
   }
 
   //////////////////////////////////////////////////////
+  // ファイルを開く処理する
+  //////////////////////////////////////////////////////
+  public fileload(): void {
+
+    // ファイルを読み込んだ
+    this.node.changeData();
+    this.member.changeData();
+    this.fixNode.ClearData();
+    this.fixMember.ClearData();
+    this.joint.ClearData();
+    this.load.ResetData();
+    this.disg.ClearData();
+    this.reac.ClearData();
+    this.fsec.ClearData();
+
+    this.scene.render();
+  }
+
+  //////////////////////////////////////////////////////
   // データの変更通知を処理する
   //////////////////////////////////////////////////////
-  public chengeData(mode: string = '', index: number = 0): void {
+  public changeData(mode: string = '', index: number = 0): void {
 
     switch (mode) {
 
-      case 'fileLoad':
-        // ファイルを読み込んだ
-        this.node.chengeData();
-        this.member.chengeData();
-        this.fixNode.chengeData(0);
-        this.fixMember.chengeData(0);
-        this.joint.chengeData(0);
-        this.load.chengeData(0);
-        this.disg.ClearData();
-        this.reac.ClearData();
-        this.fsec.ClearData();
-        break;
-
-      case 'nodes':
-        this.node.chengeData();
-        this.member.chengeData();
+   case 'nodes':
+        this.node.changeData();
+        this.member.changeData();
         break;
 
       case 'members':
-        this.member.chengeData();
+        this.member.changeData();
         break;
 
       case 'elements':
@@ -81,24 +87,23 @@ export class ThreeService {
         break;
 
       case 'joints':
-        this.joint.chengeData(index);
+        this.joint.changeData(index);
         break;
 
       case 'fix_nodes':
-        this.fixNode.chengeData(index);
+        this.fixNode.changeData(index);
         break;
 
       case 'fix_member':
-        this.fixMember.chengeData(index);
+        this.fixMember.changeData(index);
         break;
 
       case 'load_names':
-        // nothisng
+        this.load.changeCase(index);
         break;
 
-      case 'load_points':
-      case 'load_members':
-        this.load.chengeData(index);
+      case 'load_values':
+        this.load.changeData(index);
         break;
 
       default:
@@ -113,6 +118,12 @@ export class ThreeService {
 
   }
 
+  //////////////////////////////////////////////////////
+  // データの選択を処理する
+  //////////////////////////////////////////////////////
+  public selectChange(mode: string, index: number): void {
+    console.log("selectChange", mode, index);
+  }
 
   //////////////////////////////////////////////////////
   // データをクリアする
@@ -140,221 +151,243 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // 編集モードの変更通知を処理する
   //////////////////////////////////////////////////////
-  public ChengeMode(ModeName: string, currentPage: number = 1): void {
+  public ChangePage(currentPage: number): void { 
 
-    if (this.mode !== ModeName) {
-      this.currentIndex = -1;
+    if (this.currentIndex === currentPage) {
+      return;
+    }
+
+    switch (this.mode) {
+
+      case 'elements':
+        break;
+
+      case 'joints':
+        this.joint.changeData(currentPage);
+
+      case 'fix_nodes':
+          this.fixNode.changeData(currentPage);
+        break;
+
+      case 'fix_member':
+        this.fixMember.changeData(currentPage);
+        break;
+
+      case 'load_names':
+        this.load.changeCase(currentPage);
+        break;
+
+      case 'load_values':
+        this.load.changeCase(currentPage);
+        break;
+
+      case 'disg':
+        this.disg.changeData(currentPage);
+        break;
+
+      case 'comb_disg':
+        break;
+      case 'pik_disg':
+        break;
+
+      case 'reac':
+        this.reac.changeData(currentPage);
+        break;
+
+      case 'comb_reac':
+        break;
+      case 'pik_reac':
+        break;
+
+      case 'fsec':
+      case 'comb_fsec':
+      case 'pik_fsec':
+        this.fsec.changeData(currentPage, this.mode);
+        break;
+
+    }
+    this.currentIndex = currentPage;
+
+    // 再描画
+    this.scene.render();
+  }
+
+  public ChangeMode(ModeName: string): void {
+
+    if (this.mode === ModeName) {
+      return;
     }
 
     switch (ModeName) {
 
       case 'nodes':
-        this.node.visible(true, true, true);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, true, true);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'members':
       case 'elements':
-        this.node.visible(true, false, false);
-        this.member.visible(true, true, true);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, true, true);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'notice_points':
-        this.node.visible(true, false, false);
-        this.member.visible(true, true, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, true, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'joints':
-        if (this.currentIndex !== currentPage) {
-          this.joint.chengeData(currentPage);
-        }
-        this.node.visible(true, false, false);
-        this.member.visible(true, true, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(true);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, true, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(true);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'fix_nodes':
-        if (this.currentIndex !== currentPage) {
-          this.fixNode.chengeData(currentPage);
-        }
-        this.node.visible(true, true, false);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(true);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, true, false);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(true);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
 
         break;
 
       case 'fix_member':
-        if (this.currentIndex !== currentPage) {
-          this.fixMember.chengeData(currentPage);
-        }
-        this.node.visible(true, false, false);
-        this.member.visible(true, true, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(true);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, true, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(true);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'load_names':
-        if (this.currentIndex !== currentPage) {
-          this.load.chengeData(currentPage);
-        }
-        this.node.visible(true, false, false);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(true);
-        this.fixMember.visible(true);
-        this.joint.visible(true);
-        this.load.visible(true, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(true);
+        this.fixMember.visibleChange(true);
+        this.joint.visibleChange(true);
+        this.load.visibleChange(true, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
-      case 'load_points':
-        if (this.currentIndex !== currentPage) {
-          this.load.chengeData(currentPage);
-        }
-        this.node.visible(true, true, false);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(true, true);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
-        break;
-
-      case 'load_members':
-        if (this.currentIndex !== currentPage) {
-          this.load.chengeData(currentPage);
-        }
-        this.node.visible(true, false, false);
-        this.member.visible(true, true, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(true, true);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+      case 'load_values':
+        this.node.visibleChange(true, true, false);
+        this.member.visibleChange(true, true, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(true, true);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'disg':
-        if (this.currentIndex !== currentPage) {
-          this.disg.chengeData(currentPage);
-        }
-        this.node.visible(true, true, false);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(true);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, true, false);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(true);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'comb_disg':
       case 'pik_disg':
         // 何も表示しない
-        this.node.visible(true, true, true);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, true, true);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);
         break;
 
       case 'reac':
-        if (this.currentIndex !== currentPage) {
-          this.reac.chengeData(currentPage);
-        }
-        this.node.visible(true, true, false);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(true);
-        this.fsec.visible(false);
+        this.node.visibleChange(true, true, false);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(true);
+        this.fsec.visibleChange(false);
         break;
       
       case 'comb_reac':
       case 'pik_reac':
         // 何も表示しない
-        this.node.visible(true, true, true);
-        this.member.visible(true, false, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(false);       
+        this.node.visibleChange(true, true, true);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(false);       
         break;
     
       case 'fsec':
       case 'comb_fsec':
       case 'pik_fsec':
-        if (this.currentIndex !== currentPage) {
-          this.fsec.chengeData(currentPage, ModeName);
-        }
-        this.node.visible(true, false, false);
-        this.member.visible(true, true, false);
-        this.fixNode.visible(false);
-        this.fixMember.visible(false);
-        this.joint.visible(false);
-        this.load.visible(false, false);
-        this.disg.visible(false);
-        this.reac.visible(false);
-        this.fsec.visible(true);
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, true, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(false, false);
+        this.disg.visibleChange(false);
+        this.reac.visibleChange(false);
+        this.fsec.visibleChange(true);
         break;
 
     }
 
     this.mode = ModeName;
-    this.currentIndex = currentPage;
+    this.currentIndex = -1;
 
     // 再描画
     this.scene.render();
@@ -386,12 +419,9 @@ export class ThreeService {
         this.member.detectObject(raycaster, action);
         break;
 
-      case 'load_points':
-
-        break;
-
-      case 'load_members':
-        this.member.detectObject(raycaster, action);
+      case 'load_values':
+        this.load.detectObject(raycaster, action);
+        // this.member.detectObject(raycaster, action);
         break;
 
       case 'load_names':

@@ -6,11 +6,13 @@ import { Injectable } from '@angular/core';
 export class ResultPickupReacService {
 
   public reacPickup: any;
-  public isChenge: boolean;
+  public isChange: boolean;
+  private worker: Worker;
 
   constructor() { 
     this.clear();
-    this.isChenge = true;
+    this.isChange = true;
+    this.worker = new Worker('./result-pickup-reac.worker', { name: 'pickup-reac', type: 'module' });
   }
 
   public clear(): void {
@@ -61,13 +63,12 @@ export class ResultPickupReacService {
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      const worker = new Worker('./result-pickup-reac.worker', { name: 'pickup-reac', type: 'module' });
-      worker.onmessage = ({ data }) => {
+      this.worker.onmessage = ({ data }) => {
         this.reacPickup = data.reacPickup;
-        this.isChenge = false;
+        this.isChange = false;
         console.log('反力reac の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
       };
-      worker.postMessage(postData);
+      this.worker.postMessage(postData);
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
@@ -111,7 +112,7 @@ export class ResultPickupReacService {
         }
         this.reacPickup[pickNo] = tmp;
       }
-      this.isChenge = false;
+      this.isChange = false;
     } catch (e) {
       console.log(e);
     }

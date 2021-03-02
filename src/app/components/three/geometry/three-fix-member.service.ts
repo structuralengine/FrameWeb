@@ -50,7 +50,7 @@ export class ThreeFixMemberService {
     return this.nodeThree.center;
   }
 
-  public visible(flag: boolean): void {
+  public visibleChange(flag: boolean): void {
     if (this.isVisible === flag) {
       return;
     }
@@ -93,7 +93,7 @@ export class ThreeFixMemberService {
     this.gui = null;
   }
 
-  public chengeData(index: number): void {
+  public changeData(index: number): void {
 
     this.ClearData();
 

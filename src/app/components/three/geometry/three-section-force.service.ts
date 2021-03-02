@@ -37,9 +37,7 @@ export class ThreeSectionForceService {
   private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
   private gui_max_scale: number;
-
   private font: THREE.Font;
-
 
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
@@ -54,7 +52,12 @@ export class ThreeSectionForceService {
     this.isVisible = null;
 
     this.lineList = new Array();
-    this.ClearData();
+    // フォントをロード
+    const loader = new THREE.FontLoader();
+    loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
+      this.font = font;
+      this.ClearData();
+    });
 
     // gui
     this.scale = 0.5;
@@ -69,14 +72,9 @@ export class ThreeSectionForceService {
     this.gui = null;
     this.gui_max_scale = 1;
 
-    // フォントをロード
-    const loader = new THREE.FontLoader();
-    loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
-      this.font = font;
-    });
   }
 
-  public visible(flag: boolean): void {
+  public visibleChange(flag: boolean): void {
     if (this.isVisible === flag) {
       return;
     }
@@ -157,7 +155,7 @@ export class ThreeSectionForceService {
 
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
-  public chengeData(index: number, ModeName: string): void {
+  public changeData(index: number, ModeName: string): void {
 
     if (this.modeName === ModeName ){
       if (this.targetIndex === index.toString()) {
@@ -742,7 +740,7 @@ export class ThreeSectionForceService {
       const DanmentyokuText = danmenryoku[j].toFixed(2);
       const TextGeometry = new THREE.TextGeometry(
         DanmentyokuText, {
-        font: this.font,
+          font: this.font,
         size: 0.2,
         height: 0.002,
         curveSegments: 4,

@@ -55,7 +55,7 @@ export class ThreeDisplacementService {
 
   }
 
-  public visible(flag: boolean): void {
+  public visibleChange(flag: boolean): void {
     if ( this.isVisible === flag) {
       return;
     }
@@ -108,7 +108,7 @@ export class ThreeDisplacementService {
     this.gui = null;
   }
 
-  public chengeData(index: number): void {
+  public changeData(index: number): void {
 
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);

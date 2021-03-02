@@ -8,16 +8,16 @@ import { InputMembersService } from '../input-members/input-members.service'
 export class InputLoadService {
 
   public load_name: any[];
-  public load: any[];
+  public load: {};
 
   constructor(private member: InputMembersService,
-    private helper: DataHelperModule) {
+              private helper: DataHelperModule) {
     this.clear();
   }
 
   public clear(): void {
     this.load_name = new Array();
-    this.load = new Array();
+    this.load = {};
   }
 
   public getLoadNameColumns(index: number): any {
@@ -45,7 +45,9 @@ export class InputLoadService {
   }
 
 
-  public getLoadColumns(typNo: number, row: number): any {
+  public getLoadColumns(index: number, row: number): any {
+
+    const typNo: string = index.toString();
 
     let target: any;
     let result: any = undefined;
@@ -129,7 +131,7 @@ export class InputLoadService {
 
           const item2 = load_node_list[i];
 
-          const _row: string = ('row' in item2) ? item2['row'] : (i + 1).toString();
+          const _row: string = ('row' in item2) ? item2['row'] : (i + 1);
 
           const _n: string = ('n' in item2) ? item2.n : '';
           const _tx: string = ('tx' in item2) ? item2.tx : '';
@@ -420,9 +422,7 @@ export class InputLoadService {
             rz: (rz == null) ? empty : rz
           };
 
-          if (empty === null) {
-            tmp['row'] = row.row;
-          }
+          tmp['row'] = row.row;
 
           tmp_node.push(tmp);
         }
@@ -468,11 +468,10 @@ export class InputLoadService {
           const P1 = this.helper.toNumber(row['P1']);
           const P2 = this.helper.toNumber(row['P2']);
 
-          if ((m1 != null || m2 != null) && direction != '' && mark != null
+          if ((m1 != null || m2 != null)  && mark != null //&& direction != ''
             && (L1 != null || L2 != null || P1 != null || P2 != null)) {
 
-            tmp_member.push({
-              row: row.row,
+            const tmp = {
               m1: row.m1,
               m2: row.m2,
               direction: row.direction,
@@ -481,7 +480,11 @@ export class InputLoadService {
               L2: row.L2,
               P1: P1,
               P2: P2
-            });
+            };
+
+            tmp['row'] = row.row;
+
+            tmp_member.push(tmp);
 
 
           }
@@ -493,8 +496,10 @@ export class InputLoadService {
         const load2: any[] = this.convertMemberLoads(load1);
 
         for (let j = 0; j < load2.length; j++) {
-          const row: {} = load2[j];
-          tmp_member.push({
+
+          const row = load2[j];
+
+          const tmp = {
             m: row['m1'],
             direction: row['direction'],
             mark: row['mark'],
@@ -502,7 +507,11 @@ export class InputLoadService {
             L2: this.helper.toNumber(row['L2'], 3),
             P1: this.helper.toNumber(row['P1'], 2),
             P2: this.helper.toNumber(row['P2'], 2)
-          });
+          };
+
+          tmp['row'] = row.row;
+
+          tmp_member.push(tmp);
 
         }
 

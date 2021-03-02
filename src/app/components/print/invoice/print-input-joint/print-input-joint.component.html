@@ -1,0 +1,36 @@
+<div *ngIf="judge" class="pagerBreak"></div>
+<div class="invoicetTable joint">
+    <h2>結合データ</h2>
+    <div *ngFor="let title of joint_typeNum; index as i">
+        <div *ngIf="joint_break[i]" class="pagerBreak"></div>
+        <h3>タイプ {{title}}</h3>
+        <div *ngFor="let joint_dataset of joint_table[i] index as j">
+            <div *ngIf="j > 0" class="pagerBreak"></div>
+            <table class="print-lg">
+                <tr>
+                    <th class="id">部材No</th>
+                    <th class="i" colspan="3">i端側</th>
+                    <th class="j" colspan="3">j端側</th>
+                </tr>
+                <tr>
+                    <th class="id"></th>
+                    <th class="x">X</th>
+                    <th class="y1">Y</th>
+                    <th class="z">Z</th>
+                    <th class="x">X</th>
+                    <th class="y1">Y</th>
+                    <th class="j">Z</th>
+                </tr>
+                <tr *ngFor="let data of joint_dataset">
+                    <td class="id">{{data[0]}}</td>
+                    <td class="x">{{data[1]}}</td>
+                    <td class="y1">{{data[2]}}</td>
+                    <td class="z">{{data[3]}}</td>
+                    <td class="x">{{data[4]}}</td>
+                    <td class="y1">{{data[5]}}</td>
+                    <td class="z">{{data[6]}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

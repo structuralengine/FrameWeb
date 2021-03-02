@@ -1,50 +1,58 @@
 <div class="btn-group">
   <nav>
-    <a routerLink="/result-disg" routerLinkActive="selected-item" class="btn btn-outline-primary">基本ケース</a>
-    <a routesrLink="/result-comb_disg" routerLinkActive="selected-item"
-      class="btn btn-outline-primary active">COMBINE</a>
-    <a routerLink="/result-pic_disg" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
+    <a routerLink="/result-disg" class="btn-change">基本ケース</a>
+    <a routesrLink="/result-comb_disg" class="btn-change active">COMBINE</a>
+    <a routerLink="/result-pic_disg" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
 
 <div class="pager">
-  <div class="pager-title">タイプ</div>
+  <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
+  <p class="load-name">{{ load_name }}</p>
+  <!-- <div class="pager-title">タイプ</div>
   <ngb-pagination class="ngb-pagination" [collectionSize]="collectionSize" [(page)]="page" [maxSize]="7" [rotate]="true"
     [ellipses]="false" [boundaryLinks]="true" aria-label="Default pagination" (pageChange)="loadPage($event)">
   </ngb-pagination>
-  <div class="load-name">{{load_name}}</div>
+  <div class="load-name">{{load_name}}</div> -->
 </div>
 
-<div *ngFor="let r of KEYS ; index as i" >
-  <input id="{{TITLES[i]}}" class="acd-check" type="checkbox" [checked]="i==0">
-  <label class="acd-label" for="{{TITLES[i]}}">
-    <div class="conbine-title acd">{{TITLES[i]}}<i class="fas fa-sort-down"></i></div>
+<div *ngFor="let r of KEYS; index as i">
+  <input
+    id="{{ TITLES[i] }}"
+    class="acd-check"
+    type="checkbox"
+    [checked]="i == 0"
+  />
+  <label class="acd-label" for="{{ TITLES[i] }}">
+    <div class="conbine-title acd">
+      {{ TITLES[i] }}<i class="fas fa-sort-down"></i>
+    </div>
   </label>
   <div class="acd-content">
-    <div class="result_table disg">
+    <div class="result_table">
       <table class="acd">
         <thead>
           <tr>
-            <th class="id">No</th>
-            <th class="dx">x方向の移動量</th>
-            <th class="dy">y方向の移動量</th>
-            <th class="dz">z方向の移動量</th>
-            <th class="rx">x軸回りの回転量</th>
-            <th class="ry">y軸回りの回転量</th>
-            <th class="rz">z軸回りの回転量</th>
-            <th class="case">組み合わせ</th>
+            <th class="result-sm">No</th>
+            <th class="result-lg">x方向の<br />移動量</th>
+            <th class="result-lg">y方向の<br />移動量</th>
+            <th class="result-lg">z方向の<br />移動量</th>
+            <th class="result-lg">x軸回りの<br />回転量</th>
+            <th class="result-lg">y軸回りの<br />回転量</th>
+            <th class="result-lg">z軸回りの<br />回転量</th>
+            <th class="result-lg">組み合わせ</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let resultData of dataset[i]; index as i">
-            <td class="id">{{resultData.id}}</td>
-            <td class="dx">{{resultData.dx}}</td>
-            <td class="dy">{{resultData.dy}} </td>
-            <td class="dz">{{resultData.dz}} </td>
-            <td class="rx">{{resultData.rx}} </td>
-            <td class="ry">{{resultData.ry}} </td>
-            <td class="rz">{{resultData.rz}} </td>
-            <td class="case">{{resultData.case}} </td>
+            <td class="result-sm">{{ resultData.id }}</td>
+            <td class="result-lg">{{ resultData.dx }}</td>
+            <td class="result-lg">{{ resultData.dy }}</td>
+            <td class="result-lg">{{ resultData.dz }}</td>
+            <td class="result-lg">{{ resultData.rx }}</td>
+            <td class="result-lg">{{ resultData.ry }}</td>
+            <td class="result-lg">{{ resultData.rz }}</td>
+            <td class="result-lg">{{ resultData.case }}</td>
           </tr>
         </tbody>
       </table>

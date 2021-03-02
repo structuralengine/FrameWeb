@@ -1,47 +1,19 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener, Renderer2, NgZone, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, HostListener, NgZone } from '@angular/core';
 import * as THREE from 'three';
-
-import Stats from './libs/stats.module.js';
-import { OrbitControls } from './libs/OrbitControls.js';
-import { DragControls } from './libs/DragControls.js';
-import { TransformControls } from './libs/TransformControls.js';
 
 import { SceneService } from './scene.service';
 import { ThreeService } from './three.service';
-import { SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-three',
   templateUrl: './three.component.html',
-  styleUrls: ['./three.component.scss']
+  styleUrls: ['./three.component.scss'],
 })
-export class ThreeComponent implements  AfterViewInit {
-
-
-  // ngOnInit{
-  //   this.setcanvasWidth();
-  // }
-
-
-
-  // setcanvasWidth() {
-  //   setTimeout(function () {
-  //     const parent = document.getElementById('body-container-id');
-  //     // ヘッダ領域を取得
-  //     const canvas = document.getElementsByClassName('three-container')  as HTMLCollectionOf<HTMLElement>;
-  //     for (let i = 0; i < canvas.length; i++) {
-  //       const left = canvas[i].style.left;
-  //       console.log(left);
-  //     }
-  //     const widthSize = parent[0].clientWidth ;
-
-  //     canvas[0].style.width= '100px';//widthSize;
-
-  //   }, 100);
-  // }
+export class ThreeComponent implements AfterViewInit {
 
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
+
 
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;

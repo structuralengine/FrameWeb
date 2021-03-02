@@ -6,11 +6,13 @@ import { Injectable } from '@angular/core';
 export class ResultPickupFsecService {
 
   public fsecPickup: any;
-  public isChenge: boolean;
+  public isChange: boolean;
+  private worker: Worker;
 
   constructor() {
     this.clear();
-    this.isChenge = true;
+    this.isChange = true;
+    this.worker = new Worker('./result-pickup-fsec.worker', { name: 'pickup-fsec', type: 'module' });
   }
 
   public clear(): void {
@@ -33,6 +35,7 @@ export class ResultPickupFsecService {
 
     const result: any[] = new Array();
     let m: string = null;
+    const old = {};
     for (const k of Object.keys(target2)) {
       const target3 = target2[k];
       const item = {
@@ -47,8 +50,13 @@ export class ResultPickupFsecService {
         mz: target3['mz'].toFixed(2),
         case: target3['case']
       };
-      result.push(item);
-      m = target3['m'];
+      // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
+      if (old['n'] !== item['n'] || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
+          || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
+        result.push(item);
+        m = target3['m'];
+        Object.assign(old, item);
+      }
     }
     return result;
   }
@@ -63,13 +71,12 @@ export class ResultPickupFsecService {
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      const worker = new Worker('./result-pickup-fsec.worker', { name: 'pickup-fsec', type: 'module' });
-      worker.onmessage = ({ data }) => {
+      this.worker.onmessage = ({ data }) => {
         this.fsecPickup = data.fsecPickup;
-        this.isChenge = false;
+        this.isChange = false;
         console.log('断面力fsec の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
       };
-      worker.postMessage(postData);
+      this.worker.postMessage(postData);
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
@@ -112,7 +119,7 @@ export class ResultPickupFsecService {
         }
         this.fsecPickup[pickNo] = tmp;
       }
-      this.isChenge = false;
+      this.isChange = false;
     } catch (e) {
       console.log(e);
     }

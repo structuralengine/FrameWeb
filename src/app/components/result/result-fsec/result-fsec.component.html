@@ -1,43 +1,63 @@
 <div class="btn-group">
   <nav>
-    <a routerLink="/result-fsec" routerLinkActive="selected-item" class="btn btn-outline-primary active">基本ケース</a>
-    <a routerLink="/result-comb_fsec" routerLinkActive="selected-item" [class]="btnCombine">COMBINE</a>
-    <a routerLink="/result-pic_fsec" routerLinkActive="selected-item" [class]="btnPickup">PICKUP</a>
+    <a
+      routerLink="/result-fsec"
+      routerLinkActive="selected-item"
+      class="btn-change active"
+      >基本ケース</a
+    >
+    <a
+      routerLink="/result-comb_fsec"
+      routerLinkActive="selected-item"
+      [class]="btnCombine"
+      >COMBINE</a
+    >
+    <a
+      routerLink="/result-pic_fsec"
+      routerLinkActive="selected-item"
+      [class]="btnPickup"
+      >PICKUP</a
+    >
   </nav>
 </div>
 
 <div class="pager">
-  <div class="pager-title">タイプ</div>
+  <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
+  <p class="load-name">{{ load_name }}</p>
+  <!-- <div class="pager-title">タイプ</div>
   <ngb-pagination class="ngb-pagination" [collectionSize]="collectionSize" [(page)]="page" [maxSize]="7" [rotate]="true"
     [ellipses]="false" [boundaryLinks]="true" aria-label="Default pagination" (pageChange)="loadPage($event)">
   </ngb-pagination>
-  <div class="load-name">{{load_name}}</div>
+  <div class="load-name">{{load_name}}</div> -->
 </div>
-
 
 <div class="result_table">
   <table>
-    <tr>
-      <th>部材No</th>
-      <th>節点No</th>
-      <th>着目位置</th>
-      <th>軸方向力</th>
-      <th>y軸方向のせん断力</th>
-      <th>z軸方向のせん断力</th>
-      <th>ねじりモーメント</th>
-      <th>y軸回りの曲げモーメント</th>
-      <th>z軸回りの曲げモーメント</th>
-    </tr>
-    <tr *ngFor="let resultData of dataset; index as i">
-      <td >{{resultData.m}}</td>
-      <td>{{resultData.n}} </td>
-      <td>{{resultData.l}} </td>
-      <td>{{resultData.fx}} </td>
-      <td>{{resultData.fy}} </td>
-      <td>{{resultData.fz}} </td>
-      <td>{{resultData.mx}} </td>
-      <td>{{resultData.my}} </td>
-      <td>{{resultData.mz}} </td>
-    </tr>
+    <thead>
+      <tr>
+        <th class="result-sm">部材No</th>
+        <th class="result-sm">節点No</th>
+        <th class="result-lg">着目位置</th>
+        <th class="result-lg">軸方向力</th>
+        <th class="result-lg" >y軸方向の<br />せん断力</th>
+        <th class="result-lg">z軸方向の<br />せん断力</th>
+        <th class="result-lg">ねじり<br/>モーメント</th>
+        <th class="result-lg">y軸回りの<br />曲げモーメント</th>
+        <th class="result-lg">z軸回りの<br />曲げモーメント</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let resultData of dataset; index as i">
+        <td class="result-sm">{{ resultData.m }}</td>
+        <td class="result-sm">{{ resultData.n }}</td>
+        <td class="result-lg">{{ resultData.l }}</td>
+        <td class="result-lg">{{ resultData.fx }}</td>
+        <td class="result-lg">{{ resultData.fy }}</td>
+        <td class="result-lg">{{ resultData.fz }}</td>
+        <td class="result-lg">{{ resultData.mx }}</td>
+        <td class="result-lg">{{ resultData.my }}</td>
+        <td class="result-lg">{{ resultData.mz }}</td>
+      </tr>
+    </tbody>
   </table>
 </div>

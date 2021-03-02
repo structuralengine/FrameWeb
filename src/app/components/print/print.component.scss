@@ -1,0 +1,92 @@
+.print-choice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px 0;
+    padding: 12px;
+    background-color: #f5f5f5;
+    font-size: 12px;
+    ul {
+        text-align: left;
+        li {
+            margin-bottom: 8px;
+
+            .checkbox-input {
+                display: none;
+            }
+
+            .checkbox-parts {
+                display: inline-block;
+                padding-left: 30px;
+                position: relative;
+                width: 100%;
+            }
+            .checkbox-parts::before {
+                content: "";
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 15px;
+                height: 15px;
+                border: 1px solid #999;
+                border-radius: 4px;
+            }
+
+            .checkbox-input:hover + .checkbox-parts:hover {
+                cursor: pointer;
+                opacity: 0.7;
+                display: block;
+            }
+
+            .checkbox-input:checked + .checkbox-parts {
+                color: #d01137;
+            }
+            .checkbox-input:checked + .checkbox-parts::after {
+                content: "";
+                display: block;
+                position: absolute;
+                top: -5px;
+                left: 5px;
+                width: 7px;
+                height: 14px;
+                transform: rotate(40deg);
+                border-bottom: 3px solid #d01137;
+                border-right: 3px solid #d01137;
+            }
+            &:last-child {
+                margin: 0;
+            }
+        }
+    }
+}
+
+.printdata-choice {
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.print-ing {
+    input,
+    button,
+    textarea,
+    select {
+        // background: none;
+        border: 0.5px solid #83abcd;
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 8px 20px;
+        background-color: #669987;
+        color: #ffffff;
+    }
+    margin-bottom: 12px;
+    :hover {
+        cursor: pointer;
+        opacity: 0.7;
+        background-color: #669987;
+    }
+    font-size: 12px;
+}

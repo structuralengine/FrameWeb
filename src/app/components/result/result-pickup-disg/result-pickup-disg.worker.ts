@@ -38,7 +38,9 @@ addEventListener('message', ({ data }) => {
         }
       }
     }
-    disgPickup[pickNo] = tmp;
+    if (tmp !== null) {
+      disgPickup[pickNo] = tmp;
+    }
   }
 
   postMessage({ disgPickup });

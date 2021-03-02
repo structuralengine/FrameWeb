@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from '../../app.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
+import { PrintService } from '../print/print.service';
 
 import { Router } from '@angular/router';
 
@@ -16,14 +16,13 @@ import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
 
-import { PrintDataModule } from '../../providers/print-data.module';
-import * as jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import * as pako from 'pako';
+import { DataCountService } from '../print/invoice/dataCount.service';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  styleUrls: ['./menu.component.scss', '../../app.component.scss']
 })
 export class MenuComponent implements OnInit {
 
@@ -31,22 +30,26 @@ export class MenuComponent implements OnInit {
   userPoint: string;
   loggedIn: boolean;
   fileName: string;
+  isCalculated: boolean;
 
   constructor(private modalService: NgbModal,
-              private app: AppComponent,
-              private router: Router,
-              private user: UserInfoService,
-              private InputData: InputDataService,
-              private ResultData: ResultDataService,
-              private http: HttpClient,
-              private three: ThreeService,
-              private printData: PrintDataModule) {
+    private app: AppComponent,
+    private router: Router,
+    public user: UserInfoService,
+    private InputData: InputDataService,
+    private ResultData: ResultDataService,
+    private http: HttpClient,
+    private three: ThreeService,
+    public printService: PrintService,
+    public countArea:DataCountService
+    ) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.1.0"
+    this.fileName = "立体骨組構造解析ソフトver1.2.0"
+    this.user.isContentsDailogShow = false;
   }
 
 
@@ -57,11 +60,19 @@ export class MenuComponent implements OnInit {
     this.ResultData.clear();
     this.app.isCalculated = false;
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.1.0"
+    this.fileName = "立体骨組構造解析ソフトver1.2.0"
   }
 
   // ファイルを開く
   open(evt) {
+    this.app.dialogClose(); // 現在表示中の画面を閉じる
+    this.InputData.clear();
+    this.ResultData.clear();
+    this.app.isCalculated = false;
+    this.three.ClearData();
+    this.countArea.clear();
+    const modalRef = this.modalService.open(WaitDialogComponent);
+
     const file = evt.target.files[0];
     this.fileName = file.name;
     evt.target.value = '';
@@ -70,10 +81,12 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
-        this.three.chengeData('fileLoad');
+        this.three.fileload();
+        modalRef.close();
       })
       .catch(err => {
-        console.log(err);
+        alert(err);
+        modalRef.close();
       });
   }
 
@@ -95,7 +108,7 @@ export class MenuComponent implements OnInit {
     const inputJson: string = JSON.stringify(this.InputData.getInputJson());
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
     if (this.fileName.length === 0) {
-      this.fileName = 'frameWebForJS.fwj';
+      this.fileName = 'frameWebForJS.json';
     }
     FileSaver.saveAs(blob, this.fileName);
   }
@@ -116,82 +129,96 @@ export class MenuComponent implements OnInit {
     const jsonData: {} = this.InputData.getInputJson(0);
     // console.log(JSON.stringify(jsonData));
 
-    if ( 'error' in jsonData ){
-        alert(jsonData['error']);
-        modalRef.close(); // モーダルダイアログを消す
-        return;
-    }
-
-    const inputJson = { username: this.user.loginUserName, password: this.user.loginPassword };
-    for (const key of Object.keys(jsonData)) {
-      if ( 'load' === key ){
-        continue;
-      }
-      inputJson[key] = jsonData[key];
-    }
-
-    this.ResultData.clear(); // 解析結果情報をクリア
-
-    const Keys = Object.keys(jsonData['load']);
-    this.post(inputJson, jsonData['load'], Keys, 0, modalRef);
-
-  }
-
-  private post(jsonData: object, load: object, Keys: string[], index: number, modalRef: NgbModalRef) {
-
-    if (Keys.length <= index) {
-      // 全ての解析ケースを計算し終えたら
-      this.ResultData.CombinePickup(); // 組み合わせケースを集計する
-      this.three.chengeData();
+    if ('error' in jsonData) {
+      alert(jsonData['error']);
       modalRef.close(); // モーダルダイアログを消す
       return;
     }
-    const key: string = Keys[index];
-    const current = {};
-    current[key] = load[key];
-    jsonData['load'] = current;
-    const inputJson = JSON.stringify(jsonData);
-    console.log('荷重ケース ' + key);
-    console.log(inputJson);
+    this.ResultData.clear(); // 解析結果情報をクリア
 
-    // const url = 'https://uij0y12e2l.execute-api.ap-northeast-1.amazonaws.com/default/Frame3D';
-    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb';
+    this.post_compress(jsonData, modalRef);
 
-    this.http.post(url, inputJson, {
+  }
+
+  private post_compress(jsonData: {}, modalRef: NgbModalRef) {
+
+    const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
+    //const url = 'http://127.0.0.1:5000';
+
+    // json string にする
+    const json = JSON.stringify(jsonData, null, 0);
+    // pako を使ってgzip圧縮する
+    const compressed = pako.gzip(json);
+    //btoa() を使ってBase64エンコードする
+    const base64Encoded = btoa(compressed);
+
+    this.http.post(url, base64Encoded, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-      })
+        'Content-Encoding': 'gzip,base64'
+      }),
+      responseType: 'text'
     }).subscribe(
       response => {
         // 通信成功時の処理（成功コールバック）
-        console.log('通信成功!! 解析ケース' + index.toString());
+        console.log('通信成功!!');
+        try {
+          // Decode base64 (convert ascii to binary)
+          const strData = atob(response);
+          // Convert binary string to character-number array
+          const charData = strData.split('').map(function (x) { return x.charCodeAt(0); });
+          // Turn number array into byte-array
+          const binData = new Uint8Array(charData);
+          // Pako magic
+          const json = pako.ungzip(binData,{to: 'string'} );
 
-        // サーバーのレスポンスを集計する
-        if (!this.ResultData.loadResultData(response)) {
-          alert('解析結果の集計に失敗しました');
-        } else {
-          console.log(response);
-          // ユーザーポイントの更新
-          this.loadResultData(response);
+
+          // テスト ---------------------------------------------
+          //this.saveResult(json);
+          // --------------------------------------------- テスト
+
+          const jsonData = JSON.parse(json);
+          // サーバーのレスポンスを集計する
+          console.log(jsonData);
+          if (!this.ResultData.loadResultData(jsonData)) {
+            throw '解析結果の集計に失敗しました';
+          } else {
+            // ユーザーポイントの更新
+            this.loadResultData(jsonData);
+            this.three.changeData();
+          }
+        } catch (e) {
+          alert(e);
+        } finally {
+          modalRef.close(); // モーダルダイアログを消す
         }
-        this.post(jsonData, load, Keys, index + 1, modalRef);
       },
       error => {
         // 通信失敗時の処理（失敗コールバック）
         this.app.isCalculated = false;
 
         let messege: string = '通信 ' + error.statusText;
-        if ('_body' in error){
+        if ('_body' in error) {
           messege += '\n' + error._body;
         }
         alert(messege);
+        console.error(error);
+        modalRef.close();
       }
     );
   }
 
+  // 全ての解析ケースを計算し終えたら
   private loadResultData(jsonData: object): void {
+
+    // 組み合わせケースを集計する
+    this.ResultData.CombinePickup();
+
+    // ユーザーの保有ポイントの表示を更新する
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
+
+    // 結果表示ボタンを表示する
     this.app.Calculated(this.ResultData);
   }
 
@@ -208,14 +235,7 @@ export class MenuComponent implements OnInit {
     FileSaver.saveAs(blob, filename);
   }
 
-  // 印刷
-  print(): void {
-    const doc = this.printData.printData(this.router.url.replace('/', ''));
-    // 印刷実行
-    doc.output('dataurlnewwindow');
-  }
-
-  // ログイン関係 
+  // ログイン関係
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
@@ -234,4 +254,69 @@ export class MenuComponent implements OnInit {
     this.user.clear();
   }
 
+  //　印刷フロート画面用
+  public dialogClose(): void {
+    this.user.isContentsDailogShow = false;
+  }
+
+  public contentsDailogShow(id): void {
+    this.deactiveButtons();
+    document.getElementById(id).classList.add('active');
+    this.user.isContentsDailogShow = true;
+    //this.setDialogHeight();
+  }
+
+   // アクティブになっているボタンを全て非アクティブにする
+   deactiveButtons() {
+    for (let i = 0; i <= 13; i++) {
+      const data = document.getElementById(i + '');
+      if (data != null) {
+        if (data.classList.contains('active')) {
+          data.classList.remove('active');
+        }
+      }
+    }
+  }
+
+  
+  /*/ テスト ---------------------------------------------
+  private saveResult(text: string): void {
+    const blob = new window.Blob([text], { type: 'text/plain' });
+    FileSaver.saveAs(blob, 'frameWebResult.json');
+  }
+
+  //解析結果ファイルを開く
+  resultopen(evt) {
+    const modalRef = this.modalService.open(WaitDialogComponent);
+
+    const file = evt.target.files[0];
+    this.fileName = file.name;
+    evt.target.value = '';
+
+    this.fileToText(file)
+      .then(text => {
+
+        this.app.dialogClose(); // 現在表示中の画面を閉じる
+        this.ResultData.clear();
+        const jsonData = JSON.parse(text);
+
+        if (this.ResultData.loadResultData(jsonData)) {
+          // ユーザーポイントの更新
+          this.loadResultData(jsonData);
+          this.three.changeData();
+          this.app.isCalculated = true;
+        }
+
+        modalRef.close();
+
+      })
+      .catch(err => {
+        alert(err);
+        modalRef.close();
+      });
+  }
+  // --------------------------------------------- テスト */
+
+
 }
+

@@ -26,7 +26,7 @@ import { DataHelperModule } from './data-helper.module';
 })
 export class ResultDataService {
 
-  public isCombinePickupChenge: boolean;
+  public isCombinePickupChange: boolean;
   constructor(
     private combine: InputCombineService,
     private define: InputDefineService,
@@ -62,7 +62,7 @@ export class ResultDataService {
     this.pickdisg.clear();
     this.pickreac.clear();
     this.pickfsec.clear();
-    this.isCombinePickupChenge = true;
+    this.isCombinePickupChange = true;
 
     // 図をクリアする
     this.three_fsec.ClearData();
@@ -73,6 +73,10 @@ export class ResultDataService {
 
   // 計算結果を読み込む
   public loadResultData(jsonData: object): boolean {
+
+    if ( 'error' in jsonData){
+      return false;
+    }
 
     try {
       // 基本ケース
@@ -88,7 +92,7 @@ export class ResultDataService {
 
 
   public CombinePickup(): void {
-    if (this.isCombinePickupChenge === false) {
+    if (this.isCombinePickupChange === false) {
       return;
     }
     const load = this.load.getLoadNameJson(1);
@@ -104,7 +108,7 @@ export class ResultDataService {
         const d: object = define[defNo];
         const defines = new Array();
         for (const dKey of Object.keys(d)) {
-          if( dKey === 'row'){ 
+          if( dKey === 'row'){
             continue;
           }
           defines.push(d[dKey]);
@@ -114,10 +118,11 @@ export class ResultDataService {
     } else {
       // define データがない時は基本ケース＝defineケースとなる
       for (const caseNo of Object.keys(load)) {
-        defList[caseNo] = new Array(caseNo);
+        const n: number = this.helper.toNumber(caseNo);
+        defList[caseNo] = (n === null) ? [] : new Array(n);
       }
     }
-
+    /*
     // combine を集計
     const combList = {};
     for (const combNo of Object.keys(combine)) {
@@ -142,12 +147,13 @@ export class ResultDataService {
         let count: number = combines.length;
         for (let i = 0; i < count; i++) {
           const base = combines[i];
+          console.log("def.length",def.length);
 
           // defineNo が複数あった場合に配列を複製する
           for (let j = 1; j < def.length; j++)  {
             const oomb = base.slice(0, base.length);
 
-            let caseNo1: string = def[j];
+            let caseNo1: string = def[j].toString();
             let coef1: number = coef;
             if ( caseNo1 === '0') {
               combines.push(oomb);
@@ -161,21 +167,38 @@ export class ResultDataService {
             combines.push(oomb);
           }
 
-          let caseNo: string = def[0];
-          if ( caseNo !== '0') { 
+          let caseNo: string = def[0].toString();
+          if ( caseNo !== '0') {
             if (caseNo.indexOf('-') >= 0) {
               caseNo = caseNo.replace('-', '');
               coef = -1 * coef;
             }
             base.push({ caseNo, coef });
           }
-
         }
 
       }
       combList[combNo] = combines;
     }
-
+    */
+    // combine を集計
+    const combList = {};
+    for (const combNo of Object.keys(combine)) {
+      const c: object = combine[combNo];
+      const defines = new Array();
+      for (const cKey of Object.keys(c)) {
+        if( cKey === 'row'){
+          continue;
+        }
+        const caseNo: string = cKey.replace('C', '').replace('D', '');
+        const coef: number = this.helper.toNumber(c[cKey]);
+        if (!(caseNo in defList) || coef === null) {
+          continue; // なければ飛ばす
+        }
+        defines.push({caseNo, coef});
+      }
+      combList[combNo] = defines;
+    }
 
     // pickup を集計
     const pickList = {};
@@ -183,7 +206,7 @@ export class ResultDataService {
       const p: object = pickup[pickNo];
       const combines = new Array();
       for (const pKey of Object.keys(p)) {
-        if( pKey === 'row'){ 
+        if( pKey === 'row'){
           continue;
         }
         const comNo: string = p[pKey];
@@ -195,14 +218,11 @@ export class ResultDataService {
       pickList[pickNo] = combines;
     }
 
-    this.combdisg.setDisgCombineJson(combList, pickList);
-    this.combreac.setReacCombineJson(combList, pickList);
-    this.combfsec.setFsecCombineJson(combList, pickList);
-    // this.pickdisg.setDisgPickupJson(pickList);
-    // this.pickreac.setReacPickupJson(pickList);
-    // this.pickfsec.setFsecPickupJson(pickList);
+    this.combdisg.setDisgCombineJson(defList, combList, pickList);
+    this.combreac.setReacCombineJson(defList, combList, pickList);
+    this.combfsec.setFsecCombineJson(defList, combList, pickList);
 
-    this.isCombinePickupChenge = false;
+    this.isCombinePickupChange = false;
   }
 
   // ピックアップファイル出力
@@ -259,7 +279,7 @@ export class ResultDataService {
             point_name = point_counter.toString();
             point_counter += 1;
           }
-            
+
 
           result += No.toString();
           result += ',';
