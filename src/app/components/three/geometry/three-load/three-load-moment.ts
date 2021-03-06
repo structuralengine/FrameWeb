@@ -73,8 +73,22 @@ export class ThreeLoadMoment {
     child.add(ellipse);
 
     // 長さを修正する
-    if (value < 0) {
-      child.rotation.set(-Math.PI, 0, -Math.PI);
+    //if (value < 0) {
+      //child.rotation.set(-Math.PI, 0, -Math.PI);
+    //}
+
+    if (direction === 'rx' || direction === 'ry') {
+      if (value > 0) {
+        child.rotation.set(0, 0, 0);
+      } else if (value < 0) {
+        child.rotation.set(-Math.PI, 0, -Math.PI);
+      }
+    } else if (direction === 'rz') { //zのみ挙動が異なるため追加
+      if (value > 0) {
+        child.rotation.set(-Math.PI, 0, -Math.PI);
+      } else if (value < 0) {
+        child.rotation.set(0, 0, 0);
+      }
     }
     child.scale.set(radius, radius, radius);
 
@@ -107,6 +121,15 @@ export class ThreeLoadMoment {
     } else  if (direction === "ry") {
       group0.rotation.x = Math.PI / 2;
     }
+
+    //中心点を作成
+    const point_geo = new THREE.Geometry();
+    point_geo.vertices.push(new THREE.Vector3(0,0,0));
+    const point_mat = new THREE.PointsMaterial({size: 0.1, color: 0x080808});
+    const point_mesh = new THREE.Points(point_geo, point_mat);
+    point_mesh.name = 'points_center';
+    point_mesh.visible = false;
+    group0.add(point_mesh);
 
     group0.add(child);
     group0.name = "group";

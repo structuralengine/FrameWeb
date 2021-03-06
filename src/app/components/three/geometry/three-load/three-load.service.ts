@@ -1003,6 +1003,9 @@ export class ThreeLoadService {
       if(item.name === 'text'){
         item.visible = flag;
       }
+      if(item.name === 'points_center'){
+        item.visible = flag;
+      }
     }
     if(!('children' in item)){
       return;
