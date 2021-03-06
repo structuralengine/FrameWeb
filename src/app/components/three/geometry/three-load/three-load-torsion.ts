@@ -95,9 +95,18 @@ export class ThreeLoadTorsion {
     const my_color = [];
     target.forEach(value => {
       my_color.push(
-        (Math.sign(value) > 0 ? 0xff0000 : 0x0000ff)
+        (Math.sign(value) > 0 ? 0xff0000
+       : Math.sign(value) < 0 ? 0x0000ff
+       : 0x000000 )
       );
     })
+    if (my_color[0] === 0x000000 || my_color[1] === 0x000000) {
+      if (my_color[0] === 0x000000){
+        my_color[0] = my_color[1];
+      } else if (my_color[1] === 0x000000) {
+        my_color[1] = my_color[0];
+      }
+    }
     return my_color;
   }
 
@@ -134,7 +143,7 @@ export class ThreeLoadTorsion {
     if (sg1 !== sg2 && sg1 * sg2 !== 0) {
       const pp1 = Math.abs(P1);
       const pp2 = Math.abs(P2);
-      x2 = L * pp1 / (pp1 + pp2)
+      x2 = L * pp1 / (pp1 + pp2) + x1;
       y2 = 0;
     }
 
@@ -200,6 +209,10 @@ export class ThreeLoadTorsion {
         "rx",
         my_color[i]
       );
+
+      if (values[i] < 0) {
+        arrow.rotation.set(-Math.PI / 2, 0, 0);
+      }
 
       result.push(arrow);
 

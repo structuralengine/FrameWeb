@@ -190,7 +190,7 @@ export class ThreeLoadDistribute {
     if (sg1 !== sg2 && sg1 * sg2 !== 0) {
       const pp1 = Math.abs(P1);
       const pp2 = Math.abs(P2);
-      x2 = L * pp1 / (pp1 + pp2)
+      x2 = L * pp1 / (pp1 + pp2) + x1;
       y2 = 0;
     }
 
