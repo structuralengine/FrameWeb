@@ -48,7 +48,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.1.0"
+    this.fileName = "立体骨組構造解析ソフトver1.2.0"
     this.user.isContentsDailogShow = false;
   }
 
@@ -60,7 +60,7 @@ export class MenuComponent implements OnInit {
     this.ResultData.clear();
     this.app.isCalculated = false;
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.1.0"
+    this.fileName = "立体骨組構造解析ソフトver1.2.0"
   }
 
   // ファイルを開く
@@ -82,11 +82,11 @@ export class MenuComponent implements OnInit {
         this.InputData.loadInputData(text); // データを読み込む
         this.app.isCalculated = false;
         this.three.fileload();
-        modalRef.close(); 
+        modalRef.close();
       })
       .catch(err => {
         alert(err);
-        modalRef.close(); 
+        modalRef.close();
       });
   }
 
@@ -108,7 +108,7 @@ export class MenuComponent implements OnInit {
     const inputJson: string = JSON.stringify(this.InputData.getInputJson());
     const blob = new window.Blob([inputJson], { type: 'text/plain' });
     if (this.fileName.length === 0) {
-      this.fileName = 'frameWebForJS.fwj';
+      this.fileName = 'frameWebForJS.json';
     }
     FileSaver.saveAs(blob, this.fileName);
   }
@@ -143,7 +143,7 @@ export class MenuComponent implements OnInit {
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
 
     const url = 'https://asia-northeast1-the-structural-engine.cloudfunctions.net/frameWeb-2';
-    // const url = 'http://127.0.0.1:5000';
+    //const url = 'http://127.0.0.1:5000';
 
     // json string にする
     const json = JSON.stringify(jsonData, null, 0);
@@ -172,16 +172,19 @@ export class MenuComponent implements OnInit {
           // Pako magic
           const json = pako.ungzip(binData,{to: 'string'} );
 
+
+          // テスト ---------------------------------------------
+          //this.saveResult(json);
+          // --------------------------------------------- テスト
+
           const jsonData = JSON.parse(json);
           // サーバーのレスポンスを集計する
+          console.log(jsonData);
           if (!this.ResultData.loadResultData(jsonData)) {
             throw '解析結果の集計に失敗しました';
           } else {
-            console.log(jsonData);
             // ユーザーポイントの更新
             this.loadResultData(jsonData);
-            // 全ての解析ケースを計算し終えたら
-            this.ResultData.CombinePickup(); // 組み合わせケースを集計する
             this.three.changeData();
           }
         } catch (e) {
@@ -204,10 +207,18 @@ export class MenuComponent implements OnInit {
       }
     );
   }
-  
+
+  // 全ての解析ケースを計算し終えたら
   private loadResultData(jsonData: object): void {
+
+    // 組み合わせケースを集計する
+    this.ResultData.CombinePickup();
+
+    // ユーザーの保有ポイントの表示を更新する
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();
+
+    // 結果表示ボタンを表示する
     this.app.Calculated(this.ResultData);
   }
 
@@ -224,16 +235,7 @@ export class MenuComponent implements OnInit {
     FileSaver.saveAs(blob, filename);
   }
 
-  /*
-  // 印刷
-  print(): void {
-    const doc = this.printData.printData(this.router.url.replace('/', ''));
-    // 印刷実行
-    doc.output('dataurlnewwindow');
-  }
-  */
-
-  // ログイン関係 
+  // ログイン関係
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
@@ -276,4 +278,45 @@ export class MenuComponent implements OnInit {
     }
   }
 
+  
+  /*/ テスト ---------------------------------------------
+  private saveResult(text: string): void {
+    const blob = new window.Blob([text], { type: 'text/plain' });
+    FileSaver.saveAs(blob, 'frameWebResult.json');
+  }
+
+  //解析結果ファイルを開く
+  resultopen(evt) {
+    const modalRef = this.modalService.open(WaitDialogComponent);
+
+    const file = evt.target.files[0];
+    this.fileName = file.name;
+    evt.target.value = '';
+
+    this.fileToText(file)
+      .then(text => {
+
+        this.app.dialogClose(); // 現在表示中の画面を閉じる
+        this.ResultData.clear();
+        const jsonData = JSON.parse(text);
+
+        if (this.ResultData.loadResultData(jsonData)) {
+          // ユーザーポイントの更新
+          this.loadResultData(jsonData);
+          this.three.changeData();
+          this.app.isCalculated = true;
+        }
+
+        modalRef.close();
+
+      })
+      .catch(err => {
+        alert(err);
+        modalRef.close();
+      });
+  }
+  // --------------------------------------------- テスト */
+
+
 }
+
