@@ -81,7 +81,8 @@ export class ThreeLoadAxial {
 
     // 寸法線
     const dim = this.getDim(L1, L, L2, offset);
-    dim.visible = false;
+    //dim.visible = false;
+    dim.visible = true;
     child.add(dim);
 
     // 全体
@@ -121,6 +122,7 @@ export class ThreeLoadAxial {
   private getDim(L1: number, L: number, L2: number, offset: number): THREE.Group {
 
     const L1L = L1 + L;
+    const L1LL2 = L1 + L + L2;
 
     const dim = new THREE.Group();
 
@@ -156,8 +158,8 @@ export class ThreeLoadAxial {
       const p = [
         new THREE.Vector2(L1L, offset),
         new THREE.Vector2(L1L, 1),
-        new THREE.Vector2(1, 1),
-        new THREE.Vector2(1, 0),
+        new THREE.Vector2(L1LL2, 1),
+        new THREE.Vector2(L1LL2, 0),
       ];
       dim3 = this.dim.create(p, L2.toFixed(3))
       dim3.visible = true;
