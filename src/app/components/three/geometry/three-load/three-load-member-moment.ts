@@ -5,8 +5,6 @@ import { Vector2 } from 'three';
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
 import { ThreeLoadMoment } from './three-load-moment';
-//import { PassThrough } from 'stream';
-//import { ConsoleReporter } from 'jasmine';
 
 @Injectable({
   providedIn: 'root'
