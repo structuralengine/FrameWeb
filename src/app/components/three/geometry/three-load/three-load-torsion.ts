@@ -15,6 +15,9 @@ export class ThreeLoadTorsion {
   private dim: ThreeLoadDimension;
   private moment: ThreeLoadMoment;
 
+  private cylinder_Red: THREE.MeshBasicMaterial;
+  private cylinder_Blue: THREE.MeshBasicMaterial;
+
   constructor(
     text: ThreeLoadText,
     dim: ThreeLoadDimension,
@@ -22,6 +25,19 @@ export class ThreeLoadTorsion {
     this.text = text;
     this.dim = dim;
     this.moment = moment;
+    this.cylinder_Red = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0xff0000,
+      opacity: 0.3,
+    });
+    this.cylinder_Blue = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0x0000ff,
+      opacity: 0.3,
+    });
+    
   }
 
   public create(
@@ -61,11 +77,12 @@ export class ThreeLoadTorsion {
       child.add(arrow);
     }
 
-    // 寸法線
+    /*/ 寸法線
     const dim = this.getDim(points, L1, L, L2);
     dim.visible = false;
     child.add(dim);
-
+    */
+    
     // 全体
     child.name = "child";
 
@@ -168,13 +185,15 @@ export class ThreeLoadTorsion {
 
     for (let i = 0; i < my_color.length; i++) {
 
+      const cylinder_mat = (my_color[i] === 0xff0000) ? this.cylinder_Red : this.cylinder_Blue;
+      /*
       const cylinder_mat = new THREE.MeshBasicMaterial({
         transparent: true,
         side: THREE.DoubleSide,
         color: my_color[i],
         opacity: 0.3,
       });
-
+      */
       const height = points[i + 1].x - points[i].x;
       const cylinder_geo = new THREE.CylinderBufferGeometry(
         Math.abs(points[i].y), Math.abs(points[i + 1].y), height, // radiusTop, radiusBottom, height
@@ -220,7 +239,7 @@ export class ThreeLoadTorsion {
     return result;
   }
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(points: THREE.Vector3[],
     L1: number, L: number, L2: number): THREE.Group {
 
@@ -282,6 +301,7 @@ export class ThreeLoadTorsion {
 
     return dim;
   }
+  */
   
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

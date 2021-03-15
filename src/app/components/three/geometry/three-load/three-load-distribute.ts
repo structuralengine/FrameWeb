@@ -12,10 +12,41 @@ export class ThreeLoadDistribute {
 
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
+  private face_mat_Red: THREE.MeshBasicMaterial;
+  private face_mat_Green: THREE.MeshBasicMaterial;
+  private face_mat_Blue: THREE.MeshBasicMaterial;
+
+  private line_mat_Red: THREE.LineBasicMaterial;
+  private line_mat_Green: THREE.LineBasicMaterial;
+  private line_mat_Blue: THREE.LineBasicMaterial;
+
 
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
+    this.face_mat_Red =  new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0xff0000,
+      opacity: 0.3,
+    });
+    this.face_mat_Green = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0x00ff00,
+      opacity: 0.3,
+    });
+    this.face_mat_Blue = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0x0000ff,
+      opacity: 0.3,
+    });
+
+    this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    this.line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    this.line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
+
   }
 
   /// 等分布荷重を編集する
@@ -64,11 +95,11 @@ export class ThreeLoadDistribute {
     // 線
     child.add(this.getLine(my_color, points));
 
-    // 寸法線
+    /*/ 寸法線
     const dim = this.getDim(points, L1, L, L2);
     dim.visible = false;
     child.add(dim);
-
+    */  
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -77,12 +108,12 @@ export class ThreeLoadDistribute {
     group0.add(child);
     group0.name = "group";
 
-    // 文字を追加する
+    /*/ 文字を追加する
     for(const text of this.getText(points, P1, P2)){
       text.visible = false;
       group0.add(text);
     }
-
+    */
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -213,12 +244,22 @@ export class ThreeLoadDistribute {
   private getFace(
     my_color: number , points: THREE.Vector3[]): THREE.Mesh {
 
+    let face_mat: THREE.MeshBasicMaterial;
+    if (my_color === 0xff0000){
+      face_mat = this.face_mat_Red;
+    } else if (my_color === 0x00ff00) {
+      face_mat = this.face_mat_Green;
+    } else {
+      face_mat = this.face_mat_Blue;
+    }
+    /*
     const face_mat = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
       color: my_color,
       opacity: 0.3,
     });
+    */
 
     const face_geo = new THREE.Geometry();
     face_geo.vertices = points;
@@ -237,7 +278,16 @@ export class ThreeLoadDistribute {
   private getLine(
     my_color: number , points: THREE.Vector3[]): THREE.Line {
 
-    const line_mat = new THREE.LineBasicMaterial({ color: my_color });
+    let line_mat: THREE.LineBasicMaterial;
+    if (my_color === 0xff0000) {
+      line_mat = this.line_mat_Red;
+    } else if (my_color === 0x00ff00) {
+      line_mat = this.line_mat_Green;
+    } else {
+      line_mat = this.line_mat_Blue;
+    }
+    // const line_mat = new THREE.LineBasicMaterial({ color: my_color });
+
     const line_geo = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.Line(line_geo, line_mat);
     line.name = "line";
@@ -245,7 +295,7 @@ export class ThreeLoadDistribute {
     return line;
   }
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L: number, L2: number): THREE.Group {
 
@@ -307,8 +357,8 @@ export class ThreeLoadDistribute {
 
     return dim;
   }
-
-  // 文字
+  */
+  /*/ 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
 
     const result = [];
@@ -352,7 +402,7 @@ export class ThreeLoadDistribute {
 
     return result;
   }
-
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

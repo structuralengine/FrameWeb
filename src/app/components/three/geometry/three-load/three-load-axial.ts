@@ -16,9 +16,23 @@ export class ThreeLoadAxial {
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
 
+  private matLine: LineMaterial;
+  private three_color: THREE.Color;
+  private arrow_mat: THREE.MeshBasicMaterial;
+
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
+    this.matLine = new LineMaterial({
+      color: 0xffffff,
+      linewidth: 0.001, // in pixels
+      vertexColors: true,
+      dashed: false
+    });
+    const line_color = 0xff0000;
+    this.three_color = new THREE.Color(line_color);
+    this.arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+
   }
   public create(
     nodei: THREE.Vector3,
@@ -36,8 +50,8 @@ export class ThreeLoadAxial {
     const child = new THREE.Group();
 
     // 線の色を決める
-    const line_color = 0xff0000;
-    const three_color = new THREE.Color(line_color);
+    //const line_color = 0xff0000;
+    //const three_color = new THREE.Color(line_color);
 
     const LL = nodei.distanceTo(nodej);
     const L: number = LL - L1 - L2;
@@ -47,21 +61,21 @@ export class ThreeLoadAxial {
     points.push(0, 0, 0);
     points.push(L, 0, 0);
     const colors = [];
-    colors.push(three_color.r, three_color.g, three_color.b);
-    colors.push(three_color.r, three_color.g, three_color.b);
+    colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
+    colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
 
     const geometry = new LineGeometry();
     geometry.setPositions( points );
     geometry.setColors( colors );
-
+    /*
     const matLine = new LineMaterial({
       color: 0xffffff,
       linewidth: 0.001, // in pixels
       vertexColors: true,
       dashed: false
     });
-
-    const line2 = new Line2( geometry, matLine );
+    */
+    const line2 = new Line2( geometry, this.matLine );
     line2.computeLineDistances();
     line2.position.x = L1;
     line2.name = 'line2';
@@ -70,8 +84,8 @@ export class ThreeLoadAxial {
 
     // 矢印を描く
     const arrow_geo = new THREE.ConeBufferGeometry(0.05, 0.25, 3, 1, false);
-    const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
-    const arrow = new THREE.Mesh(arrow_geo, arrow_mat);
+    //const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+    const arrow = new THREE.Mesh(arrow_geo, this.arrow_mat);
     arrow.rotation.z = -Math.PI / 2;
     arrow.position.x = L1 + L;
     arrow.name = "arrow";
@@ -79,12 +93,12 @@ export class ThreeLoadAxial {
     child.add(arrow);
     child.name = "child";
 
-    // 寸法線
+    /*/ 寸法線
     const dim = this.getDim(L1, L, L2, offset);
     //dim.visible = false;
     dim.visible = true;
     child.add(dim);
-
+    */
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -93,12 +107,12 @@ export class ThreeLoadAxial {
     group0.add(child);
     group0.name = "group";
 
-    // 文字を追加する
+    /*/ 文字を追加する
     for (const text of this.getText(P1, P2, L1, L1 + L, offset)) {
       text.visible = false;
       group0.add(text);
     }
-
+    */
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -118,7 +132,7 @@ export class ThreeLoadAxial {
     return group;
   }
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(L1: number, L: number, L2: number, offset: number): THREE.Group {
 
     const L1L = L1 + L;
@@ -172,8 +186,8 @@ export class ThreeLoadAxial {
 
     return dim;
   }
-
-  // 文字
+  */
+  /*/ 文字
   private getText(P1: number, P2: number, pos1: number, pos2: number,  offset: number): THREE.Group[] {
 
     const result = [];
@@ -201,6 +215,7 @@ export class ThreeLoadAxial {
 
     return result;
   }
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

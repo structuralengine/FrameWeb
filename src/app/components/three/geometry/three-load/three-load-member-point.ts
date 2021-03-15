@@ -65,11 +65,12 @@ export class ThreeLoadMemberPoint {
       child.add(arrow);
     }
 
-    // 寸法線
+    /*/ 寸法線
     const dim = this.getDim(points, L1, L2);
     dim.visible = false;
     child.add(dim);
-
+    */
+    
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -207,8 +208,7 @@ export class ThreeLoadMemberPoint {
 
   }
 
-
-  // 寸法線
+  /*/ 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L2: number): THREE.Group {
 
@@ -256,7 +256,7 @@ export class ThreeLoadMemberPoint {
 
     return dim;
   }
-
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
