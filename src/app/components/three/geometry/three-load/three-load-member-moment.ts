@@ -65,11 +65,12 @@ export class ThreeLoadMemberMoment {
       child.add(arrow);
     }
 
-    // 寸法線
+    /*/ 寸法線
     const dim = this.getDim(points, L1, L2);
     dim.visible = false;
     child.add(dim);
-
+    */
+    
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -96,11 +97,12 @@ export class ThreeLoadMemberMoment {
       group.rotateY(-Math.asin(XZ.y));
 
 
-      if (direction === "z") {
+      //個別の集中モーメント荷重の向きを修正する
+      /*if (direction === "z") {
         group.rotateX(-Math.PI / 2);
       } else if (direction === "y") {
         group.rotateX(Math.PI);
-      }
+      }*/
 
     } else if (direction === "gx") {
       group.rotation.z = Math.asin(-Math.PI/2);
@@ -113,7 +115,6 @@ export class ThreeLoadMemberMoment {
 
     return group;
   }
-
 
   // 座標
   private getPoints(
@@ -169,7 +170,6 @@ export class ThreeLoadMemberMoment {
     };
   }
 
-
   // 両端の矢印
   private getArrow(
     direction: string,
@@ -178,7 +178,7 @@ export class ThreeLoadMemberMoment {
 
     const result: THREE.Group[] = new Array();
 
-    const key: string = 't' + direction;
+    const key: string = 'r' + direction;
 
     for (let i = 0; i < 2; i++) {
 
@@ -188,17 +188,15 @@ export class ThreeLoadMemberMoment {
       }
 
       const pos1 = new THREE.Vector3(points[i], 0, 0);
-      if (direction === 'x') {
-        pos1.y = 0.1;
-      }
 
       const arrow_1 = this.moment.create(pos1, 0, Px, 1, key)
 
-      if (direction === 'y') {
-        arrow_1.rotation.z += Math.PI;
-      } else if (direction === 'z') {
-        arrow_1.rotation.x += Math.PI / 2;
-      }
+      //モーメントの作成時に向きまで制御しているので，制御不要
+      //if (direction === 'y') {
+        //arrow_1.rotation.z += Math.PI;
+      //} else if (direction === 'z') {
+        //arrow_1.rotation.x += Math.PI / 2;
+      //}
 
       result.push(arrow_1);
     }
@@ -207,8 +205,7 @@ export class ThreeLoadMemberMoment {
 
   }
 
-
-  // 寸法線
+  /*/ 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L2: number): THREE.Group {
 
@@ -256,13 +253,31 @@ export class ThreeLoadMemberMoment {
 
     return dim;
   }
-
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
-    for (const item of group.children) {
-      item.scale.set(1, scale, scale);
+
+    for (const item of group.children) {      
+      for (const item_child1 of item.children){
+        if (item_child1.name === 'child'){
+          for (const item_child2 of item_child1.children) {
+            if (item_child2.name === 'MomentLoad'){
+              for (const item_child3 of item_child2.children){
+                if (item_child3.name === 'group'){
+                  for (const item_child4 of item_child3.children){
+                    if (item_child4.name === 'child'){
+                      item_child4.scale.set(scale, scale, scale);
+                    } 
+                  }
+                } 
+              }
+            }
+          }
+        }
+      }      
     }
+
   }
 
   // オフセットを反映する
@@ -281,7 +296,27 @@ export class ThreeLoadMemberMoment {
 
   // 大きさを反映する
   public setScale(group: any, scale: number): void {
-    group.scale.set(1, scale, scale);
+
+    for (const item of group.children) {
+      for (const item_child1 of item.children){
+        if (item_child1.name === 'child'){
+          for (const item_child2 of item_child1.children) {
+            if (item_child2.name === 'MomentLoad'){
+              for (const item_child3 of item_child2.children){
+                if (item_child3.name === 'group'){
+                  for (const item_child4 of item_child3.children){
+                    if (item_child4.name === 'child'){
+                      item_child4.scale.set(scale, scale, scale);
+                    } 
+                  }
+                } 
+              }
+            }
+          }
+        }
+      }
+    }
+
   }
 
 
