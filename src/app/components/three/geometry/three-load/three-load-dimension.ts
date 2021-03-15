@@ -9,9 +9,12 @@ import { ThreeLoadText } from "./three-load-text";
 export class ThreeLoadDimension {
 
   private text: ThreeLoadText;
-
+  private line_mat: THREE.LineBasicMaterial;
+  
   constructor(text: ThreeLoadText) {
     this.text = text;
+    this.line_mat = new THREE.LineBasicMaterial({ color: 0x000000 });
+
   }
 
    // 寸法線を編集する
@@ -72,12 +75,12 @@ export class ThreeLoadDimension {
   }
 
   private getLine(positions: THREE.Vector3[]): THREE.Line{
-    const line_color = 0x000000;
+    //const line_color = 0x000000;
 
     // 面の周りの枠線を描く
-    const line_mat = new THREE.LineBasicMaterial({ color: line_color });
+    //const line_mat = new THREE.LineBasicMaterial({ color: line_color });
     const line_geo = new THREE.BufferGeometry().setFromPoints(positions);
-    const line = new THREE.Line(line_geo, line_mat);
+    const line = new THREE.Line(line_geo, this.line_mat);
     line.name = "line";
 
     return line;

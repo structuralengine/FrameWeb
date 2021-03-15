@@ -56,7 +56,7 @@ export class ThreeLoadPoint {
 
     const group0 = new THREE.Group();
 
-    // 文字を追加する
+    /*/ 文字を追加する
     const textStr: string = value.toFixed(2);
     const size: number = 0.1;
     const vartical: string = 'bottom';
@@ -73,7 +73,8 @@ export class ThreeLoadPoint {
     text.name = "text";
     text.visible = false;
     group0.add(text);
-
+    */
+    
     child.position.y = offset;
 
     group0.add(child);

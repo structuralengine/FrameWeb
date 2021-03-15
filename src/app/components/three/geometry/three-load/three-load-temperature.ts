@@ -16,9 +16,31 @@ export class ThreeLoadTemperature {
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
 
+  private colors: number[];
+  private arrow_mat: THREE.MeshBasicMaterial;
+
+  private matLine: LineMaterial;
+
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
+
+    // 線の色を決める
+    const line_color = 0xff0000;
+    const three_color = new THREE.Color(line_color);
+
+    this.colors = [];
+    this.colors.push(three_color.r, three_color.g, three_color.b);
+    this.colors.push(three_color.r, three_color.g, three_color.b);
+
+    this.arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+
+    this.matLine = new LineMaterial({
+      color: 0xffffff,
+      linewidth: 0.001, // in pixels
+      vertexColors: true,
+      dashed: false
+    });
   }
   public create(
     nodei: THREE.Vector3,
@@ -32,8 +54,8 @@ export class ThreeLoadTemperature {
     const child = new THREE.Group();
 
     // 線の色を決める
-    const line_color = 0xff0000;
-    const three_color = new THREE.Color(line_color);
+    // const line_color = 0xff0000;
+    // const three_color = new THREE.Color(line_color);
 
     const L = nodei.distanceTo(nodej);
 
@@ -41,22 +63,24 @@ export class ThreeLoadTemperature {
     const points = [];
     points.push(0, 0, 0);
     points.push(L, 0, 0);
-    const colors = [];
-    colors.push(three_color.r, three_color.g, three_color.b);
-    colors.push(three_color.r, three_color.g, three_color.b);
+    // const colors = [];
+    // colors.push(three_color.r, three_color.g, three_color.b);
+    // colors.push(three_color.r, three_color.g, three_color.b);
 
     const geometry = new LineGeometry();
     geometry.setPositions( points );
-    geometry.setColors( colors );
+    geometry.setColors( this.colors );
 
+    /*
     const matLine = new LineMaterial({
       color: 0xffffff,
       linewidth: 0.001, // in pixels
       vertexColors: true,
       dashed: false
     });
-
-    const line2 = new Line2( geometry, matLine );
+    */
+    
+    const line2 = new Line2( geometry, this.matLine );
     line2.computeLineDistances();
     line2.name = 'line2';
 
@@ -64,18 +88,19 @@ export class ThreeLoadTemperature {
 
     // 矢印を描く
     const arrow_geo = new THREE.ConeBufferGeometry(0.05, 0.25, 3, 1, false);
-    const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
-    const arrow = new THREE.Mesh(arrow_geo, arrow_mat);
+    // const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+    const arrow = new THREE.Mesh(arrow_geo, this.arrow_mat);
     arrow.rotation.z = -Math.PI / 2;
     arrow.name = "arrow";
 
     child.add(arrow);
     child.name = "child";
 
-    // 寸法線
+    /*/ 寸法線
     const dim = this.getDim(L, offset);
     dim.visible = false;
     child.add(dim);
+    */
 
     // 全体
     child.name = "child";
@@ -85,11 +110,12 @@ export class ThreeLoadTemperature {
     group0.add(child);
     group0.name = "group";
 
-    // 文字を追加する
+    /*/ 文字を追加する
     const text = this.getText(P1, L, offset);
     text.visible = false;
     group0.add(text);
-
+    */
+    
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -109,7 +135,7 @@ export class ThreeLoadTemperature {
     return group;
   }
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(L: number, offset: number): THREE.Group {
 
     const dim = new THREE.Group();
@@ -132,8 +158,8 @@ export class ThreeLoadTemperature {
 
     return dim;
   }
-
-  // 文字
+  */
+  /*/ 文字
   private getText(P1: number, L: number,  offset: number): THREE.Group {
 
     const size: number = 0.1; // 文字サイズ
@@ -148,6 +174,7 @@ export class ThreeLoadTemperature {
 
     return text;
   }
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

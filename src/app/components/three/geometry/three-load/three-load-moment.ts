@@ -9,9 +9,26 @@ import { ThreeLoadText } from "./three-load-text";
 export class ThreeLoadMoment {
 
   private text: ThreeLoadText;
+  private arrow_mat_Red: THREE.MeshBasicMaterial;
+  private arrow_mat_Green: THREE.MeshBasicMaterial;
+  private arrow_mat_Blue: THREE.MeshBasicMaterial;
+  
+  private line_mat_Red: THREE.LineBasicMaterial;
+  private line_mat_Green: THREE.LineBasicMaterial;
+  private line_mat_Blue: THREE.LineBasicMaterial;
+
+  private point_mat: THREE.PointsMaterial;
 
   constructor(text: ThreeLoadText) {
     this.text = text;
+    this.arrow_mat_Red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    this.arrow_mat_Green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    this.arrow_mat_Blue = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    this.line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    this.line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    this.point_mat = new THREE.PointsMaterial({ size: 0.1, color: 0x080808 });
+
   }
   
   /// 節点モーメント荷重を編集する
@@ -32,12 +49,21 @@ export class ThreeLoadMoment {
 
     //線の色を決める
     let line_color = color;
+    let arrow_mat: THREE.MeshBasicMaterial;
+    let line_mat: THREE.LineBasicMaterial;
+
     if (color === null) {
       line_color = 0xff0000;
+      arrow_mat = this.arrow_mat_Red;
+      line_mat = this.line_mat_Red;
       if (direction === "ry") {
         line_color = 0x00ff00;
+        arrow_mat = this.arrow_mat_Green;
+        line_mat = this.line_mat_Green;
       } else if (direction === "rz") {
         line_color = 0x0000ff;
+        arrow_mat = this.arrow_mat_Blue;
+        line_mat = this.line_mat_Blue;
       }
     }
 
@@ -46,7 +72,7 @@ export class ThreeLoadMoment {
 
     // 色を変更する
     const arrow_geo = new THREE.ConeBufferGeometry(0.05, 0.25, 3, 1, false);
-    const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+    //const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
     const arrow = new THREE.Mesh(arrow_geo, arrow_mat);
     arrow.rotation.x = Math.PI;
 
@@ -67,7 +93,7 @@ export class ThreeLoadMoment {
 
     const points = curve.getPoints(12);
     const line_geo = new THREE.BufferGeometry().setFromPoints(points);
-    const line_mat = new THREE.LineBasicMaterial({ color: line_color });
+    //const line_mat = new THREE.LineBasicMaterial({ color: line_color });
     const ellipse = new THREE.Line(line_geo, line_mat);
     ellipse.name = "line";
     child.add(ellipse);
@@ -94,7 +120,7 @@ export class ThreeLoadMoment {
 
     const group0 = new THREE.Group();
 
-    // 文字を追加する
+    /*/ 文字を追加する
     const textStr: string = value.toFixed(2);
     const size: number = 0.2;
     const vartical: string = 'bottom';
@@ -111,7 +137,8 @@ export class ThreeLoadMoment {
     text.name = "text";
     text.visible = false;
     group0.add(text);
-
+    */
+    
     child.position.z = offset;
 
     // 向きを変更する
@@ -125,8 +152,8 @@ export class ThreeLoadMoment {
     //中心点を作成
     const point_geo = new THREE.Geometry();
     point_geo.vertices.push(new THREE.Vector3(0,0,0));
-    const point_mat = new THREE.PointsMaterial({size: 0.1, color: 0x080808});
-    const point_mesh = new THREE.Points(point_geo, point_mat);
+    // const point_mat = new THREE.PointsMaterial({size: 0.1, color: 0x080808});
+    const point_mesh = new THREE.Points(point_geo, this.point_mat);
     point_mesh.name = 'points_center';
     point_mesh.visible = false;
     group0.add(point_mesh);
