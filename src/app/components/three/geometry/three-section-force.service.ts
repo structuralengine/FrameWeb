@@ -128,6 +128,7 @@ export class ThreeSectionForceService {
     this.targetIndex = '';
     this.modeName = '';
     this.scale = 1; //0.5;
+    //this.gui_max_scale = 1 log用なので要削除
   }
 
   private guiEnable(): void {
@@ -138,7 +139,7 @@ export class ThreeSectionForceService {
     this.gui = {
       forceScale: this.scene.gui.add(this.params, 'forceScale', 0, this.gui_max_scale).step(gui_step).onChange((value) => {
         // guiによる設定
-        this.scale = value;
+        this.scale = value * this.gui_max_scale;  //this.gui_max_scaleの値で調整
         this.onResize();
         this.scene.render();
       })
@@ -715,6 +716,7 @@ export class ThreeSectionForceService {
         // シーンに追加する
         tmplineList.push(line);
         this.scene.add(line);
+        //ここでスケーリングをしていないためguiを変更する前の小さな大きさになってしまう．
       }
     }
     this.lineList = tmplineList;
