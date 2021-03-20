@@ -7,12 +7,14 @@ import { InputMembersService } from '../../input/input-members/input-members.ser
 })
 export class ResultFsecService {
 
-  public FSEC_ROWS_COUNT: number;
   public fsec: any;
+  private worker: Worker;
+  private fsecColumns: any;
 
   constructor(private member: InputMembersService,
               private helper: DataHelperModule) {
     this.clear();
+    this.worker = new Worker('./result-fsec.worker', { name: 'result-fsec', type: 'module' });
   }
 
   public clear(): void {
@@ -20,7 +22,19 @@ export class ResultFsecService {
   }
 
   public getFsecColumns(typNo: number): any {
+    
+    const key: string = typNo.toString();
 
+    let result: any = null; 
+    if (key in this.fsecColumns) {
+      result = this.fsecColumns[key];
+    } else {
+      result = new Array();
+    }
+
+    return result;
+
+    /* // this.worker に処理を移動
     let target2: any = null;
 
     // タイプ番号を探す
@@ -34,7 +48,8 @@ export class ResultFsecService {
     const result: any[] = new Array();
     let m: string = null;
     const old = {};
-    for (const target3 of target2) {
+    for( let i = 0; i < target2.length; i++){
+      const target3 = target2[i];
       const item = {
         m: (m === target3['m']) ? '' : target3['m'],
         n: ('n' in target3) ? target3['n'] : '',
@@ -47,7 +62,8 @@ export class ResultFsecService {
         mz: (Math.round(target3.mz * 100) / 100).toFixed(2)
       };
       // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
-      if (old['n'] !== item['n'] || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
+      if (old['m'] !== item['m'] || old['n'] !== item['n'] 
+          || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
           || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
         result.push(item);
         m = target3['m'];
@@ -56,14 +72,17 @@ export class ResultFsecService {
     }
 
     return result;
+    */
   }
 
+  // 
+  // three-section-force.service から呼ばれる
   public getFsecJson(): object {
     return this.fsec;
   }
 
+  // サーバーから受領した 解析結果を集計する
   public setFsecJson(jsonData: {}): void {
-    let max_row = 0;
 
     for (const caseNo of Object.keys(jsonData)) {
       const target = new Array();
@@ -165,10 +184,29 @@ export class ResultFsecService {
         }
       }
       this.fsec[caseNo.replace('Case', '')] = target;
-      max_row = Math.max(max_row, target.length);
     }
 
-    this.FSEC_ROWS_COUNT = max_row;
+    // html 用に変数を集計する
+    const postData = {
+      fsec: this.fsec
+    };
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      this.worker.onmessage = ({ data }) => {
+        this.fsecColumns = data.response;
+        if(data.error !== null){
+          console.log('断面力のhtmlが終わりました', performance.now() - startTime);
+        } else {
+          console.log('断面力のhtmlの生成に失敗しました', data.error);
+        }
+      };
+      this.worker.postMessage(postData);
+    } else {
+      console.log('断面力のhtmlの生成に失敗しました');
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
 
   }
 
