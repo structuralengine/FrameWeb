@@ -39,6 +39,12 @@ export class ThreeSectionForceService {
   private gui_max_scale: number;
   private font: THREE.Font;
 
+  private material: THREE.MeshBasicMaterial;
+  private matLine: LineMaterial;
+  private Red: THREE.Color;
+  private Green: THREE.Color;
+  private Blue: THREE.Color;
+
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
               private fsec: ResultFsecService,
@@ -72,6 +78,21 @@ export class ThreeSectionForceService {
     this.gui = null;
     this.gui_max_scale = 1;
 
+    this.material = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0x00aaff,
+      opacity: 0.2
+    });
+    this.matLine = new LineMaterial({
+      color: 0xFF0000,
+      linewidth: 0.001,
+      vertexColors: THREE.VertexColors,
+      dashed: false
+    });
+    this.Red = new THREE.Color(0xFF0000);
+    this.Green = new THREE.Color(0x00FF00);
+    this.Blue = new THREE.Color(0x0000FF);
   }
 
   public visibleChange(flag: boolean): void {
@@ -107,6 +128,7 @@ export class ThreeSectionForceService {
     this.targetIndex = '';
     this.modeName = '';
     this.scale = 1; //0.5;
+    //this.gui_max_scale = 1 log用なので要削除
   }
 
   private guiEnable(): void {
@@ -117,7 +139,7 @@ export class ThreeSectionForceService {
     this.gui = {
       forceScale: this.scene.gui.add(this.params, 'forceScale', 0, this.gui_max_scale).step(gui_step).onChange((value) => {
         // guiによる設定
-        this.scale = value;
+        this.scale = value * this.gui_max_scale;  //this.gui_max_scaleの値で調整
         this.onResize();
         this.scene.render();
       })
@@ -411,37 +433,37 @@ export class ThreeSectionForceService {
 
     if (this.params.axialForce === true) {
       // 軸方向の圧縮力
-      color = new THREE.Color(0xFF0000);
+      color = this.Red;
       key = 'axialForce';
       axis = 'localAxisY';
       scale = this.scale * this.targetData['fx_scale'];
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
-      color = new THREE.Color(0xFF0000);
+      color = this.Red;
       key = 'torsionalMoment';
       axis = 'localAxisZ';
       scale = this.scale * this.targetData['mx_scale'];
     } else if (this.params.shearForceY === true) {
       // Y方向のせん断力
-      color = new THREE.Color(0x00FF00);
+      color = this.Green;
       key = 'shearForceY';
       axis = 'localAxisY';
       scale = this.scale * this.targetData['fy_scale'];
     } else if (this.params.momentY === true) {
       // Y軸周りの曲げモーメント
-      color = new THREE.Color(0x00FF00);
+      color = this.Green;
       key = 'momentY';
       axis = 'localAxisZ';
       scale = this.scale * this.targetData['my_scale'];
     } else if (this.params.shearForceZ === true) {
       // Z方向のせん断力
-      color = new THREE.Color(0x0000FF);
+      color = this.Blue;
       key = 'shearForceZ';
       axis = 'localAxisZ';
       scale = this.scale * this.targetData['fz_scale'];
     } else if (this.params.momentZ === true) {
       // Z軸周りの曲げモーメント
-      color = new THREE.Color(0x0000FF);
+      color = this.Blue;
       key = 'momentZ';
       axis = 'localAxisY';
       scale = this.scale * this.targetData['mz_scale'];
@@ -539,13 +561,13 @@ export class ThreeSectionForceService {
         }
         LineGeo.setPositions(LinePositions);
 
-        //line.children[0]はテキストのGroup，line.children[1]はメッシュのGroup
+        /*/line.children[0]はテキストのGroup，line.children[1]はメッシュのGroup
         for (let num = 0; num < line.children[0].children.length; num++){
           line.children[0].children[num].position.x = LinePositions[3 * num + 3];
           line.children[0].children[num].position.y = LinePositions[3 * num + 4];
           line.children[0].children[num].position.z = LinePositions[3 * num + 5];
         }
-
+        */
         // 文字と面を削除する   ---   このwhile文を削除したい
         //while (line.children.length > 0) {
           //const object = line.children[0];
@@ -567,7 +589,8 @@ export class ThreeSectionForceService {
         let point3 = new Float32Array(2);
         let split_count = 0;
 
-        for (let j = 0; j < line.children[1].children.length - 0; j++){
+        const mesh = line.children[0];
+        for (let j = 0; j < mesh.children.length - 0; j++){
 
           //頂点座標の整理
           point1[0] = memberInfo.localPosition[j + 1];
@@ -609,18 +632,18 @@ export class ThreeSectionForceService {
               point2[0], point2[1], 0
             ]);
           }
-          line.children[1].children[j].children[0].geometry.attributes.position.array = vertice1;
-          line.children[1].children[j].children[1].geometry.attributes.position.array = vertice2;
-          line.children[1].children[j].children[0].geometry.attributes.position.needsUpdate = true;
-          line.children[1].children[j].children[1].geometry.attributes.position.needsUpdate = true;
+          mesh.children[j].children[0].geometry.attributes.position.array = vertice1;
+          mesh.children[j].children[1].geometry.attributes.position.array = vertice2;
+          mesh.children[j].children[0].geometry.attributes.position.needsUpdate = true;
+          mesh.children[j].children[1].geometry.attributes.position.needsUpdate = true;
 
-          line.children[1].children[j].children[0].visible = true;
-          line.children[1].children[j].children[1].visible = true;
+          mesh.children[j].children[0].visible = true;
+          mesh.children[j].children[1].visible = true;
           if(point1[1] === 0){
-            line.children[1].children[j].children[0].visible = false;
+            mesh.children[j].children[0].visible = false;
           }
           if(point2[1] === 0){
-            line.children[1].children[j].children[1].visible = false;
+            mesh.children[j].children[1].visible = false;
           }
 
         }
@@ -631,48 +654,48 @@ export class ThreeSectionForceService {
         const lookatZ = memberInfo.localAxisX.z + positions[0].z;
         //axialForceのとき
         if (key === 'axialForce'){
-          line.children[1].lookAt(lookatX, lookatY, lookatZ);
-          line.children[1].rotateZ(Math.PI * 3 / 2);
-          line.children[1].rotateY(Math.PI * 3 / 2);
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateZ(Math.PI * 3 / 2);
+          mesh.rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
-            line.children[1].rotateX(Math.PI * 3 / 2);
+            mesh.rotateX(Math.PI * 3 / 2);
           }
         //shearForceZのとき
         } else if (key === 'shearForceY'){
-          line.children[1].lookAt(lookatX, lookatY, lookatZ);
-          line.children[1].rotateZ(Math.PI * 3 / 2);
-          line.children[1].rotateY(Math.PI * 3 / 2);
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateZ(Math.PI * 3 / 2);
+          mesh.rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
-            line.children[1].rotateX(Math.PI * 3 / 2);
+            mesh.rotateX(Math.PI * 3 / 2);
           }
         //shearForceZのとき
         } else if (key === 'shearForceZ'){
-          line.children[1].lookAt(lookatX, lookatY, lookatZ);
-          line.children[1].rotateY(Math.PI * 3 / 2);
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
-            line.children[1].rotateX(Math.PI * 3 / 2);
+            mesh.rotateX(Math.PI * 3 / 2);
           }
         //torsionalMomentのとき
         } else if (key === 'torsionalMoment'){
-          line.children[1].lookAt(lookatX, lookatY, lookatZ);
-          line.children[1].rotateY(Math.PI * 3 / 2);
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
-            line.children[1].rotateX(Math.PI * 3 / 2);
+            mesh.rotateX(Math.PI * 3 / 2);
           }
         //momentYのとき
         } else if (key === 'momentY'){
-          line.children[1].lookAt(lookatX, lookatY, lookatZ);
-          line.children[1].rotateY(Math.PI * 3 / 2);
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
-            line.children[1].rotateX(Math.PI * 3 / 2);
+            mesh.rotateX(Math.PI * 3 / 2);
           }
         //momentZのとき
         } else if (key === 'momentZ'){
-          line.children[1].lookAt(lookatX, lookatY, lookatZ);
-          line.children[1].rotateZ(Math.PI * 3 / 2);
-          line.children[1].rotateY(Math.PI * 3 / 2);
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateZ(Math.PI * 3 / 2);
+          mesh.rotateY(Math.PI * 3 / 2);
           if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
-            line.children[1].rotateX(Math.PI * 3 / 2);
+            mesh.rotateX(Math.PI * 3 / 2);
           }
         }
 
@@ -687,12 +710,13 @@ export class ThreeSectionForceService {
         }
         const line = this.createLineGeometory(LinePositions, colors);
         // テキストを追加
-        this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
+        // this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
         // 面を追加する
         this.addPathGeometory(positions, line, colors, memberInfo);
         // シーンに追加する
         tmplineList.push(line);
         this.scene.add(line);
+        //ここでスケーリングをしていないためguiを変更する前の小さな大きさになってしまう．
       }
     }
     this.lineList = tmplineList;
@@ -705,22 +729,22 @@ export class ThreeSectionForceService {
     const geometry: LineGeometry = new LineGeometry();
     geometry.setPositions(positions);
     geometry.setColors(colors);
-
+    /*
     const matLine: LineMaterial = new LineMaterial({
       color: 0xFF0000,
       linewidth: 0.001,
       vertexColors: THREE.VertexColors,
       dashed: false
     });
-
-    const line: Line2 = new Line2(geometry, matLine);
+    */
+    const line: Line2 = new Line2(geometry, this.matLine);
     line.computeLineDistances();
     line.scale.set(1, 1, 1);
 
     return line;
   }
 
-  // テキストを追加
+  /*/ テキストを追加
   private addTextGeometry(positions: any[], line: THREE.Line, danmenryoku: number[], localAxis: any): void {
     let j = 0;
     const textGroup = new THREE.Group();
@@ -769,6 +793,7 @@ export class ThreeSectionForceService {
     }
     line.add(textGroup);
   }
+  */
 
   // 面を追加する
   private addPathGeometory(positions: any[], line: THREE.Line, color: any, memberInfo: any): void {
@@ -776,13 +801,15 @@ export class ThreeSectionForceService {
     //meshで台形を作成して代用するchildren[1]
     const mesh = new THREE.Group();
     mesh.name = "mesh";
+    /*
     const material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
       color: 0x00aaff,
       opacity: 0.2
     });
-
+    */
+    
     let vertice1 = new Float32Array(9);
     let vertice2 = new Float32Array(9);
     let point1 = new Float32Array(2);
@@ -837,9 +864,9 @@ export class ThreeSectionForceService {
         ]);
       }
       meshgeometry1.setAttribute('position', new THREE.BufferAttribute(vertice1, 3));
-      mesh_child.add(new THREE.Mesh(meshgeometry1, material));
+      mesh_child.add(new THREE.Mesh(meshgeometry1, this.material));
       meshgeometry2.setAttribute('position', new THREE.BufferAttribute(vertice2, 3));
-      mesh_child.add(new THREE.Mesh(meshgeometry2, material));
+      mesh_child.add(new THREE.Mesh(meshgeometry2, this.material));
 
       if (point1[1] === 0) {
         mesh_child.children[0].visible = false;
