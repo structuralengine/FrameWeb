@@ -73,10 +73,12 @@ export class ThreeService {
    case 'nodes':
         this.node.changeData();
         this.member.changeData();
+        this.load.changeNode();
         break;
 
       case 'members':
         this.member.changeData();
+        this.load.changeMember();
         break;
 
       case 'elements':
@@ -151,7 +153,7 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // 編集モードの変更通知を処理する
   //////////////////////////////////////////////////////
-  public ChangePage(currentPage: number): void { 
+  public ChangePage(currentPage: number): void {
 
     if (this.currentIndex === currentPage) {
       return;
@@ -218,9 +220,7 @@ export class ThreeService {
       return;
     }
 
-    switch (ModeName) {
-
-      case 'nodes':
+    if (ModeName === 'nodes') {
         this.node.visibleChange(true, true, true);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(false);
@@ -230,10 +230,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      } 
 
-      case 'members':
-      case 'elements':
+      if (ModeName === 'members' || ModeName ===  'elements'){
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, true);
         this.fixNode.visibleChange(false);
@@ -243,9 +242,18 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      } 
 
-      case 'notice_points':
+      // 荷重図の変更部分を書き直す
+      if (this.mode === 'nodes' || this.mode  === 'members'){
+        if (ModeName !== 'nodes' && ModeName  !== 'members'){
+          // [格点]か[部材]の入力モードから他の入力モードに遷移した場合
+          // 荷重図の変更部分を書き直す
+          this.load.reDrawNodeMember();
+        }
+      }
+
+      if (ModeName === 'notice_points'){
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -255,9 +263,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'joints':
+      if (ModeName === 'joints'){
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -267,9 +275,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'fix_nodes':
+      if (ModeName === 'fix_nodes'){
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(true);
@@ -279,10 +287,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
+      }
 
-        break;
-
-      case 'fix_member':
+      if (ModeName === 'fix_member'){
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -292,9 +299,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'load_names':
+      if (ModeName === 'load_names'){
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(true);
@@ -304,9 +311,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'load_values':
+      if (ModeName === 'load_values'){
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -316,9 +323,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'disg':
+      if (ModeName === 'disg'){
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(false);
@@ -328,10 +335,9 @@ export class ThreeService {
         this.disg.visibleChange(true);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'comb_disg':
-      case 'pik_disg':
+      if (ModeName === 'comb_disg' || ModeName === 'pik_disg'){
         // 何も表示しない
         this.node.visibleChange(true, true, true);
         this.member.visibleChange(true, false, false);
@@ -342,9 +348,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(false);
-        break;
+      }
 
-      case 'reac':
+      if (ModeName === 'reac'){
         this.node.visibleChange(true, true, false);
         this.member.visibleChange(true, false, false);
         this.fixNode.visibleChange(false);
@@ -354,10 +360,9 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(true);
         this.fsec.visibleChange(false);
-        break;
-      
-      case 'comb_reac':
-      case 'pik_reac':
+      }
+
+      if (ModeName === 'comb_reac' || ModeName === 'pik_reac'){
         // 何も表示しない
         this.node.visibleChange(true, true, true);
         this.member.visibleChange(true, false, false);
@@ -367,12 +372,10 @@ export class ThreeService {
         this.load.visibleChange(false, false);
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
-        this.fsec.visibleChange(false);       
-        break;
-    
-      case 'fsec':
-      case 'comb_fsec':
-      case 'pik_fsec':
+        this.fsec.visibleChange(false);
+      }
+
+      if (ModeName === 'fsec' || ModeName === 'comb_fsec' || ModeName === 'pik_fsec'){
         this.node.visibleChange(true, false, false);
         this.member.visibleChange(true, true, false);
         this.fixNode.visibleChange(false);
@@ -382,9 +385,7 @@ export class ThreeService {
         this.disg.visibleChange(false);
         this.reac.visibleChange(false);
         this.fsec.visibleChange(true);
-        break;
-
-    }
+      }
 
     this.mode = ModeName;
     this.currentIndex = -1;
