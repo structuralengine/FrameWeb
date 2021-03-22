@@ -174,7 +174,7 @@ export class MenuComponent implements OnInit {
 
 
           // テスト ---------------------------------------------
-          //this.saveResult(json);
+          this.saveResult(json);
           // --------------------------------------------- テスト
 
           const jsonData = JSON.parse(json);
@@ -279,7 +279,7 @@ export class MenuComponent implements OnInit {
   }
 
   
-  /*/ テスト ---------------------------------------------
+  // テスト ---------------------------------------------
   private saveResult(text: string): void {
     const blob = new window.Blob([text], { type: 'text/plain' });
     FileSaver.saveAs(blob, 'frameWebResult.json');
