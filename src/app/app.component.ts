@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { UserInfoService } from './providers/user-info.service'
 import { ResultDataService } from './providers/result-data.service';
 import { PrintService } from './components/print/print.service';
+import { AuthService } from './core/auth.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,7 +16,8 @@ export class AppComponent implements OnInit {
   constructor(private _router: Router,
               private ResultData: ResultDataService,
               public user:UserInfoService,
-              public printService: PrintService) { 
+              public printService: PrintService,
+              public authService: AuthService) { 
   }
   ngOnInit() {
     this.user.isContentsDailogShow = false;
@@ -76,5 +78,12 @@ export class AppComponent implements OnInit {
     const invoiceIds = ['101', '102'];
     this.printService
       .printDocument('invoice', invoiceIds);
+  }
+
+  login() {
+    this.authService.googleLogin();
+  }
+  logout() {
+    this.authService.signOut();
   }
 }

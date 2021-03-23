@@ -10,6 +10,10 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { MatInputModule } from "@angular/material/input";
 
+import { CoreModule } from './core/core.module';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
+
 import { InputDataService } from "./providers/input-data.service";
 import { DataHelperModule } from "./providers/data-helper.module";
 import { ResultDataService } from "./providers/result-data.service";
@@ -120,6 +124,8 @@ import { PrintInputLoadNameComponent } from './components/print/invoice/print-in
     NgbModule,
     DataHelperModule,
     MatInputModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    CoreModule,
   ],
   declarations: [
     AppComponent,

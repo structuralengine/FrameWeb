@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserInfoService } from '../../providers/user-info.service';
+import { AuthService } from '../../core/auth.service';
 
 
 @Component({
@@ -20,7 +21,8 @@ export class LoginDialogComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal,
     private http: HttpClient,
-    private user: UserInfoService) {
+    private user: UserInfoService,
+    public auth: AuthService) {
       this.loginError = false;
       this.connecting = false;
     }

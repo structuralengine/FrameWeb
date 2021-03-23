@@ -9,7 +9,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+    AngularFireAuthModule,
+    AngularFirestoreModule
+  ],
+  // providers:[AuthService]
 })
 export class CoreModule { }
