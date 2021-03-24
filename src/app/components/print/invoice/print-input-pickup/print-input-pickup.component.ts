@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
+import { PrintService } from "../../print.service";
 
 @Component({
   selector: "app-print-input-pickup",
@@ -29,7 +30,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
   public judge: boolean;
 
   constructor(
-    private InputData: InputDataService,
+    private printService: PrintService,
     private countArea: DataCountService
   ) {
     this.judge = false;
@@ -41,9 +42,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const inputJson: any = this.InputData.getInputJson(0);
-
-    const pickupJson: any = this.InputData.pickup.getPickUpJson();
+    const pickupJson: any = this.printService.pickupJson;
     if (Object.keys(pickupJson).length > 0) {
       const tables = this.printPickup(pickupJson);
       this.pickup_dataset = tables.splid;
