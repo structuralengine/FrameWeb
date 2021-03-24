@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule,CanActivate } from '@angular/router';
 
 import { InputNodesComponent } from './components/input/input-nodes/input-nodes.component';
 import { InputMembersComponent } from './components/input/input-members/input-members.component';
@@ -27,7 +27,8 @@ import { ResultPickupFsecComponent } from './components/result/result-pickup-fse
 import { PrintComponent } from './components/print/print.component'
 import { PrintLayoutComponent } from './components/print/print-layout/print-layout.component';
 import { InvoiceComponent } from './components/print/invoice/invoice.component';
-
+import { AuthGuard } from './guard/auth.guard';
+import { LoginDialogComponent } from './components/login-dialog/login-dialog.component';
 
 const routes: Routes = [
   { path: 'input-nodes', component: InputNodesComponent },
@@ -38,7 +39,7 @@ const routes: Routes = [
   { path: 'input-joints', component: InputJointComponent },
   { path: 'input-notice_points', component: InputNoticePointsComponent },
   { path: 'input-fix_members', component: InputFixMemberComponent },
-
+  { path: 'login', component: LoginDialogComponent, canActivate: [AuthGuard] },
   { path: 'input-load-name', component: InputLoadNameComponent },
   { path: 'input-loads', component: InputLoadComponent },
 
