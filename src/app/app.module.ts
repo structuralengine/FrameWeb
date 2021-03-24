@@ -10,6 +10,10 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { MatInputModule } from "@angular/material/input";
 
+import { CoreModule } from './core/core.module';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
+
 import { InputDataService } from "./providers/input-data.service";
 import { DataHelperModule } from "./providers/data-helper.module";
 import { ResultDataService } from "./providers/result-data.service";
@@ -108,6 +112,8 @@ import { PagerComponent } from "./components/input/pager/pager.component";
 import { SheetComponent } from "./components/input/sheet/sheet.component";
 import { PrintInputLoadNameComponent } from './components/print/invoice/print-input-load-name/print-input-load-name.component';
 
+import { AuthGuard } from './guard/auth.guard';
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -120,6 +126,8 @@ import { PrintInputLoadNameComponent } from './components/print/invoice/print-in
     NgbModule,
     DataHelperModule,
     MatInputModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    CoreModule,
   ],
   declarations: [
     AppComponent,
@@ -197,7 +205,7 @@ import { PrintInputLoadNameComponent } from './components/print/invoice/print-in
     InputPickupService,
 
     PrintService,
-
+    AuthGuard,
     ResultDataService,
     ResultDisgService,
     ResultReacService,
