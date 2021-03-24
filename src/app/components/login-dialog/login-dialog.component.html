@@ -17,10 +17,9 @@
 
   <form [formGroup]="loginForm" (ngSubmit)="login()">
     <label for="email">メールアドレス</label>
-    <input type="email"  class="form-control" formControlName="email" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
+    <input type="email" name="mail" required email class="form-control" formControlName="email" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
     <label for="password">パスワード</label>
-    <input type="password"  class="form-control" formControlName="password" [(ngModel)]="loginPassword" placeholder="Password">
-    <button type="submit" class="button">ログイン</button> 
+    <input type="password"  class="form-control" formControlName="password" [(ngModel)]="loginPassword" placeholder="Password" required>
   </form>
 <!-- 
   <div class="form-check">
@@ -36,15 +35,12 @@
 </div>
 <div class="modal-footer">
   <div *ngIf="connecting">
-    <!-- <img src="../../assets/img/loading.gif" /> -->
     <div class="spinner-border" role="status">
       <span class="sr-only">Loading...</span>
     </div>
   </div>
-  <button class="btn btn-outline-success" (click)="onClick()">ログイン</button>
+  <button class="btn btn-outline-success" (click)="login()">ログイン</button>
   <div *ngIf="auth.user | async as user; else showLogin">
-    <!-- <span style="color: white"> ようこそ{{ user.displayName }}さん</span>
-    <button class="btn btn-primary ml-2" (click)="logout()">Logout</button> -->
   </div>
   <ng-template #showLogin>
     <button class="btn btn-primary ml-2" (click)="loginGoogle()">Login with Google</button>
@@ -52,20 +48,4 @@
   <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>
 </div>
 
-
-<!-- <div *ngIf="auth.user | async; then authenticated else guest">
- 
-</div> -->
-
-
-<!-- User logged in -->
-<!-- <ng-template #authenticated>
-<div *ngIf="auth.user | async as user">
-  <h3>Howdy, {{ user.displayName }}</h3>
-  <img  [src]="user.photoURL">
-  <p>UID: {{ user.uid }}</p>
-  <p>Favorite Color: {{ user?.favoriteColor }} </p>
-  <button (click)="auth.signOut()">Logout</button>
-</div>
-</ng-template> -->
 
