@@ -23,7 +23,7 @@
               ピックアップファイル出力
             </button>
 
-            <!-- テスト用 
+            <!-- テスト用  -->
             <label style="width: 100%; margin: 0px">
               <span ngbDropdownItem style="padding: 8px">
                 解析結果ファイルを開く
@@ -35,7 +35,7 @@
                 />
               </span>
             </label>
-            テスト用 -->
+            <!-- テスト用 -->
 
                     </div>
                 </div>
@@ -65,20 +65,29 @@
         </div>
 
         <div *ngIf="loggedIn">
-            <div ngbDropdown>
+            <!-- <div ngbDropdown>
                 <a id="dropdownBasic2" class="login-item" ngbDropdownToggle>
                     <i class="far fa-user-circle"></i> {{ loginUserName }}さん
                 </a>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic2" style="cursor: default !important">
                     <p ngbDropdownItem style="pointer-events: none; cursor: default !important">
                         保有ポイント:{{ userPoint }}ポイント
-                    </p>
-                    <button (click)="logOut()" ngbDropdownItem style="cursor: pointer !important">
-            ログアウト
-          </button>
-                </div>
+                    </p>-->
+                   <!-- <button (click)="logOut()" ngbDropdownItem style="cursor: pointer !important">
+             ログアウト
+          </button>  -->
+                <!-- </div>
+            </div> -->
+            <div *ngIf="auth.user | async as user">
+              <h3><i class="far fa-user-circle"></i>ようこそ, {{ user.displayName }}さん</h3>
+              <button (click)="auth.signOut()" (click)="logOut()">Logout</button>
+              <p>UID: {{user.uid}}</p>
+  <p>名前: {{user.displayName}}</p>
+  <p>Email: {{user.email}}</p>
+  <p>プロフィール: {{user.profile}}</p>
             </div>
         </div>
+
     </div>
 </div>
 

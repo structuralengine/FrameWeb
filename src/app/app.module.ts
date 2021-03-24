@@ -10,6 +10,10 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { MatInputModule } from "@angular/material/input";
 
+import { CoreModule } from './core/core.module';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
+
 import { InputDataService } from "./providers/input-data.service";
 import { DataHelperModule } from "./providers/data-helper.module";
 import { ResultDataService } from "./providers/result-data.service";
@@ -94,19 +98,12 @@ import { PrintResultPickupReacComponent } from "./components/print/invoice/print
 
 
 import { DataCountService } from "./components/print/invoice/dataCount.service";
-import { PrintResultCombineDisgService } from "./components/print/invoice/print-result-combine-disg/print-result-combine-disg.service";
-import { PrintResultCombineFsecService } from "./components/print/invoice/print-result-combine-fsec/print-result-combine-fsec.service";
-import { PrintResultCombineReacService } from "./components/print/invoice/print-result-combine-reac/print-result-combine-reac.service";
-import { PrintResultDisgService } from "./components/print/invoice/print-result-disg/print-result-disg.service";
-import { PrintResultFsecService } from "./components/print/invoice/print-result-fsec/print-result-fsec.service";
-import { PrintResultReacService } from "./components/print/invoice/print-result-reac/print-result-reac.service";
-import { PrintResultPickupDisgService } from "./components/print/invoice/print-result-pickup-disg/print-result-pickup-disg.service";
-import { PrintResultPickupFsecService } from "./components/print/invoice/print-result-pickup-fsec/print-result-pickup-fsec.service";
-import { PrintResultPickupReacService } from "./components/print/invoice/print-result-pickup-reac/print-result-pickup-reac.service";
 
 import { PagerComponent } from "./components/input/pager/pager.component";
 import { SheetComponent } from "./components/input/sheet/sheet.component";
 import { PrintInputLoadNameComponent } from './components/print/invoice/print-input-load-name/print-input-load-name.component';
+
+import { AuthGuard } from './guard/auth.guard';
 
 @NgModule({
   imports: [
@@ -120,6 +117,8 @@ import { PrintInputLoadNameComponent } from './components/print/invoice/print-in
     NgbModule,
     DataHelperModule,
     MatInputModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    CoreModule,
   ],
   declarations: [
     AppComponent,
@@ -197,7 +196,7 @@ import { PrintInputLoadNameComponent } from './components/print/invoice/print-in
     InputPickupService,
 
     PrintService,
-
+    AuthGuard,
     ResultDataService,
     ResultDisgService,
     ResultReacService,
@@ -210,16 +209,6 @@ import { PrintInputLoadNameComponent } from './components/print/invoice/print-in
     ResultCombineFsecService,
 
     DataCountService,
-
-    PrintResultCombineDisgService,
-    PrintResultCombineFsecService,
-    PrintResultCombineReacService,
-    PrintResultDisgService,
-    PrintResultFsecService,
-    PrintResultReacService,
-    PrintResultPickupDisgService,
-    PrintResultPickupFsecService,
-    PrintResultPickupReacService,
 
     UserInfoService,
     SceneService,
