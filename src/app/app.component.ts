@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
               private ResultData: ResultDataService,
               public user:UserInfoService,
               public printService: PrintService,
-              public authService: AuthService) { 
+              private authService: AuthService) { 
   }
   ngOnInit() {
     this.user.isContentsDailogShow = false;

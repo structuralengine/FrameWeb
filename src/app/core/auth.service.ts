@@ -9,6 +9,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firest
 
 import { Observable, of } from 'rxjs';
 import { switchMap} from 'rxjs/operators';
+import { UserInfoService } from '../providers/user-info.service';
 
 
 interface User {
@@ -30,7 +31,8 @@ export class AuthService {
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
-    private router: Router
+    private router: Router,
+    public User: UserInfoService,
   ) {
 
       //// Get auth data, then get firestore user document || null
@@ -46,24 +48,26 @@ export class AuthService {
     }
 
     googleLogin() {
-    const provider =  new auth.auth.GoogleAuthProvider()
-    return this.oAuthLogin(provider);
-  }
-
-
-  
-
-  private oAuthLogin(provider) {
-    return this.afAuth.signInWithPopup(provider)
+      const provider =  new auth.auth.GoogleAuthProvider()
+      return this.oAuthLogin(provider);
+    }
+    
+    
+    
+    
+    private oAuthLogin(provider) {
+      // this.User.loggedIn = true;
+      return this.afAuth.signInWithPopup(provider)
       .then((credential) => {
-        this.updateUserData(credential.user)
+        // this.User.loggedIn = true;
+        this.updateUserData(credential.user);
       })
-  }
-
-
-  private updateUserData(user) {
-    // Sets user data to firestore on login
-
+    }
+    
+    
+    private updateUserData(user) {
+      // Sets user data to firestore on login
+      
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
 
     const data: User = {
@@ -72,13 +76,14 @@ export class AuthService {
       displayName: user.displayName,
       photoURL: user.photoURL
     }
-
+    // this.User.loggedIn = true;
     return userRef.set(data, { merge: true })
 
   }
 
 
   signOut() {
+    this.User.loggedIn = false;
     this.afAuth.signOut().then(() => {
         this.router.navigate(['/']);
     });

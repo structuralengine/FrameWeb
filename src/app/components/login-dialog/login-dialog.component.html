@@ -36,25 +36,20 @@
   <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>
 </div>
 
-<div *ngIf="auth.user | async; then authenticated else guest">
-  <!-- template will replace this div -->
+<!-- <div *ngIf="auth.user | async; then authenticated else guest">
+ 
+</div> -->
+
+<div *ngIf="auth.user | async as user; else showLogin">
+  <span style="color: white"> ようこそ{{ user.displayName }}さん</span>
+  <button class="btn btn-primary ml-2" (click)="logout()">Logout</button>
 </div>
-
-
-<!-- User NOT logged in -->
-<ng-template #guest>
-<h3>Howdy, GUEST</h3>
-<p>Login to get started...</p>
-
-<button (click)="auth.googleLogin()">
-  <i class="fa fa-google"></i> Connect Google
-</button>
-
+<ng-template #showLogin>
+  <button class="btn btn-primary ml-2" (click)="login()">Login with Google</button>
 </ng-template>
 
-
 <!-- User logged in -->
-<ng-template #authenticated>
+<!-- <ng-template #authenticated>
 <div *ngIf="auth.user | async as user">
   <h3>Howdy, {{ user.displayName }}</h3>
   <img  [src]="user.photoURL">
@@ -62,5 +57,5 @@
   <p>Favorite Color: {{ user?.favoriteColor }} </p>
   <button (click)="auth.signOut()">Logout</button>
 </div>
-</ng-template>
+</ng-template> -->
 

@@ -3,6 +3,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserInfoService } from '../../providers/user-info.service';
 import { AuthService } from '../../core/auth.service';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -18,11 +20,14 @@ export class LoginDialogComponent implements OnInit {
   loginError: boolean;
   errorMessage: string;
   connecting: boolean;
+  loggedIn: boolean;
 
   constructor(public activeModal: NgbActiveModal,
     private http: HttpClient,
     private user: UserInfoService,
-    public auth: AuthService) {
+    public auth: AuthService,
+    private afAuth: AngularFireAuth,
+    private router: Router,) {
       this.loginError = false;
       this.connecting = false;
     }
@@ -35,6 +40,10 @@ export class LoginDialogComponent implements OnInit {
         this.onClick();
       }
     }
+
+    this.afAuth.signOut().then(() => {
+      this.router.navigate(['/']);
+  });
   }
 
   onClick() {
@@ -73,5 +82,16 @@ export class LoginDialogComponent implements OnInit {
           this.connecting = false;
         }
     );
+  }
+
+  login() {
+    this.auth.googleLogin();
+    this.activeModal.close('Submit');
+    this.user.loggedIn = true;
+    // this.user.loggedIn = true;
+  }
+
+  logout() {
+    this.auth.signOut();
   }
 }

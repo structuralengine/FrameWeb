@@ -19,6 +19,8 @@ import { ThreeService } from '../three/three.service';
 import * as pako from 'pako';
 import { DataCountService } from '../print/invoice/dataCount.service';
 
+import { AuthService } from '../../core/auth.service';
+
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
@@ -41,7 +43,8 @@ export class MenuComponent implements OnInit {
     private http: HttpClient,
     private three: ThreeService,
     public printService: PrintService,
-    public countArea:DataCountService
+    public countArea:DataCountService,
+    public auth: AuthService
     ) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
@@ -251,6 +254,13 @@ export class MenuComponent implements OnInit {
 
   logOut(): void {
     this.loggedIn = false;
+    this.user.clear();
+    this.auth.signOut();
+  }
+
+  logout() {
+    this.user.loggedIn = false;
+    this.auth.signOut();
     this.user.clear();
   }
 

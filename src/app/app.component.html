@@ -133,12 +133,6 @@
 
   <router-outlet name="print"></router-outlet>
   
-        <div *ngIf="authService.user | async as user; else showLogin">
-          <span style="color: white"> ようこそ<a routerLink="/user/profile">{{ user.displayName }}</a></span>
-          <button class="btn btn-primary ml-2" (click)="logout()">Logout</button>
-        </div>
-        <ng-template #showLogin>
-          <button class="btn btn-primary ml-2" (click)="login()">Login with Google</button>
-        </ng-template>
+        
      
 </div>
