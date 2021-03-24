@@ -68,14 +68,14 @@ export class ThreeService {
   public changeData(mode: string = "", index: number = 0): void {
     switch (mode) {
       case "nodes":
-        this.node.changeData();
+        this.load.changeNode(
+          this.node.changeData());
         this.member.changeData();
-        this.load.changeNode();
         break;
 
       case "members":
-        this.member.changeData();
-        this.load.changeMember();
+        this.load.changeMember(
+          this.member.changeData());
         break;
 
       case "elements":
@@ -235,15 +235,6 @@ export class ThreeService {
       this.fsec.visibleChange(false);
     }
 
-    // 荷重図の変更部分を書き直す
-    if (this.mode === "nodes" || this.mode === "members") {
-      if (ModeName !== "nodes" && ModeName !== "members") {
-        // [格点]か[部材]の入力モードから他の入力モードに遷移した場合
-        // 荷重図の変更部分を書き直す
-        this.load.reDrawNodeMember();
-      }
-    }
-
     if (ModeName === "notice_points") {
       this.node.visibleChange(true, false, false);
       this.member.visibleChange(true, true, false);
@@ -292,29 +283,34 @@ export class ThreeService {
       this.fsec.visibleChange(false);
     }
 
-    if (ModeName === "load_names") {
-      this.node.visibleChange(true, false, false);
-      this.member.visibleChange(true, false, false);
-      this.fixNode.visibleChange(true);
-      this.fixMember.visibleChange(true);
-      this.joint.visibleChange(true);
-      this.load.visibleChange(true, false);
+    // 荷重図
+    if (ModeName === "load_names" || ModeName === "load_values") {
+
+      // 荷重図の変更部分を書き直す
+      this.load.reDrawNodeMember();
+
+      if (ModeName === "load_names") {
+        this.node.visibleChange(true, false, false);
+        this.member.visibleChange(true, false, false);
+        this.fixNode.visibleChange(true);
+        this.fixMember.visibleChange(true);
+        this.joint.visibleChange(true);
+        this.load.visibleChange(true, false);
+      }
+  
+      if (ModeName === "load_values") {
+        this.node.visibleChange(true, true, false);
+        this.member.visibleChange(true, true, false);
+        this.fixNode.visibleChange(false);
+        this.fixMember.visibleChange(false);
+        this.joint.visibleChange(false);
+        this.load.visibleChange(true, true);
+      }
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
       this.fsec.visibleChange(false);
     }
 
-    if (ModeName === "load_values") {
-      this.node.visibleChange(true, true, false);
-      this.member.visibleChange(true, true, false);
-      this.fixNode.visibleChange(false);
-      this.fixMember.visibleChange(false);
-      this.joint.visibleChange(false);
-      this.load.visibleChange(true, true);
-      this.disg.visibleChange(false);
-      this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
-    }
 
     if (ModeName === "disg") {
       this.node.visibleChange(true, true, false);

@@ -78,6 +78,12 @@ export class ThreeLoadService {
     this.AllCaseLoadList = {};
     this.currentIndex = null;
 
+    // 節点、部材データ
+    this.nodeData = null;
+    this.memberData = null;
+    this.newNodeData = null;
+    this.newMemberData = null;
+
     // gui
     this.LoadScale = 100;
     this.params = {
@@ -246,13 +252,13 @@ export class ThreeLoadService {
   }
 
   // 節点の入力が変更された場合 新しい入力データを保持しておく
-  public changeNode(): void {
-    this.newNodeData = this.node.getNodeJson(0);
+  public changeNode(jsonData): void {
+    this.newNodeData = jsonData;
   }
 
   // 要素の入力が変更された場合 新しい入力データを保持しておく
-  public changeMember(): void {
-    this.newMemberData = this.member.getMemberJson(0);
+  public changeMember(jsonData): void {
+    this.newMemberData = jsonData;
   }
 
   // 節点や要素が変更された部分を描きなおす
@@ -310,37 +316,46 @@ export class ThreeLoadService {
     }
 
     // 格点の変更によって影響のある部材を特定する
-    for(const key of Object.keys(this.newMemberData)){
-      const newMember = this.newMemberData[key];
+    const targetMemberData = (this.newMemberData !== null) ? this.newMemberData : this.memberData;
+    for(const key of Object.keys(targetMemberData)){
+      const newMember = targetMemberData[key];
       if(newMember.ni in changeNodeList || newMember.nj in changeNodeList){
-        changeMemberList[key] = 'change'
+        changeMemberList[key] = 'node change'
       }
     }
 
     // 荷重を変更する
     const oldIndex = this.currentIndex;
-    this.nodeData = this.newNodeData;
-    this.memberData = this.newMemberData;
+    this.nodeData = (this.newNodeData !== null)? this.newNodeData : this.nodeData;
+    this.memberData = (this.newMemberData !== null) ? this.newMemberData: this.memberData;
     // 荷重データを入手
     const nodeLoadData = this.load.getNodeLoadJson(0);
     const memberLoadData = this.load.getMemberLoadJson(0);
     // 荷重を修正
     for (const id of Object.keys(this.AllCaseLoadList)) {
       this.currentIndex = id;
+      let editFlg = false;
       if (this.currentIndex in nodeLoadData) {
         for(const load of nodeLoadData[this.currentIndex]){
           if(load.n.toString() in changeNodeList)
           this.changeNodeLode(load.row, nodeLoadData);
+          editFlg = true;
         }
       }
       if (this.currentIndex in memberLoadData) {
         for(const load of memberLoadData[this.currentIndex]){
           if(load.m.toString() in changeMemberList){
             this.changeMemberLode(load.row, memberLoadData);
+            editFlg = true;
           }
         }
       }
+      if( editFlg === true ){
+        this.setOffset();
+        this.onResize();
+      }
     }
+
     this.newNodeData = null;
     this.newMemberData = null;
     this.currentIndex = oldIndex;
