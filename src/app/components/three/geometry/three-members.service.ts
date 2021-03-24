@@ -72,14 +72,14 @@ export class ThreeMembersService {
   }
 
   // データが変更された時の処理
-  public changeData(): void {
+  public changeData(): object {
     
     // 格点データを入手
     const nodeData = this.node.getNodeJson(0);
     const nodeKeys = Object.keys(nodeData);
     if (nodeKeys.length <= 0) {
       this.ClearData();
-      return;
+      return null;
     }
 
     // メンバーデータを入手
@@ -87,7 +87,7 @@ export class ThreeMembersService {
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
       this.ClearData();
-      return;
+      return null;
     }
 
     // 要素を排除する
@@ -169,6 +169,8 @@ export class ThreeMembersService {
       this.scene.add(group);
     }
     this.onResize();
+
+    return jsonData;
   }
 
   // データをクリアする

@@ -1,18 +1,27 @@
 <div class="modal-header">
-  <a href="https://structuralengine.com/" target="_blank">Structural Engine</a>のユーザーでログインしてください
+  <!-- <a href="https://structuralengine.com/" target="_blank" style="display: block;">Structural Engine</a>のユーザーでログインしてください -->
+  <a href="https://structural-engine.web.app/" style="display: block;">ユーザー登録がお済みでない方はこちらから</a>
   <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label for="loginEmail">ユーザー名</label>
     <input type="email" class="form-control" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
   </div>
   <div class="form-group">
     <label for="loginPassword">パスワード</label>
     <input type="password" class="form-control" [(ngModel)]="loginPassword" placeholder="Password">
-  </div>
+  </div> -->
+
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <label for="email">メールアドレス</label>
+    <input type="email"  class="form-control" formControlName="email" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
+    <label for="password">パスワード</label>
+    <input type="password"  class="form-control" formControlName="password" [(ngModel)]="loginPassword" placeholder="Password">
+    <button type="submit" class="button">ログイン</button> 
+  </form>
 <!-- 
   <div class="form-check">
     <input type="checkbox" class="form-check-input" [(ngModel)]="rememberCheck">
@@ -33,5 +42,30 @@
     </div>
   </div>
   <button class="btn btn-outline-success" (click)="onClick()">ログイン</button>
+  <div *ngIf="auth.user | async as user; else showLogin">
+    <!-- <span style="color: white"> ようこそ{{ user.displayName }}さん</span>
+    <button class="btn btn-primary ml-2" (click)="logout()">Logout</button> -->
+  </div>
+  <ng-template #showLogin>
+    <button class="btn btn-primary ml-2" (click)="loginGoogle()">Login with Google</button>
+  </ng-template>
   <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>
 </div>
+
+
+<!-- <div *ngIf="auth.user | async; then authenticated else guest">
+ 
+</div> -->
+
+
+<!-- User logged in -->
+<!-- <ng-template #authenticated>
+<div *ngIf="auth.user | async as user">
+  <h3>Howdy, {{ user.displayName }}</h3>
+  <img  [src]="user.photoURL">
+  <p>UID: {{ user.uid }}</p>
+  <p>Favorite Color: {{ user?.favoriteColor }} </p>
+  <button (click)="auth.signOut()">Logout</button>
+</div>
+</ng-template> -->
+

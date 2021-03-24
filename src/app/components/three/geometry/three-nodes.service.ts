@@ -63,14 +63,14 @@ export class ThreeNodesService {
   }
 
   // データが変更された時の処理
-  public changeData(): void {
+  public changeData(): object {
 
     // 入力データを入手
     const jsonData = this.node.getNodeJson(0);
     const jsonKeys = Object.keys(jsonData);
     if (jsonKeys.length <= 0) {
       this.ClearData();
-      return;
+      return null;
     }
 
     // 入力データに無い要素を排除する
@@ -126,6 +126,8 @@ export class ThreeNodesService {
     // サイズを調整する
     this.setBaseScale();
     this.onResize();
+
+    return jsonData;
   }
 
   // データをクリアする
