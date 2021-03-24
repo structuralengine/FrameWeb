@@ -8,7 +8,8 @@ import { Router } from '@angular/router';
 
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import firebase from 'firebase';
-
+import { Observable } from 'rxjs/observable';
+import { of } from 'rxjs';
 
 
 
@@ -55,11 +56,11 @@ export class LoginDialogComponent implements OnInit {
   ngOnInit() {
     //　エンターキーでログイン可能にする。
     //　不要な場合は以下の処理を消してください。
-    document.body.onkeydown = (e) => {
-      if (e.key === 'Enter') {
-        this.onClick();
-      }
-    }
+    // document.body.onkeydown = (e) => {
+    //   if (e.key === 'Enter') {
+    //     this.login();
+    //   }
+    // }
 
     this.afAuth.signOut().then(() => {
       this.router.navigate(['/']);
@@ -113,12 +114,19 @@ export class LoginDialogComponent implements OnInit {
   login() {
     const email = this.loginForm.get('email').value;
     const password = this.loginForm.get('password').value;
-    this.auth.login(email, password);
-      // .then(() => {
-      //   this.router.navigate(['/']);
-      // });
+    this.auth.login(email, password).then((value) => {
       this.activeModal.close('Submit');
       this.user.loggedIn = true;
+      console.log(value);
+    }).catch((error) => {
+      alert("matigai");
+    })
+      // .then(() => { 
+      //   this.router.navigate(['/']);
+      // });
+      if(this.auth.user === null ){
+        console.log("SD")
+      }
   }
 
   loginGoogle() {
