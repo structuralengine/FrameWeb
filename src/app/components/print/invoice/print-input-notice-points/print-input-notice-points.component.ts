@@ -3,6 +3,7 @@ import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 import { Data } from "@angular/router";
+import { PrintService } from "../../print.service";
 
 @Component({
   selector: "app-print-input-notice-points",
@@ -33,6 +34,7 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private InputData: InputDataService,
+    private printService: PrintService,
     private countArea: DataCountService
   ) {
     this.judge = false;
@@ -46,7 +48,7 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const inputJson: any = this.InputData.getInputJson(0);
+    const inputJson: any = this.printService.inputJson;
 
     if ("notice_points" in inputJson) {
       const tables = this.printNoticepoints(inputJson); // {body, title}

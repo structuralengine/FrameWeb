@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
-import { Data } from "@angular/router";
+import { PrintService } from "../../print.service";
 
 @Component({
   selector: "app-print-input-load",
@@ -42,7 +41,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
   public judge: boolean;
 
   constructor(
-    private InputData: InputDataService,
+    private printService: PrintService,
     private countArea: DataCountService
   ) {
     this.judge = false;
@@ -62,9 +61,9 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const inputJson: any = this.InputData.getInputJson(0);
-    const LoadJson: any = this.InputData.load.getLoadJson();
-    if (Object.keys(LoadJson).length > 0) {
+    const inputJson: any = this.printService.inputJson;
+    if ("load" in inputJson) {
+      const LoadJson: any = inputJson.load; // this.InputData.load.getLoadJson();
       // 実荷重データ
       const tables_actual = this.printLoad(LoadJson);
       this.load_data = tables_actual.tableData;

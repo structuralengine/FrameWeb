@@ -98,15 +98,6 @@ import { PrintResultPickupReacComponent } from "./components/print/invoice/print
 
 
 import { DataCountService } from "./components/print/invoice/dataCount.service";
-import { PrintResultCombineDisgService } from "./components/print/invoice/print-result-combine-disg/print-result-combine-disg.service";
-import { PrintResultCombineFsecService } from "./components/print/invoice/print-result-combine-fsec/print-result-combine-fsec.service";
-import { PrintResultCombineReacService } from "./components/print/invoice/print-result-combine-reac/print-result-combine-reac.service";
-import { PrintResultDisgService } from "./components/print/invoice/print-result-disg/print-result-disg.service";
-import { PrintResultFsecService } from "./components/print/invoice/print-result-fsec/print-result-fsec.service";
-import { PrintResultReacService } from "./components/print/invoice/print-result-reac/print-result-reac.service";
-import { PrintResultPickupDisgService } from "./components/print/invoice/print-result-pickup-disg/print-result-pickup-disg.service";
-import { PrintResultPickupFsecService } from "./components/print/invoice/print-result-pickup-fsec/print-result-pickup-fsec.service";
-import { PrintResultPickupReacService } from "./components/print/invoice/print-result-pickup-reac/print-result-pickup-reac.service";
 
 import { PagerComponent } from "./components/input/pager/pager.component";
 import { SheetComponent } from "./components/input/sheet/sheet.component";
@@ -218,16 +209,6 @@ import { AuthGuard } from './guard/auth.guard';
     ResultCombineFsecService,
 
     DataCountService,
-
-    PrintResultCombineDisgService,
-    PrintResultCombineFsecService,
-    PrintResultCombineReacService,
-    PrintResultDisgService,
-    PrintResultFsecService,
-    PrintResultReacService,
-    PrintResultPickupDisgService,
-    PrintResultPickupFsecService,
-    PrintResultPickupReacService,
 
     UserInfoService,
     SceneService,

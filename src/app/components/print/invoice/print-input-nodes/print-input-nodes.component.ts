@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
-// import { table } from "console";
+import { PrintService } from "../../print.service";
 
 @Component({
   selector: "app-print-input-nodes",
@@ -33,7 +32,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   public headerShow: boolean;
 
   constructor(
-    private InputData: InputDataService,
+    private printService: PrintService,
     private countArea: DataCountService
   ) {
     this.judge = false;
@@ -46,7 +45,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const inputJson: any = this.InputData.getInputJson(0);
+    const inputJson: any = this.printService.inputJson;
 
     if ("node" in inputJson) {
       const tables = this.printNode(inputJson);

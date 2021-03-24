@@ -77,7 +77,6 @@ export class PrintInputLoadNameComponent implements OnInit {
         const line = ["", "", "", "", "", ""];
         let index: string = keys[i];
         const item = json[index]; // 1行分のnodeデータを取り出す
-        const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
         const j = page * 47 + i + 1;
 
         if (keys.length === 0) {

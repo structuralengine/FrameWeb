@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
+import { PrintService } from "../../print.service";
 
 @Component({
   selector: "app-print-input-members",
@@ -24,12 +25,13 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   invoiceDetails: Promise<any>[];
 
   public member_dataset = [];
-  public member_page = [];
+  public member_page: number;
 
   public judge: boolean;
 
   constructor(
     private InputData: InputDataService,
+    private printService: PrintService,
     private countArea: DataCountService
   ) {
     this.judge = false;
@@ -38,11 +40,11 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
   public clear(): void {
     this.member_dataset = new Array();
-    this.member_page = new Array();
+    this.member_page = 0;
   }
 
   ngOnInit(): void {
-    const inputJson: any = this.InputData.getInputJson(0);
+    const inputJson: any = this.printService.inputJson;
 
     if ("member" in inputJson) {
       const tables = this.printMember(inputJson);
@@ -68,11 +70,12 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
 
     while (break_flg) {
       for (let i = 0; i < 50; i++) {
+        const j = page * 50 + i;
+
         const line = ["", "", "", "", "", ""];
-        let index: string = keys[i];
+        let index: string = keys[j];
         const item = json[index]; // 1行分のnodeデータを取り出す
         const len: number = this.InputData.member.getMemberLength(index); // 部材長さ
-        const j = page * 50 + i + 1;
         const s = j + 1;
 
         if (s > keys.length) {

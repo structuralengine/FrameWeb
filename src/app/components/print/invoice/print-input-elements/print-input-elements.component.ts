@@ -3,6 +3,7 @@ import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 import { ArrayCamera } from "three";
+import { PrintService } from "../../print.service";
 
 @Component({
   selector: "app-print-input-elements",
@@ -33,8 +34,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
 
   public judge: boolean;
 
-  constructor(
-    private InputData: InputDataService,
+  constructor(private printService: PrintService,
     private countArea: DataCountService
   ) {
     this.judge = false;
@@ -48,7 +48,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const inputJson: any = this.InputData.getInputJson(0);
+    const inputJson: any = this.printService.inputJson;
 
     if ("element" in inputJson) {
       const tables = this.printElement(inputJson);
