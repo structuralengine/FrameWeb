@@ -223,9 +223,6 @@ export class MenuComponent implements OnInit {
   // 全ての解析ケースを計算し終えたら
   private loadResultData(jsonData: object): void {
 
-    // 組み合わせケースを集計する
-    this.ResultData.CombinePickup();
-
     // ユーザーの保有ポイントの表示を更新する
     this.user.loadResultData(jsonData);
     this.userPoint = this.user.purchase_value.toString();

@@ -4,6 +4,7 @@ import { UserInfoService } from './providers/user-info.service'
 import { ResultDataService } from './providers/result-data.service';
 import { PrintService } from './components/print/print.service';
 import { AuthService } from './core/auth.service';
+import { ResultFsecService } from './components/result/result-fsec/result-fsec.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,7 +18,8 @@ export class AppComponent implements OnInit {
               private ResultData: ResultDataService,
               public user:UserInfoService,
               public printService: PrintService,
-              private authService: AuthService) { 
+              private authService: AuthService,
+              public fsec: ResultFsecService) { 
   }
   ngOnInit() {
     this.user.isContentsDailogShow = false;

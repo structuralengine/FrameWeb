@@ -71,7 +71,6 @@ export class ResultCombineReacComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.result.CombinePickup();
     const n: number = this.comb.getCombineCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);

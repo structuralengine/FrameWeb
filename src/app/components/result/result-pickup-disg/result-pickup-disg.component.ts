@@ -67,7 +67,6 @@ export class ResultPickupDisgComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.result.CombinePickup();
     const n: number = this.pickup.getPickupCaseCount();
     this.collectionSize = n * 10;
     this.loadPage(1);
