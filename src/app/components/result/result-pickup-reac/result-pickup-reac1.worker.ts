@@ -38,9 +38,10 @@ addEventListener('message', ({ data }) => {
         }
       }
     }
-    reacPickup[pickNo] = tmp;
+    if (tmp !== null) {
+      reacPickup[pickNo] = tmp;
+    }
   }
 
-  const response = `worker response to ${data}`;
   postMessage({ reacPickup });
 });

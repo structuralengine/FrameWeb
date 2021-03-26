@@ -21,7 +21,8 @@ export class ResultPickupFsecService {
   public clear(): void {
     this.fsecPickup = {};
   }
-
+  
+  // three.js から呼ばれる
   public getFsecJson(): object {
     return this.fsecPickup;
   }

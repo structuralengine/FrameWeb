@@ -27,10 +27,8 @@ export class ResultDisgComponent implements OnInit {
 
   constructor(
     private data: ResultDisgService,
-    private app: AppComponent,
     private load: InputLoadService,
     private three: ThreeService,
-    private result: ResultDataService,
     private comb: ResultCombineDisgService,
     private pic: ResultPickupDisgService
   ) {

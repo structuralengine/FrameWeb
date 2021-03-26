@@ -39,7 +39,6 @@ export class ResultPickupDisgComponent implements OnInit {
   }
 
   ngOnInit() {
-    const n: number = this.pickup.getPickupCaseCount();
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
