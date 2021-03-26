@@ -50,7 +50,6 @@ export class ResultCombineDisgComponent implements OnInit {
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnPickup: string;
   tableHeight: number;
 
@@ -68,11 +67,10 @@ export class ResultCombineDisgComponent implements OnInit {
 
   ngOnInit() {
     const n: number = this.comb.getCombineCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // ピックアップデータがあればボタンを表示する
-    if (this.pic.isChange === false) {
+    if (this.pic.isCalculated === true) {
       this.btnPickup = "btn-change";
     } else {
       this.btnPickup = "btn-change disabled";
@@ -84,7 +82,6 @@ export class ResultCombineDisgComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }

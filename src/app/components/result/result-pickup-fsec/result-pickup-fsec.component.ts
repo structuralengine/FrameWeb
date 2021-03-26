@@ -21,7 +21,6 @@ export class ResultPickupFsecComponent implements OnInit {
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnCombine: string;
   tableHeight: number;
 
@@ -37,12 +36,10 @@ export class ResultPickupFsecComponent implements OnInit {
   }
 
   ngOnInit() {
-    const n: number = this.pickup.getPickupCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (this.comb.isChange === false) {
+    if (this.comb.isCalculated === true) {
       this.btnCombine = "btn-change";
     } else {
       this.btnCombine = "btn-change disabled";
@@ -54,7 +51,6 @@ export class ResultPickupFsecComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }

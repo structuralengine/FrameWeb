@@ -50,7 +50,6 @@ export class ResultPickupReacComponent implements OnInit {
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnCombine: string;
   tableHeight: number;
 
@@ -68,7 +67,6 @@ export class ResultPickupReacComponent implements OnInit {
 
   ngOnInit() {
     const n: number = this.pickup.getPickupCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
@@ -84,7 +82,6 @@ export class ResultPickupReacComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }

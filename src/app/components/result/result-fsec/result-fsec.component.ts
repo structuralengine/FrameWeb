@@ -21,7 +21,6 @@ export class ResultFsecComponent implements OnInit {
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnCombine: string;
   btnPickup: string;
 
@@ -38,18 +37,16 @@ export class ResultFsecComponent implements OnInit {
   }
 
   ngOnInit() {
-    const n: number = this.load.getLoadCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (this.comb.isChange === false) {
+    if (this.comb.isCalculated === true) {
       this.btnCombine = "btn-change";
     } else {
       this.btnCombine = "btn-change disabled";
     }
     // ピックアップデータがあればボタンを表示する
-    if (this.pic.isChange === false) {
+    if (this.pic.isCalculated === true) {
       this.btnPickup = "btn-change";
     } else {
       this.btnPickup = "btn-change disabled";
@@ -58,7 +55,6 @@ export class ResultFsecComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    // this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }

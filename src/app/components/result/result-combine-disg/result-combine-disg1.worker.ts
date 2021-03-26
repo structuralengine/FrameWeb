@@ -4,20 +4,7 @@ addEventListener("message", ({ data }) => {
   const defList = data.defList;
   const combList = data.combList;
   const disg = data.disg;
-  const disgKeys = [
-    "dx_max",
-    "dx_min",
-    "dy_max",
-    "dy_min",
-    "dz_max",
-    "dz_min",
-    "rx_max",
-    "rx_min",
-    "ry_max",
-    "ry_min",
-    "rz_max",
-    "rz_min",
-  ];
+  const disgKeys = data.disgKeys;
 
   // defineのループ
   const disgDefine = {};

@@ -83,17 +83,10 @@ export class ResultDataService {
     // 組み合わせケースを集計する
     this.setCombinePickup();
 
-      // 基本ケース
-//      this.disg.setDisgJson(jsonData, this.combList, this.pickList);
-//      this.reac.setReacJson(jsonData, this.combList, this.pickList);
+    // 基本ケース の集計 -> 組み合わせの集計まで じゅずツナギ
+    this.disg.setDisgJson(jsonData, this.defList, this.combList, this.pickList);
+    this.reac.setReacJson(jsonData, this.defList, this.combList, this.pickList);
     this.fsec.setFsecJson(jsonData, this.defList, this.combList, this.pickList);
-      
-      // this.combdisg.setDisgCombineJson(defList, this.combList, this.pickList);
-      // this.combreac.setReacCombineJson(defList, this.combList, this.pickList);
-      // this.combfsec.setFsecCombineJson(defList, this.combList, this.pickList);
-      
-      
-
 
     return true;
   }

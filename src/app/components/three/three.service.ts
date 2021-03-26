@@ -38,7 +38,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // 初期化
-  //////////////////////////////////////////////////////
   public OnInit(): void {
     this.node.OnInit();
     this.member.OnInit();
@@ -46,7 +45,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // ファイルを開く処理する
-  //////////////////////////////////////////////////////
   public fileload(): void {
     // ファイルを読み込んだ
     this.node.changeData();
@@ -63,8 +61,13 @@ export class ThreeService {
   }
 
   //////////////////////////////////////////////////////
-  // データの変更通知を処理する
+  // 解析結果データを集計する
+  public setResultData(): void {
+    
+  }
+
   //////////////////////////////////////////////////////
+  // データの変更通知を処理する
   public changeData(mode: string = "", index: number = 0): void {
     switch (mode) {
       case "nodes":
@@ -118,14 +121,12 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // データの選択を処理する
-  //////////////////////////////////////////////////////
   public selectChange(mode: string, index: number): void {
     console.log("selectChange", mode, index);
   }
 
   //////////////////////////////////////////////////////
   // データをクリアする
-  //////////////////////////////////////////////////////
   public ClearData(): void {
     // 節点データの削除
     this.node.ClearData();
@@ -146,8 +147,7 @@ export class ThreeService {
   }
 
   //////////////////////////////////////////////////////
-  // 編集モードの変更通知を処理する
-  //////////////////////////////////////////////////////
+  // 編集ページの変更通知を処理する
   public ChangePage(currentPage: number): void {
     if (this.currentIndex === currentPage) {
       return;
@@ -206,6 +206,8 @@ export class ThreeService {
     this.scene.render();
   }
 
+  //////////////////////////////////////////////////////
+  // 編集モードの変更通知を処理する
   public ChangeMode(ModeName: string): void {
     if (this.mode === ModeName) {
       return;
@@ -387,7 +389,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // マウス位置とぶつかったオブジェクトを検出する
-  //////////////////////////////////////////////////////
   public detectObject(mouse: THREE.Vector2, action: string): void {
     const raycaster = this.scene.getRaycaster(mouse);
 

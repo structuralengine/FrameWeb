@@ -83,17 +83,17 @@
             </div>
             <p>組合せ</p>
           </a>
-          <p class="guide" *ngIf="isCalculated">入力</p>
+          <p class="guide">入力</p>
         </div>
-        <div class="output-area" *ngIf="isCalculated">
-          <a routerLink="./result-disg" *ngIf="isCalculated" (click)="contentsDailogShow(10)" id="10"
+        <div class="output-area" *ngIf="disg.isCalculated || reac.isCalculated || fsec.isCalculated">
+          <a routerLink="./result-disg" *ngIf="disg.isCalculated" (click)="contentsDailogShow(10)" id="10"
             class="btn-md btn-blue ">
             <div class="icon-img ppt">
               <img src="./assets/img/heni.png" width="50" height="40">
             </div>
             <p>変位</p>
           </a>
-          <a routerLink="./result-reac" *ngIf="isCalculated" (click)="contentsDailogShow(11)" id="11"
+          <a routerLink="./result-reac" *ngIf="reac.isCalculated" (click)="contentsDailogShow(11)" id="11"
             class="btn-md btn-blue">
             <div class="icon-img ppt">
               <img src="./assets/img/shitenhanryoku.png" width="60" height="40">

@@ -16,7 +16,7 @@ export class ResultFsecService {
 
   constructor(
     public member: InputMembersService,
-    public combfsec: ResultCombineFsecService) {
+    public comb: ResultCombineFsecService) {
     this.clear();
     this.worker1 = new Worker('./result-fsec1.worker', { name: 'result-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-fsec2.worker', { name: 'result-fsec2', type: 'module' });
@@ -24,24 +24,14 @@ export class ResultFsecService {
 
   public clear(): void {
     this.fsec = {};
+    this.isCalculated = false;
   }
 
   public getFsecColumns(typNo: number): any {
-
     const key: string = typNo.toString();
-
-    let result: any = null;
-    if (key in this.columns) {
-      result = this.columns[key];
-    } else {
-      result = new Array();
-    }
-
-    return result;
-
+    return (key in this.columns) ? this.columns[key] : new Array();
   }
 
-  // 
   // three-section-force.service から呼ばれる
   public getFsecJson(): object {
     return this.fsec;
@@ -49,11 +39,6 @@ export class ResultFsecService {
 
   // サーバーから受領した 解析結果を集計する
   public setFsecJson(jsonData: {}, defList: any, combList: any, pickList: any): void {
-
-    // html 用に変数を集計する
-    const postData = {
-      jsonData
-    };
 
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
@@ -65,7 +50,7 @@ export class ResultFsecService {
           this.fsec = data.fsec;
 
           // 組み合わせの集計処理を実行する
-          this.combfsec.setFsecCombineJson(this.fsec, defList, combList, pickList);
+          this.comb.setFsecCombineJson(this.fsec, defList, combList, pickList);
 
           // 断面力テーブルの集計
           this.worker2.onmessage = ({ data }) => {

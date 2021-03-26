@@ -1,10 +1,6 @@
 /// <reference lib="webworker" />
 
 addEventListener('message', ({ data }) => {
-  const defList = data.defList;
-  const combList = data.combList;
-  const fsec = data.fsec;
-  const fsecKeys = data.fsecKeys;
 
   // 文字列string を数値にする
   const toNumber = (num: string) => {
@@ -19,6 +15,11 @@ addEventListener('message', ({ data }) => {
       }
       return result;
   };
+  
+  const defList = data.defList;
+  const combList = data.combList;
+  const fsec = data.fsec;
+  const fsecKeys = data.fsecKeys;
 
   // 全ケースに共通する着目点のみ対象とするために削除する id を記憶
   const delList =[]; 

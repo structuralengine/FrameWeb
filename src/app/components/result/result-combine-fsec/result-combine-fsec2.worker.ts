@@ -3,10 +3,9 @@
 addEventListener('message', ({ data }) => {
 
   const fsecCombine = data.fsecCombine;
-  const combList = data.combList
 
   const result = {};
-  for(const combNo of Object.keys(combList)){
+  for(const combNo of Object.keys(fsecCombine)){
   
     // 組み合わせを探す
     let target1: any[]  = fsecCombine[combNo];

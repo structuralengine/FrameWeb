@@ -6,14 +6,14 @@ import { Injectable } from '@angular/core';
 export class ResultPickupFsecService {
 
   public fsecPickup: any;
-  public isChange: boolean;
+  public isCalculated: boolean;
   private worker1: Worker;
   private worker2: Worker;
   private columns: any;
 
   constructor() {
     this.clear();
-    this.isChange = true;
+    this.isCalculated = false;
     this.worker1 = new Worker('./result-pickup-fsec1.worker', { name: 'pickup-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-pickup-fsec2.worker', { name: 'pickup-fsec2', type: 'module' });
   }
@@ -32,6 +32,7 @@ export class ResultPickupFsecService {
 
   public setFsecPickupJson(pickList: any, fsecCombine: any): void {
 
+    this.isCalculated = false;
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
@@ -43,7 +44,7 @@ export class ResultPickupFsecService {
         this.worker2.onmessage = ({ data }) => {
           console.log('断面fsec の ピックアップ PickUp テーブル集計が終わりました', performance.now() - startTime);
           this.columns = data.result;
-          this.isChange = false;
+          this.isCalculated = true;
         };
         this.worker2.postMessage({ fsecPickup: this.fsecPickup });
         

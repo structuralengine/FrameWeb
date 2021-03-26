@@ -10,7 +10,7 @@ import { InputNoticePointsService } from '../../input/input-notice-points/input-
 export class ResultCombineFsecService {
 
   public fsecCombine: any;
-  public isChange: boolean;
+  public isCalculated: boolean;
   private worker1: Worker;
   private worker2: Worker;
   public fsecKeys = [
@@ -47,7 +47,7 @@ export class ResultCombineFsecService {
 
   constructor(private pickfsec: ResultPickupFsecService) {
     this.clear();
-    this.isChange = true;
+    this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-fsec1.worker', { name: 'combine-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-combine-fsec2.worker', { name: 'combine-fsec2', type: 'module' });
   }
@@ -56,6 +56,7 @@ export class ResultCombineFsecService {
     this.fsecCombine = {};
   }
   
+  // three.js で必要
   public getFsecJson(): object {
     return this.fsecCombine;
   }
@@ -66,6 +67,7 @@ export class ResultCombineFsecService {
 
   public setFsecCombineJson(fsec: any, defList: any, combList: any, pickList: any): void {
 
+    this.isCalculated = false;
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
@@ -80,9 +82,9 @@ export class ResultCombineFsecService {
         this.worker2.onmessage = ({ data }) => {
           console.log('断面fsec の 組み合わせ Combine テーブル集計が終わりました', performance.now() - startTime);
           this.columns = data.result;
-          this.isChange = false;
+          this.isCalculated = true;
         };
-        this.worker2.postMessage({fsecCombine: this.fsecCombine, combList});
+        this.worker2.postMessage({fsecCombine: this.fsecCombine});
         
       };
       this.worker1.postMessage({ defList, combList, fsec, fsecKeys: this.fsecKeys});
