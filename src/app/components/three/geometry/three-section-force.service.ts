@@ -168,26 +168,326 @@ export class ThreeSectionForceService {
   }
 
   // 解析結果をセットする
-  public setResultData(getFsecJson: any): void {
+  public setResultData(fsecJson: any): void {
     this.nodeData = this.node.getNodeJson(0);
     this.memberData = this.member.getMemberJson(0);
-    this.fsecData['fsec'] = getFsecJson;
-
-
-
-
-    this.changeData(1, 'fsec');
+    this.fsecData['fsec'] = fsecJson;
+    this.createMesh('fsec');
   }
   // combine
-  public setCombResultData(getFsecJson: any): void {
-    this.fsecData['comb_fsec'] = getFsecJson;
+  public setCombResultData(fsecJson: any): void {
+    this.fsecData['comb_fsec'] = fsecJson;
   }
   // pick up
-  public setPickupResultData(getFsecJson: any): void {
-    this.fsecData['pik_fsec'] = getFsecJson;
+  public setPickupResultData(fsecJson: any): void {
+    this.fsecData['pik_fsec'] = fsecJson;
   }
 
-  private set
+  // メッシュを作成する
+  private createMesh(ModeName: string): void{
+    const targetCase: any = this.fsecData[ModeName];
+    const fsecData = targetCase.slice();
+
+    // 格点データを入手
+    if (Object.keys(this.nodeData).length <= 0) {
+      return;
+    }
+    // メンバーデータを入手
+    const memberKeys = Object.keys(this.memberData);
+    if (memberKeys.length <= 0) {
+      return;
+    }
+
+    // 断面力を作成する
+    const targetList = new Array();
+    for (const id of memberKeys) {
+
+      // 節点データを集計する
+      const m = this.memberData[id];
+      const i = this.nodeData[m.ni];
+      const j = this.nodeData[m.nj];
+      if (i === undefined || j === undefined) {
+        continue;
+      }
+
+      // 部材の座標軸を取得
+      const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+      const MemberLength: number = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
+
+      // 着目点
+      const fsecPoints: any = new Array();
+      let flg = 0;
+      const deleteindex: number[] = new Array();
+      let currentPosition: number = 0;
+      for (let c = 0; c < fsecData.length; c++) {
+        const fsec = fsecData[c];
+        if ( fsec.m === id) {
+          flg++;
+          // 1つめのデータは部材情報
+          fsecPoints.push({
+            id: fsec.m,
+            iPosition: i,
+            jPosition: j,
+            length: MemberLength,
+            localAxisX: localAxis.x,
+            localAxisY: localAxis.y,
+            localAxisZ: localAxis.z
+          });
+          // ２つめのデータ以降が断面力情報
+          currentPosition = this.helper.toNumber(fsec.l);
+          fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
+          deleteindex.push(c);
+        } else if (flg > 0) {
+          if (fsec.m.trim().length > 0) {
+            break;
+          }
+          currentPosition = this.helper.toNumber(fsec.l);
+          fsecPoints.push(this.getFsecPoints(MemberLength, currentPosition, fsec, i, j));
+          deleteindex.push(c);
+        }
+      }
+      targetList.push(fsecPoints);
+      // 登録済のデータは削除する
+      for (let d = deleteindex.length - 1; d >= 0; d--) {
+        const c = deleteindex[d];
+        fsecData.splice(c, 1);
+      }
+    }
+
+    // メッシュを作成する
+    const key: string = 'shearForceZ';  // 仮の数値
+    const axis: string = 'localAxisZ';  // 仮の数値
+    const color = this.Blue;            // 仮の数値
+    const scale: number = this.scale;   // 仮の数値
+    for (let i = 0; i < targetList.length; i++) {
+      const target = targetList[i];
+
+      // 断面力のpathを表示
+      const memberInfo: any = target[0]; // 1つめのデータは部材情報 (２つめのデータ以降が断面力情報)
+      const positions = [];
+      const colors = [];
+      const danmenryoku = [];
+      
+      //memberInfoに着目点を追加
+      const localPosition_list = [0] ;
+      for (let j = 1; j < target.length; j++){
+        localPosition_list.push(target[j].localPosition);
+      }
+      memberInfo["localPosition"] = localPosition_list;
+
+      // i端の座標を登録
+      positions.push({
+        x: memberInfo.iPosition.x,
+        y: memberInfo.iPosition.y,
+        z: memberInfo.iPosition.z
+      });
+      colors.push(color.r, color.g, color.b);
+      // 断面力の座標を登録
+      let sgn: number;
+      for (let j = 1; j < target.length; j++) {
+        const force2 = target[j];
+        let x2: number = force2.worldPosition.x;
+        let y2: number = force2.worldPosition.y;
+        let z2: number = force2.worldPosition.z;
+        let v2: number = force2.localPosition;
+        const f = force2[key];
+        if ( f === 0 ) {
+          positions.push({x: x2, y: y2, z: z2, v: v2, f: f * scale});
+          danmenryoku.push(f);
+          continue;
+        }
+
+        const sg = Math.sign(f);
+        if ( j > 1 && sg !== sgn) {
+          // 前回と符号が異なるとき
+          const force1 = target[j - 1];
+          const f1 = Math.abs(force1[key]);
+          const f2 = Math.abs(f);
+          const x1: number = force1.worldPosition.x;
+          const y1: number = force1.worldPosition.y;
+          const z1: number = force1.worldPosition.z;
+          const v1: number = force1.localPosition;
+          const x0: number = x1 + (((x2 - x1) / (f1 + f2)) * f1);
+          const y0: number = y1 + (((y2 - y1) / (f1 + f2)) * f1);
+          const z0: number = z1 + (((z2 - z1) / (f1 + f2)) * f1);
+          //positions.push({x: x0, y: y0, z: z0, f: 0, note: 'split'});
+          const v: number = v1 + (((v2 - v1) / (f1 + f2)) * f1);
+          positions.push({x: x0, y: y0, z: z0, v: v, f: 0, note: 'split'});
+          colors.push(color.r, color.g, color.b);
+        }
+        sgn = sg;
+
+        x2 -= f * memberInfo[axis].x * scale;
+        y2 -= f * memberInfo[axis].y * scale;
+        z2 -= f * memberInfo[axis].z * scale;
+        positions.push({x: x2, y: y2, z: z2, f: (-1) * f * scale});
+        colors.push(color.r, color.g, color.b);
+        danmenryoku.push(f);
+      }
+      // j端の座標を登録
+      positions.push({
+        x: memberInfo.jPosition.x,
+        y: memberInfo.jPosition.y,
+        z: memberInfo.jPosition.z
+      });
+      colors.push(color.r, color.g, color.b);
+
+      if (tmplineList.length > i) {
+        // 既にオブジェクトが生成されていた場合
+        // line を修正するコード
+        const line = tmplineList[i];
+        const LineGeo = line['geometry'];
+
+        const LinePositions = [];
+        for ( const p of positions) {
+          if ('note' in p) {
+            continue; // 特殊点は無視
+          }
+          LinePositions.push(p.x, p.y, p.z);
+        }
+        LineGeo.setPositions(LinePositions);
+
+        ////メッシュを複数のメッシュで表現
+        let vertice1 = new Float32Array(9);
+        let vertice2 = new Float32Array(9);
+        let point1 = new Float32Array(2);
+        let point2 = new Float32Array(2);
+        let point3 = new Float32Array(2);
+        let split_count = 0;
+
+        const mesh = line.children[0];
+        for (let j = 0; j < mesh.children.length - 0; j++){
+
+          //頂点座標の整理
+          point1[0] = memberInfo.localPosition[j + 1];
+          point1[1] = positions[j + 1 + split_count].f;
+          if (positions[j + 2 + split_count].note === "split"){
+            split_count += 1;
+          }
+          point2[0] = memberInfo.localPosition[j + 2];
+          if (positions[j + 1 + split_count].note === "split"){
+            point2[1] = positions[j + 2 + split_count].f;
+            point3[0] = positions[j + 1 + split_count].v;
+            point3[1] = positions[j + 1 + split_count].f;
+          } else {
+            point2[1] = positions[j + 2 + split_count].f;
+            point3[0] = memberInfo.localPosition[j + 2];
+            point3[1] = positions[j + 2 + split_count].f;
+          }
+
+          if (point1[1] * point2[1] > 0) {
+            vertice1 = new Float32Array([
+              point1[0],         0, 0,
+              point1[0], point1[1], 0,
+              point2[0],         0, 0
+            ]);
+            vertice2 = new Float32Array([
+              point1[0], point1[1], 0,
+              point2[0],         0, 0,
+              point2[0], point2[1], 0
+            ]);
+          } else if (point1[1] * point2[1] <= 0) {
+            vertice1 = new Float32Array([
+              point1[0],         0, 0,
+              point1[0], point1[1], 0,
+              point3[0],         0, 0
+            ]);
+            vertice2 = new Float32Array([
+              point3[0], point3[1], 0,
+              point2[0],         0, 0,
+              point2[0], point2[1], 0
+            ]);
+          }
+          mesh.children[j].children[0].geometry.attributes.position.array = vertice1;
+          mesh.children[j].children[1].geometry.attributes.position.array = vertice2;
+          mesh.children[j].children[0].geometry.attributes.position.needsUpdate = true;
+          mesh.children[j].children[1].geometry.attributes.position.needsUpdate = true;
+
+          mesh.children[j].children[0].visible = true;
+          mesh.children[j].children[1].visible = true;
+          if(point1[1] === 0){
+            mesh.children[j].children[0].visible = false;
+          }
+          if(point2[1] === 0){
+            mesh.children[j].children[1].visible = false;
+          }
+
+        }
+
+        //keyの変更後のmeshの向きを指定する
+        const lookatX = memberInfo.localAxisX.x + positions[0].x;
+        const lookatY = memberInfo.localAxisX.y + positions[0].y;
+        const lookatZ = memberInfo.localAxisX.z + positions[0].z;
+        //axialForceのとき
+        if (key === 'axialForce'){
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateZ(Math.PI * 3 / 2);
+          mesh.rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            mesh.rotateX(Math.PI * 3 / 2);
+          }
+        //shearForceZのとき
+        } else if (key === 'shearForceY'){
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateZ(Math.PI * 3 / 2);
+          mesh.rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            mesh.rotateX(Math.PI * 3 / 2);
+          }
+        //shearForceZのとき
+        } else if (key === 'shearForceZ'){
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            mesh.rotateX(Math.PI * 3 / 2);
+          }
+        //torsionalMomentのとき
+        } else if (key === 'torsionalMoment'){
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            mesh.rotateX(Math.PI * 3 / 2);
+          }
+        //momentYのとき
+        } else if (key === 'momentY'){
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            mesh.rotateX(Math.PI * 3 / 2);
+          }
+        //momentZのとき
+        } else if (key === 'momentZ'){
+          mesh.lookAt(lookatX, lookatY, lookatZ);
+          mesh.rotateZ(Math.PI * 3 / 2);
+          mesh.rotateY(Math.PI * 3 / 2);
+          if (memberInfo.localAxisX.x === 0 && memberInfo.localAxisX.y === 0){
+            mesh.rotateX(Math.PI * 3 / 2);
+          }
+        }
+
+      } else {
+        // 線を生成する
+        const LinePositions = [];
+        for ( const p of positions) {
+          if ('note' in p) {
+            continue; // 特殊点は無視
+          }
+          LinePositions.push(p.x, p.y, p.z);
+        }
+        const line = this.createLineGeometory(LinePositions, colors);
+        // テキストを追加
+        // this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
+        // 面を追加する
+        this.addPathGeometory(positions, line, colors, memberInfo);
+        // シーンに追加する
+        tmplineList.push(line);
+        this.scene.add(line);
+        //ここでスケーリングをしていないためguiを変更する前の小さな大きさになってしまう．
+      }
+    }
+    this.lineList = tmplineList;
+
+  }
 
 
 
@@ -210,16 +510,7 @@ export class ThreeSectionForceService {
 
     // ↓↓↓ 初めて描く場合
 
-    // 格点データを入手
-    if (Object.keys(this.nodeData).length <= 0) {
-      return;
-    }
 
-    // メンバーデータを入手
-    const memberKeys = Object.keys(this.memberData);
-    if (memberKeys.length <= 0) {
-      return;
-    }
 
     // 断面力データを入手
     const allFsecgData: object = this.fsecData[ModeName];
