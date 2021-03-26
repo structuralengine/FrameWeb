@@ -182,22 +182,21 @@ export class MenuComponent implements OnInit {
           const json = pako.ungzip(binData,{to: 'string'} );
 
 
-          // テスト ---------------------------------------------
+          /*/ テスト ---------------------------------------------
           this.saveResult(json);
-          // --------------------------------------------- テスト
+          // --------------------------------------------- テスト*/
 
           const jsonData = JSON.parse(json);
           // サーバーのレスポンスを集計する
           console.log(jsonData);
-          if (!this.ResultData.loadResultData(jsonData)) {
-            throw '解析結果の集計に失敗しました';
-          } else {
-            // ユーザーの保有ポイントの表示を更新する
-            this.user.loadResultData(jsonData);
-            this.userPoint = this.user.purchase_value.toString();
-            // three.js に変更を通知
-            this.three.setResultData();
+          if ( 'error' in jsonData){
+            throw jsonData.error;
           }
+          // 解析結果を集計する
+          this.ResultData.loadResultData(jsonData);
+          // ユーザーの保有ポイントの表示を更新する
+          this.user.loadResultData(jsonData);
+          this.userPoint = this.user.purchase_value.toString();
         } catch (e) {
           alert(e);
         } finally {
@@ -217,13 +216,6 @@ export class MenuComponent implements OnInit {
     );
   }
 
-  // 全ての解析ケースを計算し終えたら
-  private loadResultData(jsonData: object): void {
-    // ユーザーの保有ポイントの表示を更新する
-    this.ResultData.clear(); // 解析結果情報をクリア
-    this.user.loadResultData(jsonData);
-    this.userPoint = this.user.purchase_value.toString();
-  }
 
   // ピックアップファイル出力
   public pickup(): void {
@@ -310,12 +302,7 @@ export class MenuComponent implements OnInit {
         this.ResultData.clear();
         const jsonData = JSON.parse(text);
 
-        if (this.ResultData.loadResultData(jsonData)) {
-          // ユーザーポイントの更新
-          this.loadResultData(jsonData);
-          this.three.changeData();
-        }
-
+        this.ResultData.loadResultData(jsonData);
         modalRef.close();
 
       })

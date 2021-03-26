@@ -74,11 +74,7 @@ export class ResultDataService {
 
 
   // 計算結果を読み込む
-  public loadResultData(jsonData: object): boolean {
-
-    if ( 'error' in jsonData){
-      return false;
-    }
+  public loadResultData(jsonData: object): void {
 
     // 組み合わせケースを集計する
     this.setCombinePickup();
@@ -87,8 +83,6 @@ export class ResultDataService {
     this.disg.setDisgJson(jsonData, this.defList, this.combList, this.pickList);
     this.reac.setReacJson(jsonData, this.defList, this.combList, this.pickList);
     this.fsec.setFsecJson(jsonData, this.defList, this.combList, this.pickList);
-
-    return true;
   }
 
 

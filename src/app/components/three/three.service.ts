@@ -61,12 +61,6 @@ export class ThreeService {
   }
 
   //////////////////////////////////////////////////////
-  // 解析結果データを集計する
-  public setResultData(): void {
-    
-  }
-
-  //////////////////////////////////////////////////////
   // データの変更通知を処理する
   public changeData(mode: string = "", index: number = 0): void {
     switch (mode) {
@@ -138,9 +132,6 @@ export class ThreeService {
     this.disg.ClearData();
     this.reac.ClearData();
     this.fsec.ClearData();
-    this.disg.ClearData();
-    this.fsec.ClearData();
-    this.reac.ClearData();
 
     // 再描画
     this.scene.render();

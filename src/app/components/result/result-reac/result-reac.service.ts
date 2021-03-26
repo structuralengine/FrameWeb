@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ThreeReactService } from '../../three/geometry/three-react.service';
 import { ResultCombineReacService } from '../result-combine-reac/result-combine-reac.service';
 
 @Injectable({
@@ -12,8 +13,8 @@ export class ResultReacService {
   private worker2: Worker;
   private columns: any; // 表示用
 
-  constructor(
-    private comb: ResultCombineReacService) {
+  constructor(private comb: ResultCombineReacService,
+              private three: ThreeReactService) {
     this.clear();
     this.worker1 = new Worker('./result-reac1.worker', { name: 'result-reac1', type: 'module' });
     this.worker2 = new Worker('./result-reac2.worker', { name: 'result-reac2', type: 'module' });
@@ -60,6 +61,7 @@ export class ResultReacService {
             }
           };
           this.worker2.postMessage({ reac: this.reac });
+          this.three.setResultData(this.reac);
 
         } else {
           console.log('反力の集計に失敗しました', data.error);

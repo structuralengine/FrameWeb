@@ -48,7 +48,7 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     // const json: {} = this.ResultData.disg.getDisgJson();
-    const resultjson: any = this.ResultData.disg.getDisgJson();
+    const resultjson: any = this.ResultData.disg.disg;
     if (resultjson === undefined) {
       this.countArea.setData(12);
     }

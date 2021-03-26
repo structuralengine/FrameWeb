@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import { InputMembersService } from '../../input/input-members/input-members.service';
+import { ThreeSectionForceService } from '../../three/geometry/three-section-force.service';
 import { ResultCombineFsecService } from '../result-combine-fsec/result-combine-fsec.service';
 
 @Injectable({
@@ -14,9 +15,9 @@ export class ResultFsecService {
   private worker2: Worker;
   private columns: any;
 
-  constructor(
-    public member: InputMembersService,
-    public comb: ResultCombineFsecService) {
+  constructor(public member: InputMembersService,
+              public comb: ResultCombineFsecService,
+              private three: ThreeSectionForceService) {
     this.clear();
     this.worker1 = new Worker('./result-fsec1.worker', { name: 'result-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-fsec2.worker', { name: 'result-fsec2', type: 'module' });
@@ -63,6 +64,8 @@ export class ResultFsecService {
             }
           };
           this.worker2.postMessage({fsec: this.fsec});
+          this.three.setResultData(this.fsec);
+
         } else {
           console.log('断面力の集計に失敗しました', data.error);
         }

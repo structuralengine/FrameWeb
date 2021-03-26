@@ -12,10 +12,6 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
 import { InputMembersService } from '../../../components/input/input-members/input-members.service';
 
-import { ResultFsecService } from '../../result/result-fsec/result-fsec.service';
-import { ResultCombineFsecService } from '../../result/result-combine-fsec/result-combine-fsec.service';
-import { ResultPickupFsecService } from '../../result/result-pickup-fsec/result-pickup-fsec.service';
-
 import { ThreeMembersService } from './three-members.service';
 import { ThreeNodesService } from './three-nodes.service.js';
 import { Mesh } from 'three';
@@ -28,15 +24,13 @@ export class ThreeSectionForceService {
 
   private isVisible: boolean;
   private lineList: THREE.Line[];
-  private targetData: any;
-  private targetIndex: string;
-  private modeName: string;
+  private currentIndex: string;
+  private currentMode: string;
 
   private scale: number;
   private params: any;   // GUIの表示制御
   private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
   private gui: any;
-  private gui_max_scale: number;
   private font: THREE.Font;
 
   private material: THREE.MeshBasicMaterial;
@@ -45,11 +39,12 @@ export class ThreeSectionForceService {
   private Green: THREE.Color;
   private Blue: THREE.Color;
 
+  private nodeData: any;
+  private memberData: any;
+  private fsecData: any;
+
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
-              private fsec: ResultFsecService,
-              private comb_fsec: ResultCombineFsecService,
-              private pik_fsec: ResultPickupFsecService,
               private node: InputNodesService,
               private member: InputMembersService,
               private three_node: ThreeNodesService,
@@ -66,7 +61,6 @@ export class ThreeSectionForceService {
     });
 
     // gui
-    this.scale = 0.5;
     this.params = {
       forceScale: this.scale
     };
@@ -74,10 +68,9 @@ export class ThreeSectionForceService {
       this.params[key] = false;
     }
     this.params.momentY = true; // 初期値
-    //this.params.shearForceZ = true; // 初期値
     this.gui = null;
-    this.gui_max_scale = 1;
 
+    // three オブジェクトせあらかじめ生成できるものはしておく
     this.material = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -124,22 +117,21 @@ export class ThreeSectionForceService {
       }
       this.lineList = new Array();
     }
-    this.targetData = {};
-    this.targetIndex = '';
-    this.modeName = '';
-    this.scale = 1; //0.5;
-    //this.gui_max_scale = 1 log用なので要削除
+    this.currentIndex = '';
+    this.currentMode = '';
+    this.scale = 100;
   }
 
   private guiEnable(): void {
     if (this.gui !== null) {
       return;
     }
-    const gui_step: number = this.gui_max_scale * 0.001;
+    const gui_step: number = 1;
+    const gui_max_scale: number = 200;
     this.gui = {
-      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, this.gui_max_scale).step(gui_step).onChange((value) => {
+      forceScale: this.scene.gui.add(this.params, 'forceScale', 0, gui_max_scale).step(gui_step).onChange((value) => {
         // guiによる設定
-        this.scale = value * this.gui_max_scale;  //this.gui_max_scaleの値で調整
+        this.scale = value;
         this.onResize();
         this.scene.render();
       })
@@ -147,9 +139,9 @@ export class ThreeSectionForceService {
     for (const key of this.radioButtons) {
       this.gui[key] = this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
         if (value === true) {
-          this.setGUIcheck(key);
+          this.setGuiRadio(key);
         } else {
-          this.setGUIcheck('');
+          this.setGuiRadio('');
         }
         this.onResize();
         this.scene.render();
@@ -168,67 +160,72 @@ export class ThreeSectionForceService {
   }
 
   // gui 選択されたチェックボックス以外をOFFにする
-  private setGUIcheck(target: string): void {
+  private setGuiRadio(target: string): void {
     for (const key of this.radioButtons) {
       this.params[key] = false;
     }
     this.params[target] = true;
   }
 
+  // 解析結果をセットする
+  public setResultData(getFsecJson: any): void {
+    this.nodeData = this.node.getNodeJson(0);
+    this.memberData = this.member.getMemberJson(0);
+    this.fsecData['fsec'] = getFsecJson;
+
+
+
+
+    this.changeData(1, 'fsec');
+  }
+  // combine
+  public setCombResultData(getFsecJson: any): void {
+    this.fsecData['comb_fsec'] = getFsecJson;
+  }
+  // pick up
+  public setPickupResultData(getFsecJson: any): void {
+    this.fsecData['pik_fsec'] = getFsecJson;
+  }
+
+  private set
+
+
+
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
   public changeData(index: number, ModeName: string): void {
 
-    if (this.modeName === ModeName ){
-      if (this.targetIndex === index.toString()) {
-        // ケースが同じなら何もしない
-        return;
-      }
-
-      if (ModeName === 'fsec' && this.lineList.length > 0) {
-        // 既に Geometryを作成していたら リサイズするだけ
-        this.targetIndex = index.toString();
-        this.onResize();
-        return;
-      }
+    if (this.currentMode === ModeName && this.currentIndex === index.toString()) {
+      // ケースが同じなら何もしない
+      return;
     }
 
-    // 要素を排除する
-    this.ClearData();
+    this.currentIndex = index.toString();
+    this.currentMode = ModeName;
+    if (this.lineList.length > 0) {
+      // 既に Geometryを作成していたら リサイズするだけ
+      this.onResize();
+      return;
+    }
+
+    // ↓↓↓ 初めて描く場合
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson(0);
-    const nodeKeys = Object.keys(nodeData);
-    if (nodeKeys.length <= 0) {
+    if (Object.keys(this.nodeData).length <= 0) {
       return;
     }
 
     // メンバーデータを入手
-    const memberData = this.member.getMemberJson(0);
-    const memberKeys = Object.keys(memberData);
+    const memberKeys = Object.keys(this.memberData);
     if (memberKeys.length <= 0) {
       return;
     }
 
     // 断面力データを入手
-    let allFsecgData: object;
-    switch(ModeName){
-      case 'comb_fsec':
-        allFsecgData = this.comb_fsec.getFsecJson();
-        break;
-     case 'pik_fsec':
-        allFsecgData = this.pik_fsec.getFsecJson();
-        break;
-      default:
-        allFsecgData = this.fsec.getFsecJson();
-        break;
-    }
+    const allFsecgData: object = this.fsecData[ModeName];
 
-    this.targetIndex = index.toString();
-    this.modeName = ModeName;
-
-    if (!(this.targetIndex in allFsecgData)) {
-      return;      // 荷重Case番号 this.targetIndex が 計算結果 this.targetData に含まれていなかったら何もしない
+    if (!(this.currentIndex in allFsecgData)) {
+      return;      // 荷重Case番号 this.currentIndex が 計算結果 this.targetData に含まれていなかったら何もしない
     }
 
     const maxValue = {
@@ -423,7 +420,7 @@ export class ThreeSectionForceService {
   // 断面力図を描く
   private onResize(): void {
 
-    const targetKey: string = this.targetIndex.toString();
+    const targetKey: string = this.currentIndex.toString();
     if (!(targetKey in this.targetData)) return;
 
     let key: string;
@@ -560,26 +557,6 @@ export class ThreeSectionForceService {
           LinePositions.push(p.x, p.y, p.z);
         }
         LineGeo.setPositions(LinePositions);
-
-        /*/line.children[0]はテキストのGroup，line.children[1]はメッシュのGroup
-        for (let num = 0; num < line.children[0].children.length; num++){
-          line.children[0].children[num].position.x = LinePositions[3 * num + 3];
-          line.children[0].children[num].position.y = LinePositions[3 * num + 4];
-          line.children[0].children[num].position.z = LinePositions[3 * num + 5];
-        }
-        */
-        // 文字と面を削除する   ---   このwhile文を削除したい
-        //while (line.children.length > 0) {
-          //const object = line.children[0];
-          //object.parent.remove(object);
-        //}
-
-        // テキストを追加
-        //this.addTextGeometry(positions, line, danmenryoku, memberInfo[axis]);
-        // 面を追加する
-        //this.addPathGeometory(positions, line, color);
-    
-        //新しいpositionを配置
 
         ////メッシュを複数のメッシュで表現
         let vertice1 = new Float32Array(9);
