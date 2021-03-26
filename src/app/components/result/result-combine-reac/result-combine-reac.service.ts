@@ -11,8 +11,7 @@ export class ResultCombineReacService {
   public isChange: boolean;
   private worker: Worker;
 
-  constructor(private reac: ResultReacService,
-              private pickreac: ResultPickupReacService) {
+  constructor( private pickreac: ResultPickupReacService) {
     this.clear();
     this.isChange = true;
     this.worker = new Worker('./result-combine-reac.worker', { name: 'combine-reac', type: 'module' });
@@ -55,12 +54,12 @@ export class ResultCombineReacService {
     return result;
   }
 
-  public setReacCombineJson(defList: any, combList: any, pickList: any): void {
+  public setReacCombineJson(reac: any, defList: any, combList: any, pickList: any): void {
 
     const postData = {
       defList,
       combList,
-      reac: this.reac.reac
+      reac
     };
 
     const startTime = performance.now(); // 開始時間

@@ -12,6 +12,8 @@ import { Observable } from 'rxjs/observable';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { UserInfoService } from '../providers/user-info.service';
+// import { LoginJudgeService } from './login-judge.service';
+
 
 
 interface User {
@@ -35,6 +37,7 @@ export class AuthService {
     private afs: AngularFirestore,
     private router: Router,
     public User: UserInfoService,
+    // private judge:LoginJudgeService
   ) {
 
     //// Get auth data, then get firestore user document || null
@@ -53,15 +56,13 @@ export class AuthService {
     return this.afAuth.signInWithEmailAndPassword(email, password)
       .then(user => {
         console.log(user);
-        // return console.log(user) || this.updateUserData(user);
         return this.updateUserData(user.user);
       })
-      .catch(err => console.log(err));
   }
 
   googleLogin() {
     const provider = new auth.auth.GoogleAuthProvider()
-    return this.oAuthLogin(provider);
+    return  this.oAuthLogin(provider);
   }
 
   private oAuthLogin(provider) {

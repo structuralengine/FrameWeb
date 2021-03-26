@@ -45,6 +45,12 @@ export class ThreeLoadService {
   private params: any; // GUIの表示制御
   private gui: any;
 
+  private nodeData: any;    // 荷重図作成時の 節点データ
+  private memberData: any;  // 荷重図作成時の 要素データ
+
+  private newNodeData: any;    // 変更された 節点データ
+  private newMemberData: any;  // 変更された 要素データ
+
   // 初期化
   constructor(
     private scene: SceneService,
@@ -72,6 +78,12 @@ export class ThreeLoadService {
     this.AllCaseLoadList = {};
     this.currentIndex = null;
 
+    // 節点、部材データ
+    this.nodeData = null;
+    this.memberData = null;
+    this.newNodeData = null;
+    this.newMemberData = null;
+
     // gui
     this.LoadScale = 100;
     this.params = {
@@ -90,6 +102,11 @@ export class ThreeLoadService {
     this.AllCaseLoadList = {};
     this.currentIndex = null;
 
+    // 節点、部材データ
+    this.nodeData = null;
+    this.memberData = null;
+    this.newNodeData = null;
+    this.newMemberData = null;
   }
 
   // ファイルを読み込むなど、りセットする
@@ -104,8 +121,9 @@ export class ThreeLoadService {
     }
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson(0);
-    if (Object.keys(nodeData).length <= 0) {
+    this.nodeData = this.node.getNodeJson(0);
+    this.newNodeData = null;
+    if (Object.keys(this.nodeData).length <= 0) {
       return; // 格点がなければ 以降の処理は行わない
     }
     // 節点荷重データを入手
@@ -125,7 +143,7 @@ export class ThreeLoadService {
         // 節点荷重を作成する
         this.createPointLoad(
           targetNodeLoad,
-          nodeData,
+          this.nodeData,
           LoadList.ThreeObject,
           LoadList.pointLoadList
         );
@@ -133,8 +151,9 @@ export class ThreeLoadService {
 
       // 要素荷重 --------------------------------------------
       // 要素データを入手
-      const memberData = this.member.getMemberJson(0);
-      if (Object.keys(memberData).length > 0) {
+      this.memberData = this.member.getMemberJson(0);
+      this.newMemberData = null;
+      if (Object.keys(this.memberData).length > 0) {
         // 要素荷重データを入手
         const memberLoadData = this.load.getMemberLoadJson(0);
         if (id in memberLoadData) {
@@ -144,8 +163,8 @@ export class ThreeLoadService {
           // 要素荷重を作成する
           this.createMemberLoad(
             targetMemberLoad,
-            nodeData,
-            memberData,
+            this.nodeData,
+            this.memberData,
             LoadList.ThreeObject,
             LoadList.memberLoadList
           );
@@ -232,6 +251,117 @@ export class ThreeLoadService {
     delete this.AllCaseLoadList[id];
   }
 
+  // 節点の入力が変更された場合 新しい入力データを保持しておく
+  public changeNode(jsonData): void {
+    this.newNodeData = jsonData;
+  }
+
+  // 要素の入力が変更された場合 新しい入力データを保持しておく
+  public changeMember(jsonData): void {
+    this.newMemberData = jsonData;
+  }
+
+  // 節点や要素が変更された部分を描きなおす
+  public reDrawNodeMember(): void {
+
+    if (this.newNodeData === null && this.newMemberData === null){
+      return;
+    }
+
+    // 格点の変わった部分を探す
+    const changeNodeList = {};
+    if (this.newNodeData !== null){
+      for(const key of Object.keys(this.nodeData)){
+        if(!(key in this.newNodeData)){
+          // 古い情報にあって新しい情報にない節点
+          changeNodeList[key]='delete';
+        }
+      }
+      for(const key of Object.keys(this.newNodeData)){
+        if(!(key in this.nodeData)){
+          // 新しい情報にあって古い情報にない節点
+          changeNodeList[key]='add';
+          continue;
+        }
+        const oldNode = this.nodeData[key];
+        const newNode = this.newNodeData[key];
+        if(oldNode.x !== newNode.x || oldNode.y !== newNode.y || oldNode.z !== newNode.z){
+          changeNodeList[key]='change';
+        }
+      }
+    }
+
+    // 部材の変わった部分を探す
+    const changeMemberList = {};
+    if (this.newMemberData !== null){
+      for(const key of Object.keys(this.memberData)){
+        if(!(key in this.newMemberData)){
+          // 古い情報にあって新しい情報にない節点
+          changeMemberList[key]='delete';
+        }
+      }
+      for(const key of Object.keys(this.newMemberData)){
+        if(!(key in this.memberData)){
+          // 新しい情報にあって古い情報にない節点
+          changeMemberList[key]='add';
+          continue;
+        }
+        const oldMember = this.memberData[key];
+        const newMember = this.newMemberData[key];
+        if(oldMember.ni !== newMember.ni ||
+          oldMember.nj !== newMember.nj ){
+            changeMemberList[key]='change';
+        }
+      }
+    }
+
+    // 格点の変更によって影響のある部材を特定する
+    const targetMemberData = (this.newMemberData !== null) ? this.newMemberData : this.memberData;
+    for(const key of Object.keys(targetMemberData)){
+      const newMember = targetMemberData[key];
+      if(newMember.ni in changeNodeList || newMember.nj in changeNodeList){
+        changeMemberList[key] = 'node change'
+      }
+    }
+
+    // 荷重を変更する
+    const oldIndex = this.currentIndex;
+    this.nodeData = (this.newNodeData !== null)? this.newNodeData : this.nodeData;
+    this.memberData = (this.newMemberData !== null) ? this.newMemberData: this.memberData;
+    // 荷重データを入手
+    const nodeLoadData = this.load.getNodeLoadJson(0);
+    const memberLoadData = this.load.getMemberLoadJson(0);
+    // 荷重を修正
+    for (const id of Object.keys(this.AllCaseLoadList)) {
+      this.currentIndex = id;
+      let editFlg = false;
+      if (this.currentIndex in nodeLoadData) {
+        for(const load of nodeLoadData[this.currentIndex]){
+          if(load.n.toString() in changeNodeList)
+          this.changeNodeLode(load.row, nodeLoadData);
+          editFlg = true;
+        }
+      }
+      if (this.currentIndex in memberLoadData) {
+        for(const load of memberLoadData[this.currentIndex]){
+          if(load.m.toString() in changeMemberList){
+            this.changeMemberLode(load.row, memberLoadData);
+            editFlg = true;
+          }
+        }
+      }
+      if( editFlg === true ){
+        this.setOffset();
+        this.onResize();
+      }
+    }
+
+    this.newNodeData = null;
+    this.newMemberData = null;
+    this.currentIndex = oldIndex;
+  }
+
+  // 荷重の入力が変更された場合
   public changeData(row: number): void {
 
     // データになカレントデータがなければ
@@ -240,16 +370,43 @@ export class ThreeLoadService {
       return;
     }
 
-    const LoadList = this.AllCaseLoadList[this.currentIndex];
-
     // 格点データを入手
-    const nodeData = this.node.getNodeJson(0);
-    if (Object.keys(nodeData).length <= 0) {
+    //const nodeData = this.node.getNodeJson(0);
+    if (Object.keys(this.nodeData).length <= 0) {
       return; // 格点がなければ 以降の処理は行わない
     }
 
     // 節点荷重データを入手
     const nodeLoadData = this.load.getNodeLoadJson(0, this.currentIndex);
+    // 節点荷重を変更
+    this.changeNodeLode(row, nodeLoadData);
+
+   
+    // 要素データを入手
+    //const memberData = this.member.getMemberJson(0);
+    if (Object.keys(this.memberData).length <= 0) {
+      return; //要素がなければ 以降の処理は行わない
+    }
+
+    // 要素荷重データを入手
+    const memberLoadData = this.load.getMemberLoadJson(0, this.currentIndex);
+    // 要素荷重を変更
+    this.changeMemberLode(row, memberLoadData);
+
+    // 重なりを調整する
+    this.setOffset();
+    // サイズを調整する
+    this.onResize();
+    // レンダリング
+    this.scene.render();
+    // 表示フラグを ON にする
+    this.isVisible.object = true;
+  }
+  
+  // 節点荷重を変更
+  private changeNodeLode(row: number, nodeLoadData: any): void {
+
+    const LoadList = this.AllCaseLoadList[this.currentIndex];
 
     if (this.currentIndex in nodeLoadData) {
       // 節点荷重の最大値を調べる
@@ -286,7 +443,7 @@ export class ThreeLoadService {
 
       this.createPointLoad(
         targetNodeLoad,
-        nodeData,
+        this.nodeData,
         LoadList.ThreeObject,
         LoadList.pointLoadList
       );
@@ -302,15 +459,12 @@ export class ThreeLoadService {
         LoadList.pointLoadList[key] = { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
       }
     }
+  }
 
-    // 要素データを入手
-    const memberData = this.member.getMemberJson(0);
-    if (Object.keys(memberData).length <= 0) {
-      return; //要素がなければ 以降の処理は行わない
-    }
+  // 要素荷重を変更
+  private changeMemberLode(row: number, memberLoadData: any): void {
 
-    // 要素荷重データを入手
-    const memberLoadData = this.load.getMemberLoadJson(0, this.currentIndex);
+    const LoadList = this.AllCaseLoadList[this.currentIndex];
 
     if (this.currentIndex in memberLoadData) {
       // 対象業(row) に入力されている部材番号を調べる
@@ -336,8 +490,8 @@ export class ThreeLoadService {
 
       this.createMemberLoad(
         targetMemberLoad,
-        nodeData,
-        memberData,
+        this.nodeData,
+        this.memberData,
         LoadList.ThreeObject,
         LoadList.memberLoadList
       );
@@ -353,15 +507,6 @@ export class ThreeLoadService {
         LoadList.memberLoadList[key] = {gx: [], gy: [], gz: [], x: [], y: [], z: [], t: [], r: []};
       }
     }
-
-    // 重なりを調整する
-    this.setOffset();
-    // サイズを調整する
-    this.onResize();
-    // レンダリング
-    this.scene.render();
-    // 表示フラグを ON にする
-    this.isVisible.object = true;
   }
 
   // 節点荷重の矢印を描く

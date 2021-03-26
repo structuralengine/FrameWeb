@@ -17,12 +17,7 @@
 </div>
 
 <div *ngFor="let r of KEYS; index as i">
-  <input
-    id="{{ TITLES[i] }}"
-    class="acd-check"
-    type="checkbox"
-    [checked]="i == 0"
-  />
+  <input id="{{ TITLES[i] }}" class="acd-check" type="checkbox" [checked]="i == 0" />
   <label class="acd-label" for="{{ TITLES[i] }}">
     <div class="conbine-title acd">
       {{ TITLES[i] }}<i class="fas fa-sort-down"></i>
@@ -37,9 +32,9 @@
             <th class="result-sm">節点No</th>
             <th class="result-lg">着目位置</th>
             <th class="result-lg">軸方向力</th>
-            <th class="result-lg">y方向の<br/>せん断力</th>
-            <th class="result-lg">z方向の<br/>せん断力</th>
-            <th class="result-lg">ねじり<br/>モーメント</th>
+            <th class="result-lg">y方向の<br />せん断力</th>
+            <th class="result-lg">z方向の<br />せん断力</th>
+            <th class="result-lg">ねじり<br />モーメント</th>
             <th class="result-lg">y軸周りの<br />曲げモーメント</th>
             <th class="result-lg">z軸周りの<br />曲げモーメント</th>
             <th class="result-lg">組み合わせ</th>

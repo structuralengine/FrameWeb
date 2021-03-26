@@ -2,11 +2,12 @@
 
 addEventListener('message', ({ data }) => {
 
-  const response = {};
+  const fsec = data.fsec;
+  const table = {};
   let error: any = null;
 
+  // html table 用の変数を用意する
   try {
-    const fsec = data.fsec;
 
     for (const typNo of Object.keys(fsec)){
       // タイプ番号を探す
@@ -38,11 +39,11 @@ addEventListener('message', ({ data }) => {
           Object.assign(old, item);
         }
       }
-      response[typNo] = result;
+      table[typNo] = result;
     }
   } catch(e){
     error = e;
   }
 
-  postMessage({ response, error });
+  postMessage({ table, error });
 });

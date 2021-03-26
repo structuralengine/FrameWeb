@@ -21,7 +21,6 @@ export class ResultReacComponent implements OnInit {
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnCombine: string;
   btnPickup: string;
 
@@ -38,8 +37,6 @@ export class ResultReacComponent implements OnInit {
   }
 
   ngOnInit() {
-    const n: number = this.load.getLoadCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
@@ -58,7 +55,6 @@ export class ResultReacComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }
@@ -67,11 +63,7 @@ export class ResultReacComponent implements OnInit {
     if (currentPage !== this.page) {
       this.page = currentPage;
     }
-    this.dataset = new Array();
-    for (let i = 0; i < this.data.REAC_ROWS_COUNT; i++) {
-      const reac = this.data.getReacColumns(this.page, i);
-      this.dataset.push(reac);
-    }
+    this.dataset = this.data.getReacColumns(this.page);
     this.load_name = this.load.getLoadName(currentPage);
 
     this.three.ChangeMode('reac');

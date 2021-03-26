@@ -26,7 +26,10 @@ import { DataHelperModule } from './data-helper.module';
 })
 export class ResultDataService {
 
-  public isCombinePickupChange: boolean;
+  private defList: any;
+  private combList: any;
+  private pickList: any;
+
   constructor(
     private combine: InputCombineService,
     private define: InputDefineService,
@@ -62,7 +65,6 @@ export class ResultDataService {
     this.pickdisg.clear();
     this.pickreac.clear();
     this.pickfsec.clear();
-    this.isCombinePickupChange = true;
 
     // 図をクリアする
     this.three_fsec.ClearData();
@@ -78,30 +80,27 @@ export class ResultDataService {
       return false;
     }
 
-    try {
-      // 基本ケース
-      this.disg.setDisgJson(jsonData);
-      this.reac.setReacJson(jsonData);
-      this.fsec.setFsecJson(jsonData);
+    // 組み合わせケースを集計する
+    this.setCombinePickup();
 
-    } catch (e) {
-      return false;
-    }
+    // 基本ケース の集計 -> 組み合わせの集計まで じゅずツナギ
+    this.disg.setDisgJson(jsonData, this.defList, this.combList, this.pickList);
+    this.reac.setReacJson(jsonData, this.defList, this.combList, this.pickList);
+    this.fsec.setFsecJson(jsonData, this.defList, this.combList, this.pickList);
+
     return true;
   }
 
 
-  public CombinePickup(): void {
-    if (this.isCombinePickupChange === false) {
-      return;
-    }
+  private setCombinePickup(): void {
+
     const load = this.load.getLoadNameJson(1);
     const define = this.define.getDefineJson();
     const combine = this.combine.getCombineJson();
     const pickup = this.pickup.getPickUpJson();
 
     // define を集計
-    const defList = {};
+    this.defList = {};
     if (Object.keys(define).length > 0) {
       // define データが あるとき
       for (const defNo of Object.keys(define)) {
@@ -113,76 +112,18 @@ export class ResultDataService {
           }
           defines.push(d[dKey]);
         }
-        defList[defNo] = defines;
+        this.defList[defNo] = defines;
       }
     } else {
       // define データがない時は基本ケース＝defineケースとなる
       for (const caseNo of Object.keys(load)) {
         const n: number = this.helper.toNumber(caseNo);
-        defList[caseNo] = (n === null) ? [] : new Array(n);
+        this.defList[caseNo] = (n === null) ? [] : new Array(n);
       }
     }
-    /*
+
     // combine を集計
-    const combList = {};
-    for (const combNo of Object.keys(combine)) {
-      const target: object = combine[combNo];
-      const combines = new Array([]);
-      for (const defKey of Object.keys(target)) {
-        if ( defKey === 'row') {
-          continue;
-        }
-        const defNo: string = defKey.replace('C', '').replace('D', '');
-        if (!(defNo in defList)) {
-          continue; // なければ飛ばす
-        }
-        const def = defList[defNo];
-
-        // 組み合わせにケース番号を登録する
-        let coef: number = this.helper.toNumber(target[defKey]);
-        if (coef === null ) {
-          continue;
-        }
-
-        let count: number = combines.length;
-        for (let i = 0; i < count; i++) {
-          const base = combines[i];
-          console.log("def.length",def.length);
-
-          // defineNo が複数あった場合に配列を複製する
-          for (let j = 1; j < def.length; j++)  {
-            const oomb = base.slice(0, base.length);
-
-            let caseNo1: string = def[j].toString();
-            let coef1: number = coef;
-            if ( caseNo1 === '0') {
-              combines.push(oomb);
-              continue;
-            }
-            if (caseNo1.indexOf('-') >= 0) {
-              caseNo1 = caseNo1.replace('-', '');
-              coef1 = -1 * coef1;
-            }
-            oomb.push({ caseNo: caseNo1, coef: coef1 });
-            combines.push(oomb);
-          }
-
-          let caseNo: string = def[0].toString();
-          if ( caseNo !== '0') {
-            if (caseNo.indexOf('-') >= 0) {
-              caseNo = caseNo.replace('-', '');
-              coef = -1 * coef;
-            }
-            base.push({ caseNo, coef });
-          }
-        }
-
-      }
-      combList[combNo] = combines;
-    }
-    */
-    // combine を集計
-    const combList = {};
+    this.combList = {};
     for (const combNo of Object.keys(combine)) {
       const c: object = combine[combNo];
       const defines = new Array();
@@ -192,16 +133,16 @@ export class ResultDataService {
         }
         const caseNo: string = cKey.replace('C', '').replace('D', '');
         const coef: number = this.helper.toNumber(c[cKey]);
-        if (!(caseNo in defList) || coef === null) {
+        if (!(caseNo in this.defList) || coef === null) {
           continue; // なければ飛ばす
         }
         defines.push({caseNo, coef});
       }
-      combList[combNo] = defines;
+      this.combList[combNo] = defines;
     }
 
     // pickup を集計
-    const pickList = {};
+    this.pickList = {};
     for (const pickNo of Object.keys(pickup)) {
       const p: object = pickup[pickNo];
       const combines = new Array();
@@ -210,19 +151,14 @@ export class ResultDataService {
           continue;
         }
         const comNo: string = p[pKey];
-        if (!(comNo in combList)) {
+        if (!(comNo in this.combList)) {
           continue; // なければ飛ばす
         }
         combines.push(comNo);
       }
-      pickList[pickNo] = combines;
+      this.pickList[pickNo] = combines;
     }
 
-    this.combdisg.setDisgCombineJson(defList, combList, pickList);
-    this.combreac.setReacCombineJson(defList, combList, pickList);
-    this.combfsec.setFsecCombineJson(defList, combList, pickList);
-
-    this.isCombinePickupChange = false;
   }
 
   // ピックアップファイル出力

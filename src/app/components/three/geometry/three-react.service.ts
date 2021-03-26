@@ -58,20 +58,23 @@ export class ThreeReactService {
       // 一旦全排除
       this.ClearData();
 
+      // 反力データを入手
+      const reacData = this.reac.getReacJson();
+      if (Object.keys(reacData).length <= 0) {
+        return;
+      }
+     const targetCase: string = index.toString();
+      if(!(targetCase in reacData)){
+        return;
+      }
+
       // 格点データを入手
       const nodeData = this.node.getNodeJson(0);
       const nodeKeys = Object.keys(nodeData);
       if (nodeKeys.length <= 0) {
         return;
       }
-
-      // 反力データを入手
-      const targetCase: string = index.toString();
-      const reacData = this.reac.getReacJson();
-      if (Object.keys(reacData).length <= 0) {
-        return;
-      }
-
+ 
       // サイズを調整しオブジェクトを登録する
       this.createReact(reacData[targetCase], nodeData);
     }

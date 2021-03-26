@@ -18,62 +18,32 @@ import { AppComponent } from "src/app/app.component";
   ],
 })
 export class ResultPickupDisgComponent implements OnInit {
-  KEYS = [
-    "dx_max",
-    "dx_min",
-    "dy_max",
-    "dy_min",
-    "dz_max",
-    "dz_min",
-    "rx_max",
-    "rx_min",
-    "ry_max",
-    "ry_min",
-    "rz_max",
-    "rz_min",
-  ];
-  TITLES = [
-    "x方向の移動量 最大",
-    "x方向の移動量 最小",
-    "y方向の移動量 最大",
-    "y方向の移動量 最小",
-    "z方向の移動量 最大",
-    "Z方向の移動量 最小",
-    "x軸回りの回転角 最大",
-    "x軸回りの回転角 最小",
-    "y軸回りの回転角 最大",
-    "y軸回りの回転角 最小",
-    "z軸回りの回転角 最大",
-    "Z軸回りの回転角 最小",
-  ];
+  public KEYS: string[];
+  public TITLES: string[];
 
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnCombine: string;
   tableHeight: number;
 
   constructor(
     private data: ResultPickupDisgService,
-    private app: AppComponent,
-    private disg: ResultDisgService,
     private pickup: InputPickupService,
-    private result: ResultDataService,
     private three: ThreeService,
     private comb: ResultCombineDisgService
   ) {
     this.dataset = new Array();
+    this.KEYS = this.comb.disgKeys;
+    this.TITLES = this.comb.titles;
   }
 
   ngOnInit() {
-    this.result.CombinePickup();
     const n: number = this.pickup.getPickupCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (this.comb.isChange === false) {
+    if (this.comb.isCalculated === true) {
       this.btnCombine = "btn-change";
     } else {
       this.btnCombine = "btn-change disabled";
@@ -85,7 +55,6 @@ export class ResultPickupDisgComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }
