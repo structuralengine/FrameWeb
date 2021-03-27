@@ -136,7 +136,7 @@ export class ThreeLoadService {
       this.currentIndex = id; // カレントデータをセット
 
       // 節点荷重 --------------------------------------------
-      if (id in nodeLoadData ) {
+      if (id in nodeLoadData) {
         const targetNodeLoad = nodeLoadData[id];
         // 節点荷重の最大値を調べる
         this.setMaxNodeLoad(targetNodeLoad);
@@ -264,23 +264,23 @@ export class ThreeLoadService {
   // 節点や要素が変更された部分を描きなおす
   public reDrawNodeMember(): void {
 
-    if (this.newNodeData === null && this.newMemberData === null){
+    if (this.newNodeData === null && this.newMemberData === null) {
       return;
     }
 
     // 格点の変わった部分を探す
     const changeNodeList = {};
-    if (this.newNodeData !== null){
-      for(const key of Object.keys(this.nodeData)){
-        if(!(key in this.newNodeData)){
+    if (this.newNodeData !== null) {
+      for (const key of Object.keys(this.nodeData)) {
+        if (!(key in this.newNodeData)) {
           // 古い情報にあって新しい情報にない節点
-          changeNodeList[key]='delete';
+          changeNodeList[key] = 'delete';
         }
       }
-      for(const key of Object.keys(this.newNodeData)){
-        if(!(key in this.nodeData)){
+      for (const key of Object.keys(this.newNodeData)) {
+        if (!(key in this.nodeData)) {
           // 新しい情報にあって古い情報にない節点
-          changeNodeList[key]='add';
+          changeNodeList[key] = 'add';
           continue;
         }
         const oldNode = this.nodeData[key];
@@ -1014,10 +1014,12 @@ export class ThreeLoadService {
               vertice_points.push(num.x)
               vertice_points.push(num.y)
             }
-
+            if (Xarea1.length === 0) {
+              this.distributeLoad.setOffset(item, 0);
+            }
             all_check: //次のforループの名称 -> breakで使用
             for (let hit_points of Xarea1) {
-              const pre_scale : number = 1 * Math.abs(hit_points[10]) / loadList.wMax;
+              const pre_scale: number = 1 * Math.abs(hit_points[10]) / loadList.wMax;
               for (let num2 = 0; num2 < 5; num2++) {
 
                 //接触判定
@@ -1043,26 +1045,29 @@ export class ThreeLoadService {
                     vertice_points[7] += offset2;
                     vertice_points[9] += offset2;
                   }
-                  //console.log("hit (judgeX ===", judgeX, "&& judgeY ===", judgeY, ")")
                 } else if (judgeX === "NotHit" || judgeY === "NotHit") {
                   //オフセットしない
-                  //console.log("not hit (judgeX ===", judgeX, "&& judgeY ===", judgeY, ")")
+                  if (item.value > 0) {
+                    this.distributeLoad.setOffset(item, offset1);
+                  } else {
+                    this.distributeLoad.setOffset(item, offset2);
+                  }
                   break;
                 } else {
                   //現状ケースを確認できていない
-                  //console.log("not hit (judgeX ===", judgeX, "&& judgeY ===", judgeY, ")")
                   break all_check;
                 }
               }
             }
-              offset1 = offset0;
-              offset2 = offset0;
+            offset1 = offset0;
+            offset2 = offset0;
             Xarea1.push([vertice_points[0], vertice_points[1],
                          vertice_points[2], vertice_points[3],
                          vertice_points[4], vertice_points[5],
                          vertice_points[6], vertice_points[7],
                          vertice_points[8], vertice_points[9],
-                         item.value]);
+                         item.value]);  //メッシュの5点の2次元座標と，valueの値を保存する
+
           } else if (item.name === "MemberPointLoad") {
             // 集中荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
@@ -1077,7 +1082,7 @@ export class ThreeLoadService {
             }
           }
         });
-        Xarea.push(Xarea1);//不要？
+        Xarea.push(Xarea1);//不要？現状は未使用
       });
 
       // 分布荷重（絶対座標方向）
