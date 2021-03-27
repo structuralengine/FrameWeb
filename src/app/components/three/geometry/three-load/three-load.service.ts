@@ -285,49 +285,49 @@ export class ThreeLoadService {
         }
         const oldNode = this.nodeData[key];
         const newNode = this.newNodeData[key];
-        if(oldNode.x !== newNode.x || oldNode.y !== newNode.y || oldNode.z !== newNode.z){
-          changeNodeList[key]='change';
+        if (oldNode.x !== newNode.x || oldNode.y !== newNode.y || oldNode.z !== newNode.z) {
+          changeNodeList[key] = 'change';
         }
       }
     }
 
     // 部材の変わった部分を探す
     const changeMemberList = {};
-    if (this.newMemberData !== null){
-      for(const key of Object.keys(this.memberData)){
-        if(!(key in this.newMemberData)){
+    if (this.newMemberData !== null) {
+      for (const key of Object.keys(this.memberData)) {
+        if (!(key in this.newMemberData)) {
           // 古い情報にあって新しい情報にない節点
-          changeMemberList[key]='delete';
+          changeMemberList[key] = 'delete';
         }
       }
-      for(const key of Object.keys(this.newMemberData)){
-        if(!(key in this.memberData)){
+      for (const key of Object.keys(this.newMemberData)) {
+        if (!(key in this.memberData)) {
           // 新しい情報にあって古い情報にない節点
-          changeMemberList[key]='add';
+          changeMemberList[key] = 'add';
           continue;
         }
         const oldMember = this.memberData[key];
         const newMember = this.newMemberData[key];
-        if(oldMember.ni !== newMember.ni ||
-          oldMember.nj !== newMember.nj ){
-            changeMemberList[key]='change';
+        if (oldMember.ni !== newMember.ni ||
+          oldMember.nj !== newMember.nj) {
+          changeMemberList[key] = 'change';
         }
       }
     }
 
     // 格点の変更によって影響のある部材を特定する
     const targetMemberData = (this.newMemberData !== null) ? this.newMemberData : this.memberData;
-    for(const key of Object.keys(targetMemberData)){
+    for (const key of Object.keys(targetMemberData)) {
       const newMember = targetMemberData[key];
-      if(newMember.ni in changeNodeList || newMember.nj in changeNodeList){
+      if (newMember.ni in changeNodeList || newMember.nj in changeNodeList) {
         changeMemberList[key] = 'node change'
       }
     }
 
     // 荷重を変更する
     const oldIndex = this.currentIndex;
-    this.nodeData = (this.newNodeData !== null)? this.newNodeData : this.nodeData;
-    this.memberData = (this.newMemberData !== null) ? this.newMemberData: this.memberData;
+    this.nodeData = (this.newNodeData !== null) ? this.newNodeData : this.nodeData;
+    this.memberData = (this.newMemberData !== null) ? this.newMemberData : this.memberData;
     // 荷重データを入手
     const nodeLoadData = this.load.getNodeLoadJson(0);
     const memberLoadData = this.load.getMemberLoadJson(0);
@@ -336,21 +336,21 @@ export class ThreeLoadService {
       this.currentIndex = id;
       let editFlg = false;
       if (this.currentIndex in nodeLoadData) {
-        for(const load of nodeLoadData[this.currentIndex]){
-          if(load.n.toString() in changeNodeList)
-          this.changeNodeLode(load.row, nodeLoadData);
+        for (const load of nodeLoadData[this.currentIndex]) {
+          if (load.n.toString() in changeNodeList)
+            this.changeNodeLode(load.row, nodeLoadData);
           editFlg = true;
         }
       }
       if (this.currentIndex in memberLoadData) {
-        for(const load of memberLoadData[this.currentIndex]){
-          if(load.m.toString() in changeMemberList){
+        for (const load of memberLoadData[this.currentIndex]) {
+          if (load.m.toString() in changeMemberList) {
             this.changeMemberLode(load.row, memberLoadData);
             editFlg = true;
           }
         }
       }
-      if( editFlg === true ){
+      if (editFlg === true) {
         this.setOffset();
         this.onResize();
       }
@@ -381,7 +381,7 @@ export class ThreeLoadService {
     // 節点荷重を変更
     this.changeNodeLode(row, nodeLoadData);
 
-   
+
     // 要素データを入手
     //const memberData = this.member.getMemberJson(0);
     if (Object.keys(this.memberData).length <= 0) {
@@ -402,7 +402,7 @@ export class ThreeLoadService {
     // 表示フラグを ON にする
     this.isVisible.object = true;
   }
-  
+
   // 節点荷重を変更
   private changeNodeLode(row: number, nodeLoadData: any): void {
 
@@ -451,8 +451,8 @@ export class ThreeLoadService {
       // ケースが存在しなかった
       for (const key of Object.keys(LoadList.pointLoadList)) {//格点node
         const list = LoadList.pointLoadList[key];
-        for (const key2 of ["tx", "ty", "tz", "rx", "ry", "rz"]) { 
-          for (const item of list[key2]){
+        for (const key2 of ["tx", "ty", "tz", "rx", "ry", "rz"]) {
+          for (const item of list[key2]) {
             LoadList.ThreeObject.remove(item);
           }
         }
@@ -499,12 +499,12 @@ export class ThreeLoadService {
       // ケースが存在しなかった
       for (const key of Object.keys(LoadList.memberLoadList)) { //格点node
         const list = LoadList.memberLoadList[key];
-        for (const key2 of ["gx", "gy", "gz", "x", "y", "z", "t", "r"]){
-          for (const item of list[key2]){
+        for (const key2 of ["gx", "gy", "gz", "x", "y", "z", "t", "r"]) {
+          for (const item of list[key2]) {
             LoadList.ThreeObject.remove(item);
           }
         }
-        LoadList.memberLoadList[key] = {gx: [], gy: [], gz: [], x: [], y: [], z: [], t: [], r: []};
+        LoadList.memberLoadList[key] = { gx: [], gy: [], gz: [], x: [], y: [], z: [], t: [], r: [] };
       }
     }
   }
@@ -647,7 +647,7 @@ export class ThreeLoadService {
       if (load.mark === 2) {
         if (load.direction === 'r') {
           LoadList.rMax = Math.max(LoadList.rMax, value);
-        }else if (load.direction === 'x') {
+        } else if (load.direction === 'x') {
           LoadList.qMax = Math.max(LoadList.qMax, value);
         } else {
           LoadList.wMax = Math.max(LoadList.wMax, value);
@@ -703,7 +703,7 @@ export class ThreeLoadService {
       const nodei = new THREE.Vector3(i.x, i.y, i.z);
       const nodej = new THREE.Vector3(j.x, j.y, j.z);
       const localAxis = this.three_member.localAxis(
-        i.x, i.y, i.z, j.x, j.y, j.z, m.cg );
+        i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
 
       // リストに登録する
       const target =
@@ -715,7 +715,7 @@ export class ThreeLoadService {
       let P1: number = load.P1;
       let P2: number = load.P2;
       let direction: string = load.direction;
-      if (direction===null) {
+      if (direction === null) {
         direction = '';
       } else {
         direction = direction.trim();
@@ -757,7 +757,7 @@ export class ThreeLoadService {
       if (load.mark === 2) {
 
         if (direction === "y" || direction === "z" ||
-          direction === "gx" ||  direction === "gy" || direction === "gz") {
+          direction === "gx" || direction === "gy" || direction === "gz") {
           arrow = this.distributeLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2);
@@ -782,14 +782,14 @@ export class ThreeLoadService {
 
       } else if (load.mark === 1) {
         // 集中荷重荷重
-        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0 ){
+        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0) {
           arrow = this.memberPointLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2);
         }
       } else if (load.mark === 11) {
         // モーメント荷重
-        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0 ){
+        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0) {
           arrow = this.memberMomentLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2);
@@ -972,7 +972,7 @@ export class ThreeLoadService {
           const scale: number = item.value / loadList.mMax;
           this.momentLoad.setSize(item, scale);
           this.momentLoad.setOffset(item, offset);
-          offset += this.baseScale()* 0.1;
+          offset += this.baseScale() * 0.1;
         }
       });
     }
@@ -983,7 +983,7 @@ export class ThreeLoadService {
 
       // ねじりモーメント
       let offset0 = 0;
-      for (const item of list['r']){
+      for (const item of list['r']) {
         if (item.name === "MemberMomentLoad") {
           const scale: number = 1 * Math.abs(item.value) / loadList.mMax;
           this.memberMomentLoad.setSize(item, scale);
@@ -999,20 +999,70 @@ export class ThreeLoadService {
       ["y", "z"].forEach(k => {
         let offset1 = offset0;
         let offset2 = offset0;
+        const Xarea = []; //不要？
+        const Xarea1 = [];
         list[k].forEach(item => {
           // 大きさを変更する
           if (item.name === "DistributeLoad") {
             // 分布荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.wMax;
             this.distributeLoad.setSize(item, scale);
-            // オフセットする
-            if (item.value > 0) {
-              this.distributeLoad.setOffset(item, offset1);
-              offset1 += (scale * 1.0); // オフセット距離に高さを加算する
-            } else {
-              this.distributeLoad.setOffset(item, offset2);
-              offset2 -= (scale * 1.0); // オフセット距離に高さを加算する
+            //以降は当たり判定に用いる部分
+            const vertice_points = [];
+            //当たり判定のエリアを登録
+            for (let num of item.children[0].children[0].children[0].geometry.vertices) {
+              vertice_points.push(num.x)
+              vertice_points.push(num.y)
             }
+
+            all_check: //次のforループの名称 -> breakで使用
+            for (let hit_points of Xarea1) {
+              const pre_scale : number = 1 * Math.abs(hit_points[10]) / loadList.wMax;
+              for (let num2 = 0; num2 < 5; num2++) {
+
+                //接触判定
+                let judgeX = this.self_raycaster(vertice_points, hit_points, "x");
+                let judgeY = this.self_raycaster(vertice_points, hit_points, "y");
+
+                if (judgeX === "Hit" && (judgeY === "Hit" || judgeY === "Touch")) {
+                  // オフセットする
+                  if (item.value > 0) {
+                    offset1 += (pre_scale * 1.0); // オフセット距離に高さを加算する
+                    this.distributeLoad.setOffset(item, offset1);
+                    vertice_points[1] += offset1;
+                    vertice_points[3] += offset1;
+                    vertice_points[5] += offset1;
+                    vertice_points[7] += offset1;
+                    vertice_points[9] += offset1;
+                  } else {
+                    offset2 -= (pre_scale * 1.0); // オフセット距離に高さを加算する
+                    this.distributeLoad.setOffset(item, offset2);
+                    vertice_points[1] += offset2;
+                    vertice_points[3] += offset2;
+                    vertice_points[5] += offset2;
+                    vertice_points[7] += offset2;
+                    vertice_points[9] += offset2;
+                  }
+                  //console.log("hit (judgeX ===", judgeX, "&& judgeY ===", judgeY, ")")
+                } else if (judgeX === "NotHit" || judgeY === "NotHit") {
+                  //オフセットしない
+                  //console.log("not hit (judgeX ===", judgeX, "&& judgeY ===", judgeY, ")")
+                  break;
+                } else {
+                  //現状ケースを確認できていない
+                  //console.log("not hit (judgeX ===", judgeX, "&& judgeY ===", judgeY, ")")
+                  break all_check;
+                }
+              }
+            }
+              offset1 = offset0;
+              offset2 = offset0;
+            Xarea1.push([vertice_points[0], vertice_points[1],
+                         vertice_points[2], vertice_points[3],
+                         vertice_points[4], vertice_points[5],
+                         vertice_points[6], vertice_points[7],
+                         vertice_points[8], vertice_points[9],
+                         item.value]);
           } else if (item.name === "MemberPointLoad") {
             // 集中荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
@@ -1027,6 +1077,7 @@ export class ThreeLoadService {
             }
           }
         });
+        Xarea.push(Xarea1);//不要？
       });
 
       // 分布荷重（絶対座標方向）
@@ -1080,11 +1131,63 @@ export class ThreeLoadService {
 
   }
 
+  //当たり判定を行う
+  private self_raycaster(points, area, pattern: string) {
+
+    const d = 0.001 //当たり判定の緩和値
+
+    //接触判定->結果はjudgeで返す
+    let judge: string = "";
+    switch (pattern) {
+      case ('x'):
+        if (points[2] - d > area[2] && points[2] + d < area[6]) {
+          judge = "Hit";  //荷重の左側が既存面の内部にある状態
+        } else if (points[6] - d > area[2] && points[6] + d < area[6]) {
+          judge = "Hit";  //荷重の右側が既存面の内部にある状態
+        } else if ((points[2] - d < area[2] && points[2] - d < area[6]) &&
+          (points[6] + d > area[2] && points[6] + d > area[6])) {
+          judge = "Hit";  //荷重の面が既存の面を全て含む状態
+        } else {
+          judge = "NotHit"
+        }
+        break;
+      case ('y'):
+        if (points[1] > area[1] && (points[1] < area[3] || points[1] < area[7])) {
+          judge = "Hit";  //荷重の左下が既存面の内部にある状態
+        } else if (points[1] === area[1]) {
+          judge = "Touch";  //荷重の左下が既存面と同じ高さにある状態
+        } else if (points[9] > area[1] && (points[9] < area[3] || points[9] < area[7])) {
+          judge = "Hit";  //荷重の右下が既存面の内部にある状態
+        } else if (points[9] === area[1]) {
+          judge = "Touch";  //荷重の右下が既存面と同じ高さにある状態
+        } else {
+          if (points[3] > area[1] && (points[3] <= area[3] || points[3] <= area[7])) {
+            judge = "Hit";  //荷重の左上が既存面の内部にある状態
+          } else if (points[3] === area[1]) {
+            judge = "Touch";
+          } else if (points[7] > area[1] && (points[7] <= area[3] || points[7] <= area[7])) {
+            judge = "Hit";  //荷重の右上が既存面の内部にある状態
+          } else if (points[7] === area[1]) {
+            judge = "Touch";
+          } else if (points[3] <= area[1] && (points[7] >= area[3] || points[7] >= area[7])) {
+            judge = "Hit";  //荷重の左上が既存面の下側，右上が既存面の上側にある状態
+          } else if (points[7] <= area[1] && (points[3] >= area[3] || points[3] >= area[7])) {
+            judge = "Hit";  //荷重の右上が既存面の下側，左上が既存面の上側にある状態
+          } else {
+            judge = "NotHit"
+          }
+        }
+        break;
+    }
+
+    return judge
+  }
+
 
   // マウス位置とぶつかったオブジェクトを検出する
   public detectObject(raycaster: THREE.Raycaster, action: string): void {
     return; // 軽量化のため 何もしない
-    
+
     if (!(this.currentIndex in this.AllCaseLoadList)) {
       return; // 対象がなければ何もしない
     }
@@ -1093,19 +1196,19 @@ export class ThreeLoadService {
 
     // 交差しているオブジェクトを取得
     const intersects = raycaster.intersectObjects(ThreeObject.children, true);
-    if ( intersects.length <= 0 ){
+    if (intersects.length <= 0) {
       return;
     }
 
     //
     const target: any = this.getParent(intersects[0].object);
-   
+
 
     switch (action) {
       case "click":
       case "select":
       case "hover":
-          if (intersects.length > 0) {
+        if (intersects.length > 0) {
           ThreeObject.children.map((item) => {
             if (item === target) {
               // 寸法線を表示する
@@ -1127,14 +1230,14 @@ export class ThreeLoadService {
 
   private getParent(item): any {
 
-    if(['AxialLoad',
+    if (['AxialLoad',
       'DistributeLoad',
       'MemberMomentLoad',
       'MemberPointLoad',
       'MomentLoad',
       'PointLoad',
       'TemperatureLoad',
-      'TorsionLoad'].indexOf(item.name) >= 0 ){
+      'TorsionLoad'].indexOf(item.name) >= 0) {
       return item;
     } else {
       return this.getParent(item.parent);
@@ -1142,21 +1245,21 @@ export class ThreeLoadService {
   }
 
   private textVisible(item: any, flag: boolean): void {
-    if('name' in item){
-      if(item.name === 'Dimension'){
+    if ('name' in item) {
+      if (item.name === 'Dimension') {
         item.visible = flag;
       }
-      if(item.name === 'text'){
+      if (item.name === 'text') {
         item.visible = flag;
       }
-      if(item.name === 'points_center'){
+      if (item.name === 'points_center') {
         item.visible = flag;
       }
     }
-    if(!('children' in item)){
+    if (!('children' in item)) {
       return;
     }
-    for(const child of item.children){
+    for (const child of item.children) {
       this.textVisible(child, flag);
     }
   }
