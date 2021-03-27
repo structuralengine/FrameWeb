@@ -22,8 +22,7 @@ import { Mesh } from 'three';
 })
 export class ThreeSectionForceService {
 
-  private isVisible: boolean;
-  private lineList: THREE.Line[];
+  private lineList: THREE.Object3D;
   private currentIndex: string;
   private currentMode: string;
 
@@ -50,9 +49,11 @@ export class ThreeSectionForceService {
               private three_node: ThreeNodesService,
               private three_member: ThreeMembersService) {
 
-    this.isVisible = null;
+    this.lineList = new THREE.Object3D();
+    this.lineList.visible = false; // 呼び出されるまで非表示
+    this.ClearData();
+    this.scene.add(this.lineList);
 
-    this.lineList = new Array();
     // フォントをロード
     const loader = new THREE.FontLoader();
     loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
@@ -61,6 +62,7 @@ export class ThreeSectionForceService {
     });
 
     // gui
+    this.scale = 100;
     this.params = {
       forceScale: this.scale
     };
@@ -89,13 +91,10 @@ export class ThreeSectionForceService {
   }
 
   public visibleChange(flag: boolean): void {
-    if (this.isVisible === flag) {
+    if (this.lineList.visible=== flag) {
       return;
     }
-    for (const mesh of this.lineList) {
-      mesh.visible = flag;
-    }
-    this.isVisible = flag;
+    this.lineList.visible = flag;
     if (flag === true) {
       this.guiEnable();
     } else {
@@ -105,21 +104,15 @@ export class ThreeSectionForceService {
 
   // データをクリアする
   public ClearData(): void {
-    if (this.lineList.length > 0) {
-      // 線を削除する
-      for (const mesh of this.lineList) {
-        // 文字を削除する
-        while (mesh.children.length > 0) {
-          const object = mesh.children[0];
-          object.parent.remove(object);
-        }
-        this.scene.remove(mesh);
+    for (const mesh of this.lineList.children) {
+      // 文字を削除する
+      while (mesh.children.length > 0) {
+        const object = mesh.children[0];
+        object.parent.remove(object);
       }
-      this.lineList = new Array();
     }
-    this.currentIndex = '';
-    this.currentMode = '';
-    this.scale = 100;
+    // オブジェクトを削除する
+    this.lineList.children = new Array();
   }
 
   private guiEnable(): void {
@@ -183,10 +176,10 @@ export class ThreeSectionForceService {
     this.fsecData['pik_fsec'] = fsecJson;
   }
 
-  // メッシュを作成する
+  // 既定のメッシュを作成する
   private createMesh(ModeName: string): void{
     const targetCase: any = this.fsecData[ModeName];
-    const fsecData = targetCase.slice();
+    const fsecData = targetCase.slice(); // 最初のケースを代表として描画する
 
     // 格点データを入手
     if (Object.keys(this.nodeData).length <= 0) {
@@ -197,7 +190,7 @@ export class ThreeSectionForceService {
     if (memberKeys.length <= 0) {
       return;
     }
-
+/*
     // 断面力を作成する
     const targetList = new Array();
     for (const id of memberKeys) {
@@ -486,7 +479,7 @@ export class ThreeSectionForceService {
       }
     }
     this.lineList = tmplineList;
-
+*/
   }
 
 
@@ -494,7 +487,7 @@ export class ThreeSectionForceService {
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
   public changeData(index: number, ModeName: string): void {
-
+/*
     if (this.currentMode === ModeName && this.currentIndex === index.toString()) {
       // ケースが同じなら何もしない
       return;
@@ -670,7 +663,7 @@ export class ThreeSectionForceService {
 
     // 断面力図を描く
     this.onResize();
-
+*/
   }
 
   // 断面力, 部材の情報をまとめる
@@ -710,7 +703,7 @@ export class ThreeSectionForceService {
 
   // 断面力図を描く
   private onResize(): void {
-
+/*
     const targetKey: string = this.currentIndex.toString();
     if (!(targetKey in this.targetData)) return;
 
@@ -988,6 +981,7 @@ export class ThreeSectionForceService {
       }
     }
     this.lineList = tmplineList;
+*/
   }
 
   // 断面力の線を(要素ごとに)描く
