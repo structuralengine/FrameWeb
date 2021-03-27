@@ -164,7 +164,7 @@ export class ThreeSectionForceService {
   public setResultData(fsecJson: any): void {
     this.nodeData = this.node.getNodeJson(0);
     this.memberData = this.member.getMemberJson(0);
-    this.fsecData['fsec'] = fsecJson;
+    this.fsecData = {fsec: fsecJson};
     this.createMesh('fsec');
   }
   // combine
@@ -178,8 +178,6 @@ export class ThreeSectionForceService {
 
   // 既定のメッシュを作成する
   private createMesh(ModeName: string): void{
-    const targetCase: any = this.fsecData[ModeName];
-    const fsecData = targetCase.slice(); // 最初のケースを代表として描画する
 
     // 格点データを入手
     if (Object.keys(this.nodeData).length <= 0) {
@@ -190,7 +188,11 @@ export class ThreeSectionForceService {
     if (memberKeys.length <= 0) {
       return;
     }
-/*
+
+    // 最初のケースを代表として描画する
+    const fsecData = Object.entries(this.fsecData[ModeName])[0];
+
+    /*
     // 断面力を作成する
     const targetList = new Array();
     for (const id of memberKeys) {

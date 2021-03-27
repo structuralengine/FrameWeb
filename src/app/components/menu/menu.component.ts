@@ -182,7 +182,7 @@ export class MenuComponent implements OnInit {
           const json = pako.ungzip(binData,{to: 'string'} );
 
 
-          /*/ テスト ---------------------------------------------
+          // テスト ---------------------------------------------
           this.saveResult(json);
           // --------------------------------------------- テスト*/
 
