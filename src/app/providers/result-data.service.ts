@@ -15,7 +15,7 @@ import { ResultPickupDisgService } from '../components/result/result-pickup-disg
 import { ResultPickupReacService } from '../components/result/result-pickup-reac/result-pickup-reac.service';
 import { ResultPickupFsecService } from '../components/result/result-pickup-fsec/result-pickup-fsec.service';
 
-import { ThreeSectionForceService } from '../components/three/geometry/three-section-force.service';
+import { ThreeSectionForceService } from '../components/three/geometry/three-section-force/three-section-force.service';
 import { ThreeReactService } from '../components/three/geometry/three-react.service';
 import { ThreeDisplacementService } from '../components/three/geometry/three-displacement.service';
 

@@ -2,16 +2,12 @@ import { Injectable } from '@angular/core';
 import * as THREE from "three";
 import { Vector2 } from 'three';
 
-import { ThreeLoadText } from "./three-load-text";
-import { ThreeLoadDimension } from "./three-load-dimension";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThreeLoadDistribute {
 
-  private text: ThreeLoadText;
-  private dim: ThreeLoadDimension;
   private face_mat_Red: THREE.MeshBasicMaterial;
   private face_mat_Green: THREE.MeshBasicMaterial;
   private face_mat_Blue: THREE.MeshBasicMaterial;
@@ -21,7 +17,7 @@ export class ThreeLoadDistribute {
   private line_mat_Blue: THREE.LineBasicMaterial;
 
 
-  constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
+  constructor(font: Three.Font) {
     this.text = text;
     this.dim = dim;
     this.face_mat_Red =  new THREE.MeshBasicMaterial({

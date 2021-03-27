@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataHelperModule } from '../../../providers/data-helper.module';
 import { InputMembersService } from '../../input/input-members/input-members.service';
-import { ThreeSectionForceService } from '../../three/geometry/three-section-force.service';
+import { ThreeSectionForceService } from '../../three/geometry/three-section-force/three-section-force.service';
 import { ResultCombineFsecService } from '../result-combine-fsec/result-combine-fsec.service';
 
 @Injectable({

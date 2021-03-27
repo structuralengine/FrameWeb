@@ -13,7 +13,7 @@ import { ThreeJointService } from "./geometry/three-joint.service";
 import { ThreeLoadService } from "./geometry/three-load/three-load.service";
 
 import { ThreeDisplacementService } from "./geometry/three-displacement.service";
-import { ThreeSectionForceService } from "./geometry/three-section-force.service";
+import { ThreeSectionForceService } from "./geometry/three-section-force/three-section-force.service";
 import { ThreeReactService } from "./geometry/three-react.service";
 
 @Injectable({

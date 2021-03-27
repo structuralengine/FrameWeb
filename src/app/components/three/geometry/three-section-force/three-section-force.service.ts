@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 
 import * as THREE from 'three';
-import { Line2 } from '../libs/Line2.js';
-import { LineMaterial } from '../libs/LineMaterial.js';
-import { LineGeometry } from '../libs/LineGeometry.js';
+import { Line2 } from '../../libs/Line2.js';
+import { LineMaterial } from '../../libs/LineMaterial.js';
+import { LineGeometry } from '../../libs/LineGeometry.js';
 
-import { SceneService } from '../scene.service';
+import { SceneService } from '../../scene.service';
 
-import { DataHelperModule } from '../../../providers/data-helper.module';
+import { DataHelperModule } from '../../../../providers/data-helper.module';
 
-import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
-import { InputMembersService } from '../../../components/input/input-members/input-members.service';
+import { InputNodesService } from '../../../input/input-nodes/input-nodes.service';
+import { InputMembersService } from '../../../input/input-members/input-members.service';
 
-import { ThreeMembersService } from './three-members.service';
-import { ThreeNodesService } from './three-nodes.service.js';
+import { ThreeMembersService } from '../three-members.service';
+import { ThreeNodesService } from '../three-nodes.service.js';
 import { Mesh } from 'three';
 
 
@@ -192,6 +192,24 @@ export class ThreeSectionForceService {
     // 最初のケースを代表として描画する
     const fsecData = Object.entries(this.fsecData[ModeName])[0];
 
+    let localAxis: any;
+    let MemberLength: number;
+    for(const fsec of fsecData){
+      const id = fsec['m'].trim();
+      if( id.length > 0 ){
+          // 節点データを集計する
+          const m = this.memberData[id];
+          const i = this.nodeData[m.ni];
+          const j = this.nodeData[m.nj];
+          if (i === undefined || j === undefined) {
+            continue;
+          }
+          // 部材の座標軸を取得
+          localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+          MemberLength = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
+      }
+      
+    }
     /*
     // 断面力を作成する
     const targetList = new Array();
