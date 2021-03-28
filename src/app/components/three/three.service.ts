@@ -213,7 +213,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "members" || ModeName === "elements") {
@@ -225,7 +225,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "notice_points") {
@@ -237,7 +237,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "joints") {
@@ -249,7 +249,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "fix_nodes") {
@@ -261,7 +261,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "fix_member") {
@@ -273,7 +273,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     // 荷重図
@@ -301,7 +301,7 @@ export class ThreeService {
       }
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
 
@@ -314,7 +314,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(true);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "comb_disg" || ModeName === "pik_disg") {
@@ -327,7 +327,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "reac") {
@@ -339,7 +339,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(true);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "comb_reac" || ModeName === "pik_reac") {
@@ -352,14 +352,12 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
-    if (
-      ModeName === "fsec" ||
-      ModeName === "comb_fsec" ||
-      ModeName === "pik_fsec"
-    ) {
+    if (ModeName === "fsec" ||
+        ModeName === "comb_fsec" ||
+        ModeName === "pik_fsec") {
       this.node.visibleChange(true, false, false);
       this.member.visibleChange(true, true, false);
       this.fixNode.visibleChange(false);
@@ -368,7 +366,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(true);
+      this.fsec.visibleChange(ModeName);
     }
 
     this.mode = ModeName;

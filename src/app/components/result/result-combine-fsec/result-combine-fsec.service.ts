@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ResultPickupFsecService } from '../result-pickup-fsec/result-pickup-fsec.service';
 import { InputMembersService } from '../../input/input-members/input-members.service';
 import { InputNoticePointsService } from '../../input/input-notice-points/input-notice-points.service';
+import { ThreeSectionForceService } from '../../three/geometry/three-section-force/three-section-force.service';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +46,8 @@ export class ResultCombineFsecService {
   private columns: any;
  
 
-  constructor(private pickfsec: ResultPickupFsecService) {
+  constructor(private pickfsec: ResultPickupFsecService,
+              private three: ThreeSectionForceService) {
     this.clear();
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-fsec1.worker', { name: 'combine-fsec1', type: 'module' });
@@ -72,8 +74,9 @@ export class ResultCombineFsecService {
     if (typeof Worker !== 'undefined') {
       // Create a new
       this.worker1.onmessage = ({ data }) => {
-        this.fsecCombine = data.fsecCombine;
         console.log('断面fsec の 組み合わせ Combine 集計が終わりました', performance.now() - startTime);
+        this.fsecCombine = data.fsecCombine;
+        const max_values = data.max_values;
 
         // ピックアップの集計処理を実行する
         this.pickfsec.setFsecPickupJson(pickList, this.fsecCombine);
@@ -85,7 +88,8 @@ export class ResultCombineFsecService {
           this.isCalculated = true;
         };
         this.worker2.postMessage({fsecCombine: this.fsecCombine});
-        
+        this.three.setCombResultData(this.fsecCombine, max_values);
+
       };
       this.worker1.postMessage({ defList, combList, fsec, fsecKeys: this.fsecKeys});
 

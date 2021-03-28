@@ -49,7 +49,7 @@ export class ResultFsecService {
         if (data.error === null) {
           console.log('断面力の集計が終わりました', performance.now() - startTime);
           this.fsec = data.fsec;
-
+          const max_values = data.max_values;
           // 組み合わせの集計処理を実行する
           this.comb.setFsecCombineJson(this.fsec, defList, combList, pickList);
 
@@ -64,7 +64,7 @@ export class ResultFsecService {
             }
           };
           this.worker2.postMessage({fsec: this.fsec});
-          this.three.setResultData(this.fsec);
+          this.three.setResultData(this.fsec, max_values);
 
         } else {
           console.log('断面力の集計に失敗しました', data.error);

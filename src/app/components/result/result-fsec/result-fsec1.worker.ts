@@ -34,9 +34,15 @@ addEventListener('message', ({ data }) => {
   };
 
 
+  const max_values = {};
   // 断面力の集計
   try {
     for (const caseNo of Object.keys(jsonData)) {
+      const max_value = {
+        fx: 0, fy: 0, fz: 0,
+        mx: 0, my: 0, mz: 0
+      }
+  
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
       if (typeof (caseData) !== 'object') {
@@ -133,14 +139,23 @@ addEventListener('message', ({ data }) => {
           target.push(result);
           counter++;
 
+          max_value.fx = Math.max(Math.abs(fxi), Math.abs(fxj), max_value.fx);
+          max_value.fy = Math.max(Math.abs(fyi), Math.abs(fyj), max_value.fy);
+          max_value.fz = Math.max(Math.abs(fzi), Math.abs(fzj), max_value.fz);
+          max_value.mx = Math.max(Math.abs(mxi), Math.abs(mxj), max_value.mx);
+          max_value.my = Math.max(Math.abs(myi), Math.abs(myj), max_value.my);
+          max_value.mz = Math.max(Math.abs(mzi), Math.abs(mzj), max_value.mz);
+
         }
       }
-      fsec[caseNo.replace('Case', '')] = target;
+      const key = caseNo.replace('Case', '');
+      fsec[key] = target;
+      max_values[key] = max_value;
     }
 
   } catch (e) {
     error = e;
   }
 
-  postMessage({ fsec, error });
+  postMessage({ fsec, max_values, error });
 });
