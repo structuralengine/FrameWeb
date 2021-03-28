@@ -193,6 +193,12 @@ export class ThreeSectionForceService {
     const fsecData: any[] = Object.entries(this.fsecData[ModeName])[0];
 
     let localAxis: any;
+    const key: string = 'my';  // 仮の数値
+    let L1: number = 0;
+    let L2: number = 0;
+    let P1: number = 0;
+    let P2: number = 0;
+
     for(const fsec of fsecData[1]){
       const id = fsec['m'].trim();
       if( id.length > 0 ){
@@ -202,6 +208,7 @@ export class ThreeSectionForceService {
           const j = this.nodeData[m.nj];
           // 部材の座標軸を取得
           localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
+          P1 = fsec[key];
       }
 
     }
