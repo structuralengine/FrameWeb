@@ -6,7 +6,9 @@ import { Vector2 } from 'three';
 @Injectable({
   providedIn: 'root'
 })
-export class ThreeLoadDistribute {
+export class ThreeSectionForceMeshService {
+
+  private font: THREE.Font;
 
   private face_mat_Red: THREE.MeshBasicMaterial;
   private face_mat_Green: THREE.MeshBasicMaterial;
@@ -17,9 +19,9 @@ export class ThreeLoadDistribute {
   private line_mat_Blue: THREE.LineBasicMaterial;
 
 
-  constructor(font: Three.Font) {
-    this.text = text;
-    this.dim = dim;
+  constructor(font: THREE.Font) {
+    this.font = font;
+
     this.face_mat_Red =  new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -91,11 +93,6 @@ export class ThreeLoadDistribute {
     // 線
     child.add(this.getLine(my_color, points));
 
-    /*/ 寸法線
-    const dim = this.getDim(points, L1, L, L2);
-    dim.visible = false;
-    child.add(dim);
-    */  
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -114,7 +111,7 @@ export class ThreeLoadDistribute {
     const group = new THREE.Group();
     group.add(group0);
     group['value'] = p.Pmax; // 大きい方の値を保存　
-    
+
     group.position.set(nodei.x, nodei.y, nodei.z);
 
     // 全体の向きを修正する
@@ -133,7 +130,7 @@ export class ThreeLoadDistribute {
       } else if (direction === "y") {
         group.rotateX(Math.PI);
       }
-      
+
     } else if (direction === "gx") {
       group.rotation.z = Math.asin(-Math.PI/2);
 
@@ -233,7 +230,7 @@ export class ThreeLoadDistribute {
       L,
       L2,
       Pmax
-    };  
+    };
   }
 
   // 面
@@ -248,14 +245,6 @@ export class ThreeLoadDistribute {
     } else {
       face_mat = this.face_mat_Blue;
     }
-    /*
-    const face_mat = new THREE.MeshBasicMaterial({
-      transparent: true,
-      side: THREE.DoubleSide,
-      color: my_color,
-      opacity: 0.3,
-    });
-    */
 
     const face_geo = new THREE.Geometry();
     face_geo.vertices = points;
@@ -282,7 +271,6 @@ export class ThreeLoadDistribute {
     } else {
       line_mat = this.line_mat_Blue;
     }
-    // const line_mat = new THREE.LineBasicMaterial({ color: my_color });
 
     const line_geo = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.Line(line_geo, line_mat);
@@ -291,69 +279,6 @@ export class ThreeLoadDistribute {
     return line;
   }
 
-  /*/ 寸法線
-  private getDim(points: THREE.Vector3[],
-                L1: number, L: number, L2: number): THREE.Group {
-
-    const dim = new THREE.Group();
-
-    let dim1: THREE.Group;
-    let dim2: THREE.Group;
-    let dim3: THREE.Group;
-
-    const size: number = 0.1; // 文字サイズ
-
-    const y1a = Math.abs(points[1].y);
-    const y3a = Math.abs(points[3].y);
-    const y4a = Math.max(y1a, y3a) + (size * 10);
-    const a = (y1a > y3a) ? Math.sign(points[1].y) : Math.sign(points[3].y);
-    const y4 = a * y4a;
-
-    if(L1 > 0){
-      const x0 = points[1].x - L1;
-      const p = [
-        new THREE.Vector2(x0, 0),
-        new THREE.Vector2(x0, y4),
-        new THREE.Vector2(points[1].x, y4),
-        new THREE.Vector2(points[1].x, points[1].y),
-      ];
-      dim1 = this.dim.create(p, L1.toFixed(3))
-      dim1.visible = true;
-      dim1.name = "Dimension1";
-      dim.add(dim1);
-    }
-
-    const p = [
-      new THREE.Vector2(points[1].x, points[1].y),
-      new THREE.Vector2(points[1].x, y4),
-      new THREE.Vector2(points[3].x, y4),
-      new THREE.Vector2(points[3].x, points[3].y),
-    ];
-    dim2 = this.dim.create(p, L.toFixed(3))
-    dim2.visible = true;
-    dim2.name = "Dimension2";
-    dim.add(dim2);
-
-    if(L2 > 0){
-      const x4 = points[3].x + L2;
-      const p = [
-        new THREE.Vector2(points[3].x, points[3].y),
-        new THREE.Vector2(points[3].x, y4),
-        new THREE.Vector2(x4, y4),
-        new THREE.Vector2(x4, 0),
-      ];
-      dim3 = this.dim.create(p, L2.toFixed(3))
-      dim3.visible = true;
-      dim3.name = "Dimension3";
-      dim.add(dim3);
-    }
-
-    // 登録
-    dim.name = "Dimension";
-
-    return dim;
-  }
-  */
   /*/ 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
 

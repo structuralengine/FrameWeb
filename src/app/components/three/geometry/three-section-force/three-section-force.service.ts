@@ -190,25 +190,20 @@ export class ThreeSectionForceService {
     }
 
     // 最初のケースを代表として描画する
-    const fsecData = Object.entries(this.fsecData[ModeName])[0];
+    const fsecData: any[] = Object.entries(this.fsecData[ModeName])[0];
 
     let localAxis: any;
-    let MemberLength: number;
-    for(const fsec of fsecData){
+    for(const fsec of fsecData[1]){
       const id = fsec['m'].trim();
       if( id.length > 0 ){
           // 節点データを集計する
           const m = this.memberData[id];
           const i = this.nodeData[m.ni];
           const j = this.nodeData[m.nj];
-          if (i === undefined || j === undefined) {
-            continue;
-          }
           // 部材の座標軸を取得
           localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
-          MemberLength = Math.sqrt((i.x - j.x) ** 2 + (i.y - j.y) ** 2 + (i.z - j.z) ** 2);
       }
-      
+
     }
     /*
     // 断面力を作成する
