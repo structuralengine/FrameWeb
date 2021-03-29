@@ -207,7 +207,11 @@ export class ThreeSectionForceMeshService {
     // 面
     const mesh = child.getObjectByName("face");
     const geo: THREE.Geometry = mesh["geometry"];
-    geo.vertices = points;
+    for(let i= 0; i < geo.vertices.length; i++){
+      geo.vertices[i].x = points[i].x;
+      geo.vertices[i].y = points[i].y;
+      geo.vertices[i].z = points[i].z;
+    }
     geo.verticesNeedUpdate = true;
 
      // 線
@@ -220,6 +224,7 @@ export class ThreeSectionForceMeshService {
         positions[ index ++ ] = pos.y;
         positions[ index ++ ] = pos.z;
     }
+    line.geometry.attributes.position.needsUpdate = true;
 
     target.position.set(nodei.x, nodei.y, nodei.z);
 
@@ -238,9 +243,7 @@ export class ThreeSectionForceMeshService {
     } else if (direction === "y") {
       target.rotateX(Math.PI);
     }
-
-    target.name = "SectionForce";
-
+    
     return target;
   }
 

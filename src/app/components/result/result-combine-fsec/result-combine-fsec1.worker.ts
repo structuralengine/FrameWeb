@@ -41,8 +41,12 @@ addEventListener('message', ({ data }) => {
       for (const key of fsecKeys) {
         // 節点番号のループ
         const obj = {};
+        let m: string;
         for (const d of fsec[baseNo]) {
-          let id = d.m + '-' + d.l.toFixed(3);
+          if(d.m.length> 0){
+            m = d.m;
+          }
+          let id = m + '-' + d.l.toFixed(3);
           obj[id] = {
             m: d.m,
             l: d.l,

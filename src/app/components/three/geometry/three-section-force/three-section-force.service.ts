@@ -94,6 +94,8 @@ export class ThreeSectionForceService {
       return;
     }
     this.currentMode = ModeName;
+    this.changeMesh();
+    this.onResize();
     this.guiEnable();
   }
 
@@ -165,7 +167,7 @@ export class ThreeSectionForceService {
     this.currentMode = 'fsec';
     this.currentIndex = Object.keys(fsecJson)[0];
     this.changeMesh();
-    this.onResize();
+    this.currentMode = '';
   }
   // combine
   public setCombResultData(fsecJson: any, max_values: any): void {
@@ -215,10 +217,9 @@ export class ThreeSectionForceService {
     if(this.currentMode === 'fsec'){
       fsecDatas.push(fsecList[this.currentIndex]);
     } else {
-      const f1 = fsecList[key1 + '_max'];
-      const f2 = fsecList[key1 + '_min'];
-      fsecDatas.push(f1[this.currentIndex]);
-      fsecDatas.push(f2[this.currentIndex]);
+      const f = fsecList[this.currentIndex];
+      fsecDatas.push(f[key1 + '_max']);
+      fsecDatas.push(f[key1 + '_min']);
     }
     const ThreeObjects: THREE.Object3D[] = [this.ThreeObject1, this.ThreeObject2];
 
@@ -276,7 +277,7 @@ export class ThreeSectionForceService {
       }
     }
     
-  };
+  }
 
   // データが変更された時に呼び出される
   // 変数 this.targetData に値をセットする
