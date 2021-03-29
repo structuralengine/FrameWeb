@@ -135,7 +135,7 @@ export class MenuComponent implements OnInit {
         }
     */
     if (this.loggedIn === true) {
-      alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
+     // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
       this.auth.calc(this.amount);
       this.amount = this.auth.amount;
       const modalRef = this.modalService.open(WaitDialogComponent);
