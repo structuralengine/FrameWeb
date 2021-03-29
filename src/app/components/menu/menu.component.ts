@@ -34,6 +34,7 @@ export class MenuComponent implements OnInit {
   loggedIn: boolean;
   fileName: string;
   isCalculated: boolean;
+  amount:number;
 
   constructor(private modalService: NgbModal,
     private app: AppComponent,
@@ -251,10 +252,12 @@ export class MenuComponent implements OnInit {
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
-      if (this.loggedIn === true) {
-        this.loginUserName = this.user.loginUserName;
-        this.userPoint = this.user.purchase_value.toString();
-      }
+      setTimeout(() => {
+        if (this.loggedIn === true) {
+          this.userPoint = this.user.purchase_value.toString();
+          this.amount = this.auth.amount;
+        }
+      }, 200);
     });
 
     // 「ユーザー名」入力ボックスにフォーカスを当てる
