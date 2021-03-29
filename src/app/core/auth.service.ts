@@ -37,6 +37,7 @@ export class AuthService {
   user: Observable<User>;
   private itemsCollection: AngularFirestoreCollection<Item>;
   items: Observable<Item[]>;
+  amount:number;
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -63,14 +64,14 @@ export class AuthService {
         console.log(user);
         const currentUser = user.user.uid;
         console.log("current",currentUser);
-        const dd = this.afs.collection('customers').doc(currentUser).collection('subscriptions').valueChanges().subscribe(value =>{
+      this.afs.collection('customers').doc(currentUser).collection('subscriptions').valueChanges().subscribe(value =>{
           console.log("value",value);
-          const amount =  value[0].items[0].plan.amount;
-          console.log('amount',amount);
+          this.amount =  value[0].items[0].plan.amount;
+          console.log('amount',this.amount);
         },error => {
           console.log("error",error);
-        })
-        console.log("dd",dd);
+        });
+        console.log("user",user)
         return this.updateUserData(user.user);
       })
   }
