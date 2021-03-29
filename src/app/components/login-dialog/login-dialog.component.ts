@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import firebase from 'firebase';
-import { Observable } from 'rxjs/observable';
+import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs';
 
 

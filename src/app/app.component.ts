@@ -4,43 +4,51 @@ import { UserInfoService } from './providers/user-info.service'
 import { ResultDataService } from './providers/result-data.service';
 import { PrintService } from './components/print/print.service';
 import { AuthService } from './core/auth.service';
+
+import { ResultFsecService } from './components/result/result-fsec/result-fsec.service';
+import { ResultDisgService } from './components/result/result-disg/result-disg.service';
+import { ResultReacService } from './components/result/result-reac/result-reac.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  //isContentsDailogShow: boolean;
-  isCalculated: boolean;
+
   btnReac: string;
   constructor(private _router: Router,
               private ResultData: ResultDataService,
               public user:UserInfoService,
               public printService: PrintService,
-              private authService: AuthService) { 
+              private authService: AuthService,
+              public fsec: ResultFsecService,
+              public disg: ResultDisgService,
+              public reac: ResultReacService) { 
   }
+
   ngOnInit() {
     this.user.isContentsDailogShow = false;
-    this.isCalculated = false;
   }
+  
+  // 計算結果表示ボタンを無効にする
+  public disableResultButton() {
+    this.fsec.clear();
+    this.disg.clear();
+    this.reac.clear();
+  }
+
   public dialogClose(): void {
     this.user.isContentsDailogShow = false;
   }
+
   public contentsDailogShow(id): void {
     this.deactiveButtons();
     document.getElementById(id).classList.add('active');
     this.user.isContentsDailogShow = true;
     //this.setDialogHeight();
   }
-  // 解析終了したら呼ばれる関数
-  public Calculated(ResultData: ResultDataService): void {
-    this.isCalculated = true;
-    if ( ResultData.reac.REAC_ROWS_COUNT > 0) {
-      this.btnReac = 'btn btn-outline-primary';
-    } else {
-      this.btnReac = 'btn btn-outline-primary disabled';
-    }
-  }
+
   // アクティブになっているボタンを全て非アクティブにする
   deactiveButtons() {
     for (let i = 0; i <= 13; i++) {
@@ -52,6 +60,7 @@ export class AppComponent implements OnInit {
       }
     }
   }
+
   // contents-dialogの高さをウィンドウサイズに合わせる
   setDialogHeight() {
     setTimeout(function () {
@@ -64,6 +73,7 @@ export class AppComponent implements OnInit {
       console.log('dialog height:' + dialog.style.height);
     }, 100);
   }
+
   public getDialogHeight(): number {
     const dialog = document.getElementById('contents-dialog-id');
     let dialogHeight = parseFloat(dialog.style.height); // ヘッダー高さを引く
@@ -74,6 +84,7 @@ export class AppComponent implements OnInit {
     }
     return dialogHeight;
   }
+
   public onPrintInvoice() {
     const invoiceIds = ['101', '102'];
     this.printService
