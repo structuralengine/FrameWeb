@@ -38,6 +38,7 @@ export class AuthService {
   private itemsCollection: AngularFirestoreCollection<Item>;
   items: Observable<Item[]>;
   amount:number;
+  currentUser:any;
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -62,9 +63,9 @@ export class AuthService {
     return this.afAuth.signInWithEmailAndPassword(email, password)
       .then(user => {
         console.log(user);
-        const currentUser = user.user.uid;
-        console.log("current",currentUser);
-      this.afs.collection('customers').doc(currentUser).collection('subscriptions').valueChanges().subscribe(value =>{
+        this.currentUser = user.user.uid;
+        console.log("current",this.currentUser);
+      this.afs.collection('customers').doc(this.currentUser).collection('subscriptions').valueChanges().subscribe(value =>{
           console.log("value",value);
           this.amount =  value[0].items[0].plan.amount;
           console.log('amount',this.amount);
@@ -106,6 +107,17 @@ export class AuthService {
     // this.User.loggedIn = true;
     return userRef.set(data, { merge: true });
 
+  }
+
+  public calc(amount){
+    this.afs.collection('customers').doc(this.currentUser).collection('subscriptions').valueChanges().subscribe(value =>{
+      console.log("value",value);
+      value[0].items[0].plan.amount += amount;
+      this.amount = value[0].items[0].plan.amount;
+      console.log('amount',this.amount);
+    },error => {
+      console.log("error",error);
+    });
   }
 
 
