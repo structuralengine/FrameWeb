@@ -18,39 +18,12 @@ import { AppComponent } from "src/app/app.component";
   ],
 })
 export class ResultCombineFsecComponent implements OnInit {
-  KEYS = [
-    "fx_max",
-    "fx_min",
-    "fy_max",
-    "fy_min",
-    "fz_max",
-    "fz_min",
-    "mx_max",
-    "mx_min",
-    "my_max",
-    "my_min",
-    "mz_max",
-    "mz_min",
-  ];
-  TITLES = [
-    "軸方向力 最大",
-    "軸方向力 最小",
-    "y方向のせん断力 最大",
-    "y方向のせん断力 最小",
-    "z方向のせん断力 最大",
-    "z方向のせん断力 最小",
-    "ねじりモーメント 最大",
-    "ねじりモーメント 最小",
-    "y軸回りの曲げモーメント 最大",
-    "y軸回りの曲げモーメント力 最小",
-    "z軸回りの曲げモーメント 最大",
-    "z軸回りの曲げモーメント 最小",
-  ];
+  public KEYS: string[];
+  public TITLES: string[];
 
   dataset: any[];
   page: number;
   load_name: string;
-  collectionSize: number;
   btnPickup: string;
   tableHeight: number;
 
@@ -64,16 +37,16 @@ export class ResultCombineFsecComponent implements OnInit {
     private pic: ResultPickupFsecService
   ) {
     this.dataset = new Array();
+    this.KEYS = this.data.fsecKeys;
+    this.TITLES = this.data.titles;
   }
 
   ngOnInit() {
-    this.result.CombinePickup();
     const n: number = this.comb.getCombineCaseCount();
-    this.collectionSize = n * 10;
     this.loadPage(1);
 
     // ピックアップデータがあればボタンを表示する
-    if (this.pic.isChange === false) {
+    if (this.pic.isCalculated === false) {
       this.btnPickup = "btn-change";
     } else {
       this.btnPickup = "btn-change disabled";
@@ -85,7 +58,6 @@ export class ResultCombineFsecComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    this.dataset.splice(0);
     let pageNew:number = eventData;
     this.loadPage(pageNew);
   }

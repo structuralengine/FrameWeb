@@ -15,7 +15,6 @@ import { PrintService } from "../../print.service";
 })
 export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   load_name: string;
-  collectionSize: number;
   countCell: number  = 0;
   countHead: number  = 0;
   countTotal: number = 0;

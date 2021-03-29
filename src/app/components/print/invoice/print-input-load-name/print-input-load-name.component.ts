@@ -15,7 +15,6 @@ import { DataCountService } from "../dataCount.service";
 export class PrintInputLoadNameComponent implements OnInit {
   page: number;
   load_name: string;
-  collectionSize: number;
   countCell: number  = 0;
   countHead: number  = 0;
   countTotal: number = 0;

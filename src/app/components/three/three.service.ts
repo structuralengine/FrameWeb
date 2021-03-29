@@ -13,7 +13,7 @@ import { ThreeJointService } from "./geometry/three-joint.service";
 import { ThreeLoadService } from "./geometry/three-load/three-load.service";
 
 import { ThreeDisplacementService } from "./geometry/three-displacement.service";
-import { ThreeSectionForceService } from "./geometry/three-section-force.service";
+import { ThreeSectionForceService } from "./geometry/three-section-force/three-section-force.service";
 import { ThreeReactService } from "./geometry/three-react.service";
 
 @Injectable({
@@ -38,7 +38,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // 初期化
-  //////////////////////////////////////////////////////
   public OnInit(): void {
     this.node.OnInit();
     this.member.OnInit();
@@ -46,7 +45,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // ファイルを開く処理する
-  //////////////////////////////////////////////////////
   public fileload(): void {
     // ファイルを読み込んだ
     this.node.changeData();
@@ -64,7 +62,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // データの変更通知を処理する
-  //////////////////////////////////////////////////////
   public changeData(mode: string = "", index: number = 0): void {
     switch (mode) {
       case "nodes":
@@ -118,14 +115,12 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // データの選択を処理する
-  //////////////////////////////////////////////////////
   public selectChange(mode: string, index: number): void {
     console.log("selectChange", mode, index);
   }
 
   //////////////////////////////////////////////////////
   // データをクリアする
-  //////////////////////////////////////////////////////
   public ClearData(): void {
     // 節点データの削除
     this.node.ClearData();
@@ -137,17 +132,13 @@ export class ThreeService {
     this.disg.ClearData();
     this.reac.ClearData();
     this.fsec.ClearData();
-    this.disg.ClearData();
-    this.fsec.ClearData();
-    this.reac.ClearData();
 
     // 再描画
     this.scene.render();
   }
 
   //////////////////////////////////////////////////////
-  // 編集モードの変更通知を処理する
-  //////////////////////////////////////////////////////
+  // 編集ページの変更通知を処理する
   public ChangePage(currentPage: number): void {
     if (this.currentIndex === currentPage) {
       return;
@@ -206,6 +197,8 @@ export class ThreeService {
     this.scene.render();
   }
 
+  //////////////////////////////////////////////////////
+  // 編集モードの変更通知を処理する
   public ChangeMode(ModeName: string): void {
     if (this.mode === ModeName) {
       return;
@@ -220,7 +213,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "members" || ModeName === "elements") {
@@ -232,7 +225,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "notice_points") {
@@ -244,7 +237,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "joints") {
@@ -256,7 +249,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "fix_nodes") {
@@ -268,7 +261,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "fix_member") {
@@ -280,7 +273,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     // 荷重図
@@ -308,7 +301,7 @@ export class ThreeService {
       }
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
 
@@ -321,7 +314,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(true);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "comb_disg" || ModeName === "pik_disg") {
@@ -334,7 +327,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "reac") {
@@ -346,7 +339,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(true);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
     if (ModeName === "comb_reac" || ModeName === "pik_reac") {
@@ -359,14 +352,12 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(false);
+      this.fsec.visibleChange('');
     }
 
-    if (
-      ModeName === "fsec" ||
-      ModeName === "comb_fsec" ||
-      ModeName === "pik_fsec"
-    ) {
+    if (ModeName === "fsec" ||
+        ModeName === "comb_fsec" ||
+        ModeName === "pik_fsec") {
       this.node.visibleChange(true, false, false);
       this.member.visibleChange(true, true, false);
       this.fixNode.visibleChange(false);
@@ -375,7 +366,7 @@ export class ThreeService {
       this.load.visibleChange(false, false);
       this.disg.visibleChange(false);
       this.reac.visibleChange(false);
-      this.fsec.visibleChange(true);
+      this.fsec.visibleChange(ModeName);
     }
 
     this.mode = ModeName;
@@ -387,7 +378,6 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // マウス位置とぶつかったオブジェクトを検出する
-  //////////////////////////////////////////////////////
   public detectObject(mouse: THREE.Vector2, action: string): void {
     const raycaster = this.scene.getRaycaster(mouse);
 

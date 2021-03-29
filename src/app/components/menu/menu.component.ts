@@ -71,7 +71,6 @@ export class MenuComponent implements OnInit {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.InputData.clear();
     this.ResultData.clear();
-    this.app.isCalculated = false;
     this.three.ClearData();
     this.fileName = "立体骨組構造解析ソフトver1.2.1"
   }
@@ -81,7 +80,6 @@ export class MenuComponent implements OnInit {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.InputData.clear();
     this.ResultData.clear();
-    this.app.isCalculated = false;
     this.three.ClearData();
     this.countArea.clear();
     const modalRef = this.modalService.open(WaitDialogComponent);
@@ -93,7 +91,6 @@ export class MenuComponent implements OnInit {
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         this.InputData.loadInputData(text); // データを読み込む
-        this.app.isCalculated = false;
         this.three.fileload();
         modalRef.close();
       })
@@ -137,6 +134,8 @@ export class MenuComponent implements OnInit {
           return;
         }
     */
+    this.app.disableResultButton();
+
     const modalRef = this.modalService.open(WaitDialogComponent);
 
     const jsonData: {} = this.InputData.getInputJson(0);
@@ -147,8 +146,6 @@ export class MenuComponent implements OnInit {
       modalRef.close(); // モーダルダイアログを消す
       return;
     }
-    this.ResultData.clear(); // 解析結果情報をクリア
-
     this.post_compress(jsonData, modalRef);
 
   }
@@ -188,18 +185,19 @@ export class MenuComponent implements OnInit {
 
           // テスト ---------------------------------------------
           this.saveResult(json);
-          // --------------------------------------------- テスト
+          // --------------------------------------------- テスト*/
 
           const jsonData = JSON.parse(json);
           // サーバーのレスポンスを集計する
           console.log(jsonData);
-          if (!this.ResultData.loadResultData(jsonData)) {
-            throw '解析結果の集計に失敗しました';
-          } else {
-            // ユーザーポイントの更新
-            this.loadResultData(jsonData);
-            this.three.changeData();
+          if ( 'error' in jsonData){
+            throw jsonData.error;
           }
+          // 解析結果を集計する
+          this.ResultData.loadResultData(jsonData);
+          // ユーザーの保有ポイントの表示を更新する
+          this.user.loadResultData(jsonData);
+          this.userPoint = this.user.purchase_value.toString();
         } catch (e) {
           alert(e);
         } finally {
@@ -207,8 +205,6 @@ export class MenuComponent implements OnInit {
         }
       },
       error => {
-        // 通信失敗時の処理（失敗コールバック）
-        this.app.isCalculated = false;
 
         let messege: string = '通信 ' + error.statusText;
         if ('_body' in error) {
@@ -221,19 +217,6 @@ export class MenuComponent implements OnInit {
     );
   }
 
-  // 全ての解析ケースを計算し終えたら
-  private loadResultData(jsonData: object): void {
-
-    // 組み合わせケースを集計する
-    this.ResultData.CombinePickup();
-
-    // ユーザーの保有ポイントの表示を更新する
-    this.user.loadResultData(jsonData);
-    this.userPoint = this.user.purchase_value.toString();
-
-    // 結果表示ボタンを表示する
-    this.app.Calculated(this.ResultData);
-  }
 
   // ピックアップファイル出力
   public pickup(): void {
@@ -322,13 +305,7 @@ export class MenuComponent implements OnInit {
         this.ResultData.clear();
         const jsonData = JSON.parse(text);
 
-        if (this.ResultData.loadResultData(jsonData)) {
-          // ユーザーポイントの更新
-          this.loadResultData(jsonData);
-          this.three.changeData();
-          this.app.isCalculated = true;
-        }
-
+        this.ResultData.loadResultData(jsonData);
         modalRef.close();
 
       })

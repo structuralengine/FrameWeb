@@ -8,9 +8,9 @@ import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 
-import { Observable } from 'rxjs/observable';
-import { of, Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { UserInfoService } from '../providers/user-info.service';
 // import { LoginJudgeService } from './login-judge.service';
 

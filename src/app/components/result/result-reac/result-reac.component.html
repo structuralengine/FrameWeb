@@ -1,34 +1,15 @@
 <div class="btn-group">
   <nav>
-    <a
-      routerLink="/result-reac"
-      routerLinkActive="selected-item"
-      class="btn-change active"
-      >基本ケース</a
-    >
-    <a
-      routerLink="/result-comb_reac"
-      routerLinkActive="selected-item"
-      [class]="btnCombine"
-      >COMBINE</a
-    >
-    <a
-      routerLink="/result-pic_reac"
-      routerLinkActive="selected-item"
-      [class]="btnPickup"
-      >PICKUP</a
-    >
+    <a routerLink="/result-reac" class="btn-change active">基本ケース</a>
+    <a routerLink="/result-comb_reac" [class]="btnCombine">COMBINE</a>
+    <a routerLink="/result-pic_reac" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
 
 <div class="pager">
   <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
   <p class="load-name">{{ load_name }}</p>
-  <!-- <div class="pager-title">タイプ</div>
-  <ngb-pagination class="ngb-pagination" [collectionSize]="collectionSize" [(page)]="page" [maxSize]="7" [rotate]="true"
-    [ellipses]="false" [boundaryLinks]="true" aria-label="Default pagination" (pageChange)="loadPage($event)">
-  </ngb-pagination>
-  <div class="load-name">{{load_name}}</div> -->
+
 </div>
 
 <div class="result_table">

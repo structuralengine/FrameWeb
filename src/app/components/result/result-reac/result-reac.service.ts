@@ -1,90 +1,79 @@
 import { Injectable } from '@angular/core';
-import { DataHelperModule } from '../../../providers/data-helper.module';
+import { ThreeReactService } from '../../three/geometry/three-react.service';
+import { ResultCombineReacService } from '../result-combine-reac/result-combine-reac.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResultReacService {
 
-  public REAC_ROWS_COUNT: number;
+  public isCalculated: boolean;
   public reac: any;
+  private worker1: Worker;
+  private worker2: Worker;
+  private columns: any; // 表示用
 
-  constructor(private helper: DataHelperModule) {
+  constructor(private comb: ResultCombineReacService,
+              private three: ThreeReactService) {
     this.clear();
+    this.worker1 = new Worker('./result-reac1.worker', { name: 'result-reac1', type: 'module' });
+    this.worker2 = new Worker('./result-reac2.worker', { name: 'result-reac2', type: 'module' });
   }
 
   public clear(): void {
     this.reac = {};
+    this.isCalculated = false;
   }
 
-  public getReacColumns(typNo: number, index: number): any {
+  public getReacColumns(typNo: number): any {
+    const key: string = typNo.toString();
+    return (key in this.columns) ? this.columns[key] : new Array();
+}
 
-    let target: any = null;
-
-    // タイプ番号を探す
-    if (!this.reac[typNo]) {
-      target = new Array();
-    } else {
-      target = this.reac[typNo];
-    }
-    const result = target[index];
-    return result;
-  }
-
+  // three-section-force.service から呼ばれる
   public getReacJson(): object {
     return this.reac;
   }
   
-  public setReacJson(jsonData: {}): void {
-    let max_row = 0;
-    for (const caseNo of Object.keys(jsonData)) {
-      const target = new Array();
-      const caseData: {} = jsonData[caseNo];
+  // サーバーから受領した 解析結果を集計する
+  public setReacJson(jsonData: {}, defList: any, combList: any, pickList: any): void {
 
-      // 存在チェック
-      if (typeof (caseData) !== 'object') {
-        continue;
-      }
-      if (!('reac' in caseData)) {
-        continue;
-      }
-      const json: {} = caseData['reac'];
-      if (json === null) {
-        continue;
-      }
+    const startTime = performance.now(); // 開始時間
+    if (typeof Worker !== 'undefined') {
+      // Create a new
 
-      for (const n of Object.keys(json)) {
-        const item: {} = json[n];
+      this.worker1.onmessage = ({ data }) => {
+        if (data.error === null) {
+          console.log('反力の集計が終わりました', performance.now() - startTime);
+          this.reac = data.reac;
 
-        let tx: number = this.helper.toNumber(item['tx']);
-        let ty: number = this.helper.toNumber(item['ty']);
-        let tz: number = this.helper.toNumber(item['tz']);
-        let mx: number = this.helper.toNumber(item['mx']);
-        let my: number = this.helper.toNumber(item['my']);
-        let mz: number = this.helper.toNumber(item['mz']);
+          // 組み合わせの集計処理を実行する
+          this.comb.setReacCombineJson(this.reac, defList, combList, pickList);
 
-        tx = (tx == null) ? 0 : tx;
-        ty = (ty == null) ? 0 : ty;
-        tz = (tz == null) ? 0 : tz;
-        mx = (mx == null) ? 0 : mx;
-        my = (my == null) ? 0 : my;
-        mz = (mz == null) ? 0 : mz;
+          // 反力テーブルの集計
+          this.worker2.onmessage = ({ data }) => {
+            if (data.error === null) {
+              console.log('反力テーブルの集計が終わりました', performance.now() - startTime);
+              this.columns = data.table;
+              this.isCalculated = true;
+            } else {
+              console.log('反力テーブルの集計に失敗しました', data.error);
+            }
+          };
+          this.worker2.postMessage({ reac: this.reac });
+          this.three.setResultData(this.reac);
 
-        const result = {
-          id: n.replace('node', ''),
-          tx: tx.toFixed(2),
-          ty: ty.toFixed(2),
-          tz: tz.toFixed(2),
-          mx: mx.toFixed(2),
-          my: my.toFixed(2),
-          mz: mz.toFixed(2)
-        };
-        target.push(result);
-      }
-      this.reac[caseNo.replace('Case', '')] = target;
-      max_row = Math.max(max_row, target.length);
+        } else {
+          console.log('反力の集計に失敗しました', data.error);
+        }
+      };
+      this.worker1.postMessage({ jsonData });
+
+    } else {
+      console.log('反力の生成に失敗しました');
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
     }
-    this.REAC_ROWS_COUNT = max_row;
   }
 
 }

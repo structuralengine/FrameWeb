@@ -6,117 +6,57 @@ import { Injectable } from '@angular/core';
 export class ResultPickupReacService {
 
   public reacPickup: any;
-  public isChange: boolean;
-  private worker: Worker;
+  public isCalculated : boolean;
+  private worker1: Worker;
+  private worker2: Worker;
+  private columns: any;
 
   constructor() { 
     this.clear();
-    this.isChange = true;
-    this.worker = new Worker('./result-pickup-reac.worker', { name: 'pickup-reac', type: 'module' });
+    this.isCalculated  = false;
+    this.worker1 = new Worker('./result-pickup-reac1.worker', { name: 'pickup-reac1', type: 'module' });
+    this.worker2 = new Worker('./result-pickup-reac2.worker', { name: 'pickup-reac2', type: 'module' });
   }
 
   public clear(): void {
     this.reacPickup = {};
   }
 
+  // three.js で必要
+  public getReacJson(): object {
+    return this.reacPickup;
+  }
 
   public getPickupReacColumns(combNo: number, mode: string): any {
-
-    // 組み合わせを探す
-    let target1: any[] = new Array();
-    if (combNo in this.reacPickup) {
-      target1 = this.reacPickup[combNo];
-    }
-
-    // 着目項目を探す
-    let target2 = {};
-    if (mode in target1) {
-      target2 = target1[mode];
-    }
-
-    const result: any[] = new Array();
-    for (const k of Object.keys(target2)) {
-      const target3 = target2[k];
-      const item = {
-        id: target3['id'],
-        tx: target3['tx'].toFixed(2),
-        ty: target3['ty'].toFixed(2),
-        tz: target3['tz'].toFixed(2),
-        mx: target3['mx'].toFixed(2),
-        my: target3['my'].toFixed(2),
-        mz: target3['mz'].toFixed(2),
-        case: target3['case']
-      };
-      result.push(item);
-    }
-
-    return result;
+    return this.columns[combNo][mode];
   }
 
   public setReacPickupJson(pickList: any, reacCombine: any): void {
 
-    const postData = {
-      pickList,
-      reacCombine
-    };
-
+    this.isCalculated = false;
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
       // Create a new
-      this.worker.onmessage = ({ data }) => {
+      this.worker1.onmessage = ({ data }) => {
         this.reacPickup = data.reacPickup;
-        this.isChange = false;
         console.log('反力reac の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
+
+        // 断面力テーブルの集計
+        this.worker2.onmessage = ({ data }) => {
+          console.log('反力reac の ピックアップ PickUp テーブル集計が終わりました', performance.now() - startTime);
+          this.columns = data.result;
+          this.isCalculated = true;
+        };
+        this.worker2.postMessage({ reacPickup: this.reacPickup });
+        //this.columns = this.work2_test({ reacPickup: this.reacPickup });
+
       };
-      this.worker.postMessage(postData);
+      this.worker1.postMessage({ pickList, reacCombine });
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
     }
 
-
-    /*
-    try {
-      // pickupのループ
-      for (const pickNo of Object.keys(pickList)) {
-        const combines: any[] = pickList[pickNo];
-        let tmp: {} = null;
-        for (let i = 0; i < combines.length; i++) {
-          const combNo: string = combines[i];
-          const com = this.reac.reacCombine[combNo];
-          if (tmp == null) {
-            tmp = com;
-            continue;
-          }
-          for (const k of Object.keys(com)) {
-            const key = k.split('_');
-            const target = com[k];
-            const comparison = tmp[k];
-            for (const id of Object.keys(comparison)) {
-              const a = comparison[id];
-              if ( !(id in target) ){
-                continue;
-              }
-              const b = target[id];
-              if (key[1] === 'max') {
-                if (b[key[0]] > a[key[0]]) {
-                  tmp[k] = com[k];
-                }
-              } else {
-                if (b[key[0]] < a[key[0]]) {
-                  tmp[k] = com[k];
-                }
-              }
-            }
-          }
-        }
-        this.reacPickup[pickNo] = tmp;
-      }
-      this.isChange = false;
-    } catch (e) {
-      console.log(e);
-    }
-    */
   }
 
 }

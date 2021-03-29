@@ -17,7 +17,6 @@ import { DataCountService } from "../dataCount.service";
 export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
-  collectionSize: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];

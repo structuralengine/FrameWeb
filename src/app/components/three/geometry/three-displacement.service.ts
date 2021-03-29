@@ -12,7 +12,6 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
 import { InputMembersService } from '../../../components/input/input-members/input-members.service';
 
-import { ResultDisgService } from '../../result/result-disg/result-disg.service';
 import { ResultCombineDisgService } from '../../result/result-combine-disg/result-combine-disg.service';
 import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-pickup-disg.service';
 
@@ -32,9 +31,12 @@ export class ThreeDisplacementService {
   private gui: any;
   private gui_max_scale: number;
 
+  private nodeData: any
+  private membData: any
+  private allDisgData: any;
+
   constructor(private scene: SceneService,
               private helper: DataHelperModule,
-              private disg: ResultDisgService,
               private comb_disg: ResultCombineDisgService,
               private pik_disg: ResultPickupDisgService,
               private node: InputNodesService,
@@ -44,9 +46,9 @@ export class ThreeDisplacementService {
     this.targetData = new Array();
 
     this.isVisible = null;
+    this.ClearData();
 
     // gui
-    this.scale = 0.5;
     this.params = {
       dispScale: this.scale,
     };
@@ -85,6 +87,10 @@ export class ThreeDisplacementService {
       this.lineList = new Array();
     }
     this.scale = 0.5;
+
+    this.nodeData = {};
+    this.membData = {};
+    this.allDisgData = {};
   }
 
   private guiEnable(): void {
@@ -108,29 +114,33 @@ export class ThreeDisplacementService {
     this.gui = null;
   }
 
+  // 解析結果をセットする
+  public setResultData(getDisgJson: any): void {
+    this.nodeData = this.node.getNodeJson(0);
+    this.membData = this.member.getMemberJson(0);
+    this.allDisgData = getDisgJson;
+    this.changeData(1);
+  }
+
   public changeData(index: number): void {
 
     // 格点データを入手
-    const nodeData = this.node.getNodeJson(0);
-    const nodeKeys = Object.keys(nodeData);
-    if (nodeKeys.length <= 0) {
+    if (Object.keys(this.nodeData).length <= 0) {
       return;
     }
 
     // メンバーデータを入手
-    const membData = this.member.getMemberJson(0);
-    const membKeys = Object.keys(membData);
+    const membKeys = Object.keys(this.membData);
     if (membKeys.length <= 0) {
       return;
     }
 
     // 変位データを入手
-    const allDisgData = this.disg.getDisgJson();
     const targetKey: string = index.toString();
-    if (!(targetKey in allDisgData)) {
+    if (!(targetKey in this.allDisgData)) {
       return;
     }
-    const disgData = allDisgData[targetKey];
+    const disgData = this.allDisgData[targetKey];
 
     this.targetData = new Array();
 
@@ -138,9 +148,9 @@ export class ThreeDisplacementService {
     for (const key of membKeys) {
 
       // 節点データを集計する
-      const m = membData[key];
-      const i = nodeData[m.ni];
-      const j = nodeData[m.nj];
+      const m = this.membData[key];
+      const i = this.nodeData[m.ni];
+      const j = this.nodeData[m.nj];
       if (i === undefined || j === undefined) {
         continue;
       }
@@ -191,7 +201,7 @@ export class ThreeDisplacementService {
     let maxDistance: number;
     [minDistance, maxDistance] = this.getDistance();
 
-    const maxValue: number = allDisgData['max_value'];
+    const maxValue: number = this.allDisgData['max_value'];
     this.targetData['scale'] = minDistance / maxValue;
     this.gui_max_scale = maxDistance / minDistance;
 
@@ -286,7 +296,7 @@ export class ThreeDisplacementService {
         line.name = target.name;
 
         tmplineList.push(line);
-
+        line.visible = false; //----------> ポイント：非表示で生成する
         this.scene.add(line);
       }
     }

@@ -41,7 +41,6 @@ import { PrintComponent } from "../print.component";
 export class InvoiceComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
-  collectionSize: number;
   btnPickup: string;
   tableHeight: number;
   invoiceIds: string[];
