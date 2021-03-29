@@ -186,7 +186,7 @@ export class ThreeSectionForceService {
     let key2: string;
     if (this.params.axialForce === true) {
       key1 = 'fx';
-      key2 = 'y';
+      key2 = 'z';
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
       key1 = 'mx';
@@ -198,7 +198,7 @@ export class ThreeSectionForceService {
     } else if (this.params.momentY === true) {
       // Y軸周りの曲げモーメント
       key1 = 'my';
-      key2 = 'y';
+      key2 = 'z';
     } else if (this.params.shearForceZ === true) {
       // Z方向のせん断力
       key1 = 'fz';
@@ -206,7 +206,7 @@ export class ThreeSectionForceService {
     } else if (this.params.momentZ === true) {
       // Z軸周りの曲げモーメント
       key1 = 'mz';
-      key2 = 'z';
+      key2 = 'y';
     } else {
       return;
     }
@@ -283,10 +283,6 @@ export class ThreeSectionForceService {
   // 変数 this.targetData に値をセットする
   public changeData(index: number, ModeName: string): void {
 
-    if (this.currentMode === ModeName && this.currentIndex === index.toString()) {
-      // ケースが同じなら何もしない
-      return;
-    }
     this.currentIndex = index.toString();
     this.currentMode = ModeName;
     this.changeMesh();
