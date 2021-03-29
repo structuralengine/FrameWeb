@@ -26,10 +26,8 @@ export class ResultReacComponent implements OnInit {
 
   constructor(
     private data: ResultReacService,
-    private app: AppComponent,
     private load: InputLoadService,
     private three: ThreeService,
-    private result: ResultDataService,
     private comb: ResultCombineReacService,
     private pic: ResultPickupReacService
   ) {
@@ -40,13 +38,13 @@ export class ResultReacComponent implements OnInit {
     this.loadPage(1);
 
     // コンバインデータがあればボタンを表示する
-    if (this.comb.isChange === false) {
+    if (this.comb.isCalculated === true) {
       this.btnCombine = "btn-change";
     } else {
       this.btnCombine = "btn-change disabled";
     }
     // ピックアップデータがあればボタンを表示する
-    if (this.pic.isChange === false) {
+    if (this.pic.isCalculated === true) {
       this.btnPickup = "btn-change";
     } else {
       this.btnPickup = "btn-change disabled";

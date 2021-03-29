@@ -60,36 +60,6 @@ export class ResultCombineDisgService {
 
   public getCombineDisgColumns(combNo: number, mode: string): any {
     return this.columns[combNo][mode];
-
-    // 組み合わせを探す
-    let target1: any[] = new Array();
-    if (combNo in this.disgCombine) {
-      target1 = this.disgCombine[combNo];
-    }
-
-    // 着目項目を探す
-    let target2 = {};
-    if (mode in target1) {
-      target2 = target1[mode];
-    }
-
-    const result: any[] = new Array();
-    for (const k of Object.keys(target2)) {
-      const target3 = target2[k];
-      const item = {
-        id: target3['id'],
-        dx: target3['dx'].toFixed(4),
-        dy: target3['dy'].toFixed(4),
-        dz: target3['dz'].toFixed(4),
-        rx: target3['rx'].toFixed(4),
-        ry: target3['ry'].toFixed(4),
-        rz: target3['rz'].toFixed(4),
-        case: target3['case']
-      };
-      result.push(item);
-    }
-
-    return result;
   }
 
   public setDisgCombineJson(disg: any, defList: any, combList: any, pickList: any): void {
@@ -117,8 +87,6 @@ export class ResultCombineDisgService {
           this.isCalculated = true;
         };
         this.worker2.postMessage({ disgCombine: this.disgCombine });
-        // this.columns = this.test_worker2({ disgCombine: this.disgCombine, combList });
-        // this.isCalculated = true;
 
       };
       this.worker1.postMessage({ defList, combList, disg, disgKeys: this.disgKeys });
@@ -127,50 +95,6 @@ export class ResultCombineDisgService {
       // You should add a fallback so that your program still executes correctly.
     }
 
-  }
-
-
-  private test_worker2(data) {
-
-    const disgCombine = data.disgCombine;
-    const combList = data.combList
-
-    const result = {};
-    for (const combNo of Object.keys(combList)) {
-
-      // 組み合わせを探す
-      let target1: any[] = disgCombine[combNo];
-
-      const result2 = {};
-      for (const mode of Object.keys(target1)) {
-
-        // 着目項目を探す
-        const target2 = (mode in target1) ? target1[mode] : [];
-        const result3: any[] = new Array();
-
-        for (const id of Object.keys(target2)) {
-          const item = target2[id];
-          const dx = item.dx === null ? 0 : Math.round(10000 * item.dx) / 10000;
-          const dy = item.dy === null ? 0 : Math.round(10000 * item.dy) / 10000;
-          const dz = item.dz === null ? 0 : Math.round(10000 * item.dz) / 10000;
-          const rx = item.rx === null ? 0 : Math.round(10000 * item.rx) / 10000;
-          const ry = item.ry === null ? 0 : Math.round(10000 * item.ry) / 10000;
-          const rz = item.rz === null ? 0 : Math.round(10000 * item.rz) / 10000;
-          result3.push({
-            id: id,
-            dx: dx.toFixed(4),
-            dy: dy.toFixed(4),
-            dz: dz.toFixed(4),
-            rx: rx.toFixed(4),
-            ry: ry.toFixed(4),
-            rz: rz.toFixed(4),
-          });
-        }
-        result2[mode] = result3;
-      }
-      result[combNo] = result2;
-    }
-    return result;
   }
 
 }

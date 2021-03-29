@@ -34,6 +34,7 @@ export class MenuComponent implements OnInit {
   loggedIn: boolean;
   fileName: string;
   isCalculated: boolean;
+  amount:number;
 
   constructor(private modalService: NgbModal,
     private app: AppComponent,
@@ -52,7 +53,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.2.1"
+    this.fileName = "立体骨組構造解析ソフトver1.2.2"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -71,7 +72,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.2.1"
+    this.fileName = "立体骨組構造解析ソフトver1.2.2"
   }
 
   // ファイルを開く
@@ -183,21 +184,20 @@ export class MenuComponent implements OnInit {
 
 
           // テスト ---------------------------------------------
-          this.saveResult(json);
-          // --------------------------------------------- テスト
+          // this.saveResult(json);
+          // --------------------------------------------- テスト*/
 
           const jsonData = JSON.parse(json);
           // サーバーのレスポンスを集計する
           console.log(jsonData);
-          if (!this.ResultData.loadResultData(jsonData)) {
-            throw '解析結果の集計に失敗しました';
-          } else {
-            // ユーザーの保有ポイントの表示を更新する
-            this.user.loadResultData(jsonData);
-            this.userPoint = this.user.purchase_value.toString();
-            // three.js に変更を通知
-            this.three.setResultData();
+          if ( 'error' in jsonData){
+            throw jsonData.error;
           }
+          // 解析結果を集計する
+          this.ResultData.loadResultData(jsonData);
+          // ユーザーの保有ポイントの表示を更新する
+          this.user.loadResultData(jsonData);
+          this.userPoint = this.user.purchase_value.toString();
         } catch (e) {
           alert(e);
         } finally {
@@ -217,13 +217,6 @@ export class MenuComponent implements OnInit {
     );
   }
 
-  // 全ての解析ケースを計算し終えたら
-  private loadResultData(jsonData: object): void {
-    // ユーザーの保有ポイントの表示を更新する
-    this.ResultData.clear(); // 解析結果情報をクリア
-    this.user.loadResultData(jsonData);
-    this.userPoint = this.user.purchase_value.toString();
-  }
 
   // ピックアップファイル出力
   public pickup(): void {
@@ -242,10 +235,12 @@ export class MenuComponent implements OnInit {
   logIn(): void {
     this.modalService.open(LoginDialogComponent).result.then((result) => {
       this.loggedIn = this.user.loggedIn;
-      if (this.loggedIn === true) {
-        this.loginUserName = this.user.loginUserName;
-        this.userPoint = this.user.purchase_value.toString();
-      }
+      setTimeout(() => {
+        if (this.loggedIn === true) {
+          this.userPoint = this.user.purchase_value.toString();
+          this.amount = this.auth.amount;
+        }
+      }, 200);
     });
 
     // 「ユーザー名」入力ボックスにフォーカスを当てる
@@ -310,12 +305,7 @@ export class MenuComponent implements OnInit {
         this.ResultData.clear();
         const jsonData = JSON.parse(text);
 
-        if (this.ResultData.loadResultData(jsonData)) {
-          // ユーザーポイントの更新
-          this.loadResultData(jsonData);
-          this.three.changeData();
-        }
-
+        this.ResultData.loadResultData(jsonData);
         modalRef.close();
 
       })

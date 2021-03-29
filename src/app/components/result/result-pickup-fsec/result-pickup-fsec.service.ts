@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ThreeSectionForceService } from '../../three/geometry/three-section-force/three-section-force.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ResultPickupFsecService {
   private worker2: Worker;
   private columns: any;
 
-  constructor() {
+  constructor(private three: ThreeSectionForceService) {
     this.clear();
     this.isCalculated = false;
     this.worker1 = new Worker('./result-pickup-fsec1.worker', { name: 'pickup-fsec1', type: 'module' });
@@ -21,7 +22,8 @@ export class ResultPickupFsecService {
   public clear(): void {
     this.fsecPickup = {};
   }
-
+  
+  // three.js から呼ばれる
   public getFsecJson(): object {
     return this.fsecPickup;
   }
@@ -37,8 +39,9 @@ export class ResultPickupFsecService {
     if (typeof Worker !== 'undefined') {
       // Create a new
       this.worker1.onmessage = ({ data }) => {
-        this.fsecPickup = data.fsecPickup;
         console.log('断面力fsec の ピックアップ PickUp 集計が終わりました', performance.now() - startTime);
+        this.fsecPickup = data.fsecPickup;
+        const max_values = data.max_values;
 
         // 断面力テーブルの集計
         this.worker2.onmessage = ({ data }) => {
@@ -47,7 +50,8 @@ export class ResultPickupFsecService {
           this.isCalculated = true;
         };
         this.worker2.postMessage({ fsecPickup: this.fsecPickup });
-        
+        this.three.setPickupResultData(this.fsecPickup, max_values);
+
       };
       this.worker1.postMessage({ pickList, fsecCombine });
     } else {

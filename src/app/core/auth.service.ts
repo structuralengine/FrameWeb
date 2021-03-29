@@ -6,15 +6,17 @@ import auth from "firebase";
 import * as firebase from 'firebase/app';
 // import firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 
-import { Observable } from 'rxjs/observable';
+import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { UserInfoService } from '../providers/user-info.service';
 // import { LoginJudgeService } from './login-judge.service';
 
 
+export interface Shirt { name: string; price: number; }
+// export interface ShirtId extends Shirt { id: string; }
 
 interface User {
   uid: string;
@@ -24,14 +26,18 @@ interface User {
   favoriteColor?: string;
 }
 
+interface Item { name: string; }
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
+  private shirtCollection: AngularFirestoreCollection<Shirt>;
   user: Observable<User>;
-
+  private itemsCollection: AngularFirestoreCollection<Item>;
+  items: Observable<Item[]>;
+  amount:number;
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -56,6 +62,16 @@ export class AuthService {
     return this.afAuth.signInWithEmailAndPassword(email, password)
       .then(user => {
         console.log(user);
+        const currentUser = user.user.uid;
+        console.log("current",currentUser);
+      this.afs.collection('customers').doc(currentUser).collection('subscriptions').valueChanges().subscribe(value =>{
+          console.log("value",value);
+          this.amount =  value[0].items[0].plan.amount;
+          console.log('amount',this.amount);
+        },error => {
+          console.log("error",error);
+        });
+        console.log("user",user)
         return this.updateUserData(user.user);
       })
   }

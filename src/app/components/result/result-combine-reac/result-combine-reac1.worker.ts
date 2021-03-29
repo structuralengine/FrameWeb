@@ -4,21 +4,7 @@ addEventListener('message', ({ data }) => {
   const defList = data.defList;
   const combList = data.combList;
   const reac = data.reac;
-  const reacKeys = [
-    "tx_max",
-    "tx_min",
-    "ty_max",
-    "ty_min",
-    "tz_max",
-    "tz_min",
-    "mx_max",
-    "mx_min",
-    "my_max",
-    "my_min",
-    "mz_max",
-    "mz_min",
-  ];
-
+  const reacKeys = data.reacKeys;
   
   // defineのループ
   const reacDefine = {};

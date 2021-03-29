@@ -1,12 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { ResultCombineDisgService } from "./result-combine-disg.service";
-import { ResultDisgService } from "../result-disg/result-disg.service";
 import { InputCombineService } from "../../input/input-combine/input-combine.service";
-import { ResultDataService } from "../../../providers/result-data.service";
 import { ThreeService } from "../../three/three.service";
-
 import { ResultPickupDisgService } from "../result-pickup-disg/result-pickup-disg.service";
-import { AppComponent } from "src/app/app.component";
 
 @Component({
   selector: "app-result-combine-disg",
@@ -18,34 +14,8 @@ import { AppComponent } from "src/app/app.component";
   ],
 })
 export class ResultCombineDisgComponent implements OnInit {
-  public KEYS = [
-    "dx_max",
-    "dx_min",
-    "dy_max",
-    "dy_min",
-    "dz_max",
-    "dz_min",
-    "rx_max",
-    "rx_min",
-    "ry_max",
-    "ry_min",
-    "rz_max",
-    "rz_min",
-  ];
-  public TITLES = [
-    "x方向の移動量 最大",
-    "x方向の移動量 最小",
-    "y方向の移動量 最大",
-    "y方向の移動量 最小",
-    "z方向の移動量 最大",
-    "Z方向の移動量 最小",
-    "x軸回りの回転角 最大",
-    "x軸回りの回転角 最小",
-    "y軸回りの回転角 最大",
-    "y軸回りの回転角 最小",
-    "z軸回りの回転角 最大",
-    "Z軸回りの回転角 最小",
-  ];
+  public KEYS: string[];
+  public TITLES: string[];
 
   dataset: any[];
   page: number;
@@ -55,18 +25,16 @@ export class ResultCombineDisgComponent implements OnInit {
 
   constructor(
     private data: ResultCombineDisgService,
-    private app: AppComponent,
-    private disg: ResultDisgService,
     private comb: InputCombineService,
     private three: ThreeService,
-    private result: ResultDataService,
     private pic: ResultPickupDisgService
   ) {
     this.dataset = new Array();
+    this.KEYS = this.data.disgKeys;
+    this.TITLES = this.data.titles;
   }
 
   ngOnInit() {
-    const n: number = this.comb.getCombineCaseCount();
     this.loadPage(1);
 
     // ピックアップデータがあればボタンを表示する

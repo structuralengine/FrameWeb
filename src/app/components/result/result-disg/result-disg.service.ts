@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { ThreeDisplacementService } from "../../three/geometry/three-displacement.service";
 import { ResultCombineDisgService } from "../result-combine-disg/result-combine-disg.service";
 
 @Injectable({
@@ -12,7 +13,9 @@ export class ResultDisgService {
   private worker2: Worker;
   private columns: any; // 表示用
 
-  constructor(private comb: ResultCombineDisgService) {
+  constructor(private comb: ResultCombineDisgService,
+              private three: ThreeDisplacementService
+              ){
     this.clear();
     this.worker1 = new Worker('./result-disg1.worker', { name: 'result-disg1', type: 'module' });
     this.worker2 = new Worker('./result-disg2.worker', { name: 'result-disg2', type: 'module' });
@@ -28,11 +31,6 @@ export class ResultDisgService {
     return (key in this.columns) ? this.columns[key] : new Array();
   }
 
-  // three-section-force.service から呼ばれる
-  public getDisgJson(): object {
-    return this.disg;
-  }
-
   public setDisgJson(jsonData: {}, defList: any, combList: any, pickList: any): void {
 
     const startTime = performance.now(); // 開始時間
@@ -46,7 +44,7 @@ export class ResultDisgService {
 
           // 組み合わせの集計処理を実行する
           this.comb.setDisgCombineJson(this.disg, defList, combList, pickList);
-
+          
           // 変位量テーブルの集計
           this.worker2.onmessage = ({ data }) => {
             if (data.error === null) {
@@ -58,6 +56,7 @@ export class ResultDisgService {
             }
           };
           this.worker2.postMessage({ disg: this.disg });
+          this.three.setResultData(this.disg);
 
         } else {
           console.log('変位量の集計に失敗しました', data.error);

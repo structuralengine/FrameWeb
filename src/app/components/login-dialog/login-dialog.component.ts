@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import firebase from 'firebase';
-import { Observable } from 'rxjs/observable';
+import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs';
 
 
@@ -119,21 +119,19 @@ export class LoginDialogComponent implements OnInit {
       this.user.loggedIn = true;
       console.log(value);
     }).catch((error) => {
-      alert("matigai");
-    })
-      // .then(() => { 
-      //   this.router.navigate(['/']);
-      // });
-      if(this.auth.user === null ){
-        console.log("SD")
-      }
+      alert("メールアドレスまたはパスワードを間違えています。");
+    });
   }
 
   loginGoogle() {
-    this.auth.googleLogin();
-    this.activeModal.close('Submit');
-    this.user.loggedIn = true;
+    this.auth.googleLogin().then((value) => {
+      this.activeModal.close('Submit');
+      this.user.loggedIn = true;
+      console.log(value);
     // this.user.loggedIn = true;
+    }).catch((error) => {
+      alert("メールアドレスまたはパスワードを間違えています。");
+    });
   }
 
   logout() {

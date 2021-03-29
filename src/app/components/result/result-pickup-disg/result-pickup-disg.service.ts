@@ -48,7 +48,6 @@ export class ResultPickupDisgService {
           this.isCalculated = true;
         };
         this.worker2.postMessage({ disgPickup: this.disgPickup });
-        
 
       };
       this.worker1.postMessage({ pickList, disgCombine});
