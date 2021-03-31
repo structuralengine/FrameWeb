@@ -53,7 +53,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.2.2"
+    this.fileName = "立体骨組構造解析ソフトver1.2.3"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -72,7 +72,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.2.2"
+    this.fileName = "立体骨組構造解析ソフトver1.2.3"
   }
 
   // ファイルを開く
@@ -126,14 +126,7 @@ export class MenuComponent implements OnInit {
 
   // 計算
   public calcrate(): void {
-    /*
-        if (this.user.loggedIn === false) {
-          this.logIn();
-        }
-        if (this.user.loggedIn === false) {
-          return;
-        }
-    */
+
     if (this.loggedIn === true) {
      // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
       this.auth.calc(this.amount);
