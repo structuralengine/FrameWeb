@@ -21,7 +21,7 @@ export class ThreeSectionForceMeshService {
       transparent: true,
       side: THREE.DoubleSide,
       color: 0x0000ff,
-      opacity: 0.3,
+      opacity: 0.1,
     });
 
     this.line_mat = new THREE.LineBasicMaterial({ color: 0x0000ff });
