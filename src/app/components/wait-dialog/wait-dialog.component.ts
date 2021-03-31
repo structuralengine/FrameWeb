@@ -1,15 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-wait-dialog',
   templateUrl: './wait-dialog.component.html',
   styleUrls: ['./wait-dialog.component.scss']
 })
-export class WaitDialogComponent implements OnInit {
-
+export class WaitDialogComponent {
   constructor() { }
-
-  ngOnInit() {
-  }
-
 }

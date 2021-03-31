@@ -34,7 +34,7 @@ export class MenuComponent implements OnInit {
   loggedIn: boolean;
   fileName: string;
   isCalculated: boolean;
-  amount:number;
+  amount: number;
 
   constructor(private modalService: NgbModal,
     private app: AppComponent,
@@ -45,9 +45,9 @@ export class MenuComponent implements OnInit {
     private http: HttpClient,
     private three: ThreeService,
     public printService: PrintService,
-    public countArea:DataCountService,
+    public countArea: DataCountService,
     public auth: AuthService
-    ) {
+  ) {
     this.loggedIn = this.user.loggedIn;
     this.fileName = '';
   }
@@ -59,7 +59,7 @@ export class MenuComponent implements OnInit {
       console.log(user);
     });
 
-    
+
     firebase.firestore().settings({
       ignoreUndefinedProperties: true,
     })
@@ -134,20 +134,26 @@ export class MenuComponent implements OnInit {
           return;
         }
     */
-    this.app.disableResultButton();
+    if (this.loggedIn === true) {
+     // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
+      this.auth.calc(this.amount);
+      this.amount = this.auth.amount;
+      const modalRef = this.modalService.open(WaitDialogComponent);
 
-    const modalRef = this.modalService.open(WaitDialogComponent);
+      const jsonData: {} = this.InputData.getInputJson(0);
+      // console.log(JSON.stringify(jsonData));
 
-    const jsonData: {} = this.InputData.getInputJson(0);
-    // console.log(JSON.stringify(jsonData));
+      if ('error' in jsonData) {
+        alert(jsonData['error']);
+        modalRef.close(); // モーダルダイアログを消す
+        return;
+      }
+      this.ResultData.clear(); // 解析結果情報をクリア
 
-    if ('error' in jsonData) {
-      alert(jsonData['error']);
-      modalRef.close(); // モーダルダイアログを消す
-      return;
+      this.post_compress(jsonData, modalRef);
+    } else {
+      alert("ログインしてください")
     }
-    this.post_compress(jsonData, modalRef);
-
   }
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
@@ -180,7 +186,7 @@ export class MenuComponent implements OnInit {
           // Turn number array into byte-array
           const binData = new Uint8Array(charData);
           // Pako magic
-          const json = pako.ungzip(binData,{to: 'string'} );
+          const json = pako.ungzip(binData, { to: 'string' });
 
 
           // テスト ---------------------------------------------
@@ -271,8 +277,8 @@ export class MenuComponent implements OnInit {
     //this.setDialogHeight();
   }
 
-   // アクティブになっているボタンを全て非アクティブにする
-   deactiveButtons() {
+  // アクティブになっているボタンを全て非アクティブにする
+  deactiveButtons() {
     for (let i = 0; i <= 13; i++) {
       const data = document.getElementById(i + '');
       if (data != null) {
@@ -283,7 +289,7 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  
+
   // テスト ---------------------------------------------
   private saveResult(text: string): void {
     const blob = new window.Blob([text], { type: 'text/plain' });
