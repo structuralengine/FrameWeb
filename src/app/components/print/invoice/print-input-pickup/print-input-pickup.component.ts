@@ -82,10 +82,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
 
       let counter: number = 0;
       for (const key of Object.keys(item)) {
-        if (key === "row") {
-          continue;
-        }
-        if (key === "name") {
+        if (!key.startsWith("C") ) {
           continue;
         }
         line.push(item[key]);
