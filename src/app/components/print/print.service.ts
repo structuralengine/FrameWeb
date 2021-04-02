@@ -15,7 +15,7 @@ export class PrintService {
   public pickupJson: any;
 
   constructor(private router: Router,
-              private InputData: InputDataService,) {
+              public InputData: InputDataService,) {
     this.contentEditable1 = [
       false,
       false,
