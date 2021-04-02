@@ -72,7 +72,7 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
 
       // 印刷する1行分のリストを作る
       let line: string[] = new Array();
-      line.push(index); // DefineNo
+     // line.push(index); // DefineNo
       let counter: number = 0;
 
       for (const key of Object.keys(item)) {
