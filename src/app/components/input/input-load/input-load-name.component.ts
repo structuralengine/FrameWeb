@@ -5,6 +5,7 @@ import { DataHelperModule } from "../../../providers/data-helper.module";
 import { SheetComponent } from "../sheet/sheet.component";
 import pq from "pqgrid";
 import { AppComponent } from "src/app/app.component";
+import { ThreeLoadService } from "../../three/geometry/three-load/three-load.service";
 
 @Component({
   selector: "app-input-load-name",
@@ -84,7 +85,8 @@ export class InputLoadNameComponent implements OnInit {
     private data: InputLoadService,
     private three: ThreeService,
     private app: AppComponent,
-    private helper: DataHelperModule
+    private helper: DataHelperModule,
+    private threeload: ThreeLoadService
   ) {
     this.loadData(this.ROWS_COUNT);
   }
@@ -92,7 +94,7 @@ export class InputLoadNameComponent implements OnInit {
   ngOnInit() {
     this.ROWS_COUNT = this.rowsCount();
     // three.js にモードの変更を通知する
-    this.three.ChangeMode('load_names');
+    this.three.ChangeMode("load_names");
     this.three.ChangePage(1);
   }
 
@@ -124,7 +126,7 @@ export class InputLoadNameComponent implements OnInit {
     height: this.tableHeight(),
     numberCell: {
       show: true, // 行番号
-      width:45
+      width: 45,
     },
     colModel: this.columnHeaders,
     animModel: {
@@ -151,8 +153,38 @@ export class InputLoadNameComponent implements OnInit {
       this.three.ChangePage(caseNo);
     },
     change: (evt, ui) => {
-      const target = ui.updateList[0];
-      this.three.changeData("load_names", target.rowIndx);
+      let target: any = null;
+      for (let i = 0; i < ui.updateList.length; i++) {
+        target = ui.updateList[i];
+
+        const r = this.helper.toNumber(target.rowData["rate"]);
+        const s = this.helper.toNumber(target.rowData["symbol"]);
+        const fm = this.helper.toNumber(target.rowData["fix_member"]);
+        const fn = this.helper.toNumber(target.rowData["fix_node"]);
+        const e = this.helper.toNumber(target.rowData["element"]);
+        const j = this.helper.toNumber(target.rowData["joint"]);
+        const n = target.rowData["name"];
+
+        if (
+          r === null &&
+          s === null &&
+          (n === "" || n === undefined) &&
+          fm === null &&
+          fn === null &&
+          e === null &&
+          j === null
+        ) {
+          this.setNewList(target.rowIndx + 1);
+        }
+      }
+      if( target !== null ){
+        this.three.changeData("load_names", target.rowIndx + 1 );
+      }
     },
   };
+
+  public setNewList(index) {
+    this.data.partClear(index);
+    this.threeload.removeCase(index);
+  }
 }
