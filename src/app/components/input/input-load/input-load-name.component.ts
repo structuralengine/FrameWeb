@@ -167,13 +167,13 @@ export class InputLoadNameComponent implements OnInit {
         if (
           r === null &&
           s === null &&
-          n === undefined &&
+          (n === "" || n === undefined) &&
           fm === null &&
           fn === null &&
           e === null &&
           j === null
         ) {
-          let newList = this.setNewList(target.rowIndx + 1);
+          this.setNewList(target.rowIndx + 1);
         } else {
           this.three.changeData("load_names", target.rowIndx);
         }
