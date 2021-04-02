@@ -102,7 +102,7 @@ export class ThreeNodesService {
       } else {
         // ジオメトリを生成してシーンに追加
         const mesh = new THREE.Mesh(this.geometry,
-          new THREE.MeshBasicMaterial({ color: 0x000000 }));
+          new THREE.MeshBasicMaterial({ color: 0X00A5FF }));
         mesh.name = 'node' + key;
         mesh.position.x = jsonData[key].x;
         mesh.position.y = jsonData[key].y;
@@ -119,6 +119,7 @@ export class ThreeNodesService {
         const label = new CSS2DObject(div);
         label.position.set(0, 0.27, 0);
         label.name = 'font';
+        
         label.visible = this.txtVisible;
         mesh.add(label);
       }
