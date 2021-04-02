@@ -565,6 +565,7 @@ export class InputLoadService {
     if (load2.length === 0) {
       return new Array();
     }
+    // 少なくともこの行では load2 に何か入っている
 
     // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
     for (let j = 0; j < load2.length; j++) {
@@ -579,8 +580,23 @@ export class InputLoadService {
       }
     }
 
-    // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
+    //入れ替え
     let i = 0;
+    do {
+      const row = load2[i];
+      if (row.m2 < 0) {
+        if (Math.abs(row.m1) > Math.abs(row.m2)) {
+          let aaa = row.m1;
+          let bbb = -row.m2;
+          row.m2 = -aaa;
+          row.m1 = bbb;
+        }
+      }
+      i += 1;
+    } while (i < load2.length);
+
+    // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
+    i = 0;
     let curNo = -1;
     let curPos = 0;
     do {
@@ -602,7 +618,7 @@ export class InputLoadService {
     // 要素番号 m1 != m2 の場合の入力を分ける -----------------------
     i = 0;
     do {
-      const targetLoad = load2[i];
+      const targetLoad = load2[i]; // なのに、この行では load2 が空だ
       const m1 = this.helper.toNumber(targetLoad.m1);
       const m2 = this.helper.toNumber(targetLoad.m2);
       if (m1 < m2) {
