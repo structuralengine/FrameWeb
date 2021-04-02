@@ -153,8 +153,9 @@ export class InputLoadNameComponent implements OnInit {
       this.three.ChangePage(caseNo);
     },
     change: (evt, ui) => {
+      let target: any = null;
       for (let i = 0; i < ui.updateList.length; i++) {
-        const target = ui.updateList[i];
+        target = ui.updateList[i];
 
         const r = this.helper.toNumber(target.rowData["rate"]);
         const s = this.helper.toNumber(target.rowData["symbol"]);
@@ -174,9 +175,10 @@ export class InputLoadNameComponent implements OnInit {
           j === null
         ) {
           this.setNewList(target.rowIndx + 1);
-        } else {
-          this.three.changeData("load_names", target.rowIndx);
         }
+      }
+      if( target !== null ){
+        this.three.changeData("load_names", target.rowIndx + 1 );
       }
     },
   };
