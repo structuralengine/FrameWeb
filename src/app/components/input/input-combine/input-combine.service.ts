@@ -19,14 +19,33 @@ export class InputCombineService {
   public getCombineDataColumns(row: number, col: number): any {
 
     let result: any = null;
+//    const temp = [];
+//    for (let i = 0; i < this.combine.length; i++) {
+      const i = this.combine.findIndex((element) => element.row === row);
+      if(i >= 0){
+      console.log(i);
+      const line = {row : this.combine[i].row, name : this.combine[i].name}
+      for (let j = 1; j <= col; j++) {
+        const key = 'C' + j;
+        if(key in this.combine[i]){
+          line[key] = this.combine[i][key];
+        }
+      }
+      this.combine[i] = line;
+    }
+//      this.combine[row] = line;
+//    }
+//    this.combine = temp; 
 
+
+    console.log(row,col);
     for (let i = 0; i < this.combine.length; i++) {
       const tmp = this.combine[i];
       if (tmp['row'] === row) {
         result = tmp;
-        for (let i = 1; i <= col; i++) {
-          if(result['C' + i] === 0){
-            result['C' + i] = null;
+        for (let j = 1; j <= col; j++) {
+          if(result['C' + j] === 0){
+            result['C' + j] = null;
           }
         }
         break;
@@ -42,6 +61,9 @@ export class InputCombineService {
       }
       this.combine.push(result);
     }
+
+
+
     return result;
   }
 
