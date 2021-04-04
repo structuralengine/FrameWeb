@@ -7,6 +7,7 @@ import { ThreeService } from "../../three/three.service";
 
 import { ResultPickupFsecService } from "../result-pickup-fsec/result-pickup-fsec.service";
 import { AppComponent } from "src/app/app.component";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-result-combine-fsec",
@@ -34,7 +35,8 @@ export class ResultCombineFsecComponent implements OnInit {
     private comb: InputCombineService,
     private result: ResultDataService,
     private three: ThreeService,
-    private pic: ResultPickupFsecService
+    private pic: ResultPickupFsecService,
+    private helper: DataHelperModule
   ) {
     this.dataset = new Array();
     this.KEYS = this.data.fsecKeys;
@@ -74,5 +76,20 @@ export class ResultCombineFsecComponent implements OnInit {
 
     this.three.ChangeMode('comb_fsec');
     this.three.ChangePage(currentPage);
+  }
+
+   /* To copy Text from Textbox */
+   copyInputMessage($tbody) {
+    const selBox = document.createElement("textarea");
+    selBox.style.position = "fixed";
+    selBox.style.left = "0";
+    selBox.style.top = "0";
+    selBox.style.opacity = "0";
+    selBox.value = this.helper.table_To_text($tbody);
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand("copy");
+    document.body.removeChild(selBox);
   }
 }

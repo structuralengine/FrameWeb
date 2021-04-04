@@ -1,13 +1,11 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from "@angular/core";
 
 @NgModule({
   imports: [],
-  exports: []
+  exports: [],
 })
-
 export class DataHelperModule {
-
-  constructor() { }
+  constructor() {}
 
   // 文字列string を数値にする
   public toNumber(num: string, digit: number = null): number {
@@ -15,9 +13,9 @@ export class DataHelperModule {
     try {
       const tmp: string = num.toString().trim();
       if (tmp.length > 0) {
-        result = ((n: number) => isNaN(n) ? null : n)(+tmp);
+        result = ((n: number) => (isNaN(n) ? null : n))(+tmp);
       }
-    } catch{
+    } catch {
       result = null;
     }
     if (digit != null) {
@@ -29,7 +27,6 @@ export class DataHelperModule {
 
   // ２つのオブジェクトが同じものかどうか判定する
   public objectEquals(a: any, b: any): boolean {
-
     if (a === b) {
       // 同一インスタンスならtrueを返す
       return true;
@@ -56,4 +53,25 @@ export class DataHelperModule {
     return wrongIndex === -1;
   }
 
+  public table_To_text(wTABLE) {
+    var wRcString = "";
+    var wTR = wTABLE.rows;
+    for (var i = 0; i < wTR.length; i++) {
+      var wTD = wTABLE.rows[i].cells;
+      var wTR_Text = "";
+      for (var j = 0; j < wTD.length; j++) {
+        const a: string = wTD[j].innerText;
+        const b = a.replace(" ", "");
+        const c = b.replace("\n", "");
+        wTR_Text += c;
+        if (j === wTD.length - 1) {
+          wTR_Text += "";
+        } else {
+          wTR_Text += "\t";
+        }
+      }
+      wRcString += wTR_Text + "\r\n";
+    }
+    return wRcString;
+  }
 }

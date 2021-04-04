@@ -2,7 +2,7 @@
   <nav>
     <a routerLink="/result-fsec" class="btn-change active">基本ケース</a>
     <a routerLink="/result-comb_fsec" [class]="btnCombine">COMBINE</a>
-    <a routerLink="/result-pic_fsec"  [class]="btnPickup">PICKUP</a>
+    <a routerLink="/result-pic_fsec" [class]="btnPickup">PICKUP</a>
   </nav>
 </div>
 
@@ -11,8 +11,18 @@
   <p class="load-name">{{ load_name }}</p>
 </div>
 
+<div class="helper">
+  <ul>
+    <li>
+      <a class="copy" (click)="copyInputMessage(userinput)"
+        ><i class="far fa-copy"></i
+      ></a>
+    </li>
+  </ul>
+</div>
+
 <div class="result_table">
-  <table>
+  <table #userinput id="userinput">
     <thead>
       <tr>
         <th class="result-sm">部材No</th>

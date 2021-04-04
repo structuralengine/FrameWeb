@@ -12,15 +12,30 @@
 </div>
 
 <div *ngFor="let r of KEYS; index as i">
-  <input id="{{ TITLES[i] }}" class="acd-check" type="checkbox" [checked]="i == 0" />
+  <input
+    id="{{ TITLES[i] }}"
+    class="acd-check"
+    type="checkbox"
+    [checked]="i == 0"
+  />
   <label class="acd-label" for="{{ TITLES[i] }}">
     <div class="conbine-title acd">
       {{ TITLES[i] }}<i class="fas fa-sort-down"></i>
     </div>
   </label>
+
   <div class="acd-content">
+    <div class="helper">
+      <ul>
+        <li>
+          <a class="copy" (click)="copyInputMessage(userinput)"
+            ><i class="far fa-copy"></i
+          ></a>
+        </li>
+      </ul>
+    </div>
     <div class="result_table">
-      <table class="acd">
+      <table #userinput id="userinput">
         <thead>
           <tr>
             <th class="result-sm">部材No</th>

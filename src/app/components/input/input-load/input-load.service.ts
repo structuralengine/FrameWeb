@@ -625,7 +625,7 @@ export class InputLoadService {
         const newLoads = this.getMemberRepeatLoad(targetLoad);
         load2.splice(i, 1);
         for (let j = 0; j < newLoads.length; j++) {
-          load2.push(newLoads);
+          load2.push(newLoads[j]);
         }
       } else {
         i = i + 1;

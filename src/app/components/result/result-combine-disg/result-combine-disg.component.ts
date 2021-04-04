@@ -3,6 +3,7 @@ import { ResultCombineDisgService } from "./result-combine-disg.service";
 import { InputCombineService } from "../../input/input-combine/input-combine.service";
 import { ThreeService } from "../../three/three.service";
 import { ResultPickupDisgService } from "../result-pickup-disg/result-pickup-disg.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-result-combine-disg",
@@ -27,7 +28,8 @@ export class ResultCombineDisgComponent implements OnInit {
     private data: ResultCombineDisgService,
     private comb: InputCombineService,
     private three: ThreeService,
-    private pic: ResultPickupDisgService
+    private pic: ResultPickupDisgService,
+    private helper: DataHelperModule
   ) {
     this.dataset = new Array();
     this.KEYS = this.data.disgKeys;
@@ -66,5 +68,20 @@ export class ResultCombineDisgComponent implements OnInit {
 
     this.three.ChangeMode('comb_disg');
     this.three.ChangePage(currentPage);
+  }
+
+   /* To copy Text from Textbox */
+   copyInputMessage($tbody) {
+    const selBox = document.createElement("textarea");
+    selBox.style.position = "fixed";
+    selBox.style.left = "0";
+    selBox.style.top = "0";
+    selBox.style.opacity = "0";
+    selBox.value = this.helper.table_To_text($tbody);
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand("copy");
+    document.body.removeChild(selBox);
   }
 }
