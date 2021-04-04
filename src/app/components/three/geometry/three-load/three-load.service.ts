@@ -29,6 +29,7 @@ export class ThreeLoadService {
   // 全ケースの荷重を保存
   private AllCaseLoadList: {};
   private currentIndex: string;
+  private currentIndex_child: string;
 
   // 荷重のテンプレート
   private distributeLoad: ThreeLoadDistribute; // 分布荷重のテンプレート
@@ -77,6 +78,7 @@ export class ThreeLoadService {
     });
     this.AllCaseLoadList = {};
     this.currentIndex = null;
+    this.currentIndex_child = null;
 
     // 節点、部材データ
     this.nodeData = null;
@@ -237,6 +239,33 @@ export class ThreeLoadService {
 
     this.scene.add(ThreeObject); // シーンに追加
   }
+
+    //シートの選択行が指すオブジェクトをハイライトする
+    public selectChange(index): void{
+      const id: string = this.currentIndex;
+      console.log("three-load.service.ts selectChange index =", index);
+      console.log(this.AllCaseLoadList[id]);
+  
+      if (this.currentIndex_child === index){
+        //選択行の変更がないとき，何もしない
+        return
+      }
+  /*
+      //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
+      for (let item of this.memberList.children){
+  
+        item['material']['color'].setHex(0X000000);
+  
+        if (item.name === 'member' + index.toString()){
+  
+          item['material']['color'].setHex(0X00A5FF);
+        }
+      }
+  
+      this.currentIndex_child = index;
+  */
+      this.scene.render();
+    }
 
   // ケースの荷重図を消去する
   public removeCase(id: string): void {

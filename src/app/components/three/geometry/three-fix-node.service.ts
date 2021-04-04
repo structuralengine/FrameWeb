@@ -16,6 +16,8 @@ export class ThreeFixNodeService {
 
   private fixnodeList: any[];
   private isVisible: boolean;
+  private currentIndex: string;
+  private currentIndex_sub: string;
 
   // 大きさを調整するためのスケール
   private scale: number;
@@ -29,6 +31,8 @@ export class ThreeFixNodeService {
 
     this.fixnodeList = new Array();
     this.isVisible = null;
+    this.currentIndex = null;
+    this.currentIndex_sub = null;
 
     // gui
     this.scale = 1.0;
@@ -135,7 +139,7 @@ export class ThreeFixNodeService {
         } else if (position.x > this.center().x) {
           spring.relationship = 'large';
         }
-        this.CreateSpring(spring, position, this.baseScale());
+        this.CreateSpring(spring, position, this.baseScale(), target.n);
       }
       if (target.ty ** 2 !== 0 && target.ty ** 2 !== 1) {
         spring.color = 0x00ff00;
@@ -145,7 +149,7 @@ export class ThreeFixNodeService {
         } else if (position.y > this.center().y) {
           spring.relationship = 'large';
         }
-        this.CreateSpring(spring, position, this.baseScale());
+        this.CreateSpring(spring, position, this.baseScale(), target.n);
       }
       if (target.tz ** 2 !== 0 && target.tz ** 2 !== 1) {
         spring.color = 0x0000ff;
@@ -155,7 +159,7 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           spring.relationship = 'large';
         }
-        this.CreateSpring(spring, position, this.baseScale());
+        this.CreateSpring(spring, position, this.baseScale(), target.n);
       }
 
       // 回転バネ支点の分岐
@@ -163,17 +167,17 @@ export class ThreeFixNodeService {
       if (target.rx ** 2 !== 0 && target.rx ** 2 !== 1) {
         rotatingspring.color = 0xff0000;
         rotatingspring.direction = 'x'
-        this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
+        this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.n);
       }
       if (target.ry ** 2 !== 0 && target.ry ** 2 !== 1) {
         rotatingspring.color = 0x00ff00;
         rotatingspring.direction = 'y';
-        this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
+        this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.n);
       }
       if (target.rz ** 2 !== 0 && target.rz ** 2 !== 1) {
         rotatingspring.color = 0x0000ff;
         rotatingspring.direction = 'z';
-        this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
+        this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.n);
       }
 
       // 完全な固定支点の分岐
@@ -195,7 +199,7 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           fixed_Parfect.relationshipZ = 'large';
         }
-        this.CreateFixed_P(fixed_Parfect, position, this.baseScale());
+        this.CreateFixed_P(fixed_Parfect, position, this.baseScale(), target.n);
         continue;
       }
 
@@ -207,7 +211,7 @@ export class ThreeFixNodeService {
         } else if (position.x > this.center().x) {
           pin['relationship'] = 'large';
         }
-        this.CreatePin(pin, position, this.baseScale());
+        this.CreatePin(pin, position, this.baseScale(), target.n);
       }
       if( target.ty === 1 ){
         const pin = { direction: 'y', color: 0x00ff00 };
@@ -216,7 +220,7 @@ export class ThreeFixNodeService {
         } else if (position.y > this.center().y) {
           pin['relationship'] = 'large';
         }
-        this.CreatePin(pin, position, this.baseScale());
+        this.CreatePin(pin, position, this.baseScale(), target.n);
       }
       if( target.tz === 1 ){
         const pin = { direction: 'z', color: 0x0000ff };
@@ -225,7 +229,7 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           pin['relationship'] = 'large';
         }
-        this.CreatePin(pin, position, this.baseScale());
+        this.CreatePin(pin, position, this.baseScale(), target.n);
       }
 
       // 固定支点の分岐
@@ -238,7 +242,7 @@ export class ThreeFixNodeService {
         } else if (position.x > this.center().x) {
           fixed.relationship = 'large';
         }
-        this.CreateFixed(fixed, position, this.baseScale());
+        this.CreateFixed(fixed, position, this.baseScale(), target.n);
       }
       if (target.ry === 1) {
         fixed.color = 0x00ff00;
@@ -248,7 +252,7 @@ export class ThreeFixNodeService {
         } else if (position.y > this.center().y) {
           fixed.relationship = 'large';
         }
-        this.CreateFixed(fixed, position, this.baseScale());
+        this.CreateFixed(fixed, position, this.baseScale(), target.n);
       }
       if (target.rz === 1) {
         fixed.color = 0x0000ff;
@@ -258,7 +262,7 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           fixed.relationship = 'large';
         }
-        this.CreateFixed(fixed, position, this.baseScale());
+        this.CreateFixed(fixed, position, this.baseScale(), target.n);
       }
 
     }
@@ -267,7 +271,7 @@ export class ThreeFixNodeService {
   }
 
   // ピン支点を描く
-  public CreatePin(pin, position, maxLength) {
+  public CreatePin(pin, position, maxLength, n) {
 
     const height: number = maxLength * 0.2;
     const radius: number = height * 0.3;
@@ -276,6 +280,7 @@ export class ThreeFixNodeService {
     const material = new THREE.MeshBasicMaterial({ color: pin.color });
     const cone = new THREE.Mesh(geometry, material);
     cone.position.set(position.x, position.y, position.z);
+    cone.name = 'fixnode' + n.toString() + 't' + pin.direction.toString();  //例：fixnode2ty
     
     switch (pin.direction) {
       case 'x':
@@ -315,11 +320,12 @@ export class ThreeFixNodeService {
 
 
   // 固定支点を描く
-  public CreateFixed(fixed, position, maxLength) {
+  public CreateFixed(fixed, position, maxLength, n) {
     const side = 0.06 * maxLength;
     let geometry = new THREE.PlaneBufferGeometry(side, 2.5 * side);
     const material = new THREE.MeshBasicMaterial({ color: fixed.color, side: THREE.DoubleSide });
     const plane = new THREE.Mesh(geometry, material);
+    plane.name = 'fixnode' + n.toString() + 'r' + fixed.direction.toString();  //例：fixnode2ry
     let x = position.x;
     let y = position.y;
     let z = position.z;
@@ -339,13 +345,14 @@ export class ThreeFixNodeService {
   }
 
   // 完全な固定支点を描く
-  public CreateFixed_P(fixed_Parfect, position, maxLength) {
+  public CreateFixed_P(fixed_Parfect, position, maxLength, n) {
     fixed_Parfect.color = 0x808080;
     const size = 0.2 * maxLength;
     const geometry = new THREE.BoxBufferGeometry(size, size, size);
     const material = new THREE.MeshBasicMaterial({ color: fixed_Parfect.color });
     const cube = new THREE.Mesh(geometry, material);
-    switch (fixed_Parfect.directionX) {
+    cube.name = 'fixnode' + n.toString() + 'tp';  //例：fixnode2tx
+    /*switch (fixed_Parfect.directionX) {
       case 'small': position.x = position.x - size / 2;
         break;
       case 'large': position.x = position.x + size / 2;
@@ -362,14 +369,14 @@ export class ThreeFixNodeService {
         break;
       case 'large': position.z = position.z + size / 2;
         break;
-    };
+    };*/
     cube.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(cube);
     this.scene.add(cube);
   }
 
   // バネ支点を描く
-  public CreateSpring(spring, position, maxLength) {
+  public CreateSpring(spring, position, maxLength, n) {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     let increase = 0.00015;
@@ -411,13 +418,14 @@ export class ThreeFixNodeService {
     const line = new THREE.LineBasicMaterial({ color: spring.color });
     const mesh = new THREE.Line(geometry, line);
     mesh.position.set(position.x, position.y, position.z);
+    mesh.name = 'fixnode' + n.toString() + 't' + spring.direction.toString();  //例：fixnode2ty
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
     geometry = new THREE.BufferGeometry();
   }
 
   // 回転バネ支点を描く
-  public CreateRotatingSpring(rotatingspring, position, maxLength) {
+  public CreateRotatingSpring(rotatingspring, position, maxLength, n) {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     const laps = 3 + 0.25;
@@ -449,9 +457,54 @@ export class ThreeFixNodeService {
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
     const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
     const mesh = new THREE.Line(geometry, line);
+    mesh.name = 'fixnode' + n.toString() + 'r' + rotatingspring.direction.toString();  //例：fixnode2ry
     mesh.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
+  }
+
+  //シートの選択行が指すオブジェクトをハイライトする
+  public selectChange(index, index_sub): void{
+
+    if (this.currentIndex === index && this.currentIndex_sub === index_sub){
+      //選択行の変更がないとき，何もしない
+      return
+    }
+
+    let column = "";
+    const column_sub = "tp"
+    if (index_sub === 1){
+      column = "tx"
+    } else if (index_sub === 2) {
+      column = "ty"
+    } else if (index_sub === 3) {
+      column = "tz"
+    } else if (index_sub === 4) {
+      column = "rx"
+    } else if (index_sub === 5) {
+      column = "ry"
+    } else if (index_sub === 6) {
+      column = "rz"
+    } else {
+      console.log("-----error-----three-fixnode.service.ts-----error-----");
+    }
+
+    //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
+    for (let item of this.fixnodeList){
+
+      item['material']['color'].setHex(0X000000);
+
+      if (item.name === 'fixnode' + index.toString() + column ||
+          item.name === 'fixnode' + index.toString() + column_sub ){
+
+        item['material']['color'].setHex(0X00A5FF);
+      }
+    }
+
+    this.currentIndex = index;
+    this.currentIndex_sub = index_sub;
+
+    this.scene.render();
   }
 
   // データをクリアする

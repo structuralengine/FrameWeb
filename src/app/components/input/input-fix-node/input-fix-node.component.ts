@@ -103,7 +103,8 @@ export class InputFixNodeComponent implements OnInit {
     selectEnd: (evt, ui) => {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
-      this.three.selectChange('fix_nodes', row);
+      const column = range[0].c1;
+      this.three.selectChange('fix_nodes', row, column);
     },
     change: (evt, ui) => {
       this.three.changeData('fix_nodes', this.page);

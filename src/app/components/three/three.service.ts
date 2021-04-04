@@ -115,8 +115,38 @@ export class ThreeService {
 
   //////////////////////////////////////////////////////
   // データの選択を処理する
-  public selectChange(mode: string, index: number): void {
-    console.log("selectChange", mode, index);
+  public selectChange(mode: string, index: number, index_sub: number): void {
+    console.log("selectChange", mode, index, index_sub);
+
+    switch (mode) {
+      case "nodes":
+        this.node.selectChange(index);
+        break;
+      
+      case "members":
+        this.member.selectChange(index);
+        break;
+
+      case "joints":
+        this.joint.selectChange(index, index_sub);
+        break;
+
+      case "fix_nodes":
+        this.fixNode.selectChange(index, index_sub);
+        break;
+
+      case "fix_member":
+        this.fixMember.selectChange(index, index_sub);
+        break;
+
+      case "load_names":
+        //this.load.selectChange(index);
+        break;
+  
+      case "load_values":
+        //this.load.selectChange(index);
+        break;
+    }
   }
 
   //////////////////////////////////////////////////////
