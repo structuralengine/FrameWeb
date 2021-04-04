@@ -91,9 +91,9 @@ export class AppComponent implements OnInit {
       .printDocument('invoice', invoiceIds);
   }
 
-  login() {
-    this.authService.googleLogin();
-  }
+  // login() {
+  //   this.authService.googleLogin();
+  // }
   logout() {
     this.authService.signOut();
   }
