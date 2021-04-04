@@ -2,3 +2,28 @@
     position: fixed;
     top: 300px !important;
 }
+
+#download {
+  display: none;
+}
+
+#myCanvas{
+    position: relative;
+}
+
+
+i.fas {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+  }
+
+  .camera{
+    bottom: 20px;
+    right: 20px;
+    position: absolute;
+    z-index: 2;
+    font-size: 30px;
+    color: #333333;
+    padding: 16px;
+  }

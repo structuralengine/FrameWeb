@@ -41,9 +41,11 @@ export class SceneService {
 
     // gui
     this.params = {
-      GridHelper: true
+      GridHelper: true,
     };
   }
+
+
 
   public OnInit(aspectRatio: number,
                 canvasElement: HTMLCanvasElement,
@@ -122,6 +124,7 @@ export class SceneService {
                       Width: number,
                       Height: number): void {
     this.renderer = new THREE.WebGLRenderer({
+      preserveDrawingBuffer: true,
       canvas: canvasElement,
       alpha: true,    // transparent background
       antialias: true // smooth edges
