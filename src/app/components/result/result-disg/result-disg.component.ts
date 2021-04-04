@@ -8,6 +8,7 @@ import { ResultCombineDisgService } from "../result-combine-disg/result-combine-
 import { ResultPickupDisgService } from "../result-pickup-disg/result-pickup-disg.service";
 
 import { AppComponent } from "src/app/app.component";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-result-disg",
@@ -30,7 +31,8 @@ export class ResultDisgComponent implements OnInit {
     private load: InputLoadService,
     private three: ThreeService,
     private comb: ResultCombineDisgService,
-    private pic: ResultPickupDisgService
+    private pic: ResultPickupDisgService,
+    private helper: DataHelperModule
   ) {
     this.dataset = new Array();
   }
@@ -67,5 +69,20 @@ export class ResultDisgComponent implements OnInit {
 
     this.three.ChangeMode('disg');
     this.three.ChangePage(currentPage);
+  }
+
+   /* To copy Text from Textbox */
+   copyInputMessage($tbody) {
+    const selBox = document.createElement("textarea");
+    selBox.style.position = "fixed";
+    selBox.style.left = "0";
+    selBox.style.top = "0";
+    selBox.style.opacity = "0";
+    selBox.value = this.helper.table_To_text($tbody);
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand("copy");
+    document.body.removeChild(selBox);
   }
 }

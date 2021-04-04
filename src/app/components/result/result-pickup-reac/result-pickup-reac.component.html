@@ -38,9 +38,19 @@
       {{ TITLES[i] }}<i class="fas fa-sort-down"></i>
     </div>
   </label>
+
   <div class="acd-content">
+    <div class="helper">
+      <ul>
+        <li>
+          <a class="copy" (click)="copyInputMessage(userinput)"
+            ><i class="far fa-copy"></i
+          ></a>
+        </li>
+      </ul>
+    </div>
     <div class="result_table">
-      <table class="acd">
+      <table #userinput id="userinput">
         <thead>
           <tr>
             <th class="result-sm">節点No</th>
