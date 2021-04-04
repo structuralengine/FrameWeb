@@ -15,8 +15,8 @@ import { PrintService } from "../../print.service";
 export class PrintInputDefineComponent implements OnInit, AfterViewInit {
   page: number;
   load_name: string;
-  countCell: number  = 0;
-  countHead: number  = 0;
+  countCell: number = 0;
+  countHead: number = 0;
   countTotal: number = 0;
   btnPickup: string;
   tableHeight: number;
@@ -41,7 +41,6 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
     const defineJson: any = this.printService.defineJson;
     if (Object.keys(defineJson).length > 0) {
       const tables = this.printDefine(defineJson);
@@ -72,10 +71,15 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
 
       // 印刷する1行分のリストを作る
       let line: string[] = new Array();
-     // line.push(index); // DefineNo
+      // line.push(index); // DefineNo
       let counter: number = 0;
+      let kk = Object.keys(item);
+      const iid = kk[0];
+      line.push(item[iid]);
+      kk.sort();
 
-      for (const key of Object.keys(item)) {
+      for (let ii = 0; ii < kk.length - 1; ii++) {
+        const key = kk[ii];
         //  if (key === 'row') { continue; }
         line.push(item[key]);
         counter += 1;

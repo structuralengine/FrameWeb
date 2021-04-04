@@ -123,16 +123,16 @@ export class LoginDialogComponent implements OnInit {
     });
   }
 
-  loginGoogle() {
-    this.auth.googleLogin().then((value) => {
-      this.activeModal.close('Submit');
-      this.user.loggedIn = true;
-      console.log(value);
-    // this.user.loggedIn = true;
-    }).catch((error) => {
-      alert("メールアドレスまたはパスワードを間違えています。");
-    });
-  }
+  // loginGoogle() {
+  //   this.auth.googleLogin().then((value) => {
+  //     this.activeModal.close('Submit');
+  //     this.user.loggedIn = true;
+  //     console.log(value);
+  //   // this.user.loggedIn = true;
+  //   }).catch((error) => {
+  //     alert("メールアドレスまたはパスワードを間違えています。");
+  //   });
+  // }
 
   logout() {
     this.auth.signOut();

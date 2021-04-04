@@ -40,8 +40,8 @@
         </div>
     </div>
     <button class="btn btn-outline-success" (click)="login()">ログイン</button>
-    <div *ngIf="auth.user | async as user; else showLogin">
-    </div>
+    <!-- <div *ngIf="auth.user | async as user; else showLogin">
+    </div> -->
     <!-- <ng-template #showLogin>
         <button class="btn btn-primary ml-2" (click)="loginGoogle()">Login with Google</button>
     </ng-template> -->
