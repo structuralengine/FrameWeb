@@ -122,7 +122,12 @@ export class ThreeLoadAxial {
 
     // 全体の向きを修正する
     const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-    group.rotateZ(Math.asin(XY.y));
+    let A = Math.asin(XY.y);
+
+      if( XY.x < 0){
+       A = Math.PI - A;
+      }
+    group.rotateZ(A);
 
     const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
