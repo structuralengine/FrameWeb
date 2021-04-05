@@ -20,11 +20,13 @@ export class ThreeComponent implements AfterViewInit {
     return this.canvasRef.nativeElement;
   }
 
+  fileName: string;
+
   constructor(private ngZone: NgZone,
               private scene: SceneService,
               private three: ThreeService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
-
+    
   }
 
 
@@ -106,7 +108,7 @@ export class ThreeComponent implements AfterViewInit {
       // this.scene.render();
       this.img.nativeElement.src = canvas.toDataURL();
       this.downloadLink.nativeElement.href = canvas.toDataURL('image/png');
-      this.downloadLink.nativeElement.download = 'marble-diagram.png';
+      this.downloadLink.nativeElement.download = this.fileName;
       this.downloadLink.nativeElement.click();
     });
   }

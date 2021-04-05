@@ -1,29 +1,31 @@
 #gui_css {
-    position: fixed;
-    top: 300px !important;
+  position: fixed;
+  top: 300px !important;
 }
 
 #download {
   display: none;
 }
 
-#myCanvas{
-    position: relative;
+#myCanvas {
+  position: relative;
 }
 
-
 i.fas {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
+.camera {
+  bottom: 20px;
+  right: 20px;
+  position: absolute;
+  z-index: 2;
+  font-size: 30px;
+  color: #333333;
+  padding: 16px;
+  &:hover{
+    cursor: pointer;
+    opacity: 0.7;
   }
-
-  .camera{
-    bottom: 20px;
-    right: 20px;
-    position: absolute;
-    z-index: 2;
-    font-size: 30px;
-    color: #333333;
-    padding: 16px;
-  }
+}
