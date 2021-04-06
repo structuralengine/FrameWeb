@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 import { SceneService } from './scene.service';
 import { ThreeService } from './three.service';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-three',
@@ -11,9 +12,9 @@ import { ThreeService } from './three.service';
 })
 export class ThreeComponent implements AfterViewInit {
 
-
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
-
+  @ViewChild('canvas') img: ElementRef;
+  @ViewChild('downloadLink') downloadLink: ElementRef;
 
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
@@ -23,7 +24,9 @@ export class ThreeComponent implements AfterViewInit {
               private scene: SceneService,
               private three: ThreeService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
+
   }
+
 
   ngAfterViewInit() {
     this.scene.OnInit(this.getAspectRatio(),
@@ -31,12 +34,12 @@ export class ThreeComponent implements AfterViewInit {
                       devicePixelRatio,
                       window.innerWidth,
                       window.innerHeight - 120);
-    this.three.OnInit();                  
+    this.three.OnInit();
+
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.labelRendererDomElement();
     const div = document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
-
     // レンダリングする
     this.animate();
   }
@@ -95,6 +98,17 @@ export class ThreeComponent implements AfterViewInit {
       return 0;
     }
     return this.canvas.clientWidth / this.canvas.clientHeight;
+  }
+
+
+  public downloadImage(){
+    html2canvas(this.canvasRef.nativeElement).then(canvas => {
+      // this.scene.render();
+      this.img.nativeElement.src = canvas.toDataURL();
+      this.downloadLink.nativeElement.href = canvas.toDataURL('image/png');
+      this.downloadLink.nativeElement.download = 'marble-diagram.png';
+      this.downloadLink.nativeElement.click();
+    });
   }
 
 }

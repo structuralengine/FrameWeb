@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import * as THREE from "three";
-import { Vector2 } from 'three';
+import { Vector2 } from "three";
 
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ThreeLoadDistribute {
-
   private text: ThreeLoadText;
   private dim: ThreeLoadDimension;
   private face_mat_Red: THREE.MeshBasicMaterial;
@@ -20,11 +19,10 @@ export class ThreeLoadDistribute {
   private line_mat_Green: THREE.LineBasicMaterial;
   private line_mat_Blue: THREE.LineBasicMaterial;
 
-
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
     this.dim = dim;
-    this.face_mat_Red =  new THREE.MeshBasicMaterial({
+    this.face_mat_Red = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
       color: 0xff0000,
@@ -46,7 +44,6 @@ export class ThreeLoadDistribute {
     this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
     this.line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     this.line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
-
   }
 
   /// 等分布荷重を編集する
@@ -71,7 +68,6 @@ export class ThreeLoadDistribute {
     P1: number,
     P2: number
   ): THREE.Group {
-
     const offset: number = 0;
     const height: number = 1;
 
@@ -81,12 +77,11 @@ export class ThreeLoadDistribute {
     const child = new THREE.Group();
 
     // 長さを決める
-    const p  = this.getPoints(
-      nodei, nodej, direction, pL1, pL2, P1, P2, height);
+    const p = this.getPoints(nodei, nodej, direction, pL1, pL2, P1, P2, height);
 
     const points: THREE.Vector3[] = p.points;
     const L1 = p.L1;
-    const L  = p.L;
+    const L = p.L;
     const L2 = p.L2;
 
     // 面
@@ -99,7 +94,7 @@ export class ThreeLoadDistribute {
     const dim = this.getDim(points, L1, L, L2);
     dim.visible = false;
     child.add(dim);
-    */  
+    */
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -117,34 +112,49 @@ export class ThreeLoadDistribute {
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
-    group['value'] = p.Pmax; // 大きい方の値を保存　
-    
-    group.position.set(nodei.x, nodei.y, nodei.z);
+    group["value"] = p.Pmax; // 大きい方の値を保存
 
+  
     // 全体の向きを修正する
 
-    if (direction.indexOf('g') < 0){
+    if (direction.indexOf("g") < 0) {
+    
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-      group.rotateZ(Math.asin(XY.y));
+      let A = Math.asin(XY.y) 
 
-      const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
+      if( XY.x < 0){
+       A = Math.PI - A;
+      }
+      group.rotateZ(A);
+
+      const lenXY = Math.sqrt(
+        Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2)
+      );
       const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
       group.rotateY(-Math.asin(XZ.y));
 
-
-      if (direction === "z") {
-        group.rotateX(-Math.PI / 2);
-      } else if (direction === "y") {
-        group.rotateX(Math.PI);
+      if (localAxis.x.x === 0 && localAxis.x.y === 0) {
+        // 鉛直の部材
+        if (direction === "z") {
+          group.rotateX(-Math.PI);
+        } else if (direction === "y") {
+          group.rotateX(Math.PI / 2);
+        }
+      } else {
+        if (direction === "z") {
+          group.rotateX(-Math.PI / 2);
+        } else if (direction === "y") {
+          group.rotateX(Math.PI);
+        }
       }
-      
+    
     } else if (direction === "gx") {
-      group.rotation.z = Math.asin(-Math.PI/2);
-
+      group.rotation.z = Math.asin(-Math.PI / 2);
     } else if (direction === "gz") {
-      group.rotation.x = Math.asin(-Math.PI/2);
-
+      group.rotation.x = Math.asin(-Math.PI / 2);
     }
+
+    group.position.set(nodei.x, nodei.y, nodei.z);
 
     group.name = "DistributeLoad";
 
@@ -170,23 +180,28 @@ export class ThreeLoadDistribute {
     pL2: number,
     P1: number,
     P2: number,
-    height: number,
+    height: number
   ): any {
-
     const len = nodei.distanceTo(nodej);
 
     let LL: number = len;
 
     // 絶対座標系荷重の距離変換を行う
     if (direction === "gx") {
-      LL = new THREE.Vector2(nodei.z, nodei.y).distanceTo(new THREE.Vector2(nodej.z, nodej.y));
+      LL = new THREE.Vector2(nodei.z, nodei.y).distanceTo(
+        new THREE.Vector2(nodej.z, nodej.y)
+      );
     } else if (direction === "gy") {
-      LL = new THREE.Vector2(nodei.x, nodei.z).distanceTo(new THREE.Vector2(nodej.x, nodej.z));
+      LL = new THREE.Vector2(nodei.x, nodei.z).distanceTo(
+        new THREE.Vector2(nodej.x, nodej.z)
+      );
     } else if (direction === "gz") {
-      LL = new THREE.Vector2(nodei.x, nodei.y).distanceTo(new THREE.Vector2(nodej.x, nodej.y));
+      LL = new THREE.Vector2(nodei.x, nodei.y).distanceTo(
+        new THREE.Vector2(nodej.x, nodej.y)
+      );
     }
-    const L1 = pL1 * len / LL;
-    const L2 = pL2 * len / LL;
+    const L1 = (pL1 * len) / LL;
+    const L2 = (pL2 * len) / LL;
     const L: number = len - L1 - L2;
 
     // 荷重原点
@@ -194,13 +209,13 @@ export class ThreeLoadDistribute {
     // 絶対座標系における荷重原点
     if (direction === "gx") {
       const xHeight = Math.abs(nodei.x - nodej.x);
-      y0 = xHeight  * (L / len) * (LL / len);
+      y0 = xHeight * (L / len) * (LL / len);
     } else if (direction === "gy") {
       const yHeight = Math.abs(nodei.y - nodej.y);
-      y0 = yHeight  * (L / len) * (LL / len);
+      y0 = yHeight * (L / len) * (LL / len);
     } else if (direction === "gz") {
       const zHeight = Math.abs(nodei.z - nodej.z);
-      y0 = zHeight  * (L / len) * (LL / len);
+      y0 = zHeight * (L / len) * (LL / len);
     }
 
     // 荷重の各座標
@@ -209,7 +224,7 @@ export class ThreeLoadDistribute {
     let x2 = (x1 + x3) / 2;
 
     // y座標 値の大きい方が１となる
-    const Pmax = (Math.abs(P1) > Math.abs(P2)) ? P1 : P2;
+    const Pmax = Math.abs(P1) > Math.abs(P2) ? P1 : P2;
 
     let bigP = Math.abs(Pmax);
     const y1 = (P1 / bigP) * height + y0;
@@ -221,12 +236,12 @@ export class ThreeLoadDistribute {
     if (sg1 !== sg2 && sg1 * sg2 !== 0) {
       const pp1 = Math.abs(P1);
       const pp2 = Math.abs(P2);
-      x2 = L * pp1 / (pp1 + pp2) + x1;
+      x2 = (L * pp1) / (pp1 + pp2) + x1;
       y2 = 0;
     }
 
     return {
-      points:[
+      points: [
         new THREE.Vector3(x1, y0, 0),
         new THREE.Vector3(x1, y1, 0),
         new THREE.Vector3(x2, y2, 0),
@@ -236,16 +251,14 @@ export class ThreeLoadDistribute {
       L1,
       L,
       L2,
-      Pmax
-    };  
+      Pmax,
+    };
   }
 
   // 面
-  private getFace(
-    my_color: number , points: THREE.Vector3[]): THREE.Mesh {
-
+  private getFace(my_color: number, points: THREE.Vector3[]): THREE.Mesh {
     let face_mat: THREE.MeshBasicMaterial;
-    if (my_color === 0xff0000){
+    if (my_color === 0xff0000) {
       face_mat = this.face_mat_Red;
     } else if (my_color === 0x00ff00) {
       face_mat = this.face_mat_Green;
@@ -271,13 +284,10 @@ export class ThreeLoadDistribute {
     const mesh = new THREE.Mesh(face_geo, face_mat);
     mesh.name = "face";
     return mesh;
-
   }
 
   // 枠線
-  private getLine(
-    my_color: number , points: THREE.Vector3[]): THREE.Line {
-
+  private getLine(my_color: number, points: THREE.Vector3[]): THREE.Line {
     let line_mat: THREE.LineBasicMaterial;
     if (my_color === 0xff0000) {
       line_mat = this.line_mat_Red;
@@ -418,8 +428,12 @@ export class ThreeLoadDistribute {
     }
   }
 
-  public setGlobalOffset(group: THREE.Group, offset: number, key: string): void {
-    const k = key.replace('wg', '');
+  public setGlobalOffset(
+    group: THREE.Group,
+    offset: number,
+    key: string
+  ): void {
+    const k = key.replace("wg", "");
     for (const item of group.children) {
       item.position[k] = offset;
     }
@@ -429,6 +443,4 @@ export class ThreeLoadDistribute {
   public setScale(group: any, scale: number): void {
     group.scale.set(1, scale, scale);
   }
-
-
 }

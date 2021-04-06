@@ -7,6 +7,7 @@ import { ResultDataService } from "../../../providers/result-data.service";
 import { ResultCombineFsecService } from "../result-combine-fsec/result-combine-fsec.service";
 import { ResultPickupFsecService } from "../result-pickup-fsec/result-pickup-fsec.service";
 import { AppComponent } from "src/app/app.component";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-result-fsec",
@@ -31,7 +32,8 @@ export class ResultFsecComponent implements OnInit {
     private three: ThreeService,
     private result: ResultDataService,
     private comb: ResultCombineFsecService,
-    private pic: ResultPickupFsecService
+    private pic: ResultPickupFsecService,
+    private helper: DataHelperModule
   ) {
     this.dataset = new Array();
   }
@@ -55,7 +57,7 @@ export class ResultFsecComponent implements OnInit {
 
   //　pager.component からの通知を受け取る
   onReceiveEventFromChild(eventData: number) {
-    let pageNew:number = eventData;
+    let pageNew: number = eventData;
     this.loadPage(pageNew);
   }
 
@@ -66,8 +68,23 @@ export class ResultFsecComponent implements OnInit {
     this.dataset = this.data.getFsecColumns(this.page);
     this.load_name = this.load.getLoadName(currentPage);
 
-    this.three.ChangeMode('fsec');
+    this.three.ChangeMode("fsec");
     this.three.ChangePage(currentPage);
+  }
+
+  /* To copy Text from Textbox */
+  copyInputMessage($tbody) {
+    const selBox = document.createElement("textarea");
+    selBox.style.position = "fixed";
+    selBox.style.left = "0";
+    selBox.style.top = "0";
+    selBox.style.opacity = "0";
+    selBox.value = this.helper.table_To_text($tbody);
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand("copy");
+    document.body.removeChild(selBox);
   }
 
 }

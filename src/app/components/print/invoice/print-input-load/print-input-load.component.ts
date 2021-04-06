@@ -62,7 +62,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const inputJson: any = this.printService.inputJson;
     if ("load" in inputJson) {
-      const LoadJson: any = inputJson.load; // this.InputData.load.getLoadJson();
+      const LoadJson: any = this.printService.InputData.load.getLoadJson(); //inputJson.load; // 
       // 実荷重データ
       const tables_actual = this.printLoad(LoadJson);
       this.load_data = tables_actual.tableData;

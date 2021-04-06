@@ -7,6 +7,7 @@ import { ThreeService } from "../../three/three.service";
 
 import { ResultCombineReacService } from "../result-combine-reac/result-combine-reac.service";
 import { AppComponent } from "src/app/app.component";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-result-pickup-reac",
@@ -34,7 +35,8 @@ export class ResultPickupReacComponent implements OnInit {
     private pickup: InputPickupService,
     private result: ResultDataService,
     private three: ThreeService,
-    private comb: ResultCombineReacService
+    private comb: ResultCombineReacService,
+    private helper: DataHelperModule
   ) {
     this.dataset = new Array();
     this.KEYS = this.comb.reacKeys;
@@ -74,4 +76,19 @@ export class ResultPickupReacComponent implements OnInit {
     this.three.ChangeMode('pik_reac');
     this.three.ChangePage(currentPage);
   }
+
+   /* To copy Text from Textbox */
+ copyInputMessage($tbody) {
+  const selBox = document.createElement("textarea");
+  selBox.style.position = "fixed";
+  selBox.style.left = "0";
+  selBox.style.top = "0";
+  selBox.style.opacity = "0";
+  selBox.value = this.helper.table_To_text($tbody);
+  document.body.appendChild(selBox);
+  selBox.focus();
+  selBox.select();
+  document.execCommand("copy");
+  document.body.removeChild(selBox);
+}
 }

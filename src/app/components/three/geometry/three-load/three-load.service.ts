@@ -239,7 +239,7 @@ export class ThreeLoadService {
   }
 
   // ケースの荷重図を消去する
-  private removeCase(id: string): void {
+  public removeCase(id: string): void {
     if (!(id in this.AllCaseLoadList)) {
       return;
     }
@@ -249,6 +249,8 @@ export class ThreeLoadService {
     this.scene.remove(ThreeObject);
 
     delete this.AllCaseLoadList[id];
+
+    this.scene.render();
   }
 
   // 節点の入力が変更された場合 新しい入力データを保持しておく

@@ -83,7 +83,7 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       //const item = json[index]; // 1行分のnodeデータを取り出す
       let line: string[] = new Array();
       const len: number = this.InputData.member.getMemberLength(item.m); // 部材長さ
-
+      line.push(item.m);
       if (len !== null) {
         line.push(len.toFixed(3));
       } else {
