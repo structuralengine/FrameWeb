@@ -273,32 +273,31 @@ export class InputLoadService {
       delete load_member[load_id];
     }
 
-    if (empty === 0) {
-      // 無効なデータを削除する
-      const deleteKey: string[] = Array();
-      for (const load_id of Object.keys(result)) {
-        let jsonData = result[load_id];
-        let flg: boolean = false;
-        for (const key of ["fix_node", "fix_member", "element", "joint"]) {
-          const value: number = jsonData[key];
-          if (value !== empty) {
-            flg = true;
-            break;
-          }
+    // 無効なデータを削除する
+    const deleteKey: string[] = Array();
+    for (const load_id of Object.keys(result)) {
+      let jsonData = result[load_id];
+      let flg: boolean = false;
+      const keys: string[] = (empty ===0) ? ["fix_node", "fix_member", "element", "joint"] : Object.keys(jsonData);
+      for (const key of keys) {
+        const value: number = jsonData[key];
+        if (value !== empty) {
+          flg = true;
+          break;
         }
-        if (flg === false) {
+      }
+      if (flg === false) {
+        deleteKey.push(load_id);
+      } else if (empty ===0) {
+        const ln = "load_node" in jsonData ? jsonData["load_node"] : [];
+        const lm = "load_member" in jsonData ? jsonData["load_member"] : [];
+        if (ln.length + lm.length === 0) {
           deleteKey.push(load_id);
-        } else {
-          const ln = "load_node" in jsonData ? jsonData["load_node"] : [];
-          const lm = "load_member" in jsonData ? jsonData["load_member"] : [];
-          if (ln.length + lm.length === 0) {
-            deleteKey.push(load_id);
-          }
         }
       }
-      for (const load_id of deleteKey) {
-        delete result[load_id];
-      }
+    }
+    for (const load_id of deleteKey) {
+      delete result[load_id];
     }
 
     return result;
@@ -565,7 +564,6 @@ export class InputLoadService {
     if (load2.length === 0) {
       return new Array();
     }
-    // 少なくともこの行では load2 に何か入っている
 
     // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
     for (let j = 0; j < load2.length; j++) {
@@ -595,6 +593,20 @@ export class InputLoadService {
       i += 1;
     } while (i < load2.length);
 
+    i = 0;
+    do {
+      const targetLoad = load2[i];
+      if (targetLoad.m1 > 0 && targetLoad.m2 > 0) {
+        if (targetLoad.m1 > targetLoad.m2) {
+          let ccc = targetLoad.m1;
+          let ddd = targetLoad.m2;
+          targetLoad.m2 = ccc;
+          targetLoad.m1 = ddd;
+        }
+      }
+      i += 1;
+    } while (i < load2.length);
+
     // 要素番号 m2 にマイナスが付いた場合の入力を分ける ------------------------
     i = 0;
     let curNo = -1;
@@ -618,11 +630,19 @@ export class InputLoadService {
     // 要素番号 m1 != m2 の場合の入力を分ける -----------------------
     i = 0;
     do {
-      const targetLoad = load2[i]; // なのに、この行では load2 が空だ
+      const targetLoad = load2[i];
       const m1 = this.helper.toNumber(targetLoad.m1);
       const m2 = this.helper.toNumber(targetLoad.m2);
       if (m1 < m2) {
         const newLoads = this.getMemberRepeatLoad(targetLoad);
+
+        // let b = m1;
+        // let c = b.toString();
+        // targetLoad.m1 = c;
+        // let d = m2;
+        // let e = d.toString();
+        // targetLoad.m2 = e;
+
         load2.splice(i, 1);
         for (let j = 0; j < newLoads.length; j++) {
           load2.push(newLoads[j]);
@@ -902,6 +922,7 @@ export class InputLoadService {
       newLoads["mark"] = targetLoad.mark;
       newLoads["P1"] = targetLoad.P1;
       newLoads["P2"] = targetLoad.P2;
+      newLoads["row"] = targetLoad.row;
       result.push(newLoads);
     }
     return result;
