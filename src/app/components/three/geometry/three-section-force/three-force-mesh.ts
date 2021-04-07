@@ -248,7 +248,7 @@ export class ThreeSectionForceMeshService {
       if (direction === "z") {
         target.rotateX(Math.PI);
       } else if (direction === "y") {
-        target.rotateX(Math.PI / 2);
+        target.rotateX(-Math.PI / 2);
       }
     } else {
       if (direction === "z") {
