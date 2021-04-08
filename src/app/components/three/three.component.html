@@ -1,14 +1,21 @@
 <a class="camera" (click)="downloadImage()"><i class="fas fa-camera"></i></a>
 
-
-<canvas #myCanvas id="myCanvas"
-style="overflow:hidden; position: absolute;"
-(mousedown)="onMouseDown($event)" 
-(mouseup)="onMouseUp($event)"
-(mousemove)="onMouseMove($event)">
+<canvas
+  #myCanvas
+  id="myCanvas"
+  style="overflow: hidden; position: absolute"
+  (mousedown)="onMouseDown($event)"
+  (mouseup)="onMouseUp($event)"
+  (mousemove)="onMouseMove($event)"
+>
 </canvas>
 
+<div class="orientation-gizmo">
+  <canvas #gizmo id="gizmo" width="90" height="90">
+  </canvas>
+</div>
+
 <div id="download">
-    <img #canvas>
-    <a #downloadLink></a>
+  <img #canvas />
+  <a #downloadLink></a>
 </div>

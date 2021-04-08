@@ -1,29 +1,39 @@
 #gui_css {
-    position: fixed;
-    top: 300px !important;
+  position: fixed;
+  top: 300px !important;
 }
 
 #download {
   display: none;
 }
 
-#myCanvas{
-    position: relative;
+#myCanvas {
+  position: relative;
 }
 
+.orientation-gizmo {
+  position: absolute;
+  top: 150px;
+  left: 20px;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+.orientation-gizmo:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
 
 i.fas {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  }
-
-  .camera{
-    bottom: 20px;
-    right: 20px;
-    position: absolute;
-    z-index: 2;
-    font-size: 30px;
-    color: #333333;
-    padding: 16px;
-  }
+.camera {
+  bottom: 20px;
+  right: 20px;
+  position: absolute;
+  z-index: 2;
+  font-size: 30px;
+  color: #333333;
+  padding: 16px;
+}
