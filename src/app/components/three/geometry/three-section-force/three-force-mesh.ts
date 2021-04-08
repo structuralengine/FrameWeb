@@ -232,18 +232,32 @@ export class ThreeSectionForceMeshService {
     target.rotation.set(0, 0, 0); 
 
     const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-    target.rotateZ(Math.asin(XY.y));
+    let A = Math.asin(XY.y) 
+
+    if( XY.x < 0){
+     A = Math.PI - A;
+    }
+    target.rotateZ(A);
 
     const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     target.rotateY(-Math.asin(XZ.y));
 
-    if (direction === "z") {
-      target.rotateX(-Math.PI / 2);
-    } else if (direction === "y") {
-      target.rotateX(Math.PI);
+    if (localAxis.x.x === 0 && localAxis.x.y === 0) {
+      // 鉛直の部材
+      if (direction === "z") {
+        target.rotateX(Math.PI);
+      } else if (direction === "y") {
+        target.rotateX(-Math.PI / 2);
+      }
+    } else {
+      if (direction === "z") {
+        target.rotateX(-Math.PI / 2);
+      } else if (direction === "y") {
+        target.rotateX(Math.PI);
+      }
     }
-    
+
     return target;
   }
 

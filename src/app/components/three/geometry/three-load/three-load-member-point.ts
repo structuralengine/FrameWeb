@@ -53,7 +53,7 @@ export class ThreeLoadMemberPoint {
     const child = new THREE.Group();
 
     // 長さを決める
-    const p  = this.getPoints(
+    const p = this.getPoints(
       nodei, nodej, direction, pL1, pL2, P1, P2, height);
 
     const points: THREE.Vector3[] = p.points;
@@ -70,7 +70,7 @@ export class ThreeLoadMemberPoint {
     dim.visible = false;
     child.add(dim);
     */
-    
+
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -88,12 +88,12 @@ export class ThreeLoadMemberPoint {
 
     // 全体の向きを修正する
 
-    if (direction.indexOf('g') < 0){
+    if (direction.indexOf('g') < 0) {
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
       let A = Math.asin(XY.y);
 
-      if( XY.x < 0){
-       A = Math.PI - A;
+      if (XY.x < 0) {
+        A = Math.PI - A;
       }
       group.rotateZ(A);
 
@@ -101,18 +101,26 @@ export class ThreeLoadMemberPoint {
       const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
       group.rotateY(-Math.asin(XZ.y));
 
-
-      if (direction === "z") {
-        group.rotateX(-Math.PI / 2);
-      } else if (direction === "y") {
-        group.rotateX(Math.PI);
+      if (localAxis.x.x === 0 && localAxis.x.y === 0) {
+        // 鉛直の部材
+        if (direction === "z") {
+          group.rotateX(-Math.PI);
+        } else if (direction === "y") {
+          group.rotateX(Math.PI / 2);
+        }
+      } else {
+        if (direction === "z") {
+          group.rotateX(-Math.PI / 2);
+        } else if (direction === "y") {
+          group.rotateX(Math.PI);
+        }
       }
 
     } else if (direction === "gx") {
-      group.rotation.z = Math.asin(-Math.PI/2);
+      group.rotation.z = Math.asin(-Math.PI / 2);
 
     } else if (direction === "gz") {
-      group.rotation.x = Math.asin(-Math.PI/2);
+      group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
     group.name = "MemberPointLoad";
@@ -165,7 +173,7 @@ export class ThreeLoadMemberPoint {
     }
 
     return {
-      points:[
+      points: [
         new THREE.Vector3(x1, y1, 0),
         new THREE.Vector3(x2, y2, 0),
       ],

@@ -273,32 +273,31 @@ export class InputLoadService {
       delete load_member[load_id];
     }
 
-    if (empty === 0) {
-      // 無効なデータを削除する
-      const deleteKey: string[] = Array();
-      for (const load_id of Object.keys(result)) {
-        let jsonData = result[load_id];
-        let flg: boolean = false;
-        for (const key of ["fix_node", "fix_member", "element", "joint"]) {
-          const value: number = jsonData[key];
-          if (value !== empty) {
-            flg = true;
-            break;
-          }
+    // 無効なデータを削除する
+    const deleteKey: string[] = Array();
+    for (const load_id of Object.keys(result)) {
+      let jsonData = result[load_id];
+      let flg: boolean = false;
+      const keys: string[] = (empty ===0) ? ["fix_node", "fix_member", "element", "joint"] : Object.keys(jsonData);
+      for (const key of keys) {
+        const value: number = jsonData[key];
+        if (value !== empty) {
+          flg = true;
+          break;
         }
-        if (flg === false) {
+      }
+      if (flg === false) {
+        deleteKey.push(load_id);
+      } else if (empty ===0) {
+        const ln = "load_node" in jsonData ? jsonData["load_node"] : [];
+        const lm = "load_member" in jsonData ? jsonData["load_member"] : [];
+        if (ln.length + lm.length === 0) {
           deleteKey.push(load_id);
-        } else {
-          const ln = "load_node" in jsonData ? jsonData["load_node"] : [];
-          const lm = "load_member" in jsonData ? jsonData["load_member"] : [];
-          if (ln.length + lm.length === 0) {
-            deleteKey.push(load_id);
-          }
         }
       }
-      for (const load_id of deleteKey) {
-        delete result[load_id];
-      }
+    }
+    for (const load_id of deleteKey) {
+      delete result[load_id];
     }
 
     return result;
