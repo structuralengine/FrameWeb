@@ -184,30 +184,23 @@ export class ThreeSectionForceService {
   private changeMesh(){
 
     let key1: string;
-    let key2: string;
     if (this.params.axialForce === true) {
       key1 = 'fx';
-      key2 = 'z';
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
       key1 = 'mx';
-      key2 = 'y';
     } else if (this.params.shearForceY === true) {
       // Y方向のせん断力
       key1 = 'fy';
-      key2 = 'y';
     } else if (this.params.momentY === true) {
       // Y軸周りの曲げモーメント
       key1 = 'my';
-      key2 = 'z';
     } else if (this.params.shearForceZ === true) {
       // Z方向のせん断力
       key1 = 'fz';
-      key2 = 'z';
     } else if (this.params.momentZ === true) {
       // Z軸周りの曲げモーメント
       key1 = 'mz';
-      key2 = 'y';
     } else {
       return;
     }
@@ -266,10 +259,10 @@ export class ThreeSectionForceService {
           P2 = fsec[key1] - 0;
           L2 = Math.round((len - LL) * 1000) / 1000;
           if(item === null){
-            const mesh = this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            const mesh = this.mesh.create(nodei, nodej, localAxis, key1, L1, L2, P1, P2);
             ThreeObject.add(mesh);
           } else {
-            this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            this.mesh.change(item, nodei, nodej, localAxis, key1, L1, L2, P1, P2);
           }
           P1 = P2;
           L1 = LL;

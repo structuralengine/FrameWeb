@@ -54,8 +54,8 @@ export class ThreeSectionForceMeshService {
     const child = new THREE.Group();
 
     // 長さを決める
-    const p  = this.getPoints(
-      nodei, nodej, direction, pL1, pL2, P1, P2);
+    const p = this.getPoints(
+      nodei, nodej, pL1, pL2, P1, P2);
 
     const points: THREE.Vector3[] = p.points;
 
@@ -72,38 +72,91 @@ export class ThreeSectionForceMeshService {
     group0.add(child);
     group0.name = "group";
 
-     // 全体の位置を修正する
+    // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
     group['value'] = p.Pmax; // 大きい方の値を保存　
 
-    group.position.set(nodei.x, nodei.y, nodei.z);
-
-    // 全体の向きを修正する
-    const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-    group.rotateZ(Math.asin(XY.y));
-
-    const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
-    const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
-    group.rotateY(-Math.asin(XZ.y));
-
-    if (direction === "z") {
-      group.rotateX(-Math.PI / 2);
-    } else if (direction === "y") {
-      group.rotateX(Math.PI);
-    }
-
+    // 全体の位置と 向きを修正する
+    this.setPosition(group, nodei, localAxis, direction);
+    
     group.name = "SectionForce";
 
     return group;
   }
 
+  private setPosition(target: THREE.Group, 
+                      nodei: THREE.Vector3,
+                      localAxis: any,
+                      direction: string ): void {
+
+    target.position.set(nodei.x, nodei.y, nodei.z);
+
+    // 全体の向きを修正する
+    target.rotation.set(0, 0, 0);
+
+    const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
+    let A = Math.asin(XY.y)
+
+    if (XY.x < 0) {
+      A = Math.PI - A;
+    }
+    target.rotateZ(A);
+
+    const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
+    const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
+    target.rotateY(-Math.asin(XZ.y));
+
+    if (localAxis.x.x === 0 && localAxis.x.y === 0) {
+      // 鉛直の部材
+      if (this.getDirection(direction) === "z") {
+        target.rotateX(Math.PI);
+      } else if (this.getDirection(direction) === "y") {
+        if(direction === 'fy'){
+          target.rotateX(Math.PI / 2);
+        } else {
+          target.rotateX(-Math.PI / 2);
+        }
+      }
+    } else {
+      if (this.getDirection(direction) === "z") {
+        target.rotateX(-Math.PI / 2);
+      } else if (this.getDirection(direction) === "y") {
+        target.rotateX(Math.PI);
+      }
+    }
+
+
+  }
+
+
+  private getDirection(key1: string): string {
+    if (key1 === 'fx') {
+      return 'z';
+    } else if (key1 === 'mx') {
+      // ねじり曲げモーメント
+      return 'y';
+    } else if (key1 === 'fy') {
+      // Y方向のせん断力
+      return 'y';
+    } else if (key1 === 'my') {
+      // Y軸周りの曲げモーメント
+      return 'z';
+    } else if (key1 === 'fz') {
+      // Z方向のせん断力
+      return 'z';
+    } else if (key1 === 'mz') {
+      // Z軸周りの曲げモーメント
+      return 'y';
+    } else {
+      return null;
+    }
+  }
 
   // 座標
   private getPoints(
     nodei: THREE.Vector3,
     nodej: THREE.Vector3,
-    direction: string,
     pL1: number,
     pL2: number,
     P1: number,
@@ -117,7 +170,7 @@ export class ThreeSectionForceMeshService {
     const L2 = pL2 * len / LL;
     const L: number = len - L1 - L2;
 
-     // 荷重の各座標
+    // 荷重の各座標
     let x1 = L1;
     let x3 = L1 + L;
     let x2 = (x1 + x3) / 2;
@@ -139,7 +192,7 @@ export class ThreeSectionForceMeshService {
     }
 
     return {
-      points:[
+      points: [
         new THREE.Vector3(x1, 0, 0),
         new THREE.Vector3(x1, y1, 0),
         new THREE.Vector3(x2, y2, 0),
@@ -197,8 +250,8 @@ export class ThreeSectionForceMeshService {
   ): THREE.Group {
 
     // 長さを決める
-    const p  = this.getPoints(
-      nodei, nodej, direction, pL1, pL2, P1, P2);
+    const p = this.getPoints(
+      nodei, nodej, pL1, pL2, P1, P2);
     const points: THREE.Vector3[] = p.points;
 
     const group: THREE.Group = target.getObjectByName("group");
@@ -207,56 +260,27 @@ export class ThreeSectionForceMeshService {
     // 面
     const mesh = child.getObjectByName("face");
     const geo: THREE.Geometry = mesh["geometry"];
-    for(let i= 0; i < geo.vertices.length; i++){
+    for (let i = 0; i < geo.vertices.length; i++) {
       geo.vertices[i].x = points[i].x;
       geo.vertices[i].y = points[i].y;
       geo.vertices[i].z = points[i].z;
     }
     geo.verticesNeedUpdate = true;
 
-     // 線
+    // 線
     //child.add(this.getLine(my_color, points));
     const line: any = child.getObjectByName("line");
     const positions = line.geometry.attributes.position.array;
     let index = 0;
-    for(const pos of points) {
-        positions[ index ++ ] = pos.x;
-        positions[ index ++ ] = pos.y;
-        positions[ index ++ ] = pos.z;
+    for (const pos of points) {
+      positions[index++] = pos.x;
+      positions[index++] = pos.y;
+      positions[index++] = pos.z;
     }
     line.geometry.attributes.position.needsUpdate = true;
 
-    target.position.set(nodei.x, nodei.y, nodei.z);
-
-    // 全体の向きを修正する
-    target.rotation.set(0, 0, 0); 
-
-    const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-    let A = Math.asin(XY.y) 
-
-    if( XY.x < 0){
-     A = Math.PI - A;
-    }
-    target.rotateZ(A);
-
-    const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
-    const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
-    target.rotateY(-Math.asin(XZ.y));
-
-    if (localAxis.x.x === 0 && localAxis.x.y === 0) {
-      // 鉛直の部材
-      if (direction === "z") {
-        target.rotateX(Math.PI);
-      } else if (direction === "y") {
-        target.rotateX(-Math.PI / 2);
-      }
-    } else {
-      if (direction === "z") {
-        target.rotateX(-Math.PI / 2);
-      } else if (direction === "y") {
-        target.rotateX(Math.PI);
-      }
-    }
+    // 全体の位置と 向きを修正する
+    this.setPosition(target, nodei, localAxis, direction);
 
     return target;
   }
