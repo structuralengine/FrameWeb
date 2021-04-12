@@ -102,26 +102,30 @@ export class ThreeJointService {
   }
 
   //シートの選択行が指すオブジェクトをハイライトする
-  public selectChange(index, index_sub): void{
+  public selectChange(index_row, index_column): void{
+    console.log("three-fix-member.service.ts selectChange index =", index_row, index_column);
+    console.log(this.jointList);
     
-    if (this.currentIndex === index && this.currentIndex_sub === index_sub){
+    if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
       //選択行及び列の変更がないとき，何もしない
       return
     }
 
     //数字(列数)を記号に変換
     let column = "";
-    if (index_sub === 1){
+    if (index_column === 0){
+      //column = "xi"
+    } else if (index_column === 1){
       column = "xi"
-    } else if (index_sub === 2) {
+    } else if (index_column === 2) {
       column = "yi"
-    } else if (index_sub === 3) {
+    } else if (index_column === 3) {
       column = "zi"
-    } else if (index_sub === 4) {
+    } else if (index_column === 4) {
       column = "xj"
-    } else if (index_sub === 5) {
+    } else if (index_column === 5) {
       column = "yj"
-    } else if (index_sub === 6) {
+    } else if (index_column === 6) {
       column = "zj"
     } else {
       console.log("-----error-----three-joint.service.ts-----error-----");
@@ -132,14 +136,14 @@ export class ThreeJointService {
 
       item['material']['color'].setHex(0X000000); //処理の変更あり
 
-      if (item.name === 'joint' + index.toString() + column){
+      if (item.name === 'joint' + index_row.toString() + column){
 
         item['material']['color'].setHex(0X00A5FF); //処理の変更あり
       }
     }
 
-    this.currentIndex = index;
-    this.currentIndex_sub = index_sub;
+    this.currentIndex = index_row;
+    this.currentIndex_sub = index_column;
 
     this.scene.render();
   }
@@ -156,9 +160,11 @@ export class ThreeJointService {
         const FocalSpot_Z = position.z + localAxis.x.z;
         pin_x.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
         if (direction.x === Data.xi && direction.y === Data.yi && direction.z === Data.zi){
-          pin_x.name = "joint" + Data.m.toString() + "xi";
+          //pin_x.name = "joint" + Data.m.toString() + "xi";
+          pin_x.name = "joint" + Data.row.toString() + "xi";
         } else if (direction.x === Data.xj && direction.y === Data.yj && direction.z === Data.zj){
-          pin_x.name = "joint" + Data.m.toString() + "xj";
+          //pin_x.name = "joint" + Data.m.toString() + "xj";
+          pin_x.name = "joint" + Data.row.toString() + "xj";
         } else {
 
         }
@@ -175,9 +181,11 @@ export class ThreeJointService {
         const FocalSpot_Z = position.z + localAxis.y.z;
         pin_y.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
         if (direction.x === Data.xi && direction.y === Data.yi && direction.z === Data.zi){
-          pin_y.name = "joint" + Data.m.toString() + "yi";
+          //pin_y.name = "joint" + Data.m.toString() + "yi";
+          pin_y.name = "joint" + Data.row.toString() + "yi";
         } else if (direction.x === Data.xj && direction.y === Data.yj && direction.z === Data.zj){
-          pin_y.name = "joint" + Data.m.toString() + "yj";
+          //pin_y.name = "joint" + Data.m.toString() + "yj";
+          pin_y.name = "joint" + Data.row.toString() + "yj";
         } else {
 
         }
@@ -195,9 +203,11 @@ export class ThreeJointService {
         const FocalSpot_Z = position.z + localAxis.z.z;
         pin_z.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
         if (direction.x === Data.xi && direction.y === Data.yi && direction.z === Data.zi){
-          pin_z.name = "joint" + Data.m.toString() + "zi";
+          //pin_z.name = "joint" + Data.m.toString() + "zi";
+          pin_z.name = "joint" + Data.row.toString() + "zi";
         } else if (direction.x === Data.xj && direction.y === Data.yj && direction.z === Data.zj){
-          pin_z.name = "joint" + Data.m.toString() + "zj";
+          //pin_z.name = "joint" + Data.m.toString() + "zj";
+          pin_z.name = "joint" + Data.row.toString() + "zj";
         }
         this.jointList.push(pin_z);
         this.scene.add(pin_z);

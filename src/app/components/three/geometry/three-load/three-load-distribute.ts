@@ -56,6 +56,7 @@ export class ThreeLoadDistribute {
   // L2: 終点からの距離
   // P1: 始点側の荷重値
   // P2: 終点側の荷重値
+  // row: 対象荷重が記述されている行数
   // offset: 配置位置（その他の荷重とぶつからない位置）
   // scale: スケール
   public create(
@@ -66,7 +67,8 @@ export class ThreeLoadDistribute {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number
+    P2: number, 
+    row: number
   ): THREE.Group {
     const offset: number = 0;
     const height: number = 1;
@@ -156,7 +158,7 @@ export class ThreeLoadDistribute {
 
     group.position.set(nodei.x, nodei.y, nodei.z);
 
-    group.name = "DistributeLoad";
+    group.name = "DistributeLoad" + row.toString();// + direction.toString();
 
     return group;
   }

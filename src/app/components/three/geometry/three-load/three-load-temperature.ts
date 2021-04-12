@@ -46,7 +46,8 @@ export class ThreeLoadTemperature {
     nodei: THREE.Vector3,
     nodej: THREE.Vector3,
     localAxis: any,
-    P1: number
+    P1: number,
+    row: number
   ): THREE.Group {
 
     const offset: number = 0.1;
@@ -131,7 +132,7 @@ export class ThreeLoadTemperature {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "TemperatureLoad";
+    group.name = "TemperatureLoad" + row.toString();
     return group;
   }
 

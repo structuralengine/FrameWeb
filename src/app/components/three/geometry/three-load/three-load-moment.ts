@@ -44,6 +44,7 @@ export class ThreeLoadMoment {
     value: number,
     radius: number,
     direction: string,
+    row: number,
     color: number = null
   ): THREE.Group {
 
@@ -167,7 +168,7 @@ export class ThreeLoadMoment {
     // 位置を修正する
     group.position.set(node.x, node.y, node.z);
 
-    group.name = "MomentLoad";
+    group.name = "MomentLoad" + row.toString() + direction.toString();
     group['value'] = Math.abs(value); //値を保存
 
     return group;

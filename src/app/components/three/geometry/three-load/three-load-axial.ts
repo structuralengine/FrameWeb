@@ -42,7 +42,8 @@ export class ThreeLoadAxial {
     L1: number,
     L2: number,
     P1: number,
-    P2: number
+    P2: number,
+    row: number
   ): THREE.Group {
 
     const offset: number = 0.1;
@@ -133,7 +134,7 @@ export class ThreeLoadAxial {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "AxialLoad";
+    group.name = "AxialLoad" + row.toString();
     return group;
   }
 

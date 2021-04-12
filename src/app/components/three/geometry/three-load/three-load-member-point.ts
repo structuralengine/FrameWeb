@@ -5,6 +5,7 @@ import { Vector2 } from 'three';
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
 import { ThreeLoadPoint } from './three-load-point';
+import { RouterLinkWithHref } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,8 @@ export class ThreeLoadMemberPoint {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number
+    P2: number, 
+    row: number
   ): THREE.Group {
 
     const offset: number = 0;
@@ -123,7 +125,7 @@ export class ThreeLoadMemberPoint {
       group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "MemberPointLoad";
+    group.name = "MemberPointLoad" + row.toString();
 
     return group;
   }
@@ -206,7 +208,8 @@ export class ThreeLoadMemberPoint {
         pos1.y = 0.1;
       }
 
-      const arrow_1 = this.point.create(pos1, 0, Px, 1, key)
+      //6番目の代入値は不適切
+      const arrow_1 = this.point.create(pos1, 0, Px, 1, key, 0)
 
       if (direction === 'y') {
         arrow_1.rotation.z += Math.PI;

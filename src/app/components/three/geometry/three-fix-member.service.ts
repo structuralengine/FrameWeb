@@ -139,7 +139,8 @@ export class ThreeFixMemberService {
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
       const len: number = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z).length();
 
-      const spring = { direction: 'z', relationship: 'large', color: 0xff0000, m: target.m};
+      //const spring = { direction: 'z', relationship: 'large', color: 0xff0000, m: target.m, row: target.row};
+      const spring = { direction: 'z', relationship: 'large', color: 0xff0000, row: target.row};
       const position = { x: (i.x + j.x) / 2, y: (i.y + j.y) / 2, z: (i.z + j.z) / 2 };
 
       if (target.tx !== 0) {
@@ -187,7 +188,8 @@ export class ThreeFixMemberService {
 
     // バネ用の分岐
     if (spring.direction === 'x' || spring.direction === 'y' || spring.direction === 'z') {
-      multipleList.name = 'fixmember' + spring.m.toString() + spring.direction.toString();
+      //multipleList.name = 'fixmember' + spring.m.toString() + spring.direction.toString();
+      multipleList.name = 'fixmember' + spring.row.toString() + spring.direction.toString();
       
       count = Math.floor(len / 2 / interval - 0.5);
       for (let k = - count; k <= count; k += 1) {
@@ -204,7 +206,8 @@ export class ThreeFixMemberService {
 
     // 回転バネ用の分岐
     if (spring.direction === 'r') {
-      multipleList.name = 'fixmember' + spring.m.toString() + spring.direction.toString();
+      //multipleList.name = 'fixmember' + spring.m.toString() + spring.direction.toString();
+      multipleList.name = 'fixmember' + spring.row.toString() + spring.direction.toString();
 
       count = Math.floor(len / 2 / interval - 0.5);
       for (let k = - count; k <= count; k += 1) {
@@ -292,6 +295,8 @@ export class ThreeFixMemberService {
 
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index_row, index_column): void{
+    console.log("three-fix-member.service.ts selectChange index =", index_row, index_column);
+    console.log(this.fixmemberList);
 
     if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
       //選択行の変更がないとき，何もしない
@@ -299,7 +304,9 @@ export class ThreeFixMemberService {
     }
 
     let column = "";
-    if (index_column === 1){
+    if (index_column === 0){
+      //column = "x"
+    } else if (index_column === 1){
       column = "x"
     } else if (index_column === 2) {
       column = "y"

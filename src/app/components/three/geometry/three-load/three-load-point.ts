@@ -26,7 +26,8 @@ export class ThreeLoadPoint {
     offset: number,
     value: number,
     length: number,
-    direction: string
+    direction: string,
+    row: number
   ): THREE.Group {
 
 
@@ -83,7 +84,7 @@ export class ThreeLoadPoint {
     const group = new THREE.Group();
     group.add(group0);
 
-    group.name = "PointLoad";
+    group.name = "PointLoad" + row.toString() + direction.toString();
     group['value'] = value; //値を保存
 
     // 向きを変更する

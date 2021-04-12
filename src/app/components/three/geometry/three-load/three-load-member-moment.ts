@@ -5,6 +5,7 @@ import { Vector2 } from 'three';
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
 import { ThreeLoadMoment } from './three-load-moment';
+import { RouterLinkWithHref } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,8 @@ export class ThreeLoadMemberMoment {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number
+    P2: number, 
+    row: number
   ): THREE.Group {
 
     const offset: number = 0;
@@ -116,7 +118,7 @@ export class ThreeLoadMemberMoment {
       group.rotation.x = Math.asin(-Math.PI/2);
 
     }
-    group.name = "MemberMomentLoad";
+    group.name = "MemberMomentLoad" + row.toString();
 
     return group;
   }
@@ -194,7 +196,7 @@ export class ThreeLoadMemberMoment {
 
       const pos1 = new THREE.Vector3(points[i], 0, 0);
 
-      const arrow_1 = this.moment.create(pos1, 0, Px, 1, key)
+      const arrow_1 = this.moment.create(pos1, 0, Px, 1, key, 0)
 
       //モーメントの作成時に向きまで制御しているので，制御不要
       //if (direction === 'y') {

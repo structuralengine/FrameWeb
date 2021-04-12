@@ -48,7 +48,8 @@ export class ThreeLoadTorsion {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number
+    P2: number,
+    row: number
   ): THREE.Group {
 
     const radius: number = 0.5;
@@ -103,7 +104,7 @@ export class ThreeLoadTorsion {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "TorsionLoad";
+    group.name = "TorsionLoad" + row.toString();
 
     return group;
   }

@@ -3,7 +3,7 @@ import { InputDataService } from "src/app/providers/input-data.service";
 import { SceneService } from "./scene.service";
 import * as THREE from "three";
 import { DataHelperModule } from "src/app/providers/data-helper.module";
-import { DeclareFunctionStmt } from "@angular/compiler";
+//import { DeclareFunctionStmt } from "@angular/compiler";
 
 import { ThreeNodesService } from "./geometry/three-nodes.service";
 import { ThreeMembersService } from "./geometry/three-members.service";
@@ -144,7 +144,7 @@ export class ThreeService {
         break;
   
       case "load_values":
-        //this.load.selectChange(index);
+        this.load.selectChange(index, index_sub);
         break;
     }
   }
