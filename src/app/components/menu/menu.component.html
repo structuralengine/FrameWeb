@@ -1,25 +1,20 @@
 <div class="title-and-menu" id="disTitle">
-    <div class="icon-area">
-        <ul>
-            <li>
-                <div ngbDropdown>
-                    <a class="icon file" id="dropdownBasic1" ngbDropdownToggle onfocus="this.blur();"><i class="far fa-file"></i
-          ></a>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                        <button ngbDropdownItem (click)="renew()">新規作成</button>
-                        <label style="width: 100%; margin: 0px">
+  <div class="icon-area">
+    <ul>
+      <li>
+        <div ngbDropdown>
+          <a class="icon file" id="dropdownBasic1" ngbDropdownToggle onfocus="this.blur();"><i
+              class="far fa-file"></i></a>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            <button ngbDropdownItem (click)="renew()">新規作成</button>
+            <label style="width: 100%; margin: 0px">
               <span ngbDropdownItem style="padding: 8px">
                 ファイルを開く
-                <input
-                  type="file"
-                  accept="application/json"
-                  (change)="open($event)"
-                  style="display: none"
-                />
+                <input type="file" accept="application/json" (change)="open($event)" style="display: none" />
               </span>
             </label>
-                        <button ngbDropdownItem (click)="save()">ファイルを保存</button>
-                        <button ngbDropdownItem (click)="pickup()">
+            <button ngbDropdownItem (click)="save()">ファイルを保存</button>
+            <button ngbDropdownItem (click)="pickup()">
               ピックアップファイル出力
             </button>
 
@@ -37,62 +32,50 @@
             </label>
             テスト用 -->
 
-                    </div>
-                </div>
-            </li>
-            <li>
-                <a (click)="calcrate()"><i class="fas fa-calculator"></i></a>
-            </li>
-            <li>
-                <a routerLink="./print" (click)="contentsDailogShow(13)" routerLinkActive="selected-item" id="13"><i class="fi fi-print"></i></a>
-            </li>
-            <li>
-                <a onClick="window.open('https://note.com/structuralengine/m/m7052d0021a76','_blank')"><i class="far fa-question-circle"></i
-        ></a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="title">
-        <h1>{{ fileName }}</h1>
-    </div>
-
-    <div class="login-area">
-        <div *ngIf="!loggedIn">
-            <a (click)="logIn()" class="login-btn">
-                <i class="fas fa-sign-in-alt"></i> ログイン
-            </a>
+          </div>
         </div>
+      </li>
+      <li>
+        <a (click)="calcrate()"><i class="fas fa-calculator"></i></a>
+      </li>
+      <li>
+        <a routerLink="./print" (click)="contentsDailogShow(13)" routerLinkActive="selected-item" id="13"><i
+            class="fi fi-print"></i></a>
+      </li>
+      <li>
+        <a onClick="window.open('https://note.com/structuralengine/m/m7052d0021a76','_blank')"><i
+            class="far fa-question-circle"></i></a>
+      </li>
+    </ul>
+  </div>
 
-        <div *ngIf="loggedIn">
-            <!-- <div ngbDropdown>
-                <a id="dropdownBasic2" class="login-item" ngbDropdownToggle>
-                    <i class="far fa-user-circle"></i> {{ loginUserName }}さん
-                </a>
-                <div ngbDropdownMenu aria-labelledby="dropdownBasic2" style="cursor: default !important">
-                    <p ngbDropdownItem style="pointer-events: none; cursor: default !important">
-                        保有ポイント:{{ userPoint }}ポイント
-                    </p>-->
-                   <!-- <button (click)="logOut()" ngbDropdownItem style="cursor: pointer !important">
-             ログアウト
-          </button>  -->
-                <!-- </div>
-            </div> -->
-            <div *ngIf="auth.user | async as user" class="userInfo">
-              <div ngbDropdown>
-              <a class="icon file" id="dropdownBasic1" class="login-btn" ngbDropdownToggle onfocus="this.blur();"><i class="far fa-user-circle"></i>{{ user.displayName }}</a>
-              <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-              <a (click)="auth.signOut()" (click)="logOut()" class="login-btn logOut">ログアウト</a>
-              </div>
-              </div>
-            </div>
-        </div>
+  <div class="title">
+    <h1>{{ fileName }}</h1>
+  </div>
 
+  <div class="login-area">
+    <div *ngIf="!loggedIn">
+      <a (click)="logIn()" class="login-btn">
+        <i class="fas fa-sign-in-alt"></i> ログイン
+      </a>
     </div>
+
+    <div *ngIf="loggedIn">
+      <div *ngIf="auth.user | async as user" class="userInfo">
+        <div ngbDropdown>
+          <a class="icon file" id="dropdownBasic1" class="login-btn" ngbDropdownToggle onfocus="this.blur();"><i
+              class="far fa-user-circle"></i>{{ user.displayName }}</a>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            <a (click)="auth.signOut()" (click)="logOut()" class="login-btn logOut">ログアウト</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 
-<!-- <div class="title-and-menu" id="disTitle">
     <div class="icon-area">
       <div class="col-xs-4 margin">
         <div ngbDropdown class="d-inline-block">

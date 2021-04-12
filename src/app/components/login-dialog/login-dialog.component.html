@@ -1,49 +1,28 @@
 <div class="modal-header">
-    <!-- <a href="https://structuralengine.com/" target="_blank" style="display: block;">Structural Engine</a>のユーザーでログインしてください -->
-    <a href="https://structuralengine8a9e.web.app/" style="display: block;">ユーザー登録がお済みでない方はこちらから</a>
-    <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+  <a href="https://structuralengine8a9e.web.app/" target=”_blank” style="display: block;">ユーザー登録がお済みでない方はこちらから</a>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-    <!-- <div class="form-group">
-    <label for="loginEmail">ユーザー名</label>
-    <input type="email" class="form-control" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <label for="email">メールアドレス</label>
+    <input type="email" name="mail" required email class="form-control" formControlName="email"
+      [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
+    <label for="password">パスワード</label>
+    <input type="password" class="form-control" formControlName="password" [(ngModel)]="loginPassword"
+      placeholder="Password" required>
+  </form>
+  <div *ngIf="loginError">
+    {{errorMessage}}
   </div>
-  <div class="form-group">
-    <label for="loginPassword">パスワード</label>
-    <input type="password" class="form-control" [(ngModel)]="loginPassword" placeholder="Password">
-  </div> -->
-
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <label for="email">メールアドレス</label>
-        <input type="email" name="mail" required email class="form-control" formControlName="email" [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
-        <label for="password">パスワード</label>
-        <input type="password" class="form-control" formControlName="password" [(ngModel)]="loginPassword" placeholder="Password" required>
-    </form>
-    <!-- 
-  <div class="form-check">
-    <input type="checkbox" class="form-check-input" [(ngModel)]="rememberCheck">
-    <label class="form-check-label" for="rememberCheck">
-      ログイン状態を保持する
-    </label>
-  </div>
-   -->
-    <div *ngIf="loginError">
-        {{errorMessage}}
-    </div>
 </div>
 <div class="modal-footer">
-    <div *ngIf="connecting">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
+  <div *ngIf="connecting">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
-    <button class="btn btn-outline-success" (click)="login()">ログイン</button>
-    <!-- <div *ngIf="auth.user | async as user; else showLogin">
-    </div> -->
-    <!-- <ng-template #showLogin>
-        <button class="btn btn-primary ml-2" (click)="loginGoogle()">Login with Google</button>
-    </ng-template> -->
-    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>
+  </div>
+  <button class="btn btn-outline-success" (click)="login()">ログイン</button>
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">キャンセル</button>
 </div>
