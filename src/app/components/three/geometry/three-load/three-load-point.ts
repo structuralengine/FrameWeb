@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as THREE from "three";
+import { LineBasicMaterial } from 'three';
 
 import { ThreeLoadText } from "./three-load-text";
 
@@ -75,7 +76,7 @@ export class ThreeLoadPoint {
     text.visible = false;
     group0.add(text);
     */
-    
+
     child.position.y = offset;
 
     group0.add(child);
@@ -84,14 +85,14 @@ export class ThreeLoadPoint {
     const group = new THREE.Group();
     group.add(group0);
 
-    group.name = "PointLoad" + row.toString() + direction.toString();
+    group.name = "PointLoad-" + row.toString() + '-' + direction.toString();
     group['value'] = value; //値を保存
 
     // 向きを変更する
     if (direction === "ty") {
-      group.rotation.set(Math.PI/2, Math.PI/2, 0);
+      group.rotation.set(Math.PI / 2, Math.PI / 2, 0);
     } else if (direction === "tz") {
-      group.rotation.set(-Math.PI/2, 0, -Math.PI/2);
+      group.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
     }
 
     // 位置を修正する
@@ -119,4 +120,55 @@ export class ThreeLoadPoint {
     group.scale.set(scale, scale, scale);
   }
 
+  // ハイライトを反映させる
+  public setColor(group: any, n: string): void {
+
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    const line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    const line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xafeeee });  //ハイライトカラー
+    const arrow_mat_Red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const arrow_mat_Green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const arrow_mat_Blue = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xafeeee });  //ハイライトカラー
+
+    for (let target of group.children[0].children[0].children[0].children) {
+      if (n === "clear") {
+        if (target.type === 'Line' && group.name.slice(-1) === 'x') {
+          target.material = line_mat_Red; //デフォルトのカラー
+        } else if (target.type === 'Line' && group.name.slice(-1) === 'y') {
+          target.material = line_mat_Green; //デフォルトのカラー
+        } else if (target.type === 'Line' && group.name.slice(-1) === 'z') {
+          target.material = line_mat_Blue; //デフォルトのカラー
+        } else if (target.type === 'Mesh' && group.name.slice(-1) === 'x') {
+          target.material = arrow_mat_Red; //デフォルトのカラー
+        } else if (target.type === 'Mesh' && group.name.slice(-1) === 'y') {
+          target.material = arrow_mat_Green; //デフォルトのカラー
+        } else if (target.type === 'Mesh' && group.name.slice(-1) === 'z') {
+          target.material = arrow_mat_Blue; //デフォルトのカラー
+        }
+      } else if (n === "select") {
+        if (target.type === 'Line') {
+          target.material = line_mat_Pick; //ハイライト用のカラー
+        } else if (target.type === 'Mesh' ) {
+          target.material = arrow_mat_Pick; //ハイライト用のカラー
+        }
+        /*if (target.type === 'Line' && group.name.slice(-1) === 'x') {
+          target.material = line_mat_Red; //ハイライト用のカラー
+        } else if (target.type === 'Line' && group.name.slice(-1) === 'y') {
+          target.material = line_mat_Green; //ハイライト用のカラー
+        } else if (target.type === 'Line' && group.name.slice(-1) === 'z') {
+          target.material = line_mat_Blue; //ハイライト用のカラー
+        } else if (target.type === 'Mesh' && group.name.slice(-1) === 'x') {
+          target.material = arrow_mat_Red; //ハイライト用のカラー
+        } else if (target.type === 'Mesh' && group.name.slice(-1) === 'y') {
+          target.material = arrow_mat_Green; //ハイライト用のカラー
+        } else if (target.type === 'Mesh' && group.name.slice(-1) === 'z') {
+          target.material = arrow_mat_Blue; //ハイライト用のカラー
+        }*/
+      }
+    }
+  }
+  
 }

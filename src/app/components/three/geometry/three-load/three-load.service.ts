@@ -245,8 +245,8 @@ export class ThreeLoadService {
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index_row, index_column): void {
     const id: string = this.currentIndex;
-    //console.log("three-load.service.ts selectChange index =", index_row, index_column);
-    //console.log(this.AllCaseLoadList[id]);
+    console.log("three-load.service.ts selectChange index =", index_row, index_column);
+    console.log(this.AllCaseLoadList[id]);
 
     if (this.currentIndex_child1 === index_row) {
       if (this.currentIndex_child2 === index_column) {
@@ -277,52 +277,63 @@ export class ThreeLoadService {
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
     for (let item of this.AllCaseLoadList[id].ThreeObject.children) {
 
-      //item['material']['color'].setHex(0X000000);
-      item.visible = false;
+      //全てのオブジェクトをデフォルトの状態にする
+      if (item.name.includes('AxialLoad-')){
+        this.axialLoad.setColor(item, "clear");
+      } else if (item.name.includes('DistributeLoad-')){
+        this.distributeLoad.setColor(item, "clear");
+      } else if (item.name.includes('MemberPointLoad-')){
+        this.memberPointLoad.setColor(item, "clear");
+      } else if (item.name.includes('MemberMomentLoad-')){
+        this.memberMomentLoad.setColor(item, "clear");
+      } else if (item.name.includes('MomentLoad-')){
+        this.momentLoad.setColor(item, "clear");
+      } else if (item.name.includes('PointLoad-')){
+        this.pointLoad.setColor(item, "clear");
+      } else if (item.name.includes('TemperatureLoad-')) {
+        this.temperatureLoad.setColor(item, "clear");
+      } else if (item.name.includes('TorsionLoad-')) {
+        this.torsionLoad.setColor(item, "clear");
+      }
 
+      //カレント行のオブジェクトをハイライトする
+      //列によりハイライトするオブジェクトが変化する場合があるため，分岐により制御
       if (index_column >= 0 && index_column <= 7) {
-
-        if (item.name === 'DistributeLoad' + index_row.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name === 'Torsion' + index_row.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name === 'AxialLoad' + index_row.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name === 'TemperatureLoad' + index_row.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name === 'MemberPointLoad' + index_row.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name === 'MemberMomentLoad' + index_row.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
+        if (item.name === 'AxialLoad-' + index_row.toString()) {
+          this.axialLoad.setColor(item, "select");
+        } else if (item.name === 'DistributeLoad-' + index_row.toString() + '-y' ||
+                   item.name === 'DistributeLoad-' + index_row.toString() + '-z' ) {
+          this.distributeLoad.setColor(item, "select");
+        } else if (item.name === 'MemberPointLoad-' + index_row.toString() + '-x' ||
+                   item.name === 'MemberPointLoad-' + index_row.toString() + '-y' ||
+                   item.name === 'MemberPointLoad-' + index_row.toString() + '-z' ) {
+          this.memberPointLoad.setColor(item, "select");
+        } else if (item.name === 'MemberMomentLoad-' + index_row.toString() + '-x' ||
+                   item.name === 'MemberMomentLoad-' + index_row.toString() + '-y' ||
+                   item.name === 'MemberMomentLoad-' + index_row.toString() + '-z' ) {
+          this.memberMomentLoad.setColor(item, "select");
+        } else if (item.name === 'TemperatureLoad-' + index_row.toString()) {
+          this.temperatureLoad.setColor(item, "select");
+        } else if (item.name === 'TorsionLoad-' + index_row.toString()) {
+          this.torsionLoad.setColor(item, "select");
         }
+
       } else if (index_column === 8) {
-        //2桁以上に弱い
-        if (item.name.includes('PointLoad' + index_row.toString())) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name.includes('MomentLoad' + index_row.toString())){
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
+        if (item.name.includes('MomentLoad-' + index_row.toString() + '-')){
+          this.momentLoad.setColor(item, "select");
+        } else if (item.name.includes('PointLoad-' + index_row.toString() + '-')) {
+          this.pointLoad.setColor(item, "select");
         }
 
       } else if (index_column >= 9 && index_column <= 14) {
-
-        if (item.name === 'PointLoad' + index_row.toString() + column.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
-        } else if (item.name === 'MomentLoad' + index_row.toString() + column.toString()) {
-          //item['material']['color'].setHex(0X00A5FF);
-          item.visible = true;
+        if (item.name === 'MomentLoad-' + index_row.toString() + '-' + column.toString()) {
+          this.momentLoad.setColor(item, "select");
+        } else if (item.name === 'PointLoad-' + index_row.toString() + '-' + column.toString()) {
+          this.pointLoad.setColor(item, "select");
         }
       }
     }
-
+    
     this.currentIndex_child1 = index_row;
     this.currentIndex_child2 = index_column;
 

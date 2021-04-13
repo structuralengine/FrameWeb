@@ -24,7 +24,8 @@ export class ThreeLoadAxial {
     this.text = text;
     this.dim = dim;
     this.matLine = new LineMaterial({
-      color: 0xffffff,
+      //color: 0xffffff,  //65行目付近のcolor.pushと同時に削除
+      color: 0xff0000,
       linewidth: 0.001, // in pixels
       vertexColors: true,
       dashed: false
@@ -61,13 +62,14 @@ export class ThreeLoadAxial {
     const points = [];
     points.push(0, 0, 0);
     points.push(L, 0, 0);
-    const colors = [];
-    colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
-    colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
+    //const colors = [];
+    const colors = [1, 1, 1, 1, 1, 1];
+    //colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
+    //colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
 
     const geometry = new LineGeometry();
-    geometry.setPositions( points );
-    geometry.setColors( colors );
+    geometry.setPositions(points);
+    geometry.setColors(colors);
     /*
     const matLine = new LineMaterial({
       color: 0xffffff,
@@ -76,7 +78,7 @@ export class ThreeLoadAxial {
       dashed: false
     });
     */
-    const line2 = new Line2( geometry, this.matLine );
+    const line2 = new Line2(geometry, this.matLine);
     line2.computeLineDistances();
     line2.position.x = L1;
     line2.name = 'line2';
@@ -125,16 +127,16 @@ export class ThreeLoadAxial {
     const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
     let A = Math.asin(XY.y);
 
-      if( XY.x < 0){
-       A = Math.PI - A;
-      }
+    if (XY.x < 0) {
+      A = Math.PI - A;
+    }
     group.rotateZ(A);
 
     const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "AxialLoad" + row.toString();
+    group.name = "AxialLoad-" + row.toString();
     return group;
   }
 
@@ -235,4 +237,33 @@ export class ThreeLoadAxial {
     group.scale.set(1, scale, scale);
   }
 
+  // ハイライトを反映させる
+  public setColor(group: any, n: string): void {
+
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const matLine_Pick = new LineMaterial({
+      color: 0x00ffff,
+      linewidth: 0.001, // in pixels
+      vertexColors: true,
+      dashed: false
+    });
+    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+
+    for (let target of group.children[0].children[0].children) {
+      if (n === "clear") {
+        if (target.name === 'line2') {
+          target.material = this.matLine //デフォルトのカラー
+        } else if (target.name === 'arrow') {
+          target.material = this.arrow_mat //デフォルトのカラー
+        }
+      } else if (n === "select") {
+        if (target.name === 'line2') {
+          target.material = matLine_Pick; //ハイライト用のカラー
+        } else if (target.name === 'arrow') {
+          target.material = arrow_mat_Pick; //ハイライト用のカラー
+        }
+      }
+    }
+  }
+  
 }

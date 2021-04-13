@@ -20,9 +20,9 @@ export class ThreeLoadMemberMoment {
     text: ThreeLoadText,
     dim: ThreeLoadDimension,
     moment: ThreeLoadMoment) {
-      this.text = text;
-      this.dim = dim;
-      this.moment = moment;
+    this.text = text;
+    this.dim = dim;
+    this.moment = moment;
   }
 
   /// 部材途中集中荷重を編集する
@@ -45,7 +45,7 @@ export class ThreeLoadMemberMoment {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number, 
+    P2: number,
     row: number
   ): THREE.Group {
 
@@ -55,7 +55,7 @@ export class ThreeLoadMemberMoment {
     const child = new THREE.Group();
 
     // 長さを決める
-    const p  = this.getPoints(
+    const p = this.getPoints(
       nodei, nodej, direction, pL1, pL2, P1, P2, height);
 
     const points: THREE.Vector3[] = p.points;
@@ -72,7 +72,7 @@ export class ThreeLoadMemberMoment {
     dim.visible = false;
     child.add(dim);
     */
-    
+
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -90,12 +90,12 @@ export class ThreeLoadMemberMoment {
 
     // 全体の向きを修正する
 
-    if (direction.indexOf('g') < 0){
+    if (direction.indexOf('g') < 0) {
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
       let A = Math.asin(XY.y);
 
-      if( XY.x < 0){
-       A = Math.PI - A;
+      if (XY.x < 0) {
+        A = Math.PI - A;
       }
       group.rotateZ(A);
 
@@ -112,13 +112,13 @@ export class ThreeLoadMemberMoment {
       }*/
 
     } else if (direction === "gx") {
-      group.rotation.z = Math.asin(-Math.PI/2);
+      group.rotation.z = Math.asin(-Math.PI / 2);
 
     } else if (direction === "gz") {
-      group.rotation.x = Math.asin(-Math.PI/2);
+      group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "MemberMomentLoad" + row.toString();
+    group.name = "MemberMomentLoad-" + row.toString() + '-' + direction.toString();
 
     return group;
   }
@@ -167,7 +167,7 @@ export class ThreeLoadMemberMoment {
     }
 
     return {
-      points:[
+      points: [
         new THREE.Vector3(x1, y1, 0),
         new THREE.Vector3(x2, y2, 0),
       ],
@@ -200,9 +200,9 @@ export class ThreeLoadMemberMoment {
 
       //モーメントの作成時に向きまで制御しているので，制御不要
       //if (direction === 'y') {
-        //arrow_1.rotation.z += Math.PI;
+      //arrow_1.rotation.z += Math.PI;
       //} else if (direction === 'z') {
-        //arrow_1.rotation.x += Math.PI / 2;
+      //arrow_1.rotation.x += Math.PI / 2;
       //}
 
       result.push(arrow_1);
@@ -265,24 +265,24 @@ export class ThreeLoadMemberMoment {
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
 
-    for (const item of group.children) {      
-      for (const item_child1 of item.children){
-        if (item_child1.name === 'child'){
+    for (const item of group.children) {
+      for (const item_child1 of item.children) {
+        if (item_child1.name === 'child') {
           for (const item_child2 of item_child1.children) {
-            if (item_child2.name === 'MomentLoad'){
-              for (const item_child3 of item_child2.children){
-                if (item_child3.name === 'group'){
-                  for (const item_child4 of item_child3.children){
-                    if (item_child4.name === 'child'){
+            if (item_child2.name === 'MomentLoad') {
+              for (const item_child3 of item_child2.children) {
+                if (item_child3.name === 'group') {
+                  for (const item_child4 of item_child3.children) {
+                    if (item_child4.name === 'child') {
                       item_child4.scale.set(scale, scale, scale);
-                    } 
+                    }
                   }
-                } 
+                }
               }
             }
           }
         }
-      }      
+      }
     }
 
   }
@@ -305,18 +305,18 @@ export class ThreeLoadMemberMoment {
   public setScale(group: any, scale: number): void {
 
     for (const item of group.children) {
-      for (const item_child1 of item.children){
-        if (item_child1.name === 'child'){
+      for (const item_child1 of item.children) {
+        if (item_child1.name === 'child') {
           for (const item_child2 of item_child1.children) {
-            if (item_child2.name === 'MomentLoad'){
-              for (const item_child3 of item_child2.children){
-                if (item_child3.name === 'group'){
-                  for (const item_child4 of item_child3.children){
-                    if (item_child4.name === 'child'){
+            if (item_child2.name === 'MomentLoad') {
+              for (const item_child3 of item_child2.children) {
+                if (item_child3.name === 'group') {
+                  for (const item_child4 of item_child3.children) {
+                    if (item_child4.name === 'child') {
                       item_child4.scale.set(scale, scale, scale);
-                    } 
+                    }
                   }
-                } 
+                }
               }
             }
           }
@@ -326,5 +326,57 @@ export class ThreeLoadMemberMoment {
 
   }
 
+  // ハイライトを反映させる
+  public setColor(group: any, n: string) {
 
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const arrow_mat_Red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const arrow_mat_Green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const arrow_mat_Blue = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xafeeee });
+    const line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    const line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    const line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xafeeee });
+
+    for (let target1 of group.children[0].children[0].children) {
+      for (let target2 of target1.children[0].children[1].children) {  //children: (2) [Mesh(arrow), Line(line)]
+        if (n === 'clear') {
+          if (target2.name === 'arrow' && group.name.slice(-1) === 'x') {
+            target2.material = arrow_mat_Red; //デフォルトのカラー
+          } else if (target2.name === 'arrow' && group.name.slice(-1) === 'y') {
+            target2.material = arrow_mat_Green; //デフォルトのカラー
+          } else if (target2.name === 'arrow' && group.name.slice(-1) === 'z') {
+            target2.material = arrow_mat_Blue; //デフォルトのカラー
+          } else if (target2.name === 'line' && group.name.slice(-1) === 'x') {
+            target2.material = line_mat_Red; //デフォルトのカラー
+          } else if (target2.name === 'line' && group.name.slice(-1) === 'y') {
+            target2.material = line_mat_Green; //デフォルトのカラー
+          } else if (target2.name === 'line' && group.name.slice(-1) === 'z') {
+            target2.material = line_mat_Blue; //デフォルトのカラー
+          }
+        /*} else if (n === 'select') {
+          if (target2.name === 'arrow' && group.name.slice(-1) === 'x') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.name === 'arrow' && group.name.slice(-1) === 'y') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.name === 'arrow' && group.name.slice(-1) === 'z') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.name === 'line' && group.name.slice(-1) === 'x') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          } else if (target2.name === 'line' && group.name.slice(-1) === 'y') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          } else if (target2.name === 'line' && group.name.slice(-1) === 'z') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          }*/
+        } else if (n === 'select') {
+          if (target2.name === 'arrow') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.name === 'line') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          }
+        }
+      }
+    }
+  }
 }
