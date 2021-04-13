@@ -245,8 +245,8 @@ export class ThreeLoadService {
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index_row, index_column): void {
     const id: string = this.currentIndex;
-    console.log("three-load.service.ts selectChange index =", index_row, index_column);
-    console.log(this.AllCaseLoadList[id]);
+    //console.log("three-load.service.ts selectChange index =", index_row, index_column);
+    //console.log(this.AllCaseLoadList[id]);
 
     if (this.currentIndex_child1 === index_row) {
       if (this.currentIndex_child2 === index_column) {
@@ -271,7 +271,7 @@ export class ThreeLoadService {
     } else if (index_column === 14) {
       column = "rz"
     } else {
-      console.log("-----error-----three-load.service.ts(selectChenge)-----error-----");
+      //console.log("-----error-----three-load.service.ts(selectChenge)-----error-----");
     }
 
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する

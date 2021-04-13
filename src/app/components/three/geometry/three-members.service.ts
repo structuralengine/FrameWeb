@@ -177,8 +177,6 @@ export class ThreeMembersService {
 
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index): void{
-    //console.log("three-members.service.ts selectChange index =", index);
-    console.log(this.memberList);
 
     if (this.currentIndex === index){
       //選択行の変更がないとき，何もしない

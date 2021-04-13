@@ -135,7 +135,6 @@ export class ThreeNodesService {
 
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index): void{
-    //console.log("three-nodes.service.ts selectChange index =", index);
 
     if (this.currentIndex === index){
       //選択行の変更がないとき，何もしない

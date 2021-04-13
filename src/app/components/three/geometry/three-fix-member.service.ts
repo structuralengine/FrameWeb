@@ -295,8 +295,6 @@ export class ThreeFixMemberService {
 
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index_row, index_column): void{
-    console.log("three-fix-member.service.ts selectChange index =", index_row, index_column);
-    console.log(this.fixmemberList);
 
     if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
       //選択行の変更がないとき，何もしない
@@ -315,7 +313,7 @@ export class ThreeFixMemberService {
     } else if (index_column === 4) {
       column = "r"
     } else {
-      console.log("-----error-----three-fixmember.service.ts-----error-----");
+      //console.log("-----error-----three-fixmember.service.ts-----error-----");
     }
 
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する

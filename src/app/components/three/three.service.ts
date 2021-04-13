@@ -116,7 +116,7 @@ export class ThreeService {
   //////////////////////////////////////////////////////
   // データの選択を処理する
   public selectChange(mode: string, index: number, index_sub: number): void {
-    console.log("selectChange", mode, index, index_sub);
+    //console.log("selectChange", mode, index, index_sub);
 
     switch (mode) {
       case "nodes":

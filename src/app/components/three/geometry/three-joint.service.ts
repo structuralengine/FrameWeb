@@ -103,8 +103,6 @@ export class ThreeJointService {
 
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index_row, index_column): void{
-    console.log("three-fix-member.service.ts selectChange index =", index_row, index_column);
-    console.log(this.jointList);
     
     if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
       //選択行及び列の変更がないとき，何もしない

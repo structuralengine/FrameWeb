@@ -117,7 +117,6 @@ export class ThreeFixNodeService {
 
     const targetFixNode = fixnodeData[key_fixnode];
     for (const target of targetFixNode) {
-      console.log(target);
 
       if (!(target.n in nodeData)){
         continue;
@@ -503,7 +502,7 @@ export class ThreeFixNodeService {
     } else if (index_column === 6) {
       column = "rz"
     } else {
-      console.log("-----error-----three-fixnode.service.ts-----error-----");
+      //console.log("-----error-----three-fixnode.service.ts-----error-----");
     }
 
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する

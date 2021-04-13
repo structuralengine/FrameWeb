@@ -342,7 +342,6 @@ export class ThreeLoadTorsion {
           //何もしない
         }
       } else if (n == "select") {
-        console.log(target.name)
         if (target.name.slice(-3) === 'red') {
           target.material = cylinder_Pick; //ハイライト用のカラー
         } else if (target.name.slice(-4) === 'blue') {
