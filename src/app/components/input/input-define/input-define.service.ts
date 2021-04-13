@@ -18,18 +18,10 @@ export class InputDefineService {
   
   public getDefineDataColumns(row: number, col: number): any {
 
-    let result: any = null;
-
-    for (let i = 0; i < this.define.length; i++) {
-      const tmp = this.define[i];
-      if (tmp['row'] === row) {
-        result = tmp;
-        break;
-      }
-    }
+    let result: any = this.define.find(element => element.row === row);
 
     // 対象データが無かった時に処理
-    if (result == null) {
+    if (result == undefined) {
       result = { row: row };
       for (let i = 1; i <= col; i++) {
         result['C' + i] = '';
@@ -51,11 +43,7 @@ export class InputDefineService {
       const result: {} = json[index];
       for (const key of Object.keys(result)) {
         const value = this.helper.toNumber(result[key]);
-        if(value === 0){
-          result[key] = null;
-        } else { 
-          result[key] = value;
-        }
+        result[key] = value;
       }
       this.define.push(result);
     }
