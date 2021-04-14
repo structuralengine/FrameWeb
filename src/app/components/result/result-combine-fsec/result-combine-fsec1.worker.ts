@@ -142,7 +142,7 @@ addEventListener('message', ({ data }) => {
           const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
           let caseStr = '';
           if (c1 !== 0){
-            caseStr = (c1 < 0 ? "-" : "+") + c2;
+            caseStr = (c1 < 0 ? "-" : "+") + c1;
           }
           obj1.push({
             m: d.m,

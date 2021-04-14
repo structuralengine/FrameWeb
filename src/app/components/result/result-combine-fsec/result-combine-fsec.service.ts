@@ -93,7 +93,7 @@ export class ResultCombineFsecService {
         this.three.setCombResultData(this.fsecCombine, max_values);
 
       };
-      // this.fsecCombine = this.worker1_test({ defList, combList, fsec, fsecKeys: this.fsecKeys});
+      //this.fsecCombine = this.worker1_test({ defList, combList, fsec, fsecKeys: this.fsecKeys});
       this.worker1.postMessage({ defList, combList, fsec, fsecKeys: this.fsecKeys});
 
     } else {
@@ -234,7 +234,7 @@ export class ResultCombineFsecService {
             const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
             let caseStr = '';
             if (c1 !== 0){
-              caseStr = (c1 < 0 ? "-" : "+") + c2;
+              caseStr = (c1 < 0 ? "-" : "+") + c1;
             }
             obj1.push({
               m: d.m,
