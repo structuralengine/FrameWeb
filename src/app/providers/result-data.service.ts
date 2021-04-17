@@ -130,9 +130,13 @@ export class ResultDataService {
         if (!(caseNo in this.defList) || coef === null) {
           continue; // なければ飛ばす
         }
-        defines.push({caseNo, coef});
+        if('C'+caseNo === cKey || 'D'+caseNo === cKey ){
+          defines.push({caseNo, coef});
+        }
       }
-      this.combList[combNo] = defines;
+      if(defines.length > 0 ){
+        this.combList[combNo] = defines;
+      }
     }
 
     // pickup を集計
@@ -141,16 +145,18 @@ export class ResultDataService {
       const p: object = pickup[pickNo];
       const combines = new Array();
       for (const pKey of Object.keys(p)) {
-        if( pKey === 'row'){
-          continue;
-        }
-        const comNo: string = p[pKey];
-        if (!(comNo in this.combList)) {
+        const caseNo: string = pKey.replace('C', '').replace('D', '');
+        const comNo: number = this.helper.toNumber(p[pKey]);
+        if (!(caseNo in this.combList)|| comNo === null) {
           continue; // なければ飛ばす
         }
-        combines.push(comNo);
+        if('C'+caseNo === pKey || 'D'+caseNo === pKey ){
+          combines.push(comNo);
+        }
       }
-      this.pickList[pickNo] = combines;
+      if(combines.length > 0 ){
+        this.pickList[pickNo] = combines;
+      }
     }
 
   }
