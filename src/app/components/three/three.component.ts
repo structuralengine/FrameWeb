@@ -108,7 +108,15 @@ export class ThreeComponent implements AfterViewInit {
       // this.scene.render();
       this.img.nativeElement.src = canvas.toDataURL();
       this.downloadLink.nativeElement.href = canvas.toDataURL('image/png');
-      this.downloadLink.nativeElement.download = this.fileName;
+      const date = new Date();
+      const dateFormat = date.getFullYear() + "年" + 
+				(date.getMonth() + 1)  + "月" + 
+				 date.getDate() + "日" + 
+				 date.getHours() + "時" + 
+				 date.getMinutes() + "分" + 
+				 date.getSeconds() + "秒" ;
+      this.downloadLink.nativeElement.download = dateFormat;
+
       this.downloadLink.nativeElement.click();
     });
   }
