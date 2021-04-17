@@ -39,7 +39,8 @@ addEventListener('message', ({ data }) => {
           case: target3['case']
         };
         // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
-        if (old['n'] !== item['n'] || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
+        if (old['m'] !== item['m'] || old['n'] !== item['n'] 
+            || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
             || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
           result3.push(item);
           m = target3['m'];

@@ -211,7 +211,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           line[4] = item.L1;
           line[5] = item.L2;
           line[6] = item.P1 === null ? "" : item.P1.toFixed(2);
-          line[7] = item.P2 === null ? "" : item.P1.toFixed(2);
+          line[7] = item.P2 === null ? "" : item.P2.toFixed(2);
           this.mload.push(line);
           // flg.push(0);
           row++;
