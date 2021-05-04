@@ -185,7 +185,7 @@ export class ResultDataService {
         let point_counter: number = 0;
         let point_name: string = '';
 
-        for (let row = 1; row <= rows; row++) {
+        for (let row = 0; row < rows; row++) {
           const r: string = row.toString();
           if ( !(r in maxList) ){
             continue;
