@@ -223,9 +223,9 @@ export class ResultDataService {
           result += ',';
           result += mNo;
           result += ',';
-          result += maxFsec.case;
+          result += maxFsec.comb;
           result += ',';
-          result += minFsec.case;
+          result += minFsec.comb;
           result += ',';
           result += point_name;
           result += ',';

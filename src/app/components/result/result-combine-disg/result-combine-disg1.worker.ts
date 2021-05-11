@@ -103,7 +103,7 @@ addEventListener("message", ({ data }) => {
             rx: coef * d.rx,
             ry: coef * d.ry,
             rz: coef * d.rz,
-            case: caseStr,
+            case: caseStr
           };
         }
 
@@ -112,8 +112,12 @@ addEventListener("message", ({ data }) => {
               for(const k of Object.keys(obj[nodeNo])){
                 temp[key][nodeNo][k] += obj[nodeNo][k];
               }
-          }
+              temp[key][nodeNo]['comb']= combNo;
+            }
         } else {
+          for (const nodeNo of Object.keys(obj)) {
+            obj[nodeNo]['comb']= combNo;
+          }
           temp[key] = obj;
         }
       }

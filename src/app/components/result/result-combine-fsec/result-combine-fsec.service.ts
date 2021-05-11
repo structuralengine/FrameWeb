@@ -246,7 +246,7 @@ export class ResultCombineFsecService {
               mx: coef * d.mx,
               my: coef * d.my,
               mz: coef * d.mz,
-              case: caseStr,
+              case: caseStr
             });
           }
           if (key in temp) {
@@ -261,8 +261,12 @@ export class ResultCombineFsecService {
                   temp[key][row][k] += value;
                 }
               }
+              temp[key][row]['comb']= combNo;
             }
           } else {
+            for (const obj of obj1) {
+              obj['comb']= combNo;
+            }
             temp[key] = obj1;
           }
   
