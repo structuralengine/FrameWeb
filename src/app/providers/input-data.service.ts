@@ -5,6 +5,7 @@ import { InputElementsService } from '../components/input/input-elements/input-e
 import { InputFixMemberService } from '../components/input/input-fix-member/input-fix-member.service';
 import { InputFixNodeService } from '../components/input/input-fix-node/input-fix-node.service';
 import { InputJointService } from '../components/input/input-joint/input-joint.service';
+import { InputPanelService } from '../components/input/input-panel/input-panel.service';
 import { InputLoadService } from '../components/input/input-load/input-load.service';
 import { InputMembersService } from '../components/input/input-members/input-members.service';
 import { InputNodesService } from '../components/input/input-nodes/input-nodes.service';
@@ -24,6 +25,7 @@ export class InputDataService {
               public fixmenber: InputFixMemberService,
               public fixnode: InputFixNodeService,
               public joint: InputJointService,
+              public panel: InputPanelService,
               public load: InputLoadService,
               public member: InputMembersService,
               public node: InputNodesService,
@@ -40,6 +42,7 @@ export class InputDataService {
     this.member.clear();
     this.element.clear();
     this.joint.clear();
+    this.panel.clear();
     this.notice.clear();
     this.fixmenber.clear();
     this.load.clear();
@@ -57,6 +60,7 @@ export class InputDataService {
     this.member.setMemberJson(jsonData);
     this.element.setElementJson(jsonData);
     this.joint.setJointJson(jsonData);
+    this.panel.setPanelJson(jsonData);
     this.notice.setNoticePointsJson(jsonData);
     this.fixmenber.setFixMemberJson(jsonData);
     this.load.setLoadJson(jsonData);
@@ -111,6 +115,11 @@ export class InputDataService {
     const joint: {} = this.joint.getJointJson(empty);
     if (Object.keys(joint).length > 0) {
       jsonData['joint'] = joint;
+    }
+
+    const panel: {} = this.panel.getPanelJson(empty);
+    if (Object.keys(panel).length > 0) {
+      jsonData['panel'] = panel;
     }
 
     const notice_points: {} = this.notice.getNoticePointsJson();
