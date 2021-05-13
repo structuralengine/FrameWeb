@@ -7,6 +7,9 @@ import { NgModule } from "@angular/core";
 export class DataHelperModule {
   constructor() {}
 
+  // ３次元解析=3, ２次元解析=2
+  public dimension: number;
+
   // 文字列string を数値にする
   public toNumber(num: string, digit: number = null): number {
     let result: number = null;

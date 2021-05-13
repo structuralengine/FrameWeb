@@ -21,6 +21,7 @@ import { DataCountService } from '../print/invoice/dataCount.service';
 
 import { AuthService } from '../../core/auth.service';
 import firebase from 'firebase';
+import { DataHelperModule } from 'src/app/providers/data-helper.module';
 
 @Component({
   selector: 'app-menu',
@@ -36,8 +37,10 @@ export class MenuComponent implements OnInit {
   isCalculated: boolean;
   amount: number;
 
-  constructor(private modalService: NgbModal,
+  constructor(
+    private modalService: NgbModal,
     private app: AppComponent,
+    private helper: DataHelperModule,
     private router: Router,
     public user: UserInfoService,
     private InputData: InputDataService,
@@ -58,7 +61,7 @@ export class MenuComponent implements OnInit {
     this.auth.user.subscribe(user => {
       console.log(user);
     });
-
+    this.helper.dimension = 3;
 
     firebase.firestore().settings({
       ignoreUndefinedProperties: true,
@@ -281,7 +284,11 @@ export class MenuComponent implements OnInit {
       }
     }
   }
-
+  // 
+  setDimension(dim: number){
+    this.app.dialogClose(); // 現在表示中の画面を閉じる
+    this.helper.dimension = dim;
+  }
 
   // テスト ---------------------------------------------
   private saveResult(text: string): void {
