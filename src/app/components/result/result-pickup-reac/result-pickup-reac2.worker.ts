@@ -33,7 +33,8 @@ addEventListener('message', ({ data }) => {
           mx: mx.toFixed(2),
           my: my.toFixed(2),
           mz: mz.toFixed(2),
-          case: item.case
+          case: item.case,
+          comb: item.comb
         });
       }
       result2[mode] = result3;

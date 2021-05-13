@@ -81,13 +81,13 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
       let line1: any[] = new Array();
       let line2: string[] = new Array();
       line1.push(index); // CombNo
-      line2.push("");
+      line2.push("").toFixed(2);
       if ("name" in item) {
         line1.push(item.name); // 荷重名称
       } else {
         line1.push("");
       }
-      line2.push("");
+      line2.push("").toFixed(2);
 
       if (index == "1") {
         console.log("2番目の処理が正常に完了");
@@ -103,7 +103,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
           continue;
         }
         line1.push(key.replace("C", ""));
-        line2.push(item[key]);
+        line2.push(item[key].toFixed(2));
         counter += 1;
         if (counter === 10) {
           body.push(line1); // 表の1行 登録

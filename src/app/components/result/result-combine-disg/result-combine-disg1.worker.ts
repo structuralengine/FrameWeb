@@ -16,7 +16,13 @@ addEventListener("message", ({ data }) => {
       const coef: number = Math.sign(caseInfo);
 
       if (!(baseNo in disg)) {
-        continue;
+        if(caseInfo === 0 ){
+          // 値が全て0 の case 0 という架空のケースを用意する
+          // 値は coef=0 であるため 0 となる
+          disg['0'] = Object.values(disg)[0];
+        } else {
+          continue;
+        }
       }
 
       // カレントケースを集計する
@@ -86,7 +92,10 @@ addEventListener("message", ({ data }) => {
         for (const nodeNo of Object.keys(disgs[key])) {
           const d = disgs[key][nodeNo];
           const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
-          const caseStr = (c1 < 0 ? "-" : "+") + c2;
+          let caseStr = '';
+          if (c1 !== 0){
+            caseStr = (c1 < 0 ? "-" : "+") + c2;
+          }
           obj[nodeNo] = {
             dx: coef * d.dx,
             dy: coef * d.dy,
@@ -94,7 +103,7 @@ addEventListener("message", ({ data }) => {
             rx: coef * d.rx,
             ry: coef * d.ry,
             rz: coef * d.rz,
-            case: caseStr,
+            case: caseStr
           };
         }
 
@@ -103,8 +112,12 @@ addEventListener("message", ({ data }) => {
               for(const k of Object.keys(obj[nodeNo])){
                 temp[key][nodeNo][k] += obj[nodeNo][k];
               }
-          }
+              temp[key][nodeNo]['comb']= combNo;
+            }
         } else {
+          for (const nodeNo of Object.keys(obj)) {
+            obj[nodeNo]['comb']= combNo;
+          }
           temp[key] = obj;
         }
       }
