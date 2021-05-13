@@ -95,7 +95,8 @@ export class InputMembersComponent implements OnInit {
     selectEnd: (evt, ui) => {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
-      this.three.selectChange('members', row);
+      const column = range[0].c1;
+      this.three.selectChange('members', row, column);
     },
     change: (evt, ui) => {
       const changes = ui.updateList;

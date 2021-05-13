@@ -16,6 +16,8 @@ export class ThreeJointService {
 
   private jointList: any[];
   private isVisible: boolean;
+  private currentIndex: string;
+  private currentIndex_sub: string;
 
   private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
@@ -27,6 +29,8 @@ export class ThreeJointService {
               private three_member: ThreeMembersService){
       this.jointList = new Array();
       this.isVisible = null;
+      this.currentIndex = null;
+      this.currentIndex_sub = null;
     }
 
   public visibleChange(flag: boolean): void {
@@ -87,18 +91,63 @@ export class ThreeJointService {
 
       let position = {x:i.x, y:i.y, z:i.z};
       let direction = {x:jo.xi, y:jo.yi, z:jo.zi};
-      this.createJoint(position, direction, localAxis);
+      this.createJoint(position, direction, localAxis, jo);
 
       // memberDataデータに j端の格点番号
       position = {x:j.x, y:j.y, z:j.z};
       direction = {x:jo.xj, y:jo.yj, z:jo.zj};
-      this.createJoint(position, direction, localAxis);
+      this.createJoint(position, direction, localAxis, jo);
 
     }
   }
 
+  //シートの選択行が指すオブジェクトをハイライトする
+  public selectChange(index_row, index_column): void{
+    
+    if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
+      //選択行及び列の変更がないとき，何もしない
+      return
+    }
+
+    //数字(列数)を記号に変換
+    let column = "";
+    if (index_column === 0){
+      //column = "xi"
+    } else if (index_column === 1){
+      column = "xi"
+    } else if (index_column === 2) {
+      column = "yi"
+    } else if (index_column === 3) {
+      column = "zi"
+    } else if (index_column === 4) {
+      column = "xj"
+    } else if (index_column === 5) {
+      column = "yj"
+    } else if (index_column === 6) {
+      column = "zj"
+    } else {
+      console.log("-----error-----three-joint.service.ts-----error-----");
+    }
+
+    //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
+    for (let item of this.jointList){
+
+      item['material']['color'].setHex(0X000000); //処理の変更あり
+
+      if (item.name === 'joint' + index_row.toString() + column){
+
+        item['material']['color'].setHex(0X00A5FF); //処理の変更あり
+      }
+    }
+
+    this.currentIndex = index_row;
+    this.currentIndex_sub = index_column;
+
+    this.scene.render();
+  }
+
   // ピンを示すドーナッツを描く
-  private createJoint(position: any, direction: any, localAxis): void {
+  private createJoint(position: any, direction: any, localAxis, Data): void {
 
       // x方向の結合
 
@@ -108,7 +157,15 @@ export class ThreeJointService {
         const FocalSpot_Y = position.y + localAxis.x.y;
         const FocalSpot_Z = position.z + localAxis.x.z;
         pin_x.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
-        pin_x.name = "0xFF0000";
+        if (direction.x === Data.xi && direction.y === Data.yi && direction.z === Data.zi){
+          //pin_x.name = "joint" + Data.m.toString() + "xi";
+          pin_x.name = "joint" + Data.row.toString() + "xi";
+        } else if (direction.x === Data.xj && direction.y === Data.yj && direction.z === Data.zj){
+          //pin_x.name = "joint" + Data.m.toString() + "xj";
+          pin_x.name = "joint" + Data.row.toString() + "xj";
+        } else {
+
+        }
         this.jointList.push(pin_x);
         this.scene.add(pin_x);
       }
@@ -121,7 +178,15 @@ export class ThreeJointService {
         const FocalSpot_Y = position.y + localAxis.y.y;
         const FocalSpot_Z = position.z + localAxis.y.z;
         pin_y.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
-        pin_y.name = "0x00FF00";
+        if (direction.x === Data.xi && direction.y === Data.yi && direction.z === Data.zi){
+          //pin_y.name = "joint" + Data.m.toString() + "yi";
+          pin_y.name = "joint" + Data.row.toString() + "yi";
+        } else if (direction.x === Data.xj && direction.y === Data.yj && direction.z === Data.zj){
+          //pin_y.name = "joint" + Data.m.toString() + "yj";
+          pin_y.name = "joint" + Data.row.toString() + "yj";
+        } else {
+
+        }
         this.jointList.push(pin_y);
         this.scene.add(pin_y);
 
@@ -135,7 +200,13 @@ export class ThreeJointService {
         const FocalSpot_Y = position.y + localAxis.z.y;
         const FocalSpot_Z = position.z + localAxis.z.z;
         pin_z.lookAt(FocalSpot_X, FocalSpot_Y, FocalSpot_Z);
-        pin_z.name = "0x0000FF";
+        if (direction.x === Data.xi && direction.y === Data.yi && direction.z === Data.zi){
+          //pin_z.name = "joint" + Data.m.toString() + "zi";
+          pin_z.name = "joint" + Data.row.toString() + "zi";
+        } else if (direction.x === Data.xj && direction.y === Data.yj && direction.z === Data.zj){
+          //pin_z.name = "joint" + Data.m.toString() + "zj";
+          pin_z.name = "joint" + Data.row.toString() + "zj";
+        }
         this.jointList.push(pin_z);
         this.scene.add(pin_z);
 
