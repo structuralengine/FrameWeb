@@ -185,7 +185,6 @@ export class ThreeService {
     if (this.currentIndex === currentPage) {
       return;
     }
-    console.log(currentPage)
 
     switch (this.mode) {
       case "elements":

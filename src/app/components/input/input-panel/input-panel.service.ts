@@ -63,7 +63,6 @@ export class InputPanelService {
         result[key] = (pos === null) ? '' : pos.toFixed(0);
       }
       this.panel_points.push(result);
-      console.log(this.panel_points);
     }
   }
 

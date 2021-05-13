@@ -52,7 +52,6 @@ export class InputPanelComponent {
 
   // 指定行row 以降のデータを読み取る
   private loadData(row: number): void {
-    console.log("this.loadData => row =", row);
     for (let i = this.dataset.length + 1; i <= row; i++) {
       const panel = this.data.getPanelColumns(i);
       //const m: string = panel['id'];
@@ -97,7 +96,6 @@ export class InputPanelComponent {
       data: this.dataset
     },
     beforeTableView: (evt, ui) => {
-      //console.log("beforeTableView")
       const finalV = ui.finalV;
       const dataV = this.dataset.length;
       if (ui.initV == null) {
@@ -109,18 +107,15 @@ export class InputPanelComponent {
       }
     },
     selectEnd: (evt, ui) => {
-      //console.log("selectEnd")
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
       const column = range[0].c1;
       this.three.selectChange('panel', row, column);
     },
     change: (evt, ui) => {
-      //console.log("chenge")
       const changes = ui.updateList;
       for (const target of changes) {
         const row: number = target.rowIndx;
-        console.log(target.newRow)
         //if (!(target.newRow.includes('point-')) || !('e' in target.newRow)) {
           //continue;
         //}
