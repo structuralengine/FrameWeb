@@ -456,8 +456,11 @@ export class ThreeService {
 
     switch (this.mode) {
       case "nodes": // 節点データの更新
-      case "fix_nodes":
         this.node.detectObject(raycaster, action);
+        break;
+
+      case "fix_nodes":
+        this.fixNode.detectObject(raycaster, action);
         break;
 
       case "joints":

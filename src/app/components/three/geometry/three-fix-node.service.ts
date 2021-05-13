@@ -19,15 +19,17 @@ export class ThreeFixNodeService {
   private currentIndex: string;
   private currentIndex_sub: string;
 
+  private selectionItem: THREE.Mesh;     // 選択中のアイテム
+
   // 大きさを調整するためのスケール
   private scale: number;
   private params: any;          // GUIの表示制御
   private gui: any;
 
   constructor(private scene: SceneService,
-              private nodeThree: ThreeNodesService,
-              private node: InputNodesService,
-              private fixnode: InputFixNodeService) {
+    private nodeThree: ThreeNodesService,
+    private node: InputNodesService,
+    private fixnode: InputFixNodeService) {
 
     this.fixnodeList = new Array();
     this.isVisible = null;
@@ -55,13 +57,13 @@ export class ThreeFixNodeService {
 
     // guiの表示設定
     if (flag === true) {
-      if (this.fixnodeList.length > 0){
+      if (this.fixnodeList.length > 0) {
         this.guiEnable();
       }
     } else {
       this.guiDisable();
     }
-   
+
   }
 
   // guiを表示する
@@ -118,17 +120,17 @@ export class ThreeFixNodeService {
     const targetFixNode = fixnodeData[key_fixnode];
     for (const target of targetFixNode) {
 
-      if (!(target.n in nodeData)){
+      if (!(target.n in nodeData)) {
         continue;
       }
       const n = nodeData[target.n];
       const x = n.x;
       const y = n.y;
       const z = n.z;
- 
+
       const position = { x, y, z };
 
-      
+
       // バネ支点の分岐
       let spring = { direction: 'x', relationship: 'small', color: 0x000000 };
       if (target.tx ** 2 !== 0 && target.tx ** 2 !== 1) {
@@ -188,8 +190,8 @@ export class ThreeFixNodeService {
 
       // 完全な固定支点の分岐
       let fixed_Parfect = { relationshipX: 'small', relationshipY: 'small', relationshipZ: 'small', color: 0x808080 };
-      if (target.rx === 1 && target.ry === 1 && target.rz === 1 
-          && target.tx === 1 && target.ty === 1 && target.tz === 1) {
+      if (target.rx === 1 && target.ry === 1 && target.rz === 1
+        && target.tx === 1 && target.ty === 1 && target.tz === 1) {
         if (position.x <= this.center().x) {
           fixed_Parfect.relationshipX = 'small';
         } else if (position.x > this.center().x) {
@@ -211,7 +213,7 @@ export class ThreeFixNodeService {
       }
 
       // ピン支点の分岐
-      if( target.tx === 1 ){
+      if (target.tx === 1) {
         const pin = { direction: 'x', color: 0xff0000 };
         if (position.x <= this.center().x) {
           pin['relationship'] = 'small';
@@ -221,7 +223,7 @@ export class ThreeFixNodeService {
         //this.CreatePin(pin, position, this.baseScale(), target.n);
         this.CreatePin(pin, position, this.baseScale(), target.row);
       }
-      if( target.ty === 1 ){
+      if (target.ty === 1) {
         const pin = { direction: 'y', color: 0x00ff00 };
         if (position.y <= this.center().y) {
           pin['relationship'] = 'small';
@@ -231,7 +233,7 @@ export class ThreeFixNodeService {
         //this.CreatePin(pin, position, this.baseScale(), target.n);
         this.CreatePin(pin, position, this.baseScale(), target.row);
       }
-      if( target.tz === 1 ){
+      if (target.tz === 1) {
         const pin = { direction: 'z', color: 0x0000ff };
         if (position.z <= this.center().z) {
           pin['relationship'] = 'small';
@@ -288,14 +290,14 @@ export class ThreeFixNodeService {
 
     const height: number = maxLength * 0.2;
     const radius: number = height * 0.3;
-    const geometry = new THREE.ConeBufferGeometry( radius, height, 12, 1, false );
-    geometry.translate( 0, -height/2, 0 );
-    const material = new THREE.MeshBasicMaterial({ color: pin.color });
+    const geometry = new THREE.ConeBufferGeometry(radius, height, 12, 1, false);
+    geometry.translate(0, -height / 2, 0);
+    const material = new THREE.MeshBasicMaterial({ color: pin.color, opacity: 0.60 });
     const cone = new THREE.Mesh(geometry, material);
     cone.position.set(position.x, position.y, position.z);
     //cone.name = 'fixnode' + n.toString() + 't' + pin.direction.toString();  //例：fixnode2ty
     cone.name = 'fixnode' + row.toString() + 't' + pin.direction.toString();  //例：fixnode2ty
-    
+
     switch (pin.direction) {
       case 'x':
         switch (pin.relationship) {
@@ -337,7 +339,7 @@ export class ThreeFixNodeService {
   public CreateFixed(fixed, position, maxLength, row) {
     const side = 0.06 * maxLength;
     let geometry = new THREE.PlaneBufferGeometry(side, 2.5 * side);
-    const material = new THREE.MeshBasicMaterial({ color: fixed.color, side: THREE.DoubleSide });
+    const material = new THREE.MeshBasicMaterial({ color: fixed.color, side: THREE.DoubleSide, opacity: 0.60 });
     const plane = new THREE.Mesh(geometry, material);
     plane.name = 'fixnode' + row.toString() + 'r' + fixed.direction.toString();  //例：fixnode2ry
     let x = position.x;
@@ -360,10 +362,10 @@ export class ThreeFixNodeService {
 
   // 完全な固定支点を描く
   public CreateFixed_P(fixed_Parfect, position, maxLength, row) {
-    fixed_Parfect.color = 0x808080;
+    fixed_Parfect.color = 0x303030;
     const size = 0.2 * maxLength;
     const geometry = new THREE.BoxBufferGeometry(size, size, size);
-    const material = new THREE.MeshBasicMaterial({ color: fixed_Parfect.color });
+    const material = new THREE.MeshBasicMaterial({ color: fixed_Parfect.color, opacity: 0.60 });
     const cube = new THREE.Mesh(geometry, material);
     cube.name = 'fixnode' + row.toString() + 'tp';  //例：fixnode2tx
     /*switch (fixed_Parfect.directionX) {
@@ -428,8 +430,8 @@ export class ThreeFixNodeService {
       }
       vertices.push(new THREE.Vector3(x, y, z));
     }
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
-    const line = new THREE.LineBasicMaterial({ color: spring.color });
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+    const line = new THREE.LineBasicMaterial({ color: spring.color, opacity: 0.60 });
     const mesh = new THREE.Line(geometry, line);
     mesh.position.set(position.x, position.y, position.z);
     mesh.name = 'fixnode' + row.toString() + 't' + spring.direction.toString();  //例：fixnode2ty
@@ -468,8 +470,8 @@ export class ThreeFixNodeService {
       }
       vertices.push(new THREE.Vector3(x, y, z));
     }
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
-    const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+    const line = new THREE.LineBasicMaterial({ color: rotatingspring.color, opacity: 0.60 });
     const mesh = new THREE.Line(geometry, line);
     mesh.name = 'fixnode' + row.toString() + 'r' + rotatingspring.direction.toString();  //例：fixnode2ry
     mesh.position.set(position.x, position.y, position.z);
@@ -478,18 +480,18 @@ export class ThreeFixNodeService {
   }
 
   //シートの選択行が指すオブジェクトをハイライトする
-  public selectChange(index_row, index_column): void{
+  public selectChange(index_row, index_column): void {
 
-    if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
+    if (this.currentIndex === index_row && this.currentIndex_sub === index_column) {
       //選択行の変更がないとき，何もしない
       return
     }
 
     let column = "";
     const column_sub = "tp"
-    if (index_column === 0){
+    if (index_column === 0) {
       //column = "tx"
-    } else if (index_column === 1){
+    } else if (index_column === 1) {
       column = "tx"
     } else if (index_column === 2) {
       column = "ty"
@@ -506,14 +508,14 @@ export class ThreeFixNodeService {
     }
 
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
-    for (let item of this.fixnodeList){
+    for (let item of this.fixnodeList) {
 
-      item['material']['color'].setHex(0X000000);
+      this.getColor(item)
 
       if (item.name === 'fixnode' + index_row.toString() + column ||
-          item.name === 'fixnode' + index_row.toString() + column_sub ){
+        item.name === 'fixnode' + index_row.toString() + column_sub) {
 
-        item['material']['color'].setHex(0X00A5FF);
+        item['material']['color'].setHex(0XFF11FF);
       }
     }
 
@@ -543,6 +545,87 @@ export class ThreeFixNodeService {
     for (const item of this.fixnodeList) {
       item.scale.set(this.scale, this.scale, this.scale);
     }
+  }
+
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(raycaster: THREE.Raycaster, action: string): void {
+
+    if (this.fixnodeList.length === 0) {
+      return; // 対象がなければ何もしない
+    }
+
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.fixnodeList);
+    if (intersects.length <= 0) {
+      return;
+    }
+
+    switch (action) {
+      case 'click':
+        this.fixnodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を指定する
+            this.getColor(item);
+            item.material['opacity'] = 1.00;  // 彩度 強
+          }
+        });
+        break;
+
+      case 'select':
+        this.selectionItem = null;
+        this.fixnodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を指定する
+            this.getColor(item);
+            item.material['opacity'] = 1.00;  //彩度 強
+            this.selectionItem = item;
+          } else {
+            // それ以外は彩度を下げる
+            this.getColor(item);
+            item.material['opacity'] = 0.60;  //彩度 中
+          }
+        });
+        break;
+
+      case 'hover':
+        this.fixnodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を指定する
+            this.getColor(item);
+            item.material['opacity'] = 1.00;  //彩度 強
+          } else {
+            if (item === this.selectionItem) {
+              this.getColor(item);
+              item.material['opacity'] = 1.00;  //彩度 強
+            } else {
+              // それ以外は彩度を下げる
+              this.getColor(item);
+              item.material['opacity'] = 0.60;  //彩度 中
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
+    }
+    this.scene.render();
+  }
+
+  //オブジェクトの色を入手
+  private getColor(item){
+
+    const key = item.name.slice(-2); 
+    if (key === "tx" || key === "rx"){
+      item['material']['color'].setHex(0xff0000);
+    } else if (key === "ty" || key === "ry"){
+      item['material']['color'].setHex(0x00ff00);
+    } else if (key === "tz" || key === "rz"){
+      item['material']['color'].setHex(0x0000ff);
+    } else if (key === "tp") {
+      item['material']['color'].setHex(0x303030);
+    }
+
   }
 
 }
