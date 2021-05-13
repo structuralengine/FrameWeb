@@ -9,7 +9,6 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { ThreeMembersService } from './three-members.service';
 import { R3TargetBinder } from '@angular/compiler';
-import { createPublicKey } from 'crypto';
 
 @Injectable({
   providedIn: 'root'
