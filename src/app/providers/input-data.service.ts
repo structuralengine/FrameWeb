@@ -173,6 +173,22 @@ export class InputDataService {
     // ここに、２次元モードで作成したデータを３次元データとして
     // 成立する形に修正する
 
+    // Set_FixNode のセクション
+    if ( !('fix_node' in jsonData)) {
+      jsonData['fix_node'] = new Array();
+    }
+    for(const n of Object.keys(jsonData.node)) {
+        const fix_node = jsonData.fix_node.find( e => e.n === n );
+        if(fix_node === undefined){
+          jsonData.fix_node.push({ n, tz: 1, rx: 1, ry: 1 });
+        } else {
+          fix_node['tz'] = 1;
+          fix_node['rx'] = 1
+          fix_node['ry'] = 1
+        }
+
+
+} 
   }
 
 
