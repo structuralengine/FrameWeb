@@ -71,7 +71,7 @@ export class InputNodesComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.ColumnHeaders(),
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
