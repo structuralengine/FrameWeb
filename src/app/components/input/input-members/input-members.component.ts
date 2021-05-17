@@ -17,13 +17,20 @@ export class InputMembersComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "i端",          dataType: "integer",                 dataIndx: "ni", sortable: false, minwidth: 10, width: 10 },
     { title: "j端",          dataType: "integer",                 dataIndx: "nj", sortable: false, minwidth: 10, width: 10 },
     { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
     { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
     { title: "コードアングル", dataType: "float",                   dataIndx: "cg", sortable: false, width: 130 }
   ];
+  private columnHeaders2D =[
+    { title: "i端",          dataType: "integer",                 dataIndx: "ni", sortable: false, minwidth: 10, width: 10 },
+    { title: "j端",          dataType: "integer",                 dataIndx: "nj", sortable: false, minwidth: 10, width: 10 },
+    { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
+    { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
+  ];
+  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
   
@@ -74,7 +81,7 @@ export class InputMembersComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.columnHeaders,
+    colModel: this.ColumnHeaders(),
     animModel: {
       on: true
     },
@@ -120,4 +127,13 @@ export class InputMembersComponent implements OnInit {
       this.three.changeData('members');
     }
   };
+
+  public ColumnHeaders() {
+    if (this.helper.dimension === 3){
+      this.columnHeaders = this.columnHeaders3D;
+    } else if (this.helper.dimension === 2) {
+      this.columnHeaders = this.columnHeaders2D;
+    }
+    return this.columnHeaders
+  }
 }

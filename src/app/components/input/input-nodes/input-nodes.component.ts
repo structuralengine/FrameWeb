@@ -17,11 +17,16 @@ export class InputNodesComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "X", dataType: "float",  format: "#.000", dataIndx: "x",  sortable: false, width: 90 },
     { title: "Y", dataType: "float",  format: "#.000", dataIndx: "y",  sortable: false, width: 90 },
     { title: "Z", dataType: "float",  format: "#.000", dataIndx: "z",  sortable: false, width: 90 },
   ];
+  private columnHeaders2D =[
+    { title: "X", dataType: "float",  format: "#.000", dataIndx: "x",  sortable: false, width: 90 },
+    { title: "Y", dataType: "float",  format: "#.000", dataIndx: "y",  sortable: false, width: 90 },
+  ];
+  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
 
@@ -66,7 +71,7 @@ export class InputNodesComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.columnHeaders,
+    colModel: this.ColumnHeaders(),
     animModel: {
       on: true
     },
@@ -94,5 +99,14 @@ export class InputNodesComponent implements OnInit {
       this.three.changeData('nodes');
     }
   };
+
+  public ColumnHeaders() {
+    if (this.helper.dimension === 3){
+      this.columnHeaders = this.columnHeaders3D;
+    } else if (this.helper.dimension === 2) {
+      this.columnHeaders = this.columnHeaders2D;
+    }
+    return this.columnHeaders
+  }
 
 }

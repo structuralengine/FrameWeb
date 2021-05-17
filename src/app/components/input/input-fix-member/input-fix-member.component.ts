@@ -16,13 +16,19 @@ export class InputFixMemberComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
     { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
     { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
     { title: "Z変位拘束", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
     { title: "回転拘束",  dataType: "float",   dataIndx: "tr", sortable: false, width: 100 }
   ];
+  private columnHeaders2D =[
+    { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
+    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+  ];
+  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
   private page = 1;
@@ -83,7 +89,7 @@ export class InputFixMemberComponent implements OnInit {
     numberCell: {
       show: false // 行番号
     },
-    colModel: this.columnHeaders,
+    colModel: this.ColumnHeaders(),
     animModel: {
       on: true
     },
@@ -111,5 +117,14 @@ export class InputFixMemberComponent implements OnInit {
       this.three.changeData('fix_member', this.page);
     }
   };
+
+  public ColumnHeaders() {
+    if (this.helper.dimension === 3){
+      this.columnHeaders = this.columnHeaders3D;
+    } else if (this.helper.dimension === 2) {
+      this.columnHeaders = this.columnHeaders2D;
+    }
+    return this.columnHeaders
+  }
 
 }

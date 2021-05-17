@@ -16,7 +16,7 @@ export class InputLoadComponent implements OnInit {
 
   public load_name: string;
   private dataset = [];
-  private columnHeaders = [
+  private columnHeaders3D = [
     {
       title: "部材1",
       dataType: "string",
@@ -134,6 +134,21 @@ export class InputLoadComponent implements OnInit {
       width: 70,
     },
   ];
+  private columnHeaders2D = [ 
+    {title: "部材1", dataType: "string", dataIndx: "m1", sortable: false, width: 30 },
+    {title: "部材2", dataType: "string", dataIndx: "m2", sortable: false, width: 30 },
+    {title: "方向", dataType: "string", dataIndx: "direction", sortable: false, width: 30 },
+    {title: "マーク", dataType: "integer", dataIndx: "mark", sortable: false, width: 60 },
+    {title: "L1", dataType: "float", format: "#.000", dataIndx: "L1", sortable: false, width: 70 },
+    {title: "L2", dataType: "float", format: "#.000", dataIndx: "L2", sortable: false, width: 70 },
+    {title: "P1", dataType: "float", format: "#.00", dataIndx: "P1", sortable: false, width: 70 },
+    {title: "P2", dataType: "float", format: "#.00", dataIndx: "P2", sortable: false, width: 70 },
+    {title: "節点No", dataType: "string", dataIndx: "n", sortable: false, width: 30 },
+    {title: "X", dataType: "float", format: "#.00", dataIndx: "tx", sortable: false, width: 70 },
+    {title: "Y", dataType: "float", format: "#.00", dataIndx: "ty", sortable: false, width: 70 },
+    {title: "RZ", dataType: "float", format: "#.00", dataIndx: "rz", sortable: false, width: 70 },
+  ];  
+  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
   private page = 1;
@@ -195,7 +210,7 @@ export class InputLoadComponent implements OnInit {
     numberCell: {
       show: false, // 行番号
     },
-    colModel: this.columnHeaders,
+    colModel: this.ColumnHeaders(),
     animModel: {
       on: true,
     },
@@ -227,4 +242,13 @@ export class InputLoadComponent implements OnInit {
       }
     }
   };
+
+  public ColumnHeaders() {
+    if (this.helper.dimension === 3){
+      this.columnHeaders = this.columnHeaders3D;
+    } else if (this.helper.dimension === 2) {
+      this.columnHeaders = this.columnHeaders2D;
+    }
+    return this.columnHeaders
+  }
 }
