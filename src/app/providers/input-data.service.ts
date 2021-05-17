@@ -13,25 +13,28 @@ import { InputNoticePointsService } from '../components/input/input-notice-point
 import { InputPickupService } from '../components/input/input-pickup/input-pickup.service';
 
 import { SceneService } from '../components/three/scene.service';
+import { DataHelperModule } from './data-helper.module';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InputDataService {
 
-  constructor(public combine: InputCombineService,
-              public define: InputDefineService,
-              public element: InputElementsService,
-              public fixmenber: InputFixMemberService,
-              public fixnode: InputFixNodeService,
-              public joint: InputJointService,
-              public panel: InputPanelService,
-              public load: InputLoadService,
-              public member: InputMembersService,
-              public node: InputNodesService,
-              public notice: InputNoticePointsService,
-              public pickup: InputPickupService,
-              private three: SceneService) {
+  constructor(
+    private helper: DataHelperModule,
+    public combine: InputCombineService,
+    public define: InputDefineService,
+    public element: InputElementsService,
+    public fixmenber: InputFixMemberService,
+    public fixnode: InputFixNodeService,
+    public joint: InputJointService,
+    public panel: InputPanelService,
+    public load: InputLoadService,
+    public member: InputMembersService,
+    public node: InputNodesService,
+    public notice: InputNoticePointsService,
+    public pickup: InputPickupService,
+    private three: SceneService) {
     this.clear();
   }
 
@@ -159,8 +162,19 @@ export class InputDataService {
       jsonData['error'] = error;
     }
 
+    if(this.helper.dimension === 2 && empty === 0){
+      this.create2Ddata(jsonData);
+    }
+
     return jsonData;
   }
+
+  public create2Ddata(jsonData: any) {
+    // ここに、２次元モードで作成したデータを３次元データとして
+    // 成立する形に修正する
+
+  }
+
 
   private checkError(jsonData: object): string {
 
