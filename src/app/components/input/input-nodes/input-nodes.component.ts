@@ -26,7 +26,6 @@ export class InputNodesComponent implements OnInit {
     { title: "X", dataType: "float",  format: "#.000", dataIndx: "x",  sortable: false, width: 90 },
     { title: "Y", dataType: "float",  format: "#.000", dataIndx: "y",  sortable: false, width: 90 },
   ];
-  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
 
@@ -99,14 +98,5 @@ export class InputNodesComponent implements OnInit {
       this.three.changeData('nodes');
     }
   };
-
-  public ColumnHeaders() {
-    if (this.helper.dimension === 3){
-      this.columnHeaders = this.columnHeaders3D;
-    } else if (this.helper.dimension === 2) {
-      this.columnHeaders = this.columnHeaders2D;
-    }
-    return this.columnHeaders
-  }
 
 }

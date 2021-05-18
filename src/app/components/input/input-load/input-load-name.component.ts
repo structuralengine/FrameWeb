@@ -137,7 +137,6 @@ export class InputLoadNameComponent implements OnInit {
       align: "right",
     },
   ];
-  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D
 
   private ROWS_COUNT = 15;
 
@@ -188,7 +187,7 @@ export class InputLoadNameComponent implements OnInit {
       show: true, // 行番号
       width: 45,
     },
-    colModel: this.ColumnHeaders(),
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true,
     },
@@ -248,12 +247,4 @@ export class InputLoadNameComponent implements OnInit {
     this.threeload.removeCase(index);
   }
 
-  public ColumnHeaders() {
-    if (this.helper.dimension === 3){
-      this.columnHeaders = this.columnHeaders3D;
-    } else if (this.helper.dimension === 2) {
-      this.columnHeaders = this.columnHeaders2D;
-    }
-    return this.columnHeaders
-  }
 }

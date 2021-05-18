@@ -32,8 +32,6 @@ export class InputElementsComponent implements OnInit {
     { title: "断面積", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
     { title: "断面二次Iz", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
   ];
-  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
-
   
   private ROWS_COUNT = 15;
   private page = 1;
@@ -91,7 +89,7 @@ export class InputElementsComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.ColumnHeaders(),
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -119,14 +117,5 @@ export class InputElementsComponent implements OnInit {
       this.three.changeData('elements', this.page);
     }
   };
-
-  public ColumnHeaders() {
-    if (this.helper.dimension === 3){
-      this.columnHeaders = this.columnHeaders3D;
-    } else if (this.helper.dimension === 2) {
-      this.columnHeaders = this.columnHeaders2D;
-    }
-    return this.columnHeaders
-  }
 
 }

@@ -31,7 +31,6 @@ export class InputFixNodeComponent implements OnInit {
     { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
     { title: "Z回転拘束", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
   ];
-  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
   private page = 1;
@@ -89,7 +88,7 @@ export class InputFixNodeComponent implements OnInit {
     numberCell: {
       show: false // 行番号
     },
-    colModel: this.ColumnHeaders(),
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -117,14 +116,5 @@ export class InputFixNodeComponent implements OnInit {
       this.three.changeData('fix_nodes', this.page);
     }
   };
-
-  public ColumnHeaders() {
-    if (this.helper.dimension === 3){
-      this.columnHeaders = this.columnHeaders3D;
-    } else if (this.helper.dimension === 2) {
-      this.columnHeaders = this.columnHeaders2D;
-    }
-    return this.columnHeaders
-  }
 
 }

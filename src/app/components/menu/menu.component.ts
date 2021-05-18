@@ -289,7 +289,6 @@ export class MenuComponent implements OnInit {
     this.helper.dimension = dim;
     this.scene.createCamera();    // three.js のカメラを変更する
     this.scene.addControls();
-    //this.three.dimVisible();  //2Dと3Dに関係ないオブジェクトを非表示にする
     this.scene.render();
   }
 

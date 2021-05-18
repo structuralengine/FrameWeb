@@ -30,7 +30,6 @@ export class InputMembersComponent implements OnInit {
     { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
     { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
   ];
-  private columnHeaders = this.columnHeaders3D || this.columnHeaders2D;
 
   private ROWS_COUNT = 15;
   
@@ -81,7 +80,7 @@ export class InputMembersComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.ColumnHeaders(),
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -128,12 +127,4 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
-  public ColumnHeaders() {
-    if (this.helper.dimension === 3){
-      this.columnHeaders = this.columnHeaders3D;
-    } else if (this.helper.dimension === 2) {
-      this.columnHeaders = this.columnHeaders2D;
-    }
-    return this.columnHeaders
-  }
 }
