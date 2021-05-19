@@ -118,6 +118,4 @@ export class InputElementsComponent implements OnInit {
     }
   };
 
-  width = (this.helper.dimension === 3) ? 850 : 520 ;
-
 }

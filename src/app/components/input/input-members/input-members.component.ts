@@ -127,6 +127,4 @@ export class InputMembersComponent implements OnInit {
     }
   };
 
-  width = (this.helper.dimension === 3) ? 480 : 350 ;
-
 }

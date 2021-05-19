@@ -149,6 +149,4 @@ export class InputLoadComponent implements OnInit {
     }
   };
 
-  width = (this.helper.dimension === 3) ? 1020 : 810 ;
-
 }

@@ -117,6 +117,4 @@ export class InputFixNodeComponent implements OnInit {
     }
   };
 
-  width = (this.helper.dimension === 3) ? 712 : 412 ;
-
 }
