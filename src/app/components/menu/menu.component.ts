@@ -13,6 +13,7 @@ import * as FileSaver from 'file-saver';
 import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
+import { ThreeSectionForceService } from '../three/geometry/three-section-force/three-section-force.service';
 
 import * as pako from 'pako';
 import { DataCountService } from '../print/invoice/dataCount.service';
@@ -46,6 +47,7 @@ export class MenuComponent implements OnInit {
     private ResultData: ResultDataService,
     private http: HttpClient,
     private three: ThreeService,
+    private fsec: ThreeSectionForceService,
     public printService: PrintService,
     public countArea: DataCountService,
     public auth: AuthService
@@ -289,6 +291,7 @@ export class MenuComponent implements OnInit {
     this.helper.dimension = dim;
     this.scene.createCamera();    // three.js のカメラを変更する
     this.scene.addControls();
+    this.fsec.ChangeRadio(),
     this.scene.render();
   }
 

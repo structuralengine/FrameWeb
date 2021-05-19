@@ -10,6 +10,8 @@ import { ResultPickupDisgService } from "../result-pickup-disg/result-pickup-dis
 import { AppComponent } from "src/app/app.component";
 import { DataHelperModule } from "src/app/providers/data-helper.module";
 
+import { UserInfoService } from '../../../providers/user-info.service';
+
 @Component({
   selector: "app-result-disg",
   templateUrl: "./result-disg.component.html",
@@ -25,6 +27,7 @@ export class ResultDisgComponent implements OnInit {
   load_name: string;
   btnCombine: string;
   btnPickup: string;
+  dimension: number;
 
   constructor(
     private data: ResultDisgService,
@@ -32,9 +35,11 @@ export class ResultDisgComponent implements OnInit {
     private three: ThreeService,
     private comb: ResultCombineDisgService,
     private pic: ResultPickupDisgService,
-    private helper: DataHelperModule
+    private helper: DataHelperModule,
+    public user: UserInfoService
   ) {
     this.dataset = new Array();
+    this.dimension = this.helper.dimension;
   }
 
   ngOnInit() {
@@ -52,6 +57,14 @@ export class ResultDisgComponent implements OnInit {
     } else {
       this.btnPickup = "btn-change disabled";
     }
+
+    /*if (this.helper.dimension === 3){
+    this.dimension2D = false;
+    this.dimension3D = true;
+    } else if (this.helper.dimension == 2){
+    this.dimension2D = true;
+    this.dimension3D = false;
+    }*/
   }
 
   //　pager.component からの通知を受け取る

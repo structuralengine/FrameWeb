@@ -30,7 +30,9 @@ export class ThreeSectionForceService {
 
   private scale: number;
   private params: any;   // GUIの表示制御
-  private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
+  private radioButtons3D = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
+  private radioButtons2D = ['axialForce', 'shearForceY', 'momentZ'];
+  private radioButtons = this.radioButtons3D || this.radioButtons2D;
   private gui: any;
 
   private mesh: ThreeSectionForceMeshService;
@@ -47,6 +49,7 @@ export class ThreeSectionForceService {
     private three_node: ThreeNodesService,
     private three_member: ThreeMembersService) {
 
+    this.radioButtons = this.radioButtons3D;
     this.ThreeObject1 = new THREE.Object3D();
     this.ThreeObject1.visible = false; // 呼び出されるまで非表示
     this.ThreeObject2 = new THREE.Object3D();
@@ -338,6 +341,14 @@ export class ThreeSectionForceService {
       });
     }
 
+  }
+
+  public ChangeRadio(): void {
+    if (this.helper.dimension === 3){
+      this.radioButtons = this.radioButtons3D;
+    } else {
+      this.radioButtons = this.radioButtons2D;
+    }
   }
 
 }
