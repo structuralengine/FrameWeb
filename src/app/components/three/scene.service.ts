@@ -144,7 +144,7 @@ export class SceneService {
         0.1,
         21
       );
-      this.camera.position.set(0, 0, 20);
+      this.camera.position.set(0, 0, 10);
       this.camera.name = 'camera';
       this.scene.add(this.camera);
     }
