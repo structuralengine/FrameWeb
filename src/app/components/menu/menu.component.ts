@@ -4,8 +4,6 @@ import { AppComponent } from '../../app.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PrintService } from '../print/print.service';
 
-import { Router } from '@angular/router';
-
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 
@@ -21,6 +19,8 @@ import { DataCountService } from '../print/invoice/dataCount.service';
 
 import { AuthService } from '../../core/auth.service';
 import firebase from 'firebase';
+import { DataHelperModule } from 'src/app/providers/data-helper.module';
+import { SceneService } from '../three/scene.service';
 
 @Component({
   selector: 'app-menu',
@@ -36,9 +36,11 @@ export class MenuComponent implements OnInit {
   isCalculated: boolean;
   amount: number;
 
-  constructor(private modalService: NgbModal,
+  constructor(
+    private modalService: NgbModal,
     private app: AppComponent,
-    private router: Router,
+    private scene: SceneService,
+    private helper: DataHelperModule,
     public user: UserInfoService,
     private InputData: InputDataService,
     private ResultData: ResultDataService,
@@ -58,7 +60,7 @@ export class MenuComponent implements OnInit {
     this.auth.user.subscribe(user => {
       console.log(user);
     });
-
+    this.helper.dimension = 3;
 
     firebase.firestore().settings({
       ignoreUndefinedProperties: true,
@@ -281,7 +283,14 @@ export class MenuComponent implements OnInit {
       }
     }
   }
-
+  // 
+  setDimension(dim: number){
+    this.app.dialogClose(); // 現在表示中の画面を閉じる
+    this.helper.dimension = dim;
+    this.scene.createCamera();    // three.js のカメラを変更する
+    this.scene.addControls();
+    this.scene.render();
+  }
 
   // テスト ---------------------------------------------
   private saveResult(text: string): void {

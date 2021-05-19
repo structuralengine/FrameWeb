@@ -13,25 +13,28 @@ import { InputNoticePointsService } from '../components/input/input-notice-point
 import { InputPickupService } from '../components/input/input-pickup/input-pickup.service';
 
 import { SceneService } from '../components/three/scene.service';
+import { DataHelperModule } from './data-helper.module';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InputDataService {
 
-  constructor(public combine: InputCombineService,
-              public define: InputDefineService,
-              public element: InputElementsService,
-              public fixmenber: InputFixMemberService,
-              public fixnode: InputFixNodeService,
-              public joint: InputJointService,
-              public panel: InputPanelService,
-              public load: InputLoadService,
-              public member: InputMembersService,
-              public node: InputNodesService,
-              public notice: InputNoticePointsService,
-              public pickup: InputPickupService,
-              private three: SceneService) {
+  constructor(
+    private helper: DataHelperModule,
+    public combine: InputCombineService,
+    public define: InputDefineService,
+    public element: InputElementsService,
+    public fixmenber: InputFixMemberService,
+    public fixnode: InputFixNodeService,
+    public joint: InputJointService,
+    public panel: InputPanelService,
+    public load: InputLoadService,
+    public member: InputMembersService,
+    public node: InputNodesService,
+    public notice: InputNoticePointsService,
+    public pickup: InputPickupService,
+    private three: SceneService) {
     this.clear();
   }
 
@@ -72,7 +75,7 @@ export class InputDataService {
 
   // データを生成 /////////////////////////////////////////////////////////////////////
   // 計算サーバーに送信用データを生成
-  public getCalcText( Properties = {} ): string {
+  public getCalcText(Properties = {}): string {
 
     const jsonData: {} = this.getInputJson(0);
 
@@ -149,57 +152,195 @@ export class InputDataService {
       const pickup: {} = this.pickup.getPickUpJson();
       if (Object.keys(pickup).length > 0) {
         jsonData['pickup'] = pickup;
-      }      
+      }
 
       jsonData['three'] = this.three.getSettingJson();
     }
 
     const error = this.checkError(jsonData);
-    if ( error !== null ){
+    if (error !== null ){
       jsonData['error'] = error;
+    }
+
+    if (this.helper.dimension === 2 && empty === 0) {
+      this.create2Ddata(jsonData);
+      console.log("create2Ddata");
     }
 
     return jsonData;
   }
 
-  private checkError(jsonData: object): string {
+  public create2Ddata(jsonData: any) {
+    // ここに、２次元モードで作成したデータを３次元データとして
+    // 成立する形に修正する
 
-      // 存在しない節点を使っているかチェックする
-      if (!('node' in jsonData )){
-        return 'node データがありません';
+    // Set_Node のセクション
+    if (!('node' in jsonData)) {
+      jsonData['node'] = new Array();// typeof jsonData['node'] = object
+    }
+    for (const n of Object.keys(jsonData['node'])) {
+      const node = jsonData.node[n];
+      if (n === undefined) {
+        node.push({z: 0});
+      } else {
+        node['z'] = 0;
       }
-      const nodes: object = jsonData['node'];
-      if ( Object.keys(nodes).length <= 0 ){
-        return 'node データがありません';
-      }
+    }
 
-      if (!('member' in jsonData )){
-        return 'member データがありません';
+    // Set_Member のセクション
+    if (!('member' in jsonData)) {
+      jsonData['member'] = new Array();// typeof jsonData['member'] = object
+    }
+    for (const m of Object.keys(jsonData['member'])) {
+      const member = jsonData.member[m];
+      if (member === undefined) {
+        member.push({cg: 0});
+      } else {
+        member['cg'] = 0;
       }
-      const members: object = jsonData['member'];
-      const memberKeys = Object.keys(members);
-      if ( memberKeys.length <= 0 ){
-        return 'member データがありません';
-      }
+    }
 
-      // 部材で使われている 節点番号が存在するか調べる
-      const n: object = {};
-      for (const key of memberKeys){
-        const m = members[key];
-        for (const name of [m.ni, m.nj]) {
-          if (!(name in nodes)){
-            return 'member' + key + 'で使われている node ' + name + 'は、存在しません';
-          }
-          n[name] = nodes[name];
-        }
+    // Set_Element のセクション
+    if (!('element' in jsonData)) {
+      jsonData['element'] = new Array();// typeof jsonData['element'] = object
+    }
+    for (const row of Object.keys(jsonData['element'][1])) {
+      const element = jsonData.element[1][row];
+      if (element === undefined) {
+        jsonData.element[1].push({G: 1000, J: 1000, Iy: 1000});
+      } else {
+        element['G'] = 1000;
+        element['J'] = 1000;
+        element['Iy'] = 1000;
       }
-      jsonData['node'] = n;
+    }
 
-      return null;
+    // Set_Joint のセクション
+    if (!('joint' in jsonData)) {
+      //jsonData['joint'] = new Array();// typeof jsonData['joint'] = object
+      jsonData['joint'] = new Object();
+    } else {
+    for (const m of Object.keys(jsonData['member'])) {
+      const joint = jsonData.joint[1].find(e => e.m === m);
+      if (joint === undefined) {
+        jsonData.joint[1].push({xi: 1, xj: 1, yi: 1, yj: 1});
+      } else {
+        joint['xi'] = 1;
+        joint['xj'] = 1;
+        joint['yi'] = 1;
+        joint['yj'] = 1;
+      }
+    }
+  }
+
+    // Set_NoticePoints のセクション
+    if (!('notice_points' in jsonData)) {
+      //jsonData['notice_points'] = new Array();// typeof jsonData['notice_poionts'] = object
+      jsonData['notice_points'] = new Object();
+    }
+
+    // Set_FixNode のセクション
+    /*if (!('fix_node' in jsonData)) {
+      jsonData['fix_node'] = new Array();// typeof jsonData['fix_node'] = object
+    }
+    for (const n of Object.keys(jsonData.node)) {
+      const fix_node = jsonData.fix_node[1].find(e => e.n === n);
+      if (fix_node === undefined) {
+        jsonData.fix_node[1].push({ n, tz: 1, rx: 1, ry: 1 });
+      } else {
+        fix_node['tz'] = 1;
+        fix_node['rx'] = 1;
+        fix_node['ry'] = 1
+      }
+    }*/
+    // Set_FixNode のセクション
+    if (!('fix_node' in jsonData)) {
+      //jsonData['fix_node'] = new Array();// typeof jsonData['fix_node'] = object
+      jsonData['fix_node'] = new Object();
+    } else {
+    for (const n of Object.keys(jsonData.node)) {
+      const fix_node = jsonData.fix_node[1].find(e => e.n === n);
+      if (fix_node === undefined) {
+        //jsonData.fix_node[1].push({ n, tz: 1, rx: 1, ry: 1 });
+      } else {
+        fix_node['tz'] = 1;
+        fix_node['rx'] = 1;
+        fix_node['ry'] = 1
+      }
+    }}
+
+    // Set_FixMember のセクション
+    if (!('fix_member' in jsonData)) {
+      //jsonData['fix_member'] = new Array();// typeof jsonData['fix_member'] = object
+      jsonData['fix_member'] = new Object();
+    } else {
+    for (const m of Object.keys(jsonData.member)) {
+      const fix_member = jsonData.fix_member[1].find(e => e.m === m);
+      if (fix_member === undefined) {
+        jsonData.fix_member[1].push({ tz: 1000, tr: 1000 });
+      } else {
+        fix_member['tz'] = 1000;//0
+        fix_member['tr'] = 1000;//0
+      }
+    }
+  }
+
+    // Set_Load のセクション
+    if (!('load_node' in jsonData.load[1])) {
+      //jsonData.load['load_node'] = new Array();// typeof jsonData['load'] = object
+      jsonData['load_node'] = new Object();
+    } else {
+    for (const load_node of jsonData.load[1].load_node) {
+      if (load_node === undefined) {
+        jsonData.load[1].load_node.push({tz: 0, rx: 0, ry: 0});
+      } else {
+        load_node['tz'] = 0;
+        load_node['rx'] = 0;
+        load_node['ry'] = 0;
+      }
+    }}
+
   }
 
 
-  
+  private checkError(jsonData: object): string {
+
+    // 存在しない節点を使っているかチェックする
+    if (!('node' in jsonData)) {
+      return 'node データがありません';
+    }
+    const nodes: object = jsonData['node'];
+    if (Object.keys(nodes).length <= 0) {
+      return 'node データがありません';
+    }
+
+    if (!('member' in jsonData)) {
+      return 'member データがありません';
+    }
+    const members: object = jsonData['member'];
+    const memberKeys = Object.keys(members);
+    if (memberKeys.length <= 0) {
+      return 'member データがありません';
+    }
+
+    // 部材で使われている 節点番号が存在するか調べる
+    const n: object = {};
+    for (const key of memberKeys) {
+      const m = members[key];
+      for (const name of [m.ni, m.nj]) {
+        if (!(name in nodes)) {
+          return 'member' + key + 'で使われている node ' + name + 'は、存在しません';
+        }
+        n[name] = nodes[name];
+      }
+    }
+    jsonData['node'] = n;
+
+    return null;
+  }
+
+
+
   public getResultJson(): object {
 
     const jsonData = {};
