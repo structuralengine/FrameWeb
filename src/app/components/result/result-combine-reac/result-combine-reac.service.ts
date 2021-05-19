@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ResultReacService } from '../result-reac/result-reac.service';
 import { ResultPickupReacService } from '../result-pickup-reac/result-pickup-reac.service';
+import { DataHelperModule } from 'src/app/providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ResultCombineReacService {
   public isCalculated: boolean;
   private worker1: Worker;
   private worker2: Worker;
-  public reacKeys = [
+  public reacKeys3D = [
     "tx_max",
     "tx_min",
     "ty_max",
@@ -25,7 +26,15 @@ export class ResultCombineReacService {
     "mz_max",
     "mz_min",
   ];
-  public titles = [
+  public reacKeys2D = [
+    "tx_max",
+    "tx_min",
+    "ty_max",
+    "ty_min",
+    "mz_max",
+    "mz_min",
+  ];
+  public titles3D = [
     "x方向の支点反力 最大",
     "x方向の支点反力 最小",
     "y方向の支点反力 最大",
@@ -39,14 +48,27 @@ export class ResultCombineReacService {
     "z軸回りの回転反力 最大",
     "Z軸回りの回転反力 最小",
   ];
+  public titles2D = [
+    "x方向の支点反力 最大",
+    "x方向の支点反力 最小",
+    "y方向の支点反力 最大",
+    "y方向の支点反力 最小",
+    "z軸回りの回転反力 最大",
+    "Z軸回りの回転反力 最小",
+  ];
+  public reacKeys = this.reacKeys3D || this.reacKeys2D;
+  public titles = this.titles3D || this.titles2D
   
   private columns: any;
 
-  constructor( private pickreac: ResultPickupReacService) {
+  constructor( private pickreac: ResultPickupReacService,
+               private helper: DataHelperModule) {
     this.clear();
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-reac1.worker', { name: 'combine-reac1', type: 'module' });
     this.worker2 = new Worker('./result-combine-reac2.worker', { name: 'combine-reac2', type: 'module' });
+    this.reacKeys = (this.helper.dimension === 3) ? this.reacKeys3D : this.reacKeys2D ;
+    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
   }
 
   public clear(): void {

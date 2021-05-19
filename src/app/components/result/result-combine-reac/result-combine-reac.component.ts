@@ -23,6 +23,7 @@ export class ResultCombineReacComponent implements OnInit {
   load_name: string;
   btnPickup: string;
   tableHeight: number;
+  dimension: number;
   public showDetail: boolean;
   constructor(
     private data: ResultCombineReacService,
@@ -34,6 +35,7 @@ export class ResultCombineReacComponent implements OnInit {
     this.dataset = new Array();
     this.KEYS = this.data.reacKeys;
     this.TITLES = this.data.titles;
+    this.dimension = this.helper.dimension;
   }
 
   onAccordion($event) {

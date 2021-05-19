@@ -23,6 +23,7 @@ export class ResultCombineDisgComponent implements OnInit {
   load_name: string;
   btnPickup: string;
   tableHeight: number;
+  dimension: number;
 
   constructor(
     private data: ResultCombineDisgService,
@@ -34,6 +35,7 @@ export class ResultCombineDisgComponent implements OnInit {
     this.dataset = new Array();
     this.KEYS = this.data.disgKeys;
     this.TITLES = this.data.titles;
+    this.dimension = this.helper.dimension;
   }
 
   ngOnInit() {
