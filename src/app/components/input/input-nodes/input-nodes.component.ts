@@ -28,11 +28,14 @@ export class InputNodesComponent implements OnInit {
   ];
 
   private ROWS_COUNT = 15;
+  public inner_width = 290;
 
   constructor( private data: InputNodesService,
               private helper: DataHelperModule,
               private app: AppComponent,
-              private three: ThreeService) {}
+              private three: ThreeService) {
+                //this.inner_width = (this.helper.dimension === 3) ? 380px : 300px ;
+              }
 
   ngOnInit() {
     this.ROWS_COUNT = this.rowsCount();
@@ -98,5 +101,7 @@ export class InputNodesComponent implements OnInit {
       this.three.changeData('nodes');
     }
   };
+
+  width = (this.helper.dimension === 3) ? 380 : 290 ;
 
 }
