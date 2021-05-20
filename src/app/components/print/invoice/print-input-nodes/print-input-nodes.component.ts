@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 import { PrintService } from "../../print.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-input-nodes",
@@ -29,12 +30,15 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
 
   public judge: boolean;
   public headerShow: boolean;
+  public dimension: number;
 
   constructor(
     private printService: PrintService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private helper: DataHelperModule
   ) {
     this.judge = false;
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 
