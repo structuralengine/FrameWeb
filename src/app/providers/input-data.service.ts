@@ -215,9 +215,10 @@ export class InputDataService {
     if (!('joint' in jsonData)) {
       //jsonData['joint'] = new Array();// typeof jsonData['joint'] = object
       jsonData['joint'] = new Object();
-    } else {
+    }// else {
+    for (const mm of Object.keys(jsonData['joint'])){
       for (const m of Object.keys(jsonData['member'])) {
-        const joint = jsonData.joint[1].find(e => e.m === m);
+        const joint = jsonData.joint[mm].find(e => e.m === m);
         if (joint === undefined) {
           jsonData.joint[1].push({ xi: 1, xj: 1, yi: 1, yj: 1 });
         } else {
@@ -227,6 +228,7 @@ export class InputDataService {
           joint['yj'] = 1;
         }
       }
+    //}
     }
     // Set_NoticePoints のセクション
     if (!('notice_points' in jsonData)) {
@@ -238,9 +240,11 @@ export class InputDataService {
     if (!('fix_node' in jsonData)) {
       //jsonData['fix_node'] = new Array();// typeof jsonData['fix_node'] = object
       jsonData['fix_node'] = new Object();
-    } else {
+    }// else {
+    for (const nn of Object.keys(jsonData.fix_node)){
       for (const n of Object.keys(jsonData.node)) {
-        const fix_node = jsonData.fix_node[1].find(e => e.n === n);
+        console.log(jsonData.fix_node)
+        const fix_node = jsonData.fix_node[nn].find(e => e.n === n);
         if (fix_node === undefined) {
           //jsonData.fix_node[1].push({ n, tz: 1, rx: 1, ry: 1 });
         } else {
@@ -249,14 +253,16 @@ export class InputDataService {
           fix_node['ry'] = 1
         }
       }
+    //}
     }
     // Set_FixMember のセクション
     if (!('fix_member' in jsonData)) {
       //jsonData['fix_member'] = new Array();// typeof jsonData['fix_member'] = object
       jsonData['fix_member'] = new Object();
-    } else {
+    }// else {
+    for (const mm of Object.keys(jsonData.fix_member)){
       for (const m of Object.keys(jsonData.member)) {
-        const fix_member = jsonData.fix_member[1].find(e => e.m === m);
+        const fix_member = jsonData.fix_member[mm].find(e => e.m === m);
         if (fix_member === undefined) {
           jsonData.fix_member[1].push({ tz: 1000, tr: 1000 });
         } else {
@@ -264,12 +270,13 @@ export class InputDataService {
           fix_member['tr'] = 1000;//0
         }
       }
+    //}
     }
     // Set_Load のセクション
     if (!('load_node' in jsonData.load[1])) {
       //jsonData.load['load_node'] = new Array();// typeof jsonData['load'] = object
       jsonData['load_node'] = new Object();
-    } else {
+    }// else {
       for (const load_node of jsonData.load[1].load_node) {
         if (load_node === undefined) {
           jsonData.load[1].load_node.push({ tz: 0, rx: 0, ry: 0 });
@@ -278,7 +285,7 @@ export class InputDataService {
           load_node['rx'] = 0;
           load_node['ry'] = 0;
         }
-      }
+      //}
     }
 
   }
