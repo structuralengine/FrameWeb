@@ -157,14 +157,13 @@ export class InputDataService {
       jsonData['three'] = this.three.getSettingJson();
     }
 
-    const error = this.checkError(jsonData);
-    if (error !== null ){
-      jsonData['error'] = error;
-    }
-
     if (this.helper.dimension === 2 && empty === 0) {
       this.create2Ddata(jsonData);
-      console.log("create2Ddata");
+    }
+
+    const error = this.checkError(jsonData);
+    if (error !== null) {
+      jsonData['error'] = error;
     }
 
     return jsonData;
@@ -175,130 +174,83 @@ export class InputDataService {
     // 成立する形に修正する
 
     // Set_Node のセクション
-    if (!('node' in jsonData)) {
-      jsonData['node'] = new Array();// typeof jsonData['node'] = object
-    }
-    for (const n of Object.keys(jsonData['node'])) {
+    for (const n of Object.keys(jsonData.node)) {
       const node = jsonData.node[n];
-      if (n === undefined) {
-        node.push({z: 0});
-      } else {
         node['z'] = 0;
-      }
     }
-
     // Set_Member のセクション
-    if (!('member' in jsonData)) {
-      jsonData['member'] = new Array();// typeof jsonData['member'] = object
-    }
-    for (const m of Object.keys(jsonData['member'])) {
-      const member = jsonData.member[m];
-      if (member === undefined) {
-        member.push({cg: 0});
-      } else {
-        member['cg'] = 0;
-      }
-    }
-
-    // Set_Element のセクション
-    if (!('element' in jsonData)) {
-      jsonData['element'] = new Array();// typeof jsonData['element'] = object
-    }
-    for (const row of Object.keys(jsonData['element'][1])) {
-      const element = jsonData.element[1][row];
-      if (element === undefined) {
-        jsonData.element[1].push({G: 1000, J: 1000, Iy: 1000});
-      } else {
-        element['G'] = 1000;
-        element['J'] = 1000;
-        element['Iy'] = 1000;
-      }
-    }
-
-    // Set_Joint のセクション
-    if (!('joint' in jsonData)) {
-      //jsonData['joint'] = new Array();// typeof jsonData['joint'] = object
-      jsonData['joint'] = new Object();
-    } else {
-    for (const m of Object.keys(jsonData['member'])) {
-      const joint = jsonData.joint[1].find(e => e.m === m);
-      if (joint === undefined) {
-        jsonData.joint[1].push({xi: 1, xj: 1, yi: 1, yj: 1});
-      } else {
-        joint['xi'] = 1;
-        joint['xj'] = 1;
-        joint['yi'] = 1;
-        joint['yj'] = 1;
-      }
-    }
-  }
-
-    // Set_NoticePoints のセクション
-    if (!('notice_points' in jsonData)) {
-      //jsonData['notice_points'] = new Array();// typeof jsonData['notice_poionts'] = object
-      jsonData['notice_points'] = new Object();
-    }
-
-    // Set_FixNode のセクション
-    /*if (!('fix_node' in jsonData)) {
-      jsonData['fix_node'] = new Array();// typeof jsonData['fix_node'] = object
-    }
-    for (const n of Object.keys(jsonData.node)) {
-      const fix_node = jsonData.fix_node[1].find(e => e.n === n);
-      if (fix_node === undefined) {
-        jsonData.fix_node[1].push({ n, tz: 1, rx: 1, ry: 1 });
-      } else {
-        fix_node['tz'] = 1;
-        fix_node['rx'] = 1;
-        fix_node['ry'] = 1
-      }
-    }*/
-    // Set_FixNode のセクション
-    if (!('fix_node' in jsonData)) {
-      //jsonData['fix_node'] = new Array();// typeof jsonData['fix_node'] = object
-      jsonData['fix_node'] = new Object();
-    } else {
-    for (const n of Object.keys(jsonData.node)) {
-      const fix_node = jsonData.fix_node[1].find(e => e.n === n);
-      if (fix_node === undefined) {
-        //jsonData.fix_node[1].push({ n, tz: 1, rx: 1, ry: 1 });
-      } else {
-        fix_node['tz'] = 1;
-        fix_node['rx'] = 1;
-        fix_node['ry'] = 1
-      }
-    }}
-
-    // Set_FixMember のセクション
-    if (!('fix_member' in jsonData)) {
-      //jsonData['fix_member'] = new Array();// typeof jsonData['fix_member'] = object
-      jsonData['fix_member'] = new Object();
-    } else {
     for (const m of Object.keys(jsonData.member)) {
-      const fix_member = jsonData.fix_member[1].find(e => e.m === m);
-      if (fix_member === undefined) {
-        jsonData.fix_member[1].push({ tz: 1000, tr: 1000 });
-      } else {
-        fix_member['tz'] = 1000;//0
-        fix_member['tr'] = 1000;//0
+      const member = jsonData.member[m];
+        member['cg'] = 0;
+    }
+    // Set_Element のセクション
+    for (const type of Object.keys(jsonData.element)) {
+      for (const row of Object.keys(jsonData.element[type])) {
+        const element = jsonData.element[type][row];
+        element['G'] = 1;
+        element['J'] = 1;
+        element['Iy'] = 1;
       }
     }
-  }
+    // Set_Joint のセクション
+    if('joint' in jsonData) {
+      for (const type of Object.keys(jsonData.joint)) {
+        for (const row of Object.keys(jsonData.joint[type])) {
+          const joint = jsonData.joint[type][row];
+          joint['xi'] = 1;
+          joint['xj'] = 1;
+          joint['yi'] = 1;
+          joint['yj'] = 1;
+        }
+      }
+    }
 
     // Set_Load のセクション
-    if (!('load_node' in jsonData.load[1])) {
-      //jsonData.load['load_node'] = new Array();// typeof jsonData['load'] = object
-      jsonData['load_node'] = new Object();
-    } else {
-    for (const load_node of jsonData.load[1].load_node) {
-      if (load_node === undefined) {
-        jsonData.load[1].load_node.push({tz: 0, rx: 0, ry: 0});
-      } else {
-        load_node['tz'] = 0;
-        load_node['rx'] = 0;
-        load_node['ry'] = 0;
+    const fn = {};
+    for (const icase of Object.keys(jsonData.load)) {
+      if('load_node' in jsonData.load[icase]) {
+        for (const load_node of jsonData.load[icase].load_node) {
+          load_node['tz'] = 0;
+          load_node['rx'] = 0;
+          load_node['ry'] = 0;
+        }
       }
-    }}
+      const key = jsonData.load[icase].fix_node;
+      fn[key] = [];
+    }
+
+    // Set_FixNode のセクション
+    if ( !('fix_node' in jsonData)) {
+      jsonData['fix_node'] = fn;
+    }
+    for(const n of Object.keys(jsonData.node)) {
+
+      for (const type of Object.keys(jsonData.fix_node)) {
+
+        const target = jsonData.fix_node[type];
+
+        if(target.find( e => e.n === n ) === undefined){
+          target.push({ n, tz: 1, rx: 1, ry: 1 });
+
+        } else {
+          for (const fix_node of target) {
+            fix_node['tz'] = 1;
+            fix_node['rx'] = 1
+            fix_node['ry'] = 1
+          }
+        }
+      }
+    }
+
+    // Set_FixMember のセクション
+    if('fix_member' in jsonData) {
+      for (const type of Object.keys(jsonData.fix_member)) {
+        for (const fix_member of jsonData.fix_member[type]) {
+          fix_member['tz'] = 0;
+          fix_member['tr'] = 0;
+        }
+      }
+    }
 
   }
 

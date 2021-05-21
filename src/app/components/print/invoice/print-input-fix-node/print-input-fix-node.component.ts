@@ -3,6 +3,7 @@ import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 import { PrintService } from "../../print.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-input-fix-node",
@@ -32,12 +33,15 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
   public fixNode_typeNum = [];
 
   public judge: boolean;
+  public dimension: number;
 
   constructor(
     private printService: PrintService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private helper: DataHelperModule
   ) {
     this.judge = false;
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 
