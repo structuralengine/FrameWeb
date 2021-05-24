@@ -7,6 +7,7 @@ addEventListener('message', ({ data }) => {
 
   const jsonData = data.jsonData;
   const member: any[] = data.member;
+  const dim: number = (data.dimension===2) ? -1 : 1;
 
   // 同じidをもつ部材を探す
   const getMember = (memberNo: string) => {
@@ -79,11 +80,11 @@ addEventListener('message', ({ data }) => {
           let myi: number = toNumber(item['myi']);
           let mzi: number = toNumber(item['mzi']);
           fxi = (fxi == null) ? 0 : Math.round(fxi * 100) / 100;
-          fyi = (fyi == null) ? 0 : Math.round(fyi * 100) / 100;
+          fyi = ((fyi == null) ? 0 : Math.round(fyi * 100) / 100) * dim;
           fzi = (fzi == null) ? 0 : Math.round(fzi * 100) / 100;
           mxi = (mxi == null) ? 0 : Math.round(mxi * 100) / 100;
           myi = (myi == null) ? 0 : Math.round(myi * 100) / 100;
-          mzi = (mzi == null) ? 0 : Math.round(mzi * 100) / 100;
+          mzi = ((mzi == null) ? 0 : Math.round(mzi * 100) / 100) * dim;
 
           result = {
             m: memberNo,
@@ -116,11 +117,11 @@ addEventListener('message', ({ data }) => {
           let mzj: number = toNumber(item['mzj']);
           noticePoint += Math.round(l * 1000) / 1000;
           fxj = (fxj == null) ? 0 : Math.round(fxj * 100) / 100;
-          fyj = (fyj == null) ? 0 : Math.round(fyj * 100) / 100;
+          fyj = ((fyj == null) ? 0 : Math.round(fyj * 100) / 100) * dim;
           fzj = (fzj == null) ? 0 : Math.round(fzj * 100) / 100;
           mxj = (mxj == null) ? 0 : Math.round(mxj * 100) / 100;
           myj = (myj == null) ? 0 : Math.round(myj * 100) / 100;
-          mzj = (mzj == null) ? 0 : Math.round(mzj * 100) / 100;
+          mzj = ((mzj == null) ? 0 : Math.round(mzj * 100) / 100) * dim;
 
           result = {
             m: '',
