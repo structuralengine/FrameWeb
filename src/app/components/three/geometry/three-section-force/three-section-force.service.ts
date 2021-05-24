@@ -49,7 +49,7 @@ export class ThreeSectionForceService {
     private three_node: ThreeNodesService,
     private three_member: ThreeMembersService) {
 
-    this.radioButtons = this.radioButtons3D;
+    this.radioButtons = (this.helper.dimension === 3) ? this.radioButtons3D : this.radioButtons3D ;
     this.ThreeObject1 = new THREE.Object3D();
     this.ThreeObject1.visible = false; // 呼び出されるまで非表示
     this.ThreeObject2 = new THREE.Object3D();
@@ -72,7 +72,11 @@ export class ThreeSectionForceService {
     for (const key of this.radioButtons) {
       this.params[key] = false;
     }
-    this.params.momentY = true; // 初期値
+    if (this.helper.dimension === 3){
+      this.params.momentY = true; // 初期値（3D）
+    } else {
+      this.params.momentZ = true; // 初期値（2D） 
+    }
     this.gui = null;
   }
 
@@ -190,7 +194,7 @@ export class ThreeSectionForceService {
     let key2: string;
     if (this.params.axialForce === true) {
       key1 = 'fx';
-      key2 = 'z';
+      key2 = (this.helper.dimension === 3) ? 'z' : 'y' ;
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
       key1 = 'mx';
@@ -268,11 +272,19 @@ export class ThreeSectionForceService {
           const LL = fsec['l'];
           P2 = fsec[key1] - 0;
           L2 = Math.round((len - LL) * 1000) / 1000;
+          //P1 = (this.helper.dimension === 2 && key1 === 'fy') ? P1 * -1 : P1;
+          //P2 = (this.helper.dimension === 2 && key1 === 'fy') ? P2 * -1 : P2;
           if(item === null){
-            const mesh = this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            const mesh = (this.helper.dimension === 2 && key1 === 'fy') ? 
+                            this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, -P1, -P2) :
+                            this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, P1, P2) ;
             ThreeObject.add(mesh);
           } else {
-            this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            if (this.helper.dimension === 2 && key1 === 'fy'){
+              this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, -P1, -P2);
+            } else {
+              this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            }
           }
           P1 = P2;
           L1 = LL;
