@@ -223,12 +223,21 @@ export class MenuComponent implements OnInit {
 
   // ピックアップファイル出力
   public pickup(): void {
-    const pickupJson: string = this.ResultData.GetPicUpText();
+
+    let pickupJson: string;
+    let ext: string;
+    if(this.helper.dimension === 2){
+      pickupJson = this.ResultData.GetPicUpText2D();
+      ext = '.pik';
+    } else {
+      pickupJson = this.ResultData.GetPicUpText();
+      ext = '.csv';
+    }
     const blob = new window.Blob([pickupJson], { type: 'text/plain' });
-    let filename: string = 'frameWebForJS.csv';
+    let filename: string = 'frameWebForJS' + ext;
     if (this.fileName.length > 0) {
       filename = this.fileName.split('.').slice(0, -1).join('.')
-      filename += '.csv';
+      filename += ext;
     }
 
     FileSaver.saveAs(blob, filename);
@@ -285,7 +294,7 @@ export class MenuComponent implements OnInit {
       }
     }
   }
-  // 
+  //
   setDimension(dim: number){
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.helper.dimension = dim;
