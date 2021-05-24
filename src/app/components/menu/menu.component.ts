@@ -57,7 +57,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.3.1"
+    this.fileName = "立体骨組構造解析ソフトver1.3.2"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -76,7 +76,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.3.1"
+    this.fileName = "立体骨組構造解析ソフトver1.3.2"
   }
 
   // ファイルを開く
@@ -124,7 +124,11 @@ export class MenuComponent implements OnInit {
     if (this.fileName.length === 0) {
       this.fileName = 'frameWebForJS.json';
     }
-    FileSaver.saveAs(blob, this.fileName);
+    let ext = '';
+    if(this.helper.getExt(this.fileName) !== 'json'){
+      ext = '.json';
+    }
+    FileSaver.saveAs(blob, this.fileName + ext);
   }
 
 

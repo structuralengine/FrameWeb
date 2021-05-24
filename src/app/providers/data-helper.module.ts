@@ -77,4 +77,15 @@ export class DataHelperModule {
     }
     return wRcString;
   }
+
+  // ファイル名から拡張子を取得する関数
+  public getExt(filename: string): string {
+    const pos = filename.lastIndexOf('.');
+    if (pos === -1) {
+      return '';
+    }
+    const ext = filename.slice(pos + 1);
+    return ext.toLowerCase();
+  }
+
 }
