@@ -3,6 +3,7 @@ import { InputDataService } from "../../../../providers/input-data.service";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 import { PrintService } from "../../print.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-input-members",
@@ -27,13 +28,16 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
   public member_page: number;
 
   public judge: boolean;
+  public dimension: number;
 
   constructor(
     private InputData: InputDataService,
     private printService: PrintService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private helper: DataHelperModule
   ) {
     this.judge = false;
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 

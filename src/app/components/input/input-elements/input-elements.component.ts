@@ -17,7 +17,7 @@ export class InputElementsComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "弾性係数", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
     { title: "せん断弾性係数", dataType: "float", format: "#,##0", dataIndx: "G", sortable: false, width: 130 },
     { title: "膨張係数", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
@@ -26,7 +26,13 @@ export class InputElementsComponent implements OnInit {
     { title: "断面二次Iy", dataType: "float", format: "#.000000", dataIndx: "Iy", sortable: false, width: 100 },
     { title: "断面二次Iz", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
   ];
-
+  private columnHeaders2D =[
+    { title: "弾性係数", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
+    { title: "膨張係数", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
+    { title: "断面積", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
+    { title: "断面二次Iz", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
+  ];
+  
   private ROWS_COUNT = 15;
   private page = 1;
 
@@ -83,7 +89,7 @@ export class InputElementsComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.columnHeaders,
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -111,5 +117,7 @@ export class InputElementsComponent implements OnInit {
       this.three.changeData('elements', this.page);
     }
   };
+
+  width = (this.helper.dimension === 3) ? 850 : 520 ;
 
 }

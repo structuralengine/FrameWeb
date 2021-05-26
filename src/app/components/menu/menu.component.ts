@@ -13,6 +13,7 @@ import * as FileSaver from 'file-saver';
 import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
+import { ThreeSectionForceService } from '../three/geometry/three-section-force/three-section-force.service';
 
 import * as pako from 'pako';
 import { DataCountService } from '../print/invoice/dataCount.service';
@@ -46,6 +47,7 @@ export class MenuComponent implements OnInit {
     private ResultData: ResultDataService,
     private http: HttpClient,
     private three: ThreeService,
+    private fsec: ThreeSectionForceService,
     public printService: PrintService,
     public countArea: DataCountService,
     public auth: AuthService
@@ -55,7 +57,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.2.13"
+    this.fileName = "立体骨組構造解析ソフトver1.3.3"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -74,7 +76,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.2.13"
+    this.fileName = "立体骨組構造解析ソフトver1.3.3"
   }
 
   // ファイルを開く
@@ -92,7 +94,11 @@ export class MenuComponent implements OnInit {
     this.fileToText(file)
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
+        const old = this.helper.dimension;
         this.InputData.loadInputData(text); // データを読み込む
+        if(old !== this.helper.dimension){
+          this.setDimension(this.helper.dimension);
+        }
         this.three.fileload();
         modalRef.close();
       })
@@ -122,7 +128,11 @@ export class MenuComponent implements OnInit {
     if (this.fileName.length === 0) {
       this.fileName = 'frameWebForJS.json';
     }
-    FileSaver.saveAs(blob, this.fileName);
+    let ext = '';
+    if(this.helper.getExt(this.fileName) !== 'json'){
+      ext = '.json';
+    }
+    FileSaver.saveAs(blob, this.fileName + ext);
   }
 
 
@@ -174,6 +184,9 @@ export class MenuComponent implements OnInit {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
         try {
+          if ( response.indexOf('error') > 0){
+            throw response;
+          }
           // Decode base64 (convert ascii to binary)
           const strData = atob(response);
           // Convert binary string to character-number array
@@ -221,12 +234,21 @@ export class MenuComponent implements OnInit {
 
   // ピックアップファイル出力
   public pickup(): void {
-    const pickupJson: string = this.ResultData.GetPicUpText();
+
+    let pickupJson: string;
+    let ext: string;
+    if(this.helper.dimension === 2){
+      pickupJson = this.ResultData.GetPicUpText2D();
+      ext = '.pik';
+    } else {
+      pickupJson = this.ResultData.GetPicUpText();
+      ext = '.csv';
+    }
     const blob = new window.Blob([pickupJson], { type: 'text/plain' });
-    let filename: string = 'frameWebForJS.csv';
+    let filename: string = 'frameWebForJS' + ext;
     if (this.fileName.length > 0) {
       filename = this.fileName.split('.').slice(0, -1).join('.')
-      filename += '.csv';
+      filename += ext;
     }
 
     FileSaver.saveAs(blob, filename);
@@ -283,13 +305,29 @@ export class MenuComponent implements OnInit {
       }
     }
   }
-  // 
-  setDimension(dim: number){
+
+  //
+  public setDimension(dim: number){
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.helper.dimension = dim;
     this.scene.createCamera();    // three.js のカメラを変更する
     this.scene.addControls();
     this.scene.render();
+
+    // html のラジオボタンの制御
+    if(dim === 2){
+      const g23D: any = document.getElementById("3D");
+      g23D.checked = false;
+      const g22D: any = document.getElementById("2D");
+      g22D.checked = true;
+    } else {
+      const g23D: any = document.getElementById("3D");
+      g23D.checked = true;
+      const g22D: any = document.getElementById("2D");
+      g22D.checked = false;
+    }
+
+
   }
 
   // テスト ---------------------------------------------

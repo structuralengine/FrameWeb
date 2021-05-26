@@ -139,12 +139,12 @@ export class SceneService {
 
     } else if(this.helper.dimension === 2){
       this.camera = new THREE.OrthographicCamera(
-        -Width/2, Width/2,
-        Height/2, -Height/2,
+        -Width/10, Width/10,
+        Height/10, -Height/10,
         0.1,
         21
       );
-      this.camera.position.set(0, 0, 20);
+      this.camera.position.set(0, 0, 10);
       this.camera.name = 'camera';
       this.scene.add(this.camera);
     }

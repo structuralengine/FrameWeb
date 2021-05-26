@@ -667,7 +667,7 @@ export class InputLoadService {
         const newLoads = reLoadsInfo["loads"];
         curNo = reLoadsInfo["curNo"];
         curPos = reLoadsInfo["curPos"];
-        load2.splice(j, 1);
+        //load2.splice(j, 1);
         for (let k = 0; k < newLoads.length; k++) {
           load2.push(newLoads[k]);
         }
@@ -962,7 +962,7 @@ export class InputLoadService {
         ll = ll + this.member.getMemberLength(j.toString());
       }
       L2 = ll - (curPos + L2);
-      if (L2 < 0) {
+      if (targetLoad.L2 < 0) {
         L2 = 0;
       }
       targetLoad.m2 = Math.sign(targetLoad.m2) * m2;

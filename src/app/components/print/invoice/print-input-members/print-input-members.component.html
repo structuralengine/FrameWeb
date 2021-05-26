@@ -4,22 +4,40 @@
   <div *ngFor="let dataset of member_dataset index as i">
     <div *ngIf="i > 0" class="pagerBreak"></div>
     <table class="print-lg">
-      <tr>
-        <th class="id">No</th>
-        <th class="I-TAN">I-TAN</th>
-        <th class="J-TAN">J-TAN</th>
-        <th class="L">L(m)</th>
-        <th class="number">材料番号</th>
-        <th class="code">コードアングル</th>
-      </tr>
-      <tr *ngFor="let data of dataset">
-        <td class="id">{{data[0]}}</td>
-        <td class="I-TAN">{{data[1]}}</td>
-        <td class="J-TAN">{{data[2]}}</td>
-        <td class="L">{{data[3]}}</td>
-        <td class="number">{{data[4]}}</td>
-        <td class="code">{{data[5]}}</td>
-      </tr>
+      <div *ngIf="dimension===3">
+        <tr>
+          <th class="id">No</th>
+          <th class="I-TAN">I-TAN</th>
+          <th class="J-TAN">J-TAN</th>
+          <th class="L">L(m)</th>
+          <th class="number">材料番号</th>
+          <th class="code">コードアングル</th>
+        </tr>
+        <tr *ngFor="let data of dataset">
+          <td class="id">{{data[0]}}</td>
+          <td class="I-TAN">{{data[1]}}</td>
+          <td class="J-TAN">{{data[2]}}</td>
+          <td class="L">{{data[3]}}</td>
+          <td class="number">{{data[4]}}</td>
+          <td class="code">{{data[5]}}</td>
+        </tr>
+      </div>
+      <div *ngIf="dimension===2">
+        <tr>
+          <th class="id">No</th>
+          <th class="I-TAN">I-TAN</th>
+          <th class="J-TAN">J-TAN</th>
+          <th class="L">L(m)</th>
+          <th class="number">材料番号</th>
+        </tr>
+        <tr *ngFor="let data of dataset">
+          <td class="id">{{data[0]}}</td>
+          <td class="I-TAN">{{data[1]}}</td>
+          <td class="J-TAN">{{data[2]}}</td>
+          <td class="L">{{data[3]}}</td>
+          <td class="number">{{data[4]}}</td>
+        </tr>
+      </div>
     </table>
   </div>
 </div>

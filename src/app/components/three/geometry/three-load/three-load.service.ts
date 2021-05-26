@@ -301,16 +301,16 @@ export class ThreeLoadService {
       if (index_column >= 0 && index_column <= 7) {
         if (item.name === 'AxialLoad-' + index_row.toString()) {
           this.axialLoad.setColor(item, "select");
-        } else if (item.name === 'DistributeLoad-' + index_row.toString() + '-y' ||
-                   item.name === 'DistributeLoad-' + index_row.toString() + '-z' ) {
+        } else if ( item.name === 'DistributeLoad-' + index_row.toString() + '-y' ||
+                    item.name === 'DistributeLoad-' + index_row.toString() + '-z' ) {
           this.distributeLoad.setColor(item, "select");
-        } else if (item.name === 'MemberPointLoad-' + index_row.toString() + '-x' ||
-                   item.name === 'MemberPointLoad-' + index_row.toString() + '-y' ||
-                   item.name === 'MemberPointLoad-' + index_row.toString() + '-z' ) {
+        } else if ( item.name === 'MemberPointLoad-' + index_row.toString() + '-x' ||
+                    item.name === 'MemberPointLoad-' + index_row.toString() + '-y' ||
+                    item.name === 'MemberPointLoad-' + index_row.toString() + '-z' ) {
           this.memberPointLoad.setColor(item, "select");
-        } else if (item.name === 'MemberMomentLoad-' + index_row.toString() + '-x' ||
-                   item.name === 'MemberMomentLoad-' + index_row.toString() + '-y' ||
-                   item.name === 'MemberMomentLoad-' + index_row.toString() + '-z' ) {
+        } else if ( item.name === 'MemberMomentLoad-' + index_row.toString() + '-x' ||
+                    item.name === 'MemberMomentLoad-' + index_row.toString() + '-y' ||
+                    item.name === 'MemberMomentLoad-' + index_row.toString() + '-z' ) {
           this.memberMomentLoad.setColor(item, "select");
         } else if (item.name === 'TemperatureLoad-' + index_row.toString()) {
           this.temperatureLoad.setColor(item, "select");
@@ -374,51 +374,54 @@ export class ThreeLoadService {
 
     // 格点の変わった部分を探す
     const changeNodeList = {};
-    if (this.newNodeData !== null) {
-      for (const key of Object.keys(this.nodeData)) {
-        if (!(key in this.newNodeData)) {
-          // 古い情報にあって新しい情報にない節点
-          changeNodeList[key] = 'delete';
+    if(this.nodeData !== null ){
+      if (this.newNodeData !== null) {
+        for (const key of Object.keys(this.nodeData)) {
+          if (!(key in this.newNodeData)) {
+            // 古い情報にあって新しい情報にない節点
+            changeNodeList[key] = 'delete';
+          }
+        }
+        for (const key of Object.keys(this.newNodeData)) {
+          if (!(key in this.nodeData)) {
+            // 新しい情報にあって古い情報にない節点
+            changeNodeList[key] = 'add';
+            continue;
+          }
+          const oldNode = this.nodeData[key];
+          const newNode = this.newNodeData[key];
+          if (oldNode.x !== newNode.x || oldNode.y !== newNode.y || oldNode.z !== newNode.z) {
+            changeNodeList[key] = 'change';
+          }
         }
       }
-      for (const key of Object.keys(this.newNodeData)) {
-        if (!(key in this.nodeData)) {
-          // 新しい情報にあって古い情報にない節点
-          changeNodeList[key] = 'add';
-          continue;
-        }
-        const oldNode = this.nodeData[key];
-        const newNode = this.newNodeData[key];
-        if (oldNode.x !== newNode.x || oldNode.y !== newNode.y || oldNode.z !== newNode.z) {
-          changeNodeList[key] = 'change';
-        }
-      }
-    }
+    } 
 
-    // 部材の変わった部分を探す
     const changeMemberList = {};
-    if (this.newMemberData !== null) {
-      for (const key of Object.keys(this.memberData)) {
-        if (!(key in this.newMemberData)) {
-          // 古い情報にあって新しい情報にない節点
-          changeMemberList[key] = 'delete';
+    if(this.memberData !== null){
+      // 部材の変わった部分を探す
+      if (this.newMemberData !== null) {
+        for (const key of Object.keys(this.memberData)) {
+          if (!(key in this.newMemberData)) {
+            // 古い情報にあって新しい情報にない節点
+            changeMemberList[key] = 'delete';
+          }
         }
-      }
-      for (const key of Object.keys(this.newMemberData)) {
-        if (!(key in this.memberData)) {
-          // 新しい情報にあって古い情報にない節点
-          changeMemberList[key] = 'add';
-          continue;
-        }
-        const oldMember = this.memberData[key];
-        const newMember = this.newMemberData[key];
-        if (oldMember.ni !== newMember.ni ||
-          oldMember.nj !== newMember.nj) {
-          changeMemberList[key] = 'change';
+        for (const key of Object.keys(this.newMemberData)) {
+          if (!(key in this.memberData)) {
+            // 新しい情報にあって古い情報にない節点
+            changeMemberList[key] = 'add';
+            continue;
+          }
+          const oldMember = this.memberData[key];
+          const newMember = this.newMemberData[key];
+          if (oldMember.ni !== newMember.ni ||
+            oldMember.nj !== newMember.nj) {
+            changeMemberList[key] = 'change';
+          }
         }
       }
     }
-
     // 格点の変更によって影響のある部材を特定する
     const targetMemberData = (this.newMemberData !== null) ? this.newMemberData : this.memberData;
     for (const key of Object.keys(targetMemberData)) {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ResultDisgService } from '../result-disg/result-disg.service';
 import { ResultPickupDisgService } from '../result-pickup-disg/result-pickup-disg.service';
+import { DataHelperModule } from '../../../providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ResultCombineDisgService {
   public isCalculated: boolean;
   private worker1: Worker;
   private worker2: Worker;
-  public disgKeys = [
+  public disgKeys3D = [
     "dx_max",
     "dx_min",
     "dy_max",
@@ -25,7 +26,15 @@ export class ResultCombineDisgService {
     "rz_max",
     "rz_min",
   ];
-  public titles = [
+  public disgKeys2D = [
+    "dx_max",
+    "dx_min",
+    "dy_max",
+    "dy_min",
+    "rz_max",
+    "rz_min",
+  ];
+  public titles3D = [
     "x方向の移動量 最大",
     "x方向の移動量 最小",
     "y方向の移動量 最大",
@@ -39,14 +48,27 @@ export class ResultCombineDisgService {
     "z軸回りの回転角 最大",
     "Z軸回りの回転角 最小",
   ];
+  public titles2D = [
+    "x方向の移動量 最大",
+    "x方向の移動量 最小",
+    "y方向の移動量 最大",
+    "y方向の移動量 最小",
+    "z軸回りの回転角 最大",
+    "Z軸回りの回転角 最小",
+  ];
+  public disgKeys = this.disgKeys3D || this.disgKeys2D;
+  public titles = this.titles3D || this.titles2D
 
   private columns: any;
 
-  constructor(private pickdisg: ResultPickupDisgService) {
+  constructor(private pickdisg: ResultPickupDisgService,
+              private helper: DataHelperModule,) {
     this.clear();
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-disg1.worker', { name: 'combine-disg1', type: 'module' });
     this.worker2 = new Worker('./result-combine-disg2.worker', { name: 'combine-disg2', type: 'module' });
+    this.disgKeys = (this.helper.dimension === 3) ? this.disgKeys3D : this.disgKeys2D ;
+    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
   }
 
   public clear(): void {

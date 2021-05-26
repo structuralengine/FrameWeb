@@ -27,6 +27,7 @@ export class ResultPickupReacComponent implements OnInit {
   load_name: string;
   btnCombine: string;
   tableHeight: number;
+  dimension: number;
 
   constructor(
     private data: ResultPickupReacService,
@@ -41,6 +42,7 @@ export class ResultPickupReacComponent implements OnInit {
     this.dataset = new Array();
     this.KEYS = this.comb.reacKeys;
     this.TITLES = this.comb.titles;
+    this.dimension = this.helper.dimension;
   }
 
   ngOnInit() {

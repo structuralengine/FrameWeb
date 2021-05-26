@@ -24,6 +24,7 @@ export class ResultPickupFsecComponent implements OnInit {
   load_name: string;
   btnCombine: string;
   tableHeight: number;
+  dimension: number;
 
   constructor(
     private data: ResultPickupFsecService,
@@ -35,6 +36,7 @@ export class ResultPickupFsecComponent implements OnInit {
     this.dataset = new Array();
     this.KEYS = this.comb.fsecKeys;
     this.TITLES = this.comb.titles;
+    this.dimension = this.helper.dimension;
   }
 
   ngOnInit() {
