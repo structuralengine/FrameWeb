@@ -16,9 +16,10 @@ export class InputPanelComponent {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders: object[] =[
+  private columnHeaders: any =[
     //{ title: "パネルID", dataType: "integer", dataIndx: "panelID",  sortable: false, width: 40 },
     { title: "材料No", dataType: "integer", dataIndx: "e",  sortable: false, width: 40 },
+    { title: '頂点No.', colModel: [] }
   ];
 
   private ROWS_COUNT = 15;
@@ -31,8 +32,8 @@ export class InputPanelComponent {
 
     for (let i = 1; i <= this.data.PANEL_VERTEXS_COUNT; i++) {
       //const id = "point-" + i;
-      this.columnHeaders.push({
-        title: "頂点No." + i,
+      this.columnHeaders[1].colModel.push({
+        title: i.toString(),
         dataType: "integer",
         //format: "#.000",
         dataIndx: "point-" + i,
@@ -54,11 +55,6 @@ export class InputPanelComponent {
   private loadData(row: number): void {
     for (let i = this.dataset.length + 1; i <= row; i++) {
       const panel = this.data.getPanelColumns(i);
-      //const m: string = panel['id'];
-      //if (m !== '') {
-        //const l: number = this.member.getMemberLength(m);
-        //panel['len'] = (l != null) ? l.toFixed(3) : '';
-      //}
       this.dataset.push(panel);
     }
   }

@@ -355,13 +355,5 @@ export class ThreeSectionForceService {
 
   }
 
-  public ChangeRadio(): void {
-    if (this.helper.dimension === 3){
-      this.radioButtons = this.radioButtons3D;
-    } else {
-      this.radioButtons = this.radioButtons2D;
-    }
-  }
-
 }
 

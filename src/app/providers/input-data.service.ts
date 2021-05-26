@@ -71,6 +71,11 @@ export class InputDataService {
     this.combine.setCombineJson(jsonData);
     this.pickup.setPickUpJson(jsonData);
     this.three.setSetting(jsonData);
+
+    if('dimension' in jsonData){
+      this.helper.dimension = jsonData['dimension'];
+    }
+
   }
 
   // データを生成 /////////////////////////////////////////////////////////////////////
@@ -160,6 +165,8 @@ export class InputDataService {
     if (this.helper.dimension === 2 && empty === 0) {
       this.create2Ddata(jsonData);
     }
+
+    jsonData['dimension'] = this.helper.dimension;
 
     const error = this.checkError(jsonData);
     if (error !== null) {

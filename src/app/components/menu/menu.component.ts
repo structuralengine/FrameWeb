@@ -94,7 +94,11 @@ export class MenuComponent implements OnInit {
     this.fileToText(file)
       .then(text => {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
+        const old = this.helper.dimension;
         this.InputData.loadInputData(text); // データを読み込む
+        if(old !== this.helper.dimension){
+          this.setDimension(this.helper.dimension);
+        }
         this.three.fileload();
         modalRef.close();
       })
@@ -301,14 +305,29 @@ export class MenuComponent implements OnInit {
       }
     }
   }
+
   //
-  setDimension(dim: number){
+  public setDimension(dim: number){
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.helper.dimension = dim;
     this.scene.createCamera();    // three.js のカメラを変更する
     this.scene.addControls();
-    this.fsec.ChangeRadio(),
     this.scene.render();
+
+    // html のラジオボタンの制御
+    if(dim === 2){
+      const g23D: any = document.getElementById("3D");
+      g23D.checked = false;
+      const g22D: any = document.getElementById("2D");
+      g22D.checked = true;
+    } else {
+      const g23D: any = document.getElementById("3D");
+      g23D.checked = true;
+      const g22D: any = document.getElementById("2D");
+      g22D.checked = false;
+    }
+
+
   }
 
   // テスト ---------------------------------------------
