@@ -5,13 +5,14 @@
   </button>
 </div>
 <div class="modal-body">
-  <form [formGroup]="loginForm" (ngSubmit)="login()">
+  <form [formGroup]="loginForm" (ngSubmit)="login()" (submit)="login()">
     <label for="email">メールアドレス</label>
     <input type="email" name="mail" required email class="form-control" formControlName="email"
       [(ngModel)]="loginUserName" placeholder="Username" id="user_name_id">
     <label for="password">パスワード</label>
     <input type="password" class="form-control" formControlName="password" [(ngModel)]="loginPassword"
       placeholder="Password" required>
+    <input type="submit" id="submit"/>
   </form>
   <div *ngIf="loginError">
     {{errorMessage}}
