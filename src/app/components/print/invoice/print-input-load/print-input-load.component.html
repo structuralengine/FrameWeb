@@ -52,27 +52,44 @@
                         <div *ngFor="let dataset_node of page_node; index as n">
                             <div *ngIf="n > 0" class="pagerBreak"></div>
                             <table class="print-load">
-                                <tr>
-                                    <th class="id">節点荷重</th>
-                                    <th class="k">節点番号</th>
-                                    <th class="sign">Fx</th>
-                                    <th class="name">Fy</th>
-                                    <th class="node">Fz</th>
-                                    <th class="section">Mx</th>
-                                    <th class="spring">My</th>
-                                    <th class="conection">Mz</th>
-                                </tr>
-
-                                <tr *ngFor="let data_node of dataset_node">
-                                    <td class="id"> {{data_node[0]}}</td>
-                                    <td class="k"> {{data_node[1]}}</td>
-                                    <td class="sign">{{data_node[2]}}</td>
-                                    <td class="name">{{data_node[3]}}</td>
-                                    <td class="node">{{data_node[4]}}</td>
-                                    <td class="section">{{data_node[5]}}</td>
-                                    <td class="spring"> {{data_node[6]}}</td>
-                                    <td class="spring"> {{data_node[7]}}</td>
-                                </tr>
+                                <div *ngIf="dimension===3">
+                                    <tr>
+                                        <th class="id">節点荷重</th>
+                                        <th class="k">節点番号</th>
+                                        <th class="sign">Fx</th>
+                                        <th class="name">Fy</th>
+                                        <th class="node">Fz</th>
+                                        <th class="section">Mx</th>
+                                        <th class="spring">My</th>
+                                        <th class="conection">Mz</th>
+                                    </tr>
+                                    <tr *ngFor="let data_node of dataset_node">
+                                        <td class="id"> {{data_node[0]}}</td>
+                                        <td class="k"> {{data_node[1]}}</td>
+                                        <td class="sign">{{data_node[2]}}</td>
+                                        <td class="name">{{data_node[3]}}</td>
+                                        <td class="node">{{data_node[4]}}</td>
+                                        <td class="section">{{data_node[5]}}</td>
+                                        <td class="spring"> {{data_node[6]}}</td>
+                                        <td class="spring"> {{data_node[7]}}</td>
+                                    </tr>
+                                </div>
+                                <div *ngIf="dimension===2">
+                                    <tr>
+                                        <th class="id">節点荷重</th>
+                                        <th class="k">節点番号</th>
+                                        <th class="sign">Fx</th>
+                                        <th class="name">Fy</th>
+                                        <th class="conection">Mz</th>
+                                    </tr>
+                                    <tr *ngFor="let data_node of dataset_node">
+                                        <td class="id"> {{data_node[0]}}</td>
+                                        <td class="k"> {{data_node[1]}}</td>
+                                        <td class="sign">{{data_node[2]}}</td>
+                                        <td class="name">{{data_node[3]}}</td>
+                                        <td class="spring"> {{data_node[7]}}</td>
+                                    </tr>
+                                </div>
                             </table>
                         </div>
                     </div>

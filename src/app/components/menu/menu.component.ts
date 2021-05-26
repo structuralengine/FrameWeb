@@ -4,8 +4,6 @@ import { AppComponent } from '../../app.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PrintService } from '../print/print.service';
 
-import { Router } from '@angular/router';
-
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 
@@ -15,12 +13,15 @@ import * as FileSaver from 'file-saver';
 import { InputDataService } from '../../providers/input-data.service';
 import { ResultDataService } from '../../providers/result-data.service';
 import { ThreeService } from '../three/three.service';
+import { ThreeSectionForceService } from '../three/geometry/three-section-force/three-section-force.service';
 
 import * as pako from 'pako';
 import { DataCountService } from '../print/invoice/dataCount.service';
 
 import { AuthService } from '../../core/auth.service';
 import firebase from 'firebase';
+import { DataHelperModule } from 'src/app/providers/data-helper.module';
+import { SceneService } from '../three/scene.service';
 
 @Component({
   selector: 'app-menu',
@@ -36,14 +37,17 @@ export class MenuComponent implements OnInit {
   isCalculated: boolean;
   amount: number;
 
-  constructor(private modalService: NgbModal,
+  constructor(
+    private modalService: NgbModal,
     private app: AppComponent,
-    private router: Router,
+    private scene: SceneService,
+    private helper: DataHelperModule,
     public user: UserInfoService,
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private http: HttpClient,
     private three: ThreeService,
+    private fsec: ThreeSectionForceService,
     public printService: PrintService,
     public countArea: DataCountService,
     public auth: AuthService
@@ -53,12 +57,12 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.2.7"
+    this.fileName = "立体骨組構造解析ソフトver1.3.3"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
     });
-
+    this.helper.dimension = 3;
 
     firebase.firestore().settings({
       ignoreUndefinedProperties: true,
@@ -72,7 +76,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.2.7"
+    this.fileName = "立体骨組構造解析ソフトver1.3.3"
   }
 
   // ファイルを開く
@@ -120,7 +124,11 @@ export class MenuComponent implements OnInit {
     if (this.fileName.length === 0) {
       this.fileName = 'frameWebForJS.json';
     }
-    FileSaver.saveAs(blob, this.fileName);
+    let ext = '';
+    if(this.helper.getExt(this.fileName) !== 'json'){
+      ext = '.json';
+    }
+    FileSaver.saveAs(blob, this.fileName + ext);
   }
 
 
@@ -128,7 +136,7 @@ export class MenuComponent implements OnInit {
   public calcrate(): void {
 
     if (this.loggedIn === true) {
-     // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
+      // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
       this.auth.calc(this.amount);
       this.amount = this.auth.amount;
       const modalRef = this.modalService.open(WaitDialogComponent);
@@ -172,6 +180,9 @@ export class MenuComponent implements OnInit {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
         try {
+          if ( response.indexOf('error') > 0){
+            throw response;
+          }
           // Decode base64 (convert ascii to binary)
           const strData = atob(response);
           // Convert binary string to character-number array
@@ -219,12 +230,21 @@ export class MenuComponent implements OnInit {
 
   // ピックアップファイル出力
   public pickup(): void {
-    const pickupJson: string = this.ResultData.GetPicUpText();
+
+    let pickupJson: string;
+    let ext: string;
+    if(this.helper.dimension === 2){
+      pickupJson = this.ResultData.GetPicUpText2D();
+      ext = '.pik';
+    } else {
+      pickupJson = this.ResultData.GetPicUpText();
+      ext = '.csv';
+    }
     const blob = new window.Blob([pickupJson], { type: 'text/plain' });
-    let filename: string = 'frameWebForJS.csv';
+    let filename: string = 'frameWebForJS' + ext;
     if (this.fileName.length > 0) {
       filename = this.fileName.split('.').slice(0, -1).join('.')
-      filename += '.csv';
+      filename += ext;
     }
 
     FileSaver.saveAs(blob, filename);
@@ -281,7 +301,15 @@ export class MenuComponent implements OnInit {
       }
     }
   }
-
+  //
+  setDimension(dim: number){
+    this.app.dialogClose(); // 現在表示中の画面を閉じる
+    this.helper.dimension = dim;
+    this.scene.createCamera();    // three.js のカメラを変更する
+    this.scene.addControls();
+    this.fsec.ChangeRadio(),
+    this.scene.render();
+  }
 
   // テスト ---------------------------------------------
   private saveResult(text: string): void {

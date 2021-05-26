@@ -37,7 +37,7 @@ export class ThreeLoadTorsion {
       color: 0x0000ff,
       opacity: 0.3,
     });
-    
+
   }
 
   public create(
@@ -48,7 +48,8 @@ export class ThreeLoadTorsion {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number
+    P2: number,
+    row: number
   ): THREE.Group {
 
     const radius: number = 0.5;
@@ -68,12 +69,12 @@ export class ThreeLoadTorsion {
     const L2 = p.L2;
 
     // 面
-    for (const mesh of this.getFace(my_color, points)){
+    for (const mesh of this.getFace(my_color, points)) {
       child.add(mesh);
     }
 
     // 線
-    for (const arrow of this.getArrow([P1, P2], my_color, [points[0], points[2]])) {
+    for (const arrow of this.getArrow([P1, P2], my_color, [points[0], points[2]], row)) {
       child.add(arrow);
     }
 
@@ -82,7 +83,7 @@ export class ThreeLoadTorsion {
     dim.visible = false;
     child.add(dim);
     */
-    
+
     // 全体
     child.name = "child";
 
@@ -103,22 +104,22 @@ export class ThreeLoadTorsion {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "TorsionLoad";
+    group.name = "TorsionLoad-" + row.toString();
 
     return group;
   }
-  
+
   private getColor(target: number[]): number[] {
     const my_color = [];
     target.forEach(value => {
       my_color.push(
         (Math.sign(value) > 0 ? 0xff0000
-       : Math.sign(value) < 0 ? 0x0000ff
-       : 0x000000 )
+          : Math.sign(value) < 0 ? 0x0000ff
+            : 0x000000)
       );
     })
     if (my_color[0] === 0x000000 || my_color[1] === 0x000000) {
-      if (my_color[0] === 0x000000){
+      if (my_color[0] === 0x000000) {
         my_color[0] = my_color[1];
       } else if (my_color[1] === 0x000000) {
         my_color[1] = my_color[0];
@@ -149,7 +150,7 @@ export class ThreeLoadTorsion {
     let x2 = (x1 + x3) / 2;
 
     // y座標 値の大きい方がradiusとなる
-    const Pmax = (Math.abs(P1) > Math.abs(P2)) ? P1: P2;
+    const Pmax = (Math.abs(P1) > Math.abs(P2)) ? P1 : P2;
     let bigP = Math.abs(Pmax);
     const y1 = (P1 / bigP) * radius;
     const y3 = (P2 / bigP) * radius;
@@ -203,7 +204,8 @@ export class ThreeLoadTorsion {
       const mesh = new THREE.Mesh(cylinder_geo, cylinder_mat);
       mesh.rotation.z = Math.PI / 2;
       mesh.position.x = (height / 2) + points[i].x;
-      mesh.name = "mesh" + (i + 1).toString();
+      //mesh.name = "mesh" + (i + 1).toString();
+      mesh.name = (my_color[i] === 0xff0000) ? "mesh-" + (i + 1).toString() + '-red' : "mesh-" + (i + 1).toString() + '-blue';  //例：mesh-2-blue
 
       result.push(mesh);
     }
@@ -213,8 +215,8 @@ export class ThreeLoadTorsion {
   }
 
   // 矢印
-  private getArrow( values: number[],
-    my_color: number[], points: THREE.Vector3[]): THREE.Group[] {
+  private getArrow(values: number[],
+    my_color: number[], points: THREE.Vector3[], row: number): THREE.Group[] {
 
     const result: THREE.Group[] = new Array();;
 
@@ -226,6 +228,7 @@ export class ThreeLoadTorsion {
         values[i],
         Math.abs(points[i].y),
         "rx",
+        row,
         my_color[i]
       );
 
@@ -302,7 +305,7 @@ export class ThreeLoadTorsion {
     return dim;
   }
   */
-  
+
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
     for (const item of group.children) {
@@ -313,6 +316,41 @@ export class ThreeLoadTorsion {
   // 大きさを反映する
   public setScale(group: any, scale: number): void {
     group.scale.set(1, scale, scale);
+  }
+
+  // ハイライトを反映させる
+  public setColor(group: any, n: string) {
+    
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const cylinder_Pick = new THREE.MeshBasicMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      color: 0xff00ff,
+      opacity: 0.3,
+    });
+    const line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xff00ff, vertexColors: true});
+
+    for (let target of group.children[0].children) {
+      if (n === "clear") {
+        if (target.name.slice(-3) === 'red') {
+          //target.material.color.setHex(0XFF0000); //デフォルトのカラー
+          target.material = this.cylinder_Red;
+        } else if (target.name.slice(-4) === 'blue') {
+          //target.material.color.setHex(0X0000FF); //デフォルトのカラー
+          target.material = this.cylinder_Blue;
+        } else if (target.name.slice(-2) === 'rx') {
+          //何もしない
+        }
+      } else if (n == "select") {
+        if (target.name.slice(-3) === 'red') {
+          target.material = cylinder_Pick; //ハイライト用のカラー
+        } else if (target.name.slice(-4) === 'blue') {
+          target.material = cylinder_Pick; //ハイライト用のカラー
+        } else if (target.name.slice(-2) === 'rx') {
+          //何もしない
+        }
+      }
+    }
   }
 
 }

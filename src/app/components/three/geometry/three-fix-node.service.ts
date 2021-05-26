@@ -16,6 +16,10 @@ export class ThreeFixNodeService {
 
   private fixnodeList: any[];
   private isVisible: boolean;
+  private currentIndex: string;
+  private currentIndex_sub: string;
+
+  private selectionItem: THREE.Mesh;     // 選択中のアイテム
 
   // 大きさを調整するためのスケール
   private scale: number;
@@ -23,12 +27,14 @@ export class ThreeFixNodeService {
   private gui: any;
 
   constructor(private scene: SceneService,
-              private nodeThree: ThreeNodesService,
-              private node: InputNodesService,
-              private fixnode: InputFixNodeService) {
+    private nodeThree: ThreeNodesService,
+    private node: InputNodesService,
+    private fixnode: InputFixNodeService) {
 
     this.fixnodeList = new Array();
     this.isVisible = null;
+    this.currentIndex = null;
+    this.currentIndex_sub = null;
 
     // gui
     this.scale = 1.0;
@@ -51,13 +57,13 @@ export class ThreeFixNodeService {
 
     // guiの表示設定
     if (flag === true) {
-      if (this.fixnodeList.length > 0){
+      if (this.fixnodeList.length > 0) {
         this.guiEnable();
       }
     } else {
       this.guiDisable();
     }
-   
+
   }
 
   // guiを表示する
@@ -114,17 +120,17 @@ export class ThreeFixNodeService {
     const targetFixNode = fixnodeData[key_fixnode];
     for (const target of targetFixNode) {
 
-      if (!(target.n in nodeData)){
+      if (!(target.n in nodeData)) {
         continue;
       }
       const n = nodeData[target.n];
       const x = n.x;
       const y = n.y;
       const z = n.z;
- 
+
       const position = { x, y, z };
 
-      
+
       // バネ支点の分岐
       let spring = { direction: 'x', relationship: 'small', color: 0x000000 };
       if (target.tx ** 2 !== 0 && target.tx ** 2 !== 1) {
@@ -135,7 +141,8 @@ export class ThreeFixNodeService {
         } else if (position.x > this.center().x) {
           spring.relationship = 'large';
         }
-        this.CreateSpring(spring, position, this.baseScale());
+        //this.CreateSpring(spring, position, this.baseScale(), target.n);
+        this.CreateSpring(spring, position, this.baseScale(), target.row);
       }
       if (target.ty ** 2 !== 0 && target.ty ** 2 !== 1) {
         spring.color = 0x00ff00;
@@ -145,7 +152,8 @@ export class ThreeFixNodeService {
         } else if (position.y > this.center().y) {
           spring.relationship = 'large';
         }
-        this.CreateSpring(spring, position, this.baseScale());
+        //this.CreateSpring(spring, position, this.baseScale(), target.n);
+        this.CreateSpring(spring, position, this.baseScale(), target.row);
       }
       if (target.tz ** 2 !== 0 && target.tz ** 2 !== 1) {
         spring.color = 0x0000ff;
@@ -155,31 +163,35 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           spring.relationship = 'large';
         }
-        this.CreateSpring(spring, position, this.baseScale());
+        //this.CreateSpring(spring, position, this.baseScale(), target.n);
+        this.CreateSpring(spring, position, this.baseScale(), target.row);
       }
 
       // 回転バネ支点の分岐
       let rotatingspring = { direction: 'x', color: 0x000000 };;
       if (target.rx ** 2 !== 0 && target.rx ** 2 !== 1) {
         rotatingspring.color = 0xff0000;
-        rotatingspring.direction = 'x'
-        this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
+        rotatingspring.direction = 'x';
+        //this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.n);
+        this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.row);
       }
       if (target.ry ** 2 !== 0 && target.ry ** 2 !== 1) {
         rotatingspring.color = 0x00ff00;
         rotatingspring.direction = 'y';
-        this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
+        //this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.n);
+        this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.row);
       }
       if (target.rz ** 2 !== 0 && target.rz ** 2 !== 1) {
         rotatingspring.color = 0x0000ff;
         rotatingspring.direction = 'z';
-        this.CreateRotatingSpring(rotatingspring, position, this.baseScale());
+        //this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.n);
+        this.CreateRotatingSpring(rotatingspring, position, this.baseScale(), target.row);
       }
 
       // 完全な固定支点の分岐
       let fixed_Parfect = { relationshipX: 'small', relationshipY: 'small', relationshipZ: 'small', color: 0x808080 };
-      if (target.rx === 1 && target.ry === 1 && target.rz === 1 
-          && target.tx === 1 && target.ty === 1 && target.tz === 1) {
+      if (target.rx === 1 && target.ry === 1 && target.rz === 1
+        && target.tx === 1 && target.ty === 1 && target.tz === 1) {
         if (position.x <= this.center().x) {
           fixed_Parfect.relationshipX = 'small';
         } else if (position.x > this.center().x) {
@@ -195,37 +207,41 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           fixed_Parfect.relationshipZ = 'large';
         }
-        this.CreateFixed_P(fixed_Parfect, position, this.baseScale());
+        //this.CreateFixed_P(fixed_Parfect, position, this.baseScale(), target.n);
+        this.CreateFixed_P(fixed_Parfect, position, this.baseScale(), target.row);
         continue;
       }
 
       // ピン支点の分岐
-      if( target.tx === 1 ){
+      if (target.tx === 1) {
         const pin = { direction: 'x', color: 0xff0000 };
         if (position.x <= this.center().x) {
           pin['relationship'] = 'small';
         } else if (position.x > this.center().x) {
           pin['relationship'] = 'large';
         }
-        this.CreatePin(pin, position, this.baseScale());
+        //this.CreatePin(pin, position, this.baseScale(), target.n);
+        this.CreatePin(pin, position, this.baseScale(), target.row);
       }
-      if( target.ty === 1 ){
+      if (target.ty === 1) {
         const pin = { direction: 'y', color: 0x00ff00 };
         if (position.y <= this.center().y) {
           pin['relationship'] = 'small';
         } else if (position.y > this.center().y) {
           pin['relationship'] = 'large';
         }
-        this.CreatePin(pin, position, this.baseScale());
+        //this.CreatePin(pin, position, this.baseScale(), target.n);
+        this.CreatePin(pin, position, this.baseScale(), target.row);
       }
-      if( target.tz === 1 ){
+      if (target.tz === 1) {
         const pin = { direction: 'z', color: 0x0000ff };
         if (position.z <= this.center().z) {
           pin['relationship'] = 'small';
         } else if (position.z > this.center().z) {
           pin['relationship'] = 'large';
         }
-        this.CreatePin(pin, position, this.baseScale());
+        //this.CreatePin(pin, position, this.baseScale(), target.n);
+        this.CreatePin(pin, position, this.baseScale(), target.row);
       }
 
       // 固定支点の分岐
@@ -238,7 +254,8 @@ export class ThreeFixNodeService {
         } else if (position.x > this.center().x) {
           fixed.relationship = 'large';
         }
-        this.CreateFixed(fixed, position, this.baseScale());
+        //this.CreateFixed(fixed, position, this.baseScale(), target.n);
+        this.CreateFixed(fixed, position, this.baseScale(), target.row);
       }
       if (target.ry === 1) {
         fixed.color = 0x00ff00;
@@ -248,7 +265,8 @@ export class ThreeFixNodeService {
         } else if (position.y > this.center().y) {
           fixed.relationship = 'large';
         }
-        this.CreateFixed(fixed, position, this.baseScale());
+        //this.CreateFixed(fixed, position, this.baseScale(), target.n);
+        this.CreateFixed(fixed, position, this.baseScale(), target.row);
       }
       if (target.rz === 1) {
         fixed.color = 0x0000ff;
@@ -258,7 +276,8 @@ export class ThreeFixNodeService {
         } else if (position.z > this.center().z) {
           fixed.relationship = 'large';
         }
-        this.CreateFixed(fixed, position, this.baseScale());
+        //this.CreateFixed(fixed, position, this.baseScale(), target.n);
+        this.CreateFixed(fixed, position, this.baseScale(), target.row);
       }
 
     }
@@ -267,16 +286,18 @@ export class ThreeFixNodeService {
   }
 
   // ピン支点を描く
-  public CreatePin(pin, position, maxLength) {
+  public CreatePin(pin, position, maxLength, row) {
 
     const height: number = maxLength * 0.2;
     const radius: number = height * 0.3;
-    const geometry = new THREE.ConeBufferGeometry( radius, height, 12, 1, false );
-    geometry.translate( 0, -height/2, 0 );
-    const material = new THREE.MeshBasicMaterial({ color: pin.color });
+    const geometry = new THREE.ConeBufferGeometry(radius, height, 12, 1, false);
+    geometry.translate(0, -height / 2, 0);
+    const material = new THREE.MeshBasicMaterial({ color: pin.color, opacity: 0.60 });
     const cone = new THREE.Mesh(geometry, material);
     cone.position.set(position.x, position.y, position.z);
-    
+    //cone.name = 'fixnode' + n.toString() + 't' + pin.direction.toString();  //例：fixnode2ty
+    cone.name = 'fixnode' + row.toString() + 't' + pin.direction.toString();  //例：fixnode2ty
+
     switch (pin.direction) {
       case 'x':
         switch (pin.relationship) {
@@ -315,11 +336,12 @@ export class ThreeFixNodeService {
 
 
   // 固定支点を描く
-  public CreateFixed(fixed, position, maxLength) {
+  public CreateFixed(fixed, position, maxLength, row) {
     const side = 0.06 * maxLength;
     let geometry = new THREE.PlaneBufferGeometry(side, 2.5 * side);
-    const material = new THREE.MeshBasicMaterial({ color: fixed.color, side: THREE.DoubleSide });
+    const material = new THREE.MeshBasicMaterial({ color: fixed.color, side: THREE.DoubleSide, opacity: 0.60 });
     const plane = new THREE.Mesh(geometry, material);
+    plane.name = 'fixnode' + row.toString() + 'r' + fixed.direction.toString();  //例：fixnode2ry
     let x = position.x;
     let y = position.y;
     let z = position.z;
@@ -339,13 +361,14 @@ export class ThreeFixNodeService {
   }
 
   // 完全な固定支点を描く
-  public CreateFixed_P(fixed_Parfect, position, maxLength) {
-    fixed_Parfect.color = 0x808080;
+  public CreateFixed_P(fixed_Parfect, position, maxLength, row) {
+    fixed_Parfect.color = 0x303030;
     const size = 0.2 * maxLength;
     const geometry = new THREE.BoxBufferGeometry(size, size, size);
-    const material = new THREE.MeshBasicMaterial({ color: fixed_Parfect.color });
+    const material = new THREE.MeshBasicMaterial({ color: fixed_Parfect.color, opacity: 0.60 });
     const cube = new THREE.Mesh(geometry, material);
-    switch (fixed_Parfect.directionX) {
+    cube.name = 'fixnode' + row.toString() + 'tp';  //例：fixnode2tx
+    /*switch (fixed_Parfect.directionX) {
       case 'small': position.x = position.x - size / 2;
         break;
       case 'large': position.x = position.x + size / 2;
@@ -362,14 +385,14 @@ export class ThreeFixNodeService {
         break;
       case 'large': position.z = position.z + size / 2;
         break;
-    };
+    };*/
     cube.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(cube);
     this.scene.add(cube);
   }
 
   // バネ支点を描く
-  public CreateSpring(spring, position, maxLength) {
+  public CreateSpring(spring, position, maxLength, row) {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     let increase = 0.00015;
@@ -407,17 +430,18 @@ export class ThreeFixNodeService {
       }
       vertices.push(new THREE.Vector3(x, y, z));
     }
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
-    const line = new THREE.LineBasicMaterial({ color: spring.color });
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+    const line = new THREE.LineBasicMaterial({ color: spring.color, opacity: 0.60 });
     const mesh = new THREE.Line(geometry, line);
     mesh.position.set(position.x, position.y, position.z);
+    mesh.name = 'fixnode' + row.toString() + 't' + spring.direction.toString();  //例：fixnode2ty
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
     geometry = new THREE.BufferGeometry();
   }
 
   // 回転バネ支点を描く
-  public CreateRotatingSpring(rotatingspring, position, maxLength) {
+  public CreateRotatingSpring(rotatingspring, position, maxLength, row) {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     const laps = 3 + 0.25;
@@ -446,12 +470,59 @@ export class ThreeFixNodeService {
       }
       vertices.push(new THREE.Vector3(x, y, z));
     }
-    geometry = new THREE.BufferGeometry().setFromPoints( vertices );
-    const line = new THREE.LineBasicMaterial({ color: rotatingspring.color });
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+    const line = new THREE.LineBasicMaterial({ color: rotatingspring.color, opacity: 0.60 });
     const mesh = new THREE.Line(geometry, line);
+    mesh.name = 'fixnode' + row.toString() + 'r' + rotatingspring.direction.toString();  //例：fixnode2ry
     mesh.position.set(position.x, position.y, position.z);
     this.fixnodeList.push(mesh);
     this.scene.add(mesh);
+  }
+
+  //シートの選択行が指すオブジェクトをハイライトする
+  public selectChange(index_row, index_column): void {
+
+    if (this.currentIndex === index_row && this.currentIndex_sub === index_column) {
+      //選択行の変更がないとき，何もしない
+      return
+    }
+
+    let column = "";
+    const column_sub = "tp"
+    if (index_column === 0) {
+      //column = "tx"
+    } else if (index_column === 1) {
+      column = "tx"
+    } else if (index_column === 2) {
+      column = "ty"
+    } else if (index_column === 3) {
+      column = "tz"
+    } else if (index_column === 4) {
+      column = "rx"
+    } else if (index_column === 5) {
+      column = "ry"
+    } else if (index_column === 6) {
+      column = "rz"
+    } else {
+      //console.log("-----error-----three-fixnode.service.ts-----error-----");
+    }
+
+    //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
+    for (let item of this.fixnodeList) {
+
+      this.getColor(item)
+
+      if (item.name === 'fixnode' + index_row.toString() + column ||
+        item.name === 'fixnode' + index_row.toString() + column_sub) {
+
+        item['material']['color'].setHex(0XFF11FF);
+      }
+    }
+
+    this.currentIndex = index_row;
+    this.currentIndex_sub = index_column;
+
+    this.scene.render();
   }
 
   // データをクリアする
@@ -474,6 +545,87 @@ export class ThreeFixNodeService {
     for (const item of this.fixnodeList) {
       item.scale.set(this.scale, this.scale, this.scale);
     }
+  }
+
+  // マウス位置とぶつかったオブジェクトを検出する
+  public detectObject(raycaster: THREE.Raycaster, action: string): void {
+
+    if (this.fixnodeList.length === 0) {
+      return; // 対象がなければ何もしない
+    }
+
+    // 交差しているオブジェクトを取得
+    const intersects = raycaster.intersectObjects(this.fixnodeList);
+    if (intersects.length <= 0) {
+      return;
+    }
+
+    switch (action) {
+      case 'click':
+        this.fixnodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を指定する
+            this.getColor(item);
+            item.material['opacity'] = 1.00;  // 彩度 強
+          }
+        });
+        break;
+
+      case 'select':
+        this.selectionItem = null;
+        this.fixnodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を指定する
+            this.getColor(item);
+            item.material['opacity'] = 1.00;  //彩度 強
+            this.selectionItem = item;
+          } else {
+            // それ以外は彩度を下げる
+            this.getColor(item);
+            item.material['opacity'] = 0.60;  //彩度 中
+          }
+        });
+        break;
+
+      case 'hover':
+        this.fixnodeList.map(item => {
+          if (intersects.length > 0 && item === intersects[0].object) {
+            // 色を指定する
+            this.getColor(item);
+            item.material['opacity'] = 1.00;  //彩度 強
+          } else {
+            if (item === this.selectionItem) {
+              this.getColor(item);
+              item.material['opacity'] = 1.00;  //彩度 強
+            } else {
+              // それ以外は彩度を下げる
+              this.getColor(item);
+              item.material['opacity'] = 0.60;  //彩度 中
+            }
+          }
+        });
+        break;
+
+      default:
+        return;
+    }
+    this.scene.render();
+  }
+
+  //オブジェクトの色を入手
+  private getColor(item){
+
+    const key = item.name.slice(-2); 
+    if (key === "tx" || key === "rx"){
+      item['material']['color'].setHex(0xff0000);
+    } else if (key === "ty" || key === "ry"){
+      item['material']['color'].setHex(0x00ff00);
+    } else if (key === "tz" || key === "rz"){
+      item['material']['color'].setHex(0x0000ff);
+    } else if (key === "tp") {
+      item['material']['color'].setHex(0x303030);
+    }
+
   }
 
 }

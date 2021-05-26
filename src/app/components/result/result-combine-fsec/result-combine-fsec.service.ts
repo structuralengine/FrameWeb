@@ -4,6 +4,7 @@ import { ResultPickupFsecService } from '../result-pickup-fsec/result-pickup-fse
 import { InputMembersService } from '../../input/input-members/input-members.service';
 import { InputNoticePointsService } from '../../input/input-notice-points/input-notice-points.service';
 import { ThreeSectionForceService } from '../../three/geometry/three-section-force/three-section-force.service';
+import { DataHelperModule } from 'src/app/providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class ResultCombineFsecService {
   public isCalculated: boolean;
   private worker1: Worker;
   private worker2: Worker;
-  public fsecKeys = [
+  public fsecKeys3D = [
     "fx_max",
     "fx_min",
     "fy_max",
@@ -28,7 +29,15 @@ export class ResultCombineFsecService {
     "mz_max",
     "mz_min",
   ];
-  public titles = [
+  public fsecKeys2D = [
+    "fx_max",
+    "fx_min",
+    "fy_max",
+    "fy_min",
+    "mz_max",
+    "mz_min",
+  ];
+  public titles3D = [
     "軸方向力 最大",
     "軸方向力 最小",
     "y方向のせん断力 最大",
@@ -42,16 +51,29 @@ export class ResultCombineFsecService {
     "z軸回りの曲げモーメント 最大",
     "z軸回りの曲げモーメント 最小",
   ];
+  public titles2D = [
+    "軸方向力 最大",
+    "軸方向力 最小",
+    "y方向のせん断力 最大",
+    "y方向のせん断力 最小",
+    "z軸回りの曲げモーメント 最大",
+    "z軸回りの曲げモーメント 最小",
+  ];
+  public fsecKeys = this.fsecKeys3D || this.fsecKeys2D;
+  public titles = this.titles3D || this.titles2D
 
   private columns: any;
  
 
   constructor(private pickfsec: ResultPickupFsecService,
-              private three: ThreeSectionForceService) {
+              private three: ThreeSectionForceService,
+              private helper: DataHelperModule) {
     this.clear();
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-fsec1.worker', { name: 'combine-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-combine-fsec2.worker', { name: 'combine-fsec2', type: 'module' });
+    this.fsecKeys = (this.helper.dimension === 3) ? this.fsecKeys3D : this.fsecKeys2D ;
+    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
   }
 
   public clear(): void {
@@ -106,20 +128,6 @@ export class ResultCombineFsecService {
 
   private worker1_test(data){
 
-    // 文字列string を数値にする
-    const toNumber = (num: string) => {
-      let result: number = null;
-      try {
-        const tmp: string = num.toString().trim();
-        if (tmp.length > 0) {
-          result = ((n: number) => isNaN(n) ? null : n)(+tmp);
-        }
-      } catch {
-        result = null;
-      }
-      return result;
-    };
-  
     const defList = data.defList;
     const combList = data.combList;
     const fsec = data.fsec;
@@ -138,7 +146,13 @@ export class ResultCombineFsecService {
         const coef: number = Math.sign(caseInfo);
   
         if (!(baseNo in fsec)) {
-          continue;
+          if(caseInfo === 0 ){
+            // 値が全て0 の case 0 という架空のケースを用意する
+            // 値は coef=0 であるため 0 となる
+            fsec['0'] = Object.values(fsec)[0];
+          } else {
+            continue;
+          }
         }
   
         // カレントケースを集計する
@@ -238,7 +252,10 @@ export class ResultCombineFsecService {
           for (const id of Object.keys(fsecs[key])) {
             const d = fsecs[key][id];
             const c1 = Math.sign(coef) < 0 ? -1 : 1 * d.case;
-            const caseStr = (c1 < 0 ? "-" : "+") + c2;
+            let caseStr = '';
+            if (c1 !== 0){
+              caseStr = (c1 < 0 ? "-" : "+") + c1;
+            }
             obj1.push({
               m: d.m,
               l: d.l,
@@ -249,7 +266,7 @@ export class ResultCombineFsecService {
               mx: coef * d.mx,
               my: coef * d.my,
               mz: coef * d.mz,
-              case: caseStr,
+              case: caseStr
             });
           }
           if (key in temp) {
@@ -259,13 +276,17 @@ export class ResultCombineFsecService {
                 if (k === 'm' || k === 'l') {
                   temp[key][row][k] = value;
                 } else if (k === 'n') {
-                  temp[key][row][k] = (toNumber(value) !== null) ? value : '';
+                  temp[key][row][k] = (this.helper.toNumber(value) !== null) ? value : '';
                 } else {
                   temp[key][row][k] += value;
                 }
               }
+              temp[key][row]['comb']= combNo;
             }
           } else {
+            for (const obj of obj1) {
+              obj['comb']= combNo;
+            }
             temp[key] = obj1;
           }
   
@@ -285,6 +306,7 @@ export class ResultCombineFsecService {
     }
   
     return { fsecCombine, max_values };
+  
   
   }
 

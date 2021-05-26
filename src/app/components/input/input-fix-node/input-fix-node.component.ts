@@ -16,13 +16,19 @@ export class InputFixNodeComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "節点No",   dataType: "string", dataIndx: "n",  sortable: false, width: 30 },
     { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
     { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
     { title: "Z変位拘束", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
     { title: "X回転拘束", dataType: "float",   dataIndx: "rx", sortable: false, width: 100 },
     { title: "Y回転拘束", dataType: "float",   dataIndx: "ry", sortable: false, width: 100 },
+    { title: "Z回転拘束", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
+  ];
+  private columnHeaders2D =[
+    { title: "節点No",   dataType: "string", dataIndx: "n",  sortable: false, width: 30 },
+    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
     { title: "Z回転拘束", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
   ];
 
@@ -82,7 +88,7 @@ export class InputFixNodeComponent implements OnInit {
     numberCell: {
       show: false // 行番号
     },
-    colModel: this.columnHeaders,
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -103,11 +109,14 @@ export class InputFixNodeComponent implements OnInit {
     selectEnd: (evt, ui) => {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
-      this.three.selectChange('fix_nodes', row);
+      const column = range[0].c1;
+      this.three.selectChange('fix_nodes', row, column);
     },
     change: (evt, ui) => {
       this.three.changeData('fix_nodes', this.page);
     }
   };
+
+  width = (this.helper.dimension === 3) ? 712 : 412 ;
 
 }

@@ -7,7 +7,7 @@ import { ThreeNodesService } from './three-nodes.service';
 
 import * as THREE from 'three';
 import { ThreeMembersService } from './three-members.service';
-import { Material } from 'three';
+import { Material, Object3D } from 'three';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,8 @@ export class ThreeFixMemberService {
 
   private fixmemberList: any[];
   private isVisible: boolean;
+  private currentIndex: string;
+  private currentIndex_sub: string;
 
   // 大きさを調整するためのスケール
   private scale: number;
@@ -31,6 +33,8 @@ export class ThreeFixMemberService {
 
     this.fixmemberList = new Array();
     this.isVisible = null;
+    this.currentIndex = null;
+    this.currentIndex_sub = null;
 
     // gui
     this.scale = 1.0;
@@ -135,7 +139,8 @@ export class ThreeFixMemberService {
       const localAxis = this.three_member.localAxis(i.x, i.y, i.z, j.x, j.y, j.z, m.cg);
       const len: number = new THREE.Vector3(j.x - i.x, j.y - i.y, j.z - i.z).length();
 
-      const spring = { direction: 'z', relationship: 'large', color: 0xff0000 };
+      //const spring = { direction: 'z', relationship: 'large', color: 0xff0000, m: target.m, row: target.row};
+      const spring = { direction: 'z', relationship: 'large', color: 0xff0000, row: target.row};
       const position = { x: (i.x + j.x) / 2, y: (i.y + j.y) / 2, z: (i.z + j.z) / 2 };
 
       if (target.tx !== 0) {
@@ -176,56 +181,86 @@ export class ThreeFixMemberService {
 
   // 複数回 描くために
   public MultipleDrawing(spring, position, localAxis, len, maxLength) {
+    let multipleList = new Object3D();
     let interval = 0.3;
-    let count = 0;
+    let info = {count: 0, len: len};
     let local_position = { x: position.x, y: position.x, z: position.x };
 
     // バネ用の分岐
     if (spring.direction === 'x' || spring.direction === 'y' || spring.direction === 'z') {
-      count = Math.floor(len / 2 / interval - 0.5);
-      for (let k = - count; k <= count; k += 1) {
-        local_position.x = position.x + localAxis.x.x * k * interval;
-        local_position.y = position.y + localAxis.x.y * k * interval;
-        local_position.z = position.z + localAxis.x.z * k * interval;
-        this.CreateSpring(spring, local_position, localAxis, maxLength);
-      }
+      multipleList.name = 'fixmember' + spring.row.toString() + spring.direction.toString();
+      
+      info.count = (Math.floor(len / 2 / interval - interval) === -1) ? 0 : Math.floor(len / 2 / interval - interval);
+      if (info.count === 0){
+        local_position.x = position.x;
+        local_position.y = position.y;
+        local_position.z = position.z;
+        const mesh = this.CreateSpring(spring, local_position, localAxis, maxLength, info);
+        multipleList.add(mesh);
+      } else {
+        for (let k = - info.count; k <= info.count; k += 1) {
+          local_position.x = position.x + localAxis.x.x * k * interval;
+          local_position.y = position.y + localAxis.x.y * k * interval;
+          local_position.z = position.z + localAxis.x.z * k * interval;
+          const mesh = this.CreateSpring(spring, local_position, localAxis, maxLength, info);
+          multipleList.add(mesh);
+        }
+      }      
+      this.fixmemberList.push(multipleList);
+      this.scene.add(multipleList);
+      multipleList = new Object3D();  //multipleListの初期化
     }
 
     // 回転バネ用の分岐
     if (spring.direction === 'r') {
-      count = Math.floor(len / 2 / interval - 0.5);
-      for (let k = - count; k <= count; k += 1) {
-        local_position.x = position.x + localAxis.x.x * k * interval;
-        local_position.y = position.y + localAxis.x.y * k * interval;
-        local_position.z = position.z + localAxis.x.z * k * interval;
-        this.CreateRotatingSpring(spring, local_position, localAxis, maxLength);
-      }
+      multipleList.name = 'fixmember' + spring.row.toString() + spring.direction.toString();
+
+      info.count = (Math.floor(len / 2 / interval - interval) === -1) ? 0 : Math.floor(len / 2 / interval - interval);
+      if (info.count === 0){
+        local_position.x = position.x;
+        local_position.y = position.y;
+        local_position.z = position.z;
+        const mesh = this.CreateRotatingSpring(spring, local_position, localAxis, maxLength, info);
+        multipleList.add(mesh);
+      } else {
+        for (let k = - info.count; k <= info.count; k += 1) {
+          local_position.x = position.x + localAxis.x.x * k * interval;
+          local_position.y = position.y + localAxis.x.y * k * interval;
+          local_position.z = position.z + localAxis.x.z * k * interval;
+          const mesh = this.CreateRotatingSpring(spring, local_position, localAxis, maxLength, info);
+          multipleList.add(mesh);
+        }
+      }      
+      this.fixmemberList.push(multipleList);
+      this.scene.add(multipleList);
+      multipleList = new Object3D();  //multipleListの初期化
     }
   }
 
   // バネを描く
-  public CreateSpring(spring, position, localAxis, maxLength) {
+  public CreateSpring(spring, position, localAxis, maxLength, info) {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
-    let increase = 0.0001;
+    let increase :number ;
     switch (spring.relationship) {
       case ('small'):
-        increase = 0.0001;
+        increase = 0.003;
         break;
       case ('large'):
-        increase = -0.0001;
+        increase = -0.003;
         break;
     }
-    const laps = 3;
+    const laps = (info.count === 0 && spring.direction === 'x') ? Math.floor(info.len / Math.abs(increase) / 36) : 4;
     const split = 10;
-    const radius = 0.03;
+    const radius = 0.05 * 10;
     let x = position.x;
     let y = position.y;
     let z = position.z;
     for (let i = 0; i <= laps * 360; i += split) {
-      x = radius * Math.cos(Math.PI / 180 * i) * maxLength;
-      y = radius * Math.sin(Math.PI / 180 * i) * maxLength;
-      z = - i * increase * maxLength;
+      x = radius * Math.sin(Math.PI / 180 * i) * maxLength;
+      y = radius * Math.cos(Math.PI / 180 * i) * maxLength;
+      z = (spring.direction === 'x') ? ((- i + laps * 360 / 2) * increase) * maxLength : 
+                                        - i * increase * 0.5 * maxLength ;
       vertices.push(new THREE.Vector3(x, y, z));
     }
     geometry = new THREE.BufferGeometry().setFromPoints( vertices );
@@ -244,23 +279,23 @@ export class ThreeFixMemberService {
         break;
     }
     mesh.position.set(position.x, position.y, position.z);
-    this.fixmemberList.push(mesh);
-    this.scene.add(mesh);
+
+    return mesh
   }
 
   // 回転バネ支点を描く
-  public CreateRotatingSpring(rotatingspring, position, localAxis, maxLength) {
+  public CreateRotatingSpring(rotatingspring, position, localAxis, maxLength, info) {
     let geometry = new THREE.BufferGeometry();
     let vertices = [];
     const laps = 3 + 0.25;
     const split = 10;
-    const radius = 0.1 * 0.0005;
+    const radius = 0.1 * 0.005;
     let x = position.x;
     let y = position.y;
     let z = position.z;
     for (let j = 0; j <= laps * 360; j += split) {
-      x = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
-      y = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
+      x = radius * Math.sin(Math.PI / 180 * j) * maxLength * j;
+      y = radius * Math.cos(Math.PI / 180 * j) * maxLength * j;
       z = 0;
       vertices.push(new THREE.Vector3(x, y, z));
     }
@@ -269,8 +304,47 @@ export class ThreeFixMemberService {
     const mesh = new THREE.Line(geometry, line);
     mesh.lookAt(position.x + localAxis.x.x, position.y + localAxis.x.y, position.z + localAxis.x.z); // 作図上y方向を見る
     mesh.position.set(position.x, position.y, position.z);
-    this.fixmemberList.push(mesh);
-    this.scene.add(mesh);
+
+    return mesh;
+  }
+
+  //シートの選択行が指すオブジェクトをハイライトする
+  public selectChange(index_row, index_column): void{
+
+    if (this.currentIndex === index_row && this.currentIndex_sub === index_column){
+      //選択行の変更がないとき，何もしない
+      return
+    }
+
+    let column = "";
+    if (index_column === 0){
+      //column = "x"
+    } else if (index_column === 1){
+      column = "x"
+    } else if (index_column === 2) {
+      column = "y"
+    } else if (index_column === 3) {
+      column = "z"
+    } else if (index_column === 4) {
+      column = "r"
+    }
+
+    //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
+    for (let item of this.fixmemberList){
+      for (const item_child of item.children){
+        item_child['material']['color'].setHex(0X000000);
+      }
+      if (item.name === 'fixmember' + index_row.toString() + column){
+        for (const item_child of item.children){
+          item_child['material']['color'].setHex(0X00A5FF);
+        }
+      }
+    }
+
+    this.currentIndex = index_row;
+    this.currentIndex_sub = index_column;
+
+    this.scene.render();
   }
 
   public ClearData(): void {
@@ -289,7 +363,16 @@ export class ThreeFixMemberService {
   // スケールを反映する
   private onResize(): void {
     for (const item of this.fixmemberList) {
-      item.scale.set(this.scale, this.scale, this.scale);
+      for (const item_child of item.children) {
+        if (item_child.parent.name.slice(-1) === 'x') {
+          item_child.scale.set(this.scale, this.scale, 1);
+        } else if (item_child.parent.name.slice(-1) === 'y' || item_child.parent.name.slice(-1) === 'z') {
+          const getBaseLog = Math.log(this.scale) / Math.log(2)
+          item_child.scale.set(1 + getBaseLog, 1 + getBaseLog, this.scale);
+        } else {
+          item_child.scale.set(this.scale, this.scale, this.scale);
+        }
+      }
     }
   }
 

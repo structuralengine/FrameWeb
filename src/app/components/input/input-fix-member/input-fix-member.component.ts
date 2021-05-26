@@ -16,12 +16,17 @@ export class InputFixMemberComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
     { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
     { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
     { title: "Z変位拘束", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
     { title: "回転拘束",  dataType: "float",   dataIndx: "tr", sortable: false, width: 100 }
+  ];
+  private columnHeaders2D =[
+    { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
+    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
   ];
 
   private ROWS_COUNT = 15;
@@ -83,7 +88,7 @@ export class InputFixMemberComponent implements OnInit {
     numberCell: {
       show: false // 行番号
     },
-    colModel: this.columnHeaders,
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -104,11 +109,14 @@ export class InputFixMemberComponent implements OnInit {
     selectEnd: (evt, ui) => {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
-      this.three.selectChange('fix_member', row);
+      const column = range[0].c1;
+      this.three.selectChange('fix_member', row, column);
     },
     change: (evt, ui) => {
       this.three.changeData('fix_member', this.page);
     }
   };
+
+  width = (this.helper.dimension === 3) ? 510 : 310 ;
 
 }

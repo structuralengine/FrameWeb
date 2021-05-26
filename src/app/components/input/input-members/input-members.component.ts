@@ -17,12 +17,18 @@ export class InputMembersComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "i端",          dataType: "integer",                 dataIndx: "ni", sortable: false, minwidth: 10, width: 10 },
     { title: "j端",          dataType: "integer",                 dataIndx: "nj", sortable: false, minwidth: 10, width: 10 },
     { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
     { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
     { title: "コードアングル", dataType: "float",                   dataIndx: "cg", sortable: false, width: 130 }
+  ];
+  private columnHeaders2D =[
+    { title: "i端",          dataType: "integer",                 dataIndx: "ni", sortable: false, minwidth: 10, width: 10 },
+    { title: "j端",          dataType: "integer",                 dataIndx: "nj", sortable: false, minwidth: 10, width: 10 },
+    { title: "部材長",        dataType: "float",  format: "#.000", dataIndx: "L", sortable: false, width: 100, editable: false, style: { "background": "#dae6f0" } },
+    { title: "材料No",       dataType: "integer",                 dataIndx: "e",  sortable: false, minwidth: 10, width: 10 },
   ];
 
   private ROWS_COUNT = 15;
@@ -74,7 +80,7 @@ export class InputMembersComponent implements OnInit {
       show: true, // 行番号
       width:45
     },
-    colModel: this.columnHeaders,
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true
     },
@@ -95,7 +101,8 @@ export class InputMembersComponent implements OnInit {
     selectEnd: (evt, ui) => {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
-      this.three.selectChange('members', row);
+      const column = range[0].c1;
+      this.three.selectChange('members', row, column);
     },
     change: (evt, ui) => {
       const changes = ui.updateList;
@@ -119,4 +126,7 @@ export class InputMembersComponent implements OnInit {
       this.three.changeData('members');
     }
   };
+
+  width = (this.helper.dimension === 3) ? 480 : 350 ;
+
 }

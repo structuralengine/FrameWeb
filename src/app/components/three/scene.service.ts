@@ -20,7 +20,10 @@ export class SceneService {
   private labelRenderer: CSS2DRenderer;
 
   // カメラ
-  private camera: THREE.PerspectiveCamera;
+  private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
+  private aspectRatio: number;
+  private Width: number;
+  private Height: number;
 
   // helper
   private axisHelper: THREE.AxesHelper;
@@ -53,7 +56,10 @@ export class SceneService {
                 Width: number,
                 Height: number): void {
     // カメラ
-    this.createCamera(aspectRatio);
+    this.aspectRatio = aspectRatio;
+    this.Width = Width;
+    this.Height = Height;
+    this.createCamera(aspectRatio, Width, Height);
     // 環境光源
     this.add(new THREE.AmbientLight(0xf0f0f0));
     // レンダラー
@@ -97,6 +103,7 @@ export class SceneService {
     const controls = new OrbitControls(this.camera, this.labelRenderer.domElement);
     controls.damping = 0.2;
     controls.addEventListener('change', this.render);
+    controls.enableRotate = (this.helper.dimension === 3) ? true : false; // 2次元モードの場合はカメラの回転を無効にする
   }
 
    // 物体とマウスの交差判定に用いるレイキャスト
@@ -107,15 +114,40 @@ export class SceneService {
   }
 
   // カメラの初期化
-  public createCamera(aspectRatio: number ) {
-    this.camera = new THREE.PerspectiveCamera(
-      70,
-      aspectRatio,
-      0.1,
-      1000
-    );
-    this.camera.position.set(0, -50, 20);
-    this.scene.add(this.camera);
+  public createCamera(
+    aspectRatio: number=null,
+    Width: number=null, Height: number=null ) {
+
+    aspectRatio = (aspectRatio === null) ? this.aspectRatio : aspectRatio;
+    Width = (Width === null) ? this.Width : Width;
+    Height = (Height === null) ? this.Height : Height;
+
+    const target = this.scene.getObjectByName('camera');
+    if (target !== undefined) {
+      this.scene.remove(this.camera);
+    }
+    if(this.helper.dimension === 3){
+      this.camera = new THREE.PerspectiveCamera(
+        70,
+        aspectRatio,
+        0.1,
+        1000
+      );
+      this.camera.position.set(0, -50, 20);
+      this.camera.name = 'camera';
+      this.scene.add(this.camera);
+
+    } else if(this.helper.dimension === 2){
+      this.camera = new THREE.OrthographicCamera(
+        -Width/10, Width/10,
+        Height/10, -Height/10,
+        0.1,
+        21
+      );
+      this.camera.position.set(0, 0, 10);
+      this.camera.name = 'camera';
+      this.scene.add(this.camera);
+    }
   }
 
   // レンダラーを初期化する
@@ -142,12 +174,17 @@ export class SceneService {
     return this.labelRenderer.domElement;
   }
 
-
   // リサイズ
   public onResize(deviceRatio: number,
                   Width: number,
                   Height: number): void {
-    this.camera.aspect = deviceRatio;
+
+    if('aspect' in this.camera) { this.camera['aspect'] = deviceRatio; }
+    if('left' in this.camera) { this.camera['left'] = -Width/2; }
+    if('right' in this.camera) { this.camera['right'] = Width/2; }
+    if('top' in this.camera) { this.camera['top'] = Height/2; }
+    if('bottom' in this.camera) { this.camera['bottom'] = -Height/2; }
+
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(Width, Height);
     this.labelRenderer.setSize(Width, Height);

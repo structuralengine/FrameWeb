@@ -16,123 +16,44 @@ export class InputLoadComponent implements OnInit {
 
   public load_name: string;
   private dataset = [];
-  private columnHeaders = [
-    {
-      title: "部材1",
-      dataType: "string",
-      dataIndx: "m1",
-      sortable: false,
-      width: 30,
-    },
-    {
-      title: "部材2",
-      dataType: "string",
-      dataIndx: "m2",
-      sortable: false,
-      width: 30,
-    },
-    {
-      title: "方向",
-      dataType: "string",
-      dataIndx: "direction",
-      sortable: false,
-      width: 30,
-    },
-    {
-      title: "マーク",
-      dataType: "integer",
-      dataIndx: "mark",
-      sortable: false,
-      width: 60,
-    },
-    {
-      title: "L1",
-      dataType: "float",
-      format: "#.000",
-      dataIndx: "L1",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "L2",
-      dataType: "float",
-      format: "#.000",
-      dataIndx: "L2",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "P1",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "P1",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "P2",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "P2",
-      sortable: false,
-      width: 70,
-    },
-
-    {
-      title: "節点No",
-      dataType: "string",
-      dataIndx: "n",
-      sortable: false,
-      width: 30,
-    },
-    {
-      title: "X",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "tx",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "Y",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "ty",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "Z",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "tz",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "RX",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "rx",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "RY",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "ry",
-      sortable: false,
-      width: 70,
-    },
-    {
-      title: "RZ",
-      dataType: "float",
-      format: "#.00",
-      dataIndx: "rz",
-      sortable: false,
-      width: 70,
-    },
+  private columnHeaders3D = [
+    { title: '要素荷重', align: 'center', colModel: [
+      { title: "部材1", dataType: "string", dataIndx: "m1", sortable: false, width: 30, },
+      { title: "部材2", dataType: "string", dataIndx: "m2", sortable: false, width: 30, },
+      { title: "方向",  dataType: "string", dataIndx: "direction",  sortable: false, width: 30, },
+      { title: "マーク", dataType: "integer", dataIndx: "mark", sortable: false, width: 60, },
+      { title: "L1", dataType: "float", format: "#.000", dataIndx: "L1", sortable: false, width: 70, },
+      { title: "L2", dataType: "float", format: "#.000", dataIndx: "L2", sortable: false, width: 70, },
+      { title: "P1", dataType: "float", format: "#.00", dataIndx: "P1", sortable: false, width: 70, },
+      { title: "P2", dataType: "float", format: "#.00", dataIndx: "P2", sortable: false, width: 70, },
+    ]},
+    { title: '節点荷重', align: 'center', colModel: [
+      { title: "節点No", dataType: "string", dataIndx: "n", sortable: false, width: 30,},
+      { title: "X", dataType: "float", format: "#.00", dataIndx: "tx", sortable: false, width: 70, },
+      { title: "Y", dataType: "float", format: "#.00", dataIndx: "ty", sortable: false, width: 70, },
+      { title: "Z", dataType: "float", format: "#.00", dataIndx: "tz", sortable: false, width: 70, },
+      { title: "RX", dataType: "float", format: "#.00", dataIndx: "rx", sortable: false, width: 70, },
+      { title: "RY", dataType: "float", format: "#.00", dataIndx: "ry", sortable: false, width: 70, },
+      { title: "RZ", dataType: "float", format: "#.00", dataIndx: "rz", sortable: false, width: 70, },
+    ]},
+  ];
+  private columnHeaders2D = [
+    { title: '要素荷重', align: 'center', colModel: [
+      {title: "部材1", dataType: "string", dataIndx: "m1", sortable: false, width: 30 },
+      {title: "部材2", dataType: "string", dataIndx: "m2", sortable: false, width: 30 },
+      {title: "方向", dataType: "string", dataIndx: "direction", sortable: false, width: 30 },
+      {title: "マーク", dataType: "integer", dataIndx: "mark", sortable: false, width: 60 },
+      {title: "L1", dataType: "float", format: "#.000", dataIndx: "L1", sortable: false, width: 70 },
+      {title: "L2", dataType: "float", format: "#.000", dataIndx: "L2", sortable: false, width: 70 },
+      {title: "P1", dataType: "float", format: "#.00", dataIndx: "P1", sortable: false, width: 70 },
+      {title: "P2", dataType: "float", format: "#.00", dataIndx: "P2", sortable: false, width: 70 },
+    ]},
+    { title: '節点荷重', align: 'center', colModel: [
+      {title: "節点No", dataType: "string", dataIndx: "n", sortable: false, width: 30 },
+      {title: "X", dataType: "float", format: "#.00", dataIndx: "tx", sortable: false, width: 70 },
+      {title: "Y", dataType: "float", format: "#.00", dataIndx: "ty", sortable: false, width: 70 },
+      {title: "RZ", dataType: "float", format: "#.00", dataIndx: "rz", sortable: false, width: 70 },
+    ]},
   ];
 
   private ROWS_COUNT = 15;
@@ -195,7 +116,7 @@ export class InputLoadComponent implements OnInit {
     numberCell: {
       show: false, // 行番号
     },
-    colModel: this.columnHeaders,
+    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
     animModel: {
       on: true,
     },
@@ -216,7 +137,8 @@ export class InputLoadComponent implements OnInit {
     selectEnd: (evt, ui) => {
       const range = ui.selection.iCells.ranges;
       const row = range[0].r1 + 1;
-      this.three.selectChange("load_values", row);
+      const column = range[0].c1;
+      this.three.selectChange("load_values", row, column);
     },
     change: (evt, ui) => {
 
@@ -226,4 +148,7 @@ export class InputLoadComponent implements OnInit {
       }
     }
   };
+
+  width = (this.helper.dimension === 3) ? 1020 : 810 ;
+
 }

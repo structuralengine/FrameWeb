@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { AfterViewInit } from "@angular/core";
 import { DataCountService } from "../dataCount.service";
 import { PrintService } from "../../print.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-input-load",
@@ -38,12 +39,15 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
   public pload: any = [];
 
   public judge: boolean;
+  public dimension: number;
 
   constructor(
     private printService: PrintService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private helper: DataHelperModule
   ) {
     this.judge = false;
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 
@@ -211,7 +215,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
           line[4] = item.L1;
           line[5] = item.L2;
           line[6] = item.P1 === null ? "" : item.P1.toFixed(2);
-          line[7] = item.P2 === null ? "" : item.P1.toFixed(2);
+          line[7] = item.P2 === null ? "" : item.P2.toFixed(2);
           this.mload.push(line);
           // flg.push(0);
           row++;

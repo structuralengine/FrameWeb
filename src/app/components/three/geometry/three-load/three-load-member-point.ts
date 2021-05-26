@@ -5,6 +5,7 @@ import { Vector2 } from 'three';
 import { ThreeLoadText } from "./three-load-text";
 import { ThreeLoadDimension } from "./three-load-dimension";
 import { ThreeLoadPoint } from './three-load-point';
+import { RouterLinkWithHref } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,8 @@ export class ThreeLoadMemberPoint {
     pL1: number,
     pL2: number,
     P1: number,
-    P2: number
+    P2: number,
+    row: number
   ): THREE.Group {
 
     const offset: number = 0;
@@ -123,7 +125,7 @@ export class ThreeLoadMemberPoint {
       group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "MemberPointLoad";
+    group.name = "MemberPointLoad-" + row.toString() + '-' + direction.toString();
 
     return group;
   }
@@ -206,7 +208,8 @@ export class ThreeLoadMemberPoint {
         pos1.y = 0.1;
       }
 
-      const arrow_1 = this.point.create(pos1, 0, Px, 1, key)
+      //6番目の代入値は不適切
+      const arrow_1 = this.point.create(pos1, 0, Px, 1, key, 0)
 
       if (direction === 'y') {
         arrow_1.rotation.z += Math.PI;
@@ -297,5 +300,57 @@ export class ThreeLoadMemberPoint {
     group.scale.set(1, scale, scale);
   }
 
+  // ハイライトを反映させる
+  public setColor(group: any, n: string) {
 
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const arrow_mat_Red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const arrow_mat_Green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const arrow_mat_Blue = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xafeeee });  //ハイライト用のカラー
+    const line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    const line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    const line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xafeeee }); //ハイライト用のカラー
+
+    for (let target1 of group.children[0].children[0].children) {
+      for (let target2 of target1.children[0].children[0].children[0].children) {  //children: (2) [Line, Mesh]
+        if (n === 'clear') {
+          if (target2.type === 'Line' && group.name.slice(-1) === 'x') {
+            target2.material = line_mat_Red; //デフォルトのカラー
+          } else if (target2.type === 'Line' && group.name.slice(-1) === 'y') {
+            target2.material = line_mat_Green; //デフォルトのカラー
+          } else if (target2.type === 'Line' && group.name.slice(-1) === 'z') {
+            target2.material = line_mat_Blue; //デフォルトのカラー
+          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'x') {
+            target2.material = arrow_mat_Red; //デフォルトのカラー
+          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'y') {
+            target2.material = arrow_mat_Green; //デフォルトのカラー
+          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'z') {
+            target2.material = arrow_mat_Blue; //デフォルトのカラー
+          }
+        /*} else if (n === 'select') {
+          if (target2.type === 'Mesh' && group.name.slice(-1) === 'x') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'y') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'z') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          } else if (target2.type === 'Line' && group.name.slice(-1) === 'x') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          } else if (target2.type === 'Line' && group.name.slice(-1) === 'y') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          } else if (target2.type === 'Line' && group.name.slice(-1) === 'z') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          }*/
+        } else if (n === 'select') {
+          if (target2.type === 'Line') {
+            target2.material = line_mat_Pick; //ハイライト用のカラー
+          } else if (target2.type === 'Mesh') {
+            target2.material = arrow_mat_Pick; //ハイライト用のカラー
+          }
+        }
+      }
+    }
+  }
 }

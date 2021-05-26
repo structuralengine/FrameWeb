@@ -24,6 +24,7 @@ export class ResultReacComponent implements OnInit {
   load_name: string;
   btnCombine: string;
   btnPickup: string;
+  dimension: number;
 
   constructor(
     private data: ResultReacService,
@@ -34,6 +35,7 @@ export class ResultReacComponent implements OnInit {
     private helper: DataHelperModule
   ) {
     this.dataset = new Array();
+    this.dimension = this.helper.dimension;
   }
 
   ngOnInit() {

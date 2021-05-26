@@ -27,6 +27,7 @@ export class ResultCombineFsecComponent implements OnInit {
   load_name: string;
   btnPickup: string;
   tableHeight: number;
+  dimension: number;
 
   constructor(
     private data: ResultCombineFsecService,
@@ -41,6 +42,7 @@ export class ResultCombineFsecComponent implements OnInit {
     this.dataset = new Array();
     this.KEYS = this.data.fsecKeys;
     this.TITLES = this.data.titles;
+    this.dimension =  this.helper.dimension;
   }
 
   ngOnInit() {

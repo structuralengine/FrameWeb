@@ -29,14 +29,16 @@ export class ThreeLoadTemperature {
     const line_color = 0xff0000;
     const three_color = new THREE.Color(line_color);
 
-    this.colors = [];
-    this.colors.push(three_color.r, three_color.g, three_color.b);
-    this.colors.push(three_color.r, three_color.g, three_color.b);
+    //this.colors = [];
+    this.colors = [1, 1, 1, 1, 1, 1]
+    //this.colors.push(three_color.r, three_color.g, three_color.b);
+    //this.colors.push(three_color.r, three_color.g, three_color.b);
 
-    this.arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+    //this.arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+    this.arrow_mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
     this.matLine = new LineMaterial({
-      color: 0xffffff,
+      color: 0xff0000,
       linewidth: 0.001, // in pixels
       vertexColors: true,
       dashed: false
@@ -46,7 +48,8 @@ export class ThreeLoadTemperature {
     nodei: THREE.Vector3,
     nodej: THREE.Vector3,
     localAxis: any,
-    P1: number
+    P1: number,
+    row: number
   ): THREE.Group {
 
     const offset: number = 0.1;
@@ -68,8 +71,8 @@ export class ThreeLoadTemperature {
     // colors.push(three_color.r, three_color.g, three_color.b);
 
     const geometry = new LineGeometry();
-    geometry.setPositions( points );
-    geometry.setColors( this.colors );
+    geometry.setPositions(points);
+    geometry.setColors(this.colors);
 
     /*
     const matLine = new LineMaterial({
@@ -79,8 +82,8 @@ export class ThreeLoadTemperature {
       dashed: false
     });
     */
-    
-    const line2 = new Line2( geometry, this.matLine );
+
+    const line2 = new Line2(geometry, this.matLine);
     line2.computeLineDistances();
     line2.name = 'line2';
 
@@ -115,7 +118,7 @@ export class ThreeLoadTemperature {
     text.visible = false;
     group0.add(text);
     */
-    
+
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -131,7 +134,7 @@ export class ThreeLoadTemperature {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "TemperatureLoad";
+    group.name = "TemperatureLoad-" + row.toString();
     return group;
   }
 
@@ -188,4 +191,33 @@ export class ThreeLoadTemperature {
     group.scale.set(1, scale, scale);
   }
 
+  // ハイライトを反映させる
+  public setColor(group: any, n: string): void {
+
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const matLine_Pick = new LineMaterial({
+      color: 0x00ffff,
+      linewidth: 0.001, // in pixels
+      vertexColors: true,
+      dashed: false
+    })
+    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+
+    for (let target of group.children[0].children[0].children) {
+      if (n === 'clear') {
+        if (target.name === 'line2') {
+          target.material = this.matLine; //デフォルトのカラー
+        } else if (target.name === 'arrow') {
+          target.material = this.arrow_mat //デフォルトのカラー
+        }
+      } else if (n === "select") {
+        if (target.name === 'line2') {
+          target.material = matLine_Pick; //ハイライト用のカラー
+        } else if (target.name === 'arrow') {
+          target.material = arrow_mat_Pick; //ハイライト用のカラー
+        }
+      }
+    }
+  }
+  
 }

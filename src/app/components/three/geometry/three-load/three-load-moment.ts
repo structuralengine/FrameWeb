@@ -12,7 +12,7 @@ export class ThreeLoadMoment {
   private arrow_mat_Red: THREE.MeshBasicMaterial;
   private arrow_mat_Green: THREE.MeshBasicMaterial;
   private arrow_mat_Blue: THREE.MeshBasicMaterial;
-  
+
   private line_mat_Red: THREE.LineBasicMaterial;
   private line_mat_Green: THREE.LineBasicMaterial;
   private line_mat_Blue: THREE.LineBasicMaterial;
@@ -30,7 +30,7 @@ export class ThreeLoadMoment {
     this.point_mat = new THREE.PointsMaterial({ size: 0.1, color: 0x080808 });
 
   }
-  
+
   /// 節点モーメント荷重を編集する
   // target: 編集対象の荷重,
   // node: 基準点,
@@ -44,6 +44,7 @@ export class ThreeLoadMoment {
     value: number,
     radius: number,
     direction: string,
+    row: number,
     color: number = null
   ): THREE.Group {
 
@@ -100,7 +101,7 @@ export class ThreeLoadMoment {
 
     // 長さを修正する
     //if (value < 0) {
-      //child.rotation.set(-Math.PI, 0, -Math.PI);
+    //child.rotation.set(-Math.PI, 0, -Math.PI);
     //}
 
     if (direction === 'rx' || direction === 'ry') {
@@ -138,20 +139,20 @@ export class ThreeLoadMoment {
     text.visible = false;
     group0.add(text);
     */
-    
+
     child.position.z = offset;
 
     // 向きを変更する
     if (direction === "rx") {
       group0.rotation.x = Math.PI / 2;
       group0.rotation.y = -Math.PI / 2;
-    } else  if (direction === "ry") {
+    } else if (direction === "ry") {
       group0.rotation.x = Math.PI / 2;
     }
 
     //中心点を作成
     const point_geo = new THREE.Geometry();
-    point_geo.vertices.push(new THREE.Vector3(0,0,0));
+    point_geo.vertices.push(new THREE.Vector3(0, 0, 0));
     // const point_mat = new THREE.PointsMaterial({size: 0.1, color: 0x080808});
     const point_mesh = new THREE.Points(point_geo, this.point_mat);
     point_mesh.name = 'points_center';
@@ -167,7 +168,7 @@ export class ThreeLoadMoment {
     // 位置を修正する
     group.position.set(node.x, node.y, node.z);
 
-    group.name = "MomentLoad";
+    group.name = "MomentLoad-" + row.toString() + '-' + direction.toString();
     group['value'] = Math.abs(value); //値を保存
 
     return group;
@@ -191,5 +192,45 @@ export class ThreeLoadMoment {
     group.scale.set(scale, scale, scale);
   }
 
+  // ハイライトを反映させる
+  public setColor(group: any, n: string): void {
+
+    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
+    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xafeeee });
+    const line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xafeeee });
+
+    for (let target of group.children[0].children[1].children) {
+      if (n === "clear") {
+        if (target.name === 'arrow' && group.name.slice(-1) === 'x') {
+          target.material = this.arrow_mat_Red; //デフォルトのカラー
+        } else if (target.name === 'arrow' && group.name.slice(-1) === 'y') {
+          target.material = this.arrow_mat_Green; //デフォルトのカラー
+        } else if (target.name === 'arrow' && group.name.slice(-1) === 'z') {
+          target.material = this.arrow_mat_Blue; //デフォルトのカラー
+        } else if (target.name === 'line' && group.name.slice(-1) === 'x') {
+          target.material = this.line_mat_Red; //デフォルトのカラー
+        } else if (target.name === 'line' && group.name.slice(-1) === 'y') {
+          target.material = this.line_mat_Green; //デフォルトのカラー
+        } else if (target.name === 'line' && group.name.slice(-1) === 'z') {
+          target.material = this.line_mat_Blue; //デフォルトのカラー
+        }
+
+      } else if (n === "select") {
+        if (target.name === 'arrow' && group.name.slice(-1) === 'x') {
+          target.material = arrow_mat_Pick; //ハイライト用のカラー
+        } else if (target.name === 'arrow' && group.name.slice(-1) === 'y') {
+          target.material = arrow_mat_Pick; //ハイライト用のカラー
+        } else if (target.name === 'arrow' && group.name.slice(-1) === 'z') {
+          target.material = arrow_mat_Pick; //ハイライト用のカラー
+        } else if (target.name === 'line'  && group.name.slice(-1) === 'x') {
+          target.material = line_mat_Pick; //ハイライト用のカラー
+        } else if (target.name === 'line'  && group.name.slice(-1) === 'y') {
+          target.material = line_mat_Pick; //ハイライト用のカラー
+        } else if (target.name === 'line'  && group.name.slice(-1) === 'z') {
+          target.material = line_mat_Pick; //ハイライト用のカラー
+        }
+      }
+    }
+  }
 
 }

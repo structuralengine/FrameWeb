@@ -7,6 +7,9 @@ import { NgModule } from "@angular/core";
 export class DataHelperModule {
   constructor() {}
 
+  // ３次元解析=3, ２次元解析=2
+  public dimension: number;
+
   // 文字列string を数値にする
   public toNumber(num: string, digit: number = null): number {
     let result: number = null;
@@ -74,4 +77,15 @@ export class DataHelperModule {
     }
     return wRcString;
   }
+
+  // ファイル名から拡張子を取得する関数
+  public getExt(filename: string): string {
+    const pos = filename.lastIndexOf('.');
+    if (pos === -1) {
+      return '';
+    }
+    const ext = filename.slice(pos + 1);
+    return ext.toLowerCase();
+  }
+
 }

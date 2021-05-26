@@ -79,6 +79,7 @@ export class ThreeSectionForceMeshService {
 
     group.position.set(nodei.x, nodei.y, nodei.z);
 
+/* change() 関数で向きを修正するからここでは、必要ない
     // 全体の向きを修正する
     const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
     group.rotateZ(Math.asin(XY.y));
@@ -86,13 +87,12 @@ export class ThreeSectionForceMeshService {
     const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
-
     if (direction === "z") {
-      group.rotateX(-Math.PI / 2);
+      group.rotateX(-1 * Math.PI / 2);
     } else if (direction === "y") {
-      group.rotateX(Math.PI);
+      group.rotateX(-1 * Math.PI);
     }
-
+*/
     group.name = "SectionForce";
 
     return group;
