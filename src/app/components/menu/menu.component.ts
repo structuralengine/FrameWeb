@@ -57,7 +57,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.3.2"
+    this.fileName = "立体骨組構造解析ソフトver1.3.3"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -76,7 +76,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.3.2"
+    this.fileName = "立体骨組構造解析ソフトver1.3.3"
   }
 
   // ファイルを開く
@@ -180,6 +180,9 @@ export class MenuComponent implements OnInit {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
         try {
+          if ( response.indexOf('error') > 0){
+            throw response;
+          }
           // Decode base64 (convert ascii to binary)
           const strData = atob(response);
           // Convert binary string to character-number array

@@ -7,7 +7,6 @@ addEventListener('message', ({ data }) => {
 
   const jsonData = data.jsonData;
   const member: any[] = data.member;
-  const dim: number = (data.dimension===2) ? -1 : 1;
 
   // 同じidをもつ部材を探す
   const getMember = (memberNo: string) => {
@@ -43,7 +42,7 @@ addEventListener('message', ({ data }) => {
         fx: 0, fy: 0, fz: 0,
         mx: 0, my: 0, mz: 0
       }
-  
+
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
       if (typeof (caseData) !== 'object') {
@@ -80,11 +79,11 @@ addEventListener('message', ({ data }) => {
           let myi: number = toNumber(item['myi']);
           let mzi: number = toNumber(item['mzi']);
           fxi = (fxi == null) ? 0 : Math.round(fxi * 100) / 100;
-          fyi = ((fyi == null) ? 0 : Math.round(fyi * 100) / 100) * dim;
+          fyi = (fyi == null) ? 0 : Math.round(fyi * 100) / 100;
           fzi = (fzi == null) ? 0 : Math.round(fzi * 100) / 100;
           mxi = (mxi == null) ? 0 : Math.round(mxi * 100) / 100;
           myi = (myi == null) ? 0 : Math.round(myi * 100) / 100;
-          mzi = ((mzi == null) ? 0 : Math.round(mzi * 100) / 100) * dim;
+          mzi = (mzi == null) ? 0 : Math.round(mzi * 100) / 100;
 
           result = {
             m: memberNo,
@@ -100,13 +99,13 @@ addEventListener('message', ({ data }) => {
 
           row++;
           result['row'] = row;
-          
+
           const check_target = (target[target.length - 1] !== undefined) ? target[target.length - 1] :
-                                                                           {l: '', m: '', n: '', row: ''} ;
+            { l: '', m: '', n: '', row: '' };
           const check_result = result;
           check_result['row'] -= 1;
           if (check_result['l'] !== check_target.l || check_result['m'] !== check_target.m ||
-              check_result['n'] !== check_target.n || check_result['row'] !== check_target.row) {
+            check_result['n'] !== check_target.n || check_result['row'] !== check_target.row) {
             target.push(result);
           }
 
@@ -125,11 +124,11 @@ addEventListener('message', ({ data }) => {
           let mzj: number = toNumber(item['mzj']);
           noticePoint += Math.round(l * 1000) / 1000;
           fxj = (fxj == null) ? 0 : Math.round(fxj * 100) / 100;
-          fyj = ((fyj == null) ? 0 : Math.round(fyj * 100) / 100) * dim;
+          fyj = (fyj == null) ? 0 : Math.round(fyj * 100) / 100;
           fzj = (fzj == null) ? 0 : Math.round(fzj * 100) / 100;
           mxj = (mxj == null) ? 0 : Math.round(mxj * 100) / 100;
           myj = (myj == null) ? 0 : Math.round(myj * 100) / 100;
-          mzj = ((mzj == null) ? 0 : Math.round(mzj * 100) / 100) * dim;
+          mzj = (mzj == null) ? 0 : Math.round(mzj * 100) / 100;
 
           result = {
             m: '',
