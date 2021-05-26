@@ -8,8 +8,6 @@ import { ThreeNodesService } from './three-nodes.service';
 import * as THREE from 'three';
 import { ThreeMembersService } from './three-members.service';
 import { Material, Object3D } from 'three';
-import { max } from 'rxjs/operators';
-import { SSL_OP_SINGLE_DH_USE } from 'node:constants';
 
 @Injectable({
   providedIn: 'root'
