@@ -8,6 +8,7 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { ThreeMembersService } from './three-members.service';
 import { CubeCamera } from 'three';
+import { DataHelperModule } from 'src/app/providers/data-helper.module';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,9 @@ export class ThreeFixNodeService {
   private params: any;          // GUIの表示制御
   private gui: any;
 
-  constructor(private scene: SceneService,
+  constructor(
+    private helper: DataHelperModule,
+    private scene: SceneService,
     private nodeThree: ThreeNodesService,
     private node: InputNodesService,
     private fixnode: InputFixNodeService) {
@@ -190,8 +193,10 @@ export class ThreeFixNodeService {
 
       // 完全な固定支点の分岐
       let fixed_Parfect = { relationshipX: 'small', relationshipY: 'small', relationshipZ: 'small', color: 0x808080 };
-      if (target.rx === 1 && target.ry === 1 && target.rz === 1
-        && target.tx === 1 && target.ty === 1 && target.tz === 1) {
+      if ((target.rx === 1 && target.ry === 1 && target.rz === 1
+        && target.tx === 1 && target.ty === 1 && target.tz === 1) ||
+        ( this.helper.dimension === 2
+          && target.tx === 1 && target.ty === 1 && target.rz === 1 )) {
         if (position.x <= this.center().x) {
           fixed_Parfect.relationshipX = 'small';
         } else if (position.x > this.center().x) {
