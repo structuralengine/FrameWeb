@@ -8,6 +8,7 @@ import { AuthService } from './core/auth.service';
 import { ResultFsecService } from './components/result/result-fsec/result-fsec.service';
 import { ResultDisgService } from './components/result/result-disg/result-disg.service';
 import { ResultReacService } from './components/result/result-reac/result-reac.service';
+import { DataHelperModule } from './providers/data-helper.module';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,7 @@ export class AppComponent implements OnInit {
               public user:UserInfoService,
               public printService: PrintService,
               private authService: AuthService,
+              public helper: DataHelperModule,
               public fsec: ResultFsecService,
               public disg: ResultDisgService,
               public reac: ResultReacService) { 
