@@ -90,7 +90,7 @@ export class ThreeLoadMemberPoint {
 
     // 全体の向きを修正する
 
-    if (direction.indexOf('g') < 0) {
+    if (!direction.includes('g')) {
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
       let A = Math.asin(XY.y);
 

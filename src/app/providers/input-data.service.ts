@@ -103,21 +103,27 @@ export class InputDataService {
     const node: {} = this.node.getNodeJson(empty);
     if (Object.keys(node).length > 0) {
       jsonData['node'] = node;
+    } else if(empty === 0){
+      jsonData['node'] = {};
     }
 
     const fix_node: {} = this.fixnode.getFixNodeJson(empty);
     if (Object.keys(fix_node).length > 0) {
       jsonData['fix_node'] = fix_node;
-    }
+    } 
 
     const member: {} = this.member.getMemberJson(empty);
     if (Object.keys(member).length > 0) {
       jsonData['member'] = member;
+    } else if(empty === 0){
+      jsonData['member'] = {};
     }
 
     const element: {} = this.element.getElementJson(empty);
     if (Object.keys(element).length > 0) {
       jsonData['element'] = element;
+    } else if(empty === 0){
+      jsonData['element'] = {};
     }
 
     const joint: {} = this.joint.getJointJson(empty);
@@ -143,6 +149,8 @@ export class InputDataService {
     const load: {} = this.load.getLoadJson(empty);
     if (Object.keys(load).length > 0) {
       jsonData['load'] = load;
+    } else if(empty === 0){
+      jsonData['load'] = {}
     }
 
     if (empty === null) {
@@ -214,18 +222,19 @@ export class InputDataService {
 
     // Set_Load のセクション
     const fn = {};
-    for (const icase of Object.keys(jsonData.load)) {
-      if('load_node' in jsonData.load[icase]) {
-        for (const load_node of jsonData.load[icase].load_node) {
-          load_node['tz'] = 0;
-          load_node['rx'] = 0;
-          load_node['ry'] = 0;
+    if ( !('load' in jsonData)) {
+      for (const icase of Object.keys(jsonData.load)) {
+        if('load_node' in jsonData.load[icase]) {
+          for (const load_node of jsonData.load[icase].load_node) {
+            load_node['tz'] = 0;
+            load_node['rx'] = 0;
+            load_node['ry'] = 0;
+          }
         }
+        const key = jsonData.load[icase].fix_node;
+        fn[key] = [];
       }
-      const key = jsonData.load[icase].fix_node;
-      fn[key] = [];
     }
-
     // Set_FixNode のセクション
     if ( !('fix_node' in jsonData)) {
       jsonData['fix_node'] = fn;
@@ -294,6 +303,16 @@ export class InputDataService {
       }
     }
     jsonData['node'] = n;
+
+    if (!('load' in jsonData)) {
+      return 'load データがありません';
+    }
+    const loads: object = jsonData['load'];
+    const loadKeys = Object.keys(loads);
+    if (loadKeys.length <= 0) {
+      return 'load データがありません';
+    }
+
 
     return null;
   }

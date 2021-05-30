@@ -184,7 +184,7 @@ export class MenuComponent implements OnInit {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
         try {
-          if ( response.indexOf('error') > 0){
+          if ( response.includes('error')){
             throw response;
           }
           // Decode base64 (convert ascii to binary)
@@ -258,12 +258,14 @@ export class MenuComponent implements OnInit {
   logIn(): void {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.modalService.open(LoginDialogComponent).result.then((result) => {
+      const modalRef = this.modalService.open(WaitDialogComponent);
       this.loggedIn = this.user.loggedIn;
       setTimeout(() => {
         if (this.loggedIn === true) {
           this.userPoint = this.user.purchase_value.toString();
           this.amount = this.auth.amount;
         }
+        modalRef.close();
       }, 200);
     });
 

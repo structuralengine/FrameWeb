@@ -280,19 +280,19 @@ export class ThreeLoadService {
       //全てのオブジェクトをデフォルトの状態にする
       if (item.name.includes('AxialLoad-')){
         this.axialLoad.setColor(item, "clear");
-      } else if (item.name.includes('DistributeLoad-')){
+      } else if (item.name.includes('DistributeLoad')){
         this.distributeLoad.setColor(item, "clear");
-      } else if (item.name.includes('MemberPointLoad-')){
+      } else if (item.name.includes('MemberPointLoad')){
         this.memberPointLoad.setColor(item, "clear");
-      } else if (item.name.includes('MemberMomentLoad-')){
+      } else if (item.name.includes('MemberMomentLoad')){
         this.memberMomentLoad.setColor(item, "clear");
-      } else if (item.name.includes('MomentLoad-')){
+      } else if (item.name.includes('MomentLoad')){
         this.momentLoad.setColor(item, "clear");
-      } else if (item.name.includes('PointLoad-')){
+      } else if (item.name.includes('PointLoad')){
         this.pointLoad.setColor(item, "clear");
-      } else if (item.name.includes('TemperatureLoad-')) {
+      } else if (item.name.includes('TemperatureLoad')) {
         this.temperatureLoad.setColor(item, "clear");
-      } else if (item.name.includes('TorsionLoad-')) {
+      } else if (item.name.includes('TorsionLoad')) {
         this.torsionLoad.setColor(item, "clear");
       }
 
@@ -889,14 +889,14 @@ export class ThreeLoadService {
 
       } else if (load.mark === 1) {
         // 集中荷重荷重
-        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0) {
+        if (["x", "y", "z", "gx", "gy", "gz"].includes(direction)) {
           arrow = this.memberPointLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
         }
       } else if (load.mark === 11) {
         // モーメント荷重
-        if (["x", "y", "z", "gx", "gy", "gz"].indexOf(direction) >= 0) {
+        if (["x", "y", "z", "gx", "gy", "gz"].includes(direction)) {
           arrow = this.memberMomentLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
@@ -1020,24 +1020,19 @@ export class ThreeLoadService {
       const dict = loadList.memberLoadList[m];
       for (const direction of ["gx", "gy", "gz", "r", "x", "y", "z"]) {
         dict[direction].forEach(item => {
-          //if (item.name === "DistributeLoad") {
-          if (item.name.substr(0, 14) === "DistributeLoad") {
+          if (item.name.includes("DistributeLoad")) {
             // 分布荷重
             this.distributeLoad.setScale(item, scale);
-          } else if (item.name === "TorsionLoad") {
-            //} else if (item.name.substr(0, 11) === "TorsionLoad") {
+          } else if (item.name.includes("TorsionLoad")) {
             // ねじり分布荷重
             this.torsionLoad.setScale(item, scale);
-          } else if (item.name === "AxialLoad") {
-            //} else if (item.name.substr(0, 9) === "AxialLoad") {
+          } else if (item.name.includes("AxialLoad")) {
             // 軸方向分布荷重
             this.axialLoad.setScale(item, scale);
-          } else if (item.name === "MemberPointLoad") {
-            //} else if (item.name.substr(0, 15) === "MemberPointLoad") {
+          } else if (item.name.includes("MemberPointLoad")) {
             // 部材途中集中荷重
             this.memberPointLoad.setScale(item, scale);
-          } else if (item.name === "MemberMomentLoad") {
-            //} else if (item.name.substr(0, 16) === "MemberMomentLoad") {
+          } else if (item.name.includes("MemberMomentLoad")) {
             // 部材途中モーメント
             this.memberMomentLoad.setScale(item, scale);
           }
@@ -1096,10 +1091,10 @@ export class ThreeLoadService {
       // ねじりモーメント
       let offset0 = 0;
       for (const item of list['r']) {
-        if (item.name === "MemberMomentLoad") {
+        if (item.name.includes("MemberMomentLoad")) {
           const scale: number = 1 * Math.abs(item.value) / loadList.mMax;
           this.memberMomentLoad.setSize(item, scale);
-        } else if (item.name === "TorsionLoad") {
+        } else if (item.name.includes("TorsionLoad")) {
           // 大きさを変更する
           const scale: number = 1 * Math.abs(item.value / loadList.rMax);
           this.torsionLoad.setSize(item, scale);
@@ -1115,7 +1110,7 @@ export class ThreeLoadService {
         const Xarea1 = [];
         list[k].forEach(item => {
           // 大きさを変更する
-          if (item.name === "DistributeLoad") {
+          if (item.name.includes("DistributeLoad")) {
             // 分布荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.wMax;
             this.distributeLoad.setSize(item, scale);
@@ -1180,7 +1175,7 @@ export class ThreeLoadService {
             vertice_points[8], vertice_points[9],
             item.value]);  //メッシュの5点の2次元座標と，valueの値を保存する
 
-          } else if (item.name === "MemberPointLoad") {
+          } else if (item.name.includes("MemberPointLoad")) {
             // 集中荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
             this.memberPointLoad.setSize(item, scale);
@@ -1203,7 +1198,7 @@ export class ThreeLoadService {
         let offset2 = offset0;
         list[k].forEach(item => {
           // 大きさを変更する
-          if (item.name === "DistributeLoad") {
+          if (item.name.includes("DistributeLoad")) {
             // 分布荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.wMax;
             this.distributeLoad.setSize(item, scale);
@@ -1215,7 +1210,7 @@ export class ThreeLoadService {
               this.distributeLoad.setGlobalOffset(item, offset2, k);
               offset2 += (scale * 1.0); // オフセット距離に高さを加算する
             }
-          } else if (item.name === "MemberPointLoad") {
+          } else if (item.name.includes("MemberPointLoad")) {
             // 集中荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
             this.memberPointLoad.setSize(item, scale);
@@ -1235,10 +1230,10 @@ export class ThreeLoadService {
       // 部材軸方向荷重
       list['x'].forEach(item => {
         // 大きさを変更する
-        if (item.name === "MemberPointLoad") {
+        if (item.name.includes("MemberPointLoad")) {
           const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
           this.memberPointLoad.setSize(item, scale);
-        } else if (item.name === "AxialLoad") {
+        } else if (item.name.includes("AxialLoad")) {
           const scale: number = 1 * Math.abs(item.value) / loadList.qMax;
           this.axialLoad.setSize(item, scale);
         }
@@ -1354,7 +1349,7 @@ export class ThreeLoadService {
       'MomentLoad',
       'PointLoad',
       'TemperatureLoad',
-      'TorsionLoad'].indexOf(item.name) >= 0) {
+      'TorsionLoad'].includes(item.name)) {
       return item;
     } else {
       return this.getParent(item.parent);

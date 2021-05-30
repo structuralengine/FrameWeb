@@ -42,10 +42,10 @@ addEventListener('message', ({ data }) => {
       for (const n of Object.keys(json)) {
 
         const id = n.replace("node", "");
-        if (id.indexOf('n') >= 0) {
+        if (id.includes('n')) {
           continue; // 着目節点は除外する
         }
-        if (id.indexOf('l') >= 0) {
+        if (id.includes('l')) {
           continue; // 荷重による分割点は除外する
         }
 

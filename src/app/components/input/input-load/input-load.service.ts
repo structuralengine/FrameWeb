@@ -278,12 +278,19 @@ export class InputLoadService {
     for (const load_id of Object.keys(result)) {
       let jsonData = result[load_id];
       let flg: boolean = false;
-      const keys: string[] = (empty ===0) ? ["fix_node", "fix_member", "element", "joint"] : Object.keys(jsonData);
-      for (const key of keys) {
-        const value: number = jsonData[key];
-        if (value !== empty) {
-          flg = true;
-          break;
+      if(empty === 0){
+        flg = true;
+        for (const key of ["fix_node", "fix_member", "element", "joint"]) {
+          if (jsonData[key] === empty) {
+            jsonData[key] = 1;
+          }
+        }
+      } else {
+        for (const key of Object.keys(jsonData)) {
+          if (jsonData[key] !== empty) {
+            flg = true;
+            break;
+          }
         }
       }
       if (flg === false) {
@@ -656,7 +663,7 @@ export class InputLoadService {
     for (let j = 0; j < load2.length; j++) {
       const targetLoad = load2[j];
       const sL1: string = targetLoad.L1.toString();
-      if (sL1.indexOf("-") >= 0 || targetLoad.L2 < 0) {
+      if (sL1.includes("-") || targetLoad.L2 < 0) {
         const reLoadsInfo = this.setMemberLoadAddition(
           targetLoad,
           curNo,
@@ -698,7 +705,7 @@ export class InputLoadService {
     let lo: number;
 
     const sL1: string = targetLoad.L1.toString();
-    if (sL1.indexOf("-") >= 0) {
+    if (sL1.includes("-")) {
       // 距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
@@ -943,7 +950,7 @@ export class InputLoadService {
     let L2: number = Math.abs(targetLoad.L2);
 
     const sL1: string = targetLoad.L1.toString();
-    if (sL1.indexOf("-") >= 0) {
+    if (sL1.includes("-")) {
       // 距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
