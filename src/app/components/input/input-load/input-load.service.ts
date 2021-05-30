@@ -523,7 +523,7 @@ export class InputLoadService {
       let m2 = this.helper.toNumber(row["m2"]);
       let direction: string = row["direction"];
 
-      if (direction === null) {
+      if (direction === null || direction === undefined) {
         direction = "";
       }
 
@@ -533,12 +533,10 @@ export class InputLoadService {
       let P1 = this.helper.toNumber(row["P1"]);
       let P2 = this.helper.toNumber(row["P2"]);
 
-      if (
-        (m1 != null || m2 != null) &&
-        direction !== "" &&
-        mark != null &&
-        (L1 != null || L2 != null || P1 != null || P2 != null)
-      ) {
+      if (mark === 9) { direction = 'x'; }
+
+      if ((m1 != null || m2 != null) && direction !== "" && mark != null &&
+          (L1 != null || L2 != null || P1 != null || P2 != null)) {
         m1 = m1 == null ? 0 : m1;
         m2 = m2 == null ? 0 : m2;
 

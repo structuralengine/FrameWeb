@@ -822,7 +822,7 @@ export class ThreeLoadService {
       let P1: number = load.P1;
       let P2: number = load.P2;
       let direction: string = load.direction;
-      if (direction === null) {
+      if (direction === null || direction === undefined) {
         direction = '';
       } else {
         direction = direction.trim();
