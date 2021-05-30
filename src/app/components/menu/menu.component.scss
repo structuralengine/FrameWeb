@@ -8,6 +8,10 @@ $border-color: #42c1ca;
   margin: 0 5;
 }
 
+.dropdownmenu {
+  z-index: 1050;
+}
+
 .title-and-menu {
   display: flex;
   justify-content: space-between;

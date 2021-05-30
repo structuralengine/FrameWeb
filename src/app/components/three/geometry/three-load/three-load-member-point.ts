@@ -90,7 +90,7 @@ export class ThreeLoadMemberPoint {
 
     // 全体の向きを修正する
 
-    if (direction.indexOf('g') < 0) {
+    if (!direction.includes('g')) {
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
       let A = Math.asin(XY.y);
 
@@ -224,7 +224,7 @@ export class ThreeLoadMemberPoint {
 
   }
 
-  /*/ 寸法線
+  // 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L2: number): THREE.Group {
 
@@ -272,7 +272,7 @@ export class ThreeLoadMemberPoint {
 
     return dim;
   }
-  */
+
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
@@ -329,20 +329,6 @@ export class ThreeLoadMemberPoint {
           } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'z') {
             target2.material = arrow_mat_Blue; //デフォルトのカラー
           }
-        /*} else if (n === 'select') {
-          if (target2.type === 'Mesh' && group.name.slice(-1) === 'x') {
-            target2.material = arrow_mat_Pick; //ハイライト用のカラー
-          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'y') {
-            target2.material = arrow_mat_Pick; //ハイライト用のカラー
-          } else if (target2.type === 'Mesh' && group.name.slice(-1) === 'z') {
-            target2.material = arrow_mat_Pick; //ハイライト用のカラー
-          } else if (target2.type === 'Line' && group.name.slice(-1) === 'x') {
-            target2.material = line_mat_Pick; //ハイライト用のカラー
-          } else if (target2.type === 'Line' && group.name.slice(-1) === 'y') {
-            target2.material = line_mat_Pick; //ハイライト用のカラー
-          } else if (target2.type === 'Line' && group.name.slice(-1) === 'z') {
-            target2.material = line_mat_Pick; //ハイライト用のカラー
-          }*/
         } else if (n === 'select') {
           if (target2.type === 'Line') {
             target2.material = line_mat_Pick; //ハイライト用のカラー
