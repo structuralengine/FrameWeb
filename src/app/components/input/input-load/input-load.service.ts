@@ -715,6 +715,7 @@ export class InputLoadService {
         targetLoad.m1 = j + 1;
         targetLoad.L1 = L1.toString();
       } else {
+        targetLoad.m1 = j;
         break;
       }
     }
@@ -739,6 +740,7 @@ export class InputLoadService {
             targetLoad.m2 = j + 1;
             targetLoad.L2 = L2;
           } else {
+            targetLoad.m2 = j;
             break;
           }
         }
