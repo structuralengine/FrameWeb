@@ -40,7 +40,7 @@ export class ThreeSectionForceService {
   private nodeData: any;
   private memberData: any;
   private fsecData: any;
-  private max_values: any;
+  private max_values: any = {};
 
   constructor(private scene: SceneService,
     private helper: DataHelperModule,
@@ -168,27 +168,43 @@ export class ThreeSectionForceService {
 
   // 解析結果をセットする
   public setResultData(fsecJson: any, max_values: any): void {
+    const keys =  Object.keys(fsecJson);
+    if(keys.length === 0){
+      this.ClearData();
+      return;
+    }
+
     this.nodeData = this.node.getNodeJson(0);
     this.memberData = this.member.getMemberJson(0);
     this.fsecData = { fsec: fsecJson };
     this.max_values = { fsec: max_values };
     this.currentMode = 'fsec';
-    this.currentIndex = Object.keys(fsecJson)[0];
+    this.currentIndex = keys[0];
     this.changeMesh();
     this.currentMode = '';
   }
   // combine
   public setCombResultData(fsecJson: any, max_values: any): void {
+    if(!('comb_fsec' in fsecJson)){
+      return;
+    }
     this.fsecData['comb_fsec'] = fsecJson;
     this.max_values['comb_fsec'] = max_values;
   }
   // pick up
   public setPickupResultData(fsecJson: any, max_values: any): void {
+    if(!('pik_fsec' in fsecJson)){
+      return;
+    }
     this.fsecData['pik_fsec'] = fsecJson;
     this.max_values['pik_fsec'] = max_values;
   }
 
   private changeMesh(){
+
+    if(this.currentIndex === undefined){
+      return;
+    }
 
     let key1: string;
     let key2: string;
@@ -226,8 +242,11 @@ export class ThreeSectionForceService {
       fsecDatas.push(fsecList[this.currentIndex]);
     } else {
       const f = fsecList[this.currentIndex];
-      fsecDatas.push(f[key1 + '_max']);
-      fsecDatas.push(f[key1 + '_min']);
+      for (const k of [key1 + '_max', key1 + '_min']){
+        if( k in f ){
+          fsecDatas.push(f[k]);
+        }
+      }
     }
     const ThreeObjects: THREE.Object3D[] = [this.ThreeObject1, this.ThreeObject2];
 
@@ -312,6 +331,9 @@ export class ThreeSectionForceService {
   
   // 断面力図を描く
   private onResize(): void {
+    if(!(this.currentMode in this.max_values)){
+      return;
+    }
 
     const scale1: number = this.scale / 100;
     const scale2: number = this.baseScale();

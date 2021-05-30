@@ -38,7 +38,8 @@ export class SceneService {
     // シーンを作成
     this.scene = new THREE.Scene();
     // シーンの背景を白に設定
-    this.scene.background = new THREE.Color(0xf0f0f0);
+    // this.scene.background = new THREE.Color(0xf0f0f0);
+    this.scene.background = new THREE.Color( 0xffffff );
     // レンダラーをバインド
     this.render = this.render.bind(this);
 
@@ -164,6 +165,7 @@ export class SceneService {
     this.renderer.setPixelRatio(deviceRatio);
     this.renderer.setSize(Width, Height);
     this.renderer.shadowMap.enabled = true;
+    // this.renderer.setClearColorHex( 0x000000, 1 );
 
     this.labelRenderer = new CSS2DRenderer();
     this.labelRenderer.setSize(Width, Height);
