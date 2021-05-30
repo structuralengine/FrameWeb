@@ -563,7 +563,7 @@ export class InputLoadService {
       return new Array();
     }
 
-    // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
+    // 要素番号 m1, m2 に入力が無い場合 -------------------------------------
     for (let j = 0; j < load2.length; j++) {
       const row = load2[j];
       if (row.m1 === 0) {
@@ -799,7 +799,7 @@ export class InputLoadService {
     switch (targetLoad.mark) {
       case 1:
       case 11:
-        if ((m1 = m2)) {
+        if (m1 === m2) {
           const newLoads = {};
           newLoads["direction"] = targetLoad.direction;
           newLoads["mark"] = targetLoad.mark;
