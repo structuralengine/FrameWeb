@@ -19,7 +19,7 @@ export class InputLoadNameComponent implements OnInit {
   @ViewChild("grid") grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders3D = [
+  private columnHeaders = [
     {
       title: "割増し係数",
       dataType: "float",
@@ -65,65 +65,6 @@ export class InputLoadNameComponent implements OnInit {
       title: "バネ",
       dataType: "integer",
       dataIndx: "fix_member",
-      sortable: false,
-      width: 30,
-      align: "right",
-    },
-    {
-      title: "結合",
-      dataType: "integer",
-      dataIndx: "joint",
-      sortable: false,
-      width: 30,
-      align: "right",
-    },
-  ];
-  private columnHeaders2D = [
-    {
-      title: "割増し係数",
-      dataType: "float",
-      format: "#.000",
-      dataIndx: "rate",
-      sortable: false,
-      width: 100,
-      align: "right",
-    },
-    {
-      title: "記号",
-      dataType: "string",
-      dataIndx: "symbol",
-      sortable: false,
-      width: 80,
-      align: "left",
-    },
-    {
-      title: "名称",
-      dataType: "string",
-      dataIndx: "name",
-      sortable: false,
-      width: 300,
-      align: "left",
-    },
-    {
-      title: "支点",
-      dataType: "integer",
-      dataIndx: "fix_node",
-      sortable: false,
-      width: 30,
-      align: "right",
-    },
-    {
-      title: "バネ",
-      dataType: "integer",
-      dataIndx: "fix_member",
-      sortable: false,
-      width: 30,
-      align: "right",
-    },
-    {
-      title: "断面",
-      dataType: "integer",
-      dataIndx: "element",
       sortable: false,
       width: 30,
       align: "right",
@@ -187,7 +128,7 @@ export class InputLoadNameComponent implements OnInit {
       show: true, // 行番号
       width: 45,
     },
-    colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
+    colModel: this.columnHeaders,
     animModel: {
       on: true,
     },
