@@ -42,14 +42,19 @@
             class="far fa-question-circle"></i></a>
       </li>
       <li>
-        <div class="md-radio md-radio-inline">
+        <div class="toggle toggle--switch">
+          <input type="checkbox" id="toggle--switch" name="g2" class="toggle--checkbox" style="display: none;"  (change)="setDimension()" checked>
+          <label class="toggle--btn" for="toggle--switch"><span class="toggle--feature" data-label-on="3D"  data-label-off="2D"></span></label>
+        </div>
+
+        <!-- <div class="md-radio md-radio-inline">
           <input id="3D" type="radio" name="g2" (change)="setDimension(3)" checked>
           <label for="3D">3D</label>
         </div>
         <div class="md-radio md-radio-inline">
           <input id="2D" type="radio" name="g2" (change)="setDimension(2)">
           <label for="2D">2D</label>
-        </div>
+        </div> -->
       </li>
     </ul>
   </div>

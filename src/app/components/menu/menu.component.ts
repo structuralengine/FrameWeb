@@ -36,6 +36,7 @@ export class MenuComponent implements OnInit {
   fileName: string;
   isCalculated: boolean;
   amount: number;
+  // n:number = 3;
 
   constructor(
     private modalService: NgbModal,
@@ -310,27 +311,45 @@ export class MenuComponent implements OnInit {
   }
 
   //
-  public setDimension(dim: number){
+  // public setDimension(dim: number){
+  //   this.app.dialogClose(); // 現在表示中の画面を閉じる
+  //   this.helper.dimension = dim;
+  //   this.scene.createCamera();    // three.js のカメラを変更する
+  //   this.scene.addControls();
+  //   this.scene.render();
+
+  //   // html のラジオボタンの制御
+  //   if(dim === 3){
+  //     const g23D: any = document.getElementById("3D");
+  //     g23D.checked = false;
+  //     const g22D: any = document.getElementById("2D");
+  //     g22D.checked = true;
+  //   } else {
+  //     const g23D: any = document.getElementById("3D");
+  //     g23D.checked = true;
+  //     const g22D: any = document.getElementById("2D");
+  //     g22D.checked = false;
+  //   }
+
+
+  // }
+
+  public setDimension(dim:number = null){
+    if(dim === null) {
+      if(this.helper.dimension === 2) {
+        this.helper.dimension = 3;
+      } else{
+        this.helper.dimension = 2;
+      }
+    }else{
+      this.helper.dimension = dim;
+      const g23D: any = document.getElementById("toggle--switch");
+      g23D.checked = (this.helper.dimension === 3);
+    }
     this.app.dialogClose(); // 現在表示中の画面を閉じる
-    this.helper.dimension = dim;
     this.scene.createCamera();    // three.js のカメラを変更する
     this.scene.addControls();
     this.scene.render();
-
-    // html のラジオボタンの制御
-    if(dim === 2){
-      const g23D: any = document.getElementById("3D");
-      g23D.checked = false;
-      const g22D: any = document.getElementById("2D");
-      g22D.checked = true;
-    } else {
-      const g23D: any = document.getElementById("3D");
-      g23D.checked = true;
-      const g22D: any = document.getElementById("2D");
-      g22D.checked = false;
-    }
-
-
   }
 
   // テスト ---------------------------------------------
