@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { InputFixNodeService } from '../../input/input-fix-node/input-fix-node.service';
+import { InputLoadService } from '../../input/input-load/input-load.service';
 import { ThreeReactService } from '../../three/geometry/three-react.service';
 import { ResultCombineReacService } from '../result-combine-reac/result-combine-reac.service';
 
@@ -13,8 +15,12 @@ export class ResultReacService {
   private worker2: Worker;
   private columns: any; // 表示用
 
-  constructor(private comb: ResultCombineReacService,
-              private three: ThreeReactService) {
+  constructor(
+    private fixnode: InputFixNodeService,
+    private load: InputLoadService,
+    private comb: ResultCombineReacService,
+    private three: ThreeReactService) {
+
     this.clear();
     this.worker1 = new Worker('./result-reac1.worker', { name: 'result-reac1', type: 'module' });
     this.worker2 = new Worker('./result-reac2.worker', { name: 'result-reac2', type: 'module' });
@@ -34,11 +40,31 @@ export class ResultReacService {
   public getReacJson(): object {
     return this.reac;
   }
-  
+
   // サーバーから受領した 解析結果を集計する
   public setReacJson(jsonData: {}, defList: any, combList: any, pickList: any): void {
 
     const startTime = performance.now(); // 開始時間
+
+    // 入力にない反力情報は削除する
+    // 2D モードの時 仮に支点を入力することがあった
+    const fix_node = this.fixnode.getFixNodeJson(0);
+    const load_name = this.load.getLoadNameJson(0);
+
+    for(const k1 of Object.keys(jsonData)){
+      const fixNo = load_name[k1].fix_node;
+      if ( fixNo in fix_node ) {
+        const fixNode = fix_node[fixNo];
+        for(const k2 of Object.keys(jsonData[k1].reac)){
+          if( fixNode.find((e) => e.n === k2 ) === undefined){
+            delete jsonData[k1].reac[k2];
+          }
+        }
+      } else {
+        jsonData[k1].reac = {};
+      }
+    }
+
     if (typeof Worker !== 'undefined') {
       // Create a new
 
