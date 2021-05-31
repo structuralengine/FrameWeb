@@ -129,6 +129,9 @@ $border-color: #428bca; // ボーダーライン
     width: 100%;
     margin: 0;
     padding: 0 16px;
+    border-bottom: #0e036e;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
 }
 
 .three-container {
@@ -146,7 +149,7 @@ $border-color: #428bca; // ボーダーライン
     background: #fff;
     border-radius: 4px;
     position: absolute;
-    top: 130px;
+    top: 150px;
     left: 16px;
     margin: 0;
     z-index: 1048;

@@ -17,7 +17,8 @@ export class ResultFsecService {
 
   constructor(public member: InputMembersService,
               public comb: ResultCombineFsecService,
-              private three: ThreeSectionForceService) {
+              private three: ThreeSectionForceService,
+              private helper: DataHelperModule) {
     this.clear();
     this.worker1 = new Worker('./result-fsec1.worker', { name: 'result-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-fsec2.worker', { name: 'result-fsec2', type: 'module' });
@@ -71,7 +72,7 @@ export class ResultFsecService {
         }
       };
 
-      this.worker1.postMessage({ jsonData, member: this.member.member });
+      this.worker1.postMessage({ jsonData, member: this.member.member, dimension: this.helper.dimension });
 
     } else {
       console.log('断面力の生成に失敗しました');

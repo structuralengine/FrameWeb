@@ -18,9 +18,10 @@ export class InputNoticePointsComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders: object[] =[
+  private columnHeaders: any =[
     { title: "部材No", dataType: "string", dataIndx: "m", sortable: false, minwidth: 10, width: 10 },
-    { title: "部材長", dataType: "float",  format: "#.000", dataIndx: "len", sortable: false, width: 80, editable: false, style: { "background": "#dae6f0" } }
+    { title: "部材長", dataType: "float",  format: "#.000", dataIndx: "len", sortable: false, width: 80, editable: false, style: { "background": "#dae6f0" } },
+    { title: 'i橋からの距離.', colModel: [] }
   ];
 
   private ROWS_COUNT = 15;
@@ -33,7 +34,7 @@ export class InputNoticePointsComponent implements OnInit {
 
     for (let i = 1; i <= this.data.NOTICE_POINTS_COUNT; i++) {
       const id = "L" + i;
-      this.columnHeaders.push({
+      this.columnHeaders[2].colModel.push({
         title: id,
         dataType: "float",
         format: "#.000",

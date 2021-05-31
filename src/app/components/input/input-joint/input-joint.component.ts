@@ -16,13 +16,18 @@ export class InputJointComponent implements OnInit {
   @ViewChild('grid') grid: SheetComponent;
 
   private dataset = [];
-  private columnHeaders =[
+  private columnHeaders3D =[
     { title: "部材No", dataType: "string", dataIndx: "m", sortable: false },
     { title: "xi", dataType: "integer", dataIndx: "xi", sortable: false },
     { title: "yi", dataType: "integer", dataIndx: "yi", sortable: false },
     { title: "zi", dataType: "integer", dataIndx: "zi", sortable: false },
     { title: "xj", dataType: "integer", dataIndx: "xj", sortable: false },
     { title: "yj", dataType: "integer", dataIndx: "yj", sortable: false },
+    { title: "zj", dataType: "integer", dataIndx: "zj", sortable: false }
+  ];
+  private columnHeaders2D =[
+    { title: "部材No", dataType: "string", dataIndx: "m", sortable: false },
+    { title: "zi", dataType: "integer", dataIndx: "zi", sortable: false },
     { title: "zj", dataType: "integer", dataIndx: "zj", sortable: false }
   ];
 
@@ -82,7 +87,7 @@ export class InputJointComponent implements OnInit {
       numberCell: {
         show: false // 行番号
       },
-      colModel: this.columnHeaders,
+      colModel: (this.helper.dimension === 3) ? this.columnHeaders3D : this.columnHeaders2D,
       animModel: {
         on: true
       },
@@ -110,4 +115,7 @@ export class InputJointComponent implements OnInit {
         this.three.changeData('joints', this.page);
       }
     };
+
+    width = (this.helper.dimension === 3) ? 410 : 210 ;
+
 }

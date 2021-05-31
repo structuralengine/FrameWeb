@@ -37,28 +37,50 @@
     <div class="result_table">
       <table #userinput id="userinput">
         <thead>
-          <tr>
-            <th class="result-sm">No</th>
-            <th class="result-lg">x方向の<br />移動量</th>
-            <th class="result-lg">y方向の<br />移動量</th>
-            <th class="result-lg">z方向の<br />移動量</th>
-            <th class="result-lg">x軸回りの<br />回転量</th>
-            <th class="result-lg">y軸回りの<br />回転量</th>
-            <th class="result-lg">z軸回りの<br />回転量</th>
-            <th class="result-lg">組み合わせ</th>
-          </tr>
+          <div *ngIf="dimension===3">
+            <tr>
+              <th class="result-sm">No</th>
+              <th class="result-lg">x方向の<br />移動量</th>
+              <th class="result-lg">y方向の<br />移動量</th>
+              <th class="result-lg">z方向の<br />移動量</th>
+              <th class="result-lg">x軸回りの<br />回転量</th>
+              <th class="result-lg">y軸回りの<br />回転量</th>
+              <th class="result-lg">z軸回りの<br />回転量</th>
+              <th class="result-lg">組み合わせ</th>
+            </tr>
+          </div>
+          <div *ngIf="dimension===2">
+            <tr>
+              <th class="result-sm">No</th>
+              <th class="result-lg">x方向の<br />移動量</th>
+              <th class="result-lg">y方向の<br />移動量</th>
+              <th class="result-lg">z軸回りの<br />回転量</th>
+              <th class="result-lg">組み合わせ</th>
+            </tr>
+          </div>
         </thead>
         <tbody>
-          <tr *ngFor="let resultData of dataset[i]; index as i">
-            <td class="result-sm">{{ resultData.id }}</td>
-            <td class="result-lg">{{ resultData.dx }}</td>
-            <td class="result-lg">{{ resultData.dy }}</td>
-            <td class="result-lg">{{ resultData.dz }}</td>
-            <td class="result-lg">{{ resultData.rx }}</td>
-            <td class="result-lg">{{ resultData.ry }}</td>
-            <td class="result-lg">{{ resultData.rz }}</td>
-            <td class="result-lg">{{ resultData.case }}</td>
-          </tr>
+          <div *ngIf="dimension===3">
+            <tr *ngFor="let resultData of dataset[i]; index as i">
+              <td class="result-sm">{{ resultData.id }}</td>
+              <td class="result-lg">{{ resultData.dx }}</td>
+              <td class="result-lg">{{ resultData.dy }}</td>
+              <td class="result-lg">{{ resultData.dz }}</td>
+              <td class="result-lg">{{ resultData.rx }}</td>
+              <td class="result-lg">{{ resultData.ry }}</td>
+              <td class="result-lg">{{ resultData.rz }}</td>
+              <td class="result-lg">{{ resultData.case }}</td>
+            </tr>
+          </div>
+          <div *ngIf="dimension===3">
+            <tr *ngFor="let resultData of dataset[i]; index as i">
+              <td class="result-sm">{{ resultData.id }}</td>
+              <td class="result-lg">{{ resultData.dx }}</td>
+              <td class="result-lg">{{ resultData.dy }}</td>
+              <td class="result-lg">{{ resultData.rz }}</td>
+              <td class="result-lg">{{ resultData.case }}</td>
+            </tr>
+          </div>
         </tbody>
       </table>
     </div>

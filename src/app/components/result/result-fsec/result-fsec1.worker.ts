@@ -42,7 +42,7 @@ addEventListener('message', ({ data }) => {
         fx: 0, fy: 0, fz: 0,
         mx: 0, my: 0, mz: 0
       }
-  
+
       const target = new Array();
       const caseData: {} = jsonData[caseNo];
       if (typeof (caseData) !== 'object') {
@@ -99,7 +99,15 @@ addEventListener('message', ({ data }) => {
 
           row++;
           result['row'] = row;
-          target.push(result);
+
+          const check_target = (target[target.length - 1] !== undefined) ? target[target.length - 1] :
+            { l: '', m: '', n: '', row: '' };
+          const check_result = result;
+          check_result['row'] -= 1;
+          if (check_result['l'] !== check_target.l || check_result['m'] !== check_target.m ||
+            check_result['n'] !== check_target.n || check_result['row'] !== check_target.row) {
+            target.push(result);
+          }
 
           memberNo = '';
           ni = '';

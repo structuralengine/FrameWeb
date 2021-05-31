@@ -278,12 +278,19 @@ export class InputLoadService {
     for (const load_id of Object.keys(result)) {
       let jsonData = result[load_id];
       let flg: boolean = false;
-      const keys: string[] = (empty ===0) ? ["fix_node", "fix_member", "element", "joint"] : Object.keys(jsonData);
-      for (const key of keys) {
-        const value: number = jsonData[key];
-        if (value !== empty) {
-          flg = true;
-          break;
+      if(empty === 0){
+        flg = true;
+        for (const key of ["fix_node", "fix_member", "element", "joint"]) {
+          if (jsonData[key] === empty) {
+            jsonData[key] = 1;
+          }
+        }
+      } else {
+        for (const key of Object.keys(jsonData)) {
+          if (jsonData[key] !== empty) {
+            flg = true;
+            break;
+          }
         }
       }
       if (flg === false) {
@@ -523,7 +530,7 @@ export class InputLoadService {
       let m2 = this.helper.toNumber(row["m2"]);
       let direction: string = row["direction"];
 
-      if (direction === null) {
+      if (direction === null || direction === undefined) {
         direction = "";
       }
 
@@ -533,12 +540,10 @@ export class InputLoadService {
       let P1 = this.helper.toNumber(row["P1"]);
       let P2 = this.helper.toNumber(row["P2"]);
 
-      if (
-        (m1 != null || m2 != null) &&
-        direction !== "" &&
-        mark != null &&
-        (L1 != null || L2 != null || P1 != null || P2 != null)
-      ) {
+      if (mark === 9) { direction = 'x'; }
+
+      if ((m1 != null || m2 != null) && direction !== "" && mark != null &&
+          (L1 != null || L2 != null || P1 != null || P2 != null)) {
         m1 = m1 == null ? 0 : m1;
         m2 = m2 == null ? 0 : m2;
 
@@ -565,7 +570,7 @@ export class InputLoadService {
       return new Array();
     }
 
-    // 要素番号 m1,m2 に入力が無い場合 -------------------------------------
+    // 要素番号 m1, m2 に入力が無い場合 -------------------------------------
     for (let j = 0; j < load2.length; j++) {
       const row = load2[j];
       if (row.m1 === 0) {
@@ -658,7 +663,7 @@ export class InputLoadService {
     for (let j = 0; j < load2.length; j++) {
       const targetLoad = load2[j];
       const sL1: string = targetLoad.L1.toString();
-      if (sL1.indexOf("-") >= 0 || targetLoad.L2 < 0) {
+      if (sL1.includes("-") || targetLoad.L2 < 0) {
         const reLoadsInfo = this.setMemberLoadAddition(
           targetLoad,
           curNo,
@@ -667,7 +672,7 @@ export class InputLoadService {
         const newLoads = reLoadsInfo["loads"];
         curNo = reLoadsInfo["curNo"];
         curPos = reLoadsInfo["curPos"];
-        load2.splice(j, 1);
+        //load2.splice(j, 1);
         for (let k = 0; k < newLoads.length; k++) {
           load2.push(newLoads[k]);
         }
@@ -700,7 +705,7 @@ export class InputLoadService {
     let lo: number;
 
     const sL1: string = targetLoad.L1.toString();
-    if (sL1.indexOf("-") >= 0) {
+    if (sL1.includes("-")) {
       // 距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
@@ -717,6 +722,7 @@ export class InputLoadService {
         targetLoad.m1 = j + 1;
         targetLoad.L1 = L1.toString();
       } else {
+        targetLoad.m1 = j;
         break;
       }
     }
@@ -741,6 +747,7 @@ export class InputLoadService {
             targetLoad.m2 = j + 1;
             targetLoad.L2 = L2;
           } else {
+            targetLoad.m2 = j;
             break;
           }
         }
@@ -801,7 +808,7 @@ export class InputLoadService {
     switch (targetLoad.mark) {
       case 1:
       case 11:
-        if ((m1 = m2)) {
+        if (m1 === m2) {
           const newLoads = {};
           newLoads["direction"] = targetLoad.direction;
           newLoads["mark"] = targetLoad.mark;
@@ -943,7 +950,7 @@ export class InputLoadService {
     let L2: number = Math.abs(targetLoad.L2);
 
     const sL1: string = targetLoad.L1.toString();
-    if (sL1.indexOf("-") >= 0) {
+    if (sL1.includes("-")) {
       // 距離L1が加算モードで入力されている場合
       if (m1 <= curNo && curNo <= m2) {
         m1 = curNo;
@@ -962,7 +969,7 @@ export class InputLoadService {
         ll = ll + this.member.getMemberLength(j.toString());
       }
       L2 = ll - (curPos + L2);
-      if (L2 < 0) {
+      if (targetLoad.L2 < 0) {
         L2 = 0;
       }
       targetLoad.m2 = Math.sign(targetLoad.m2) * m2;

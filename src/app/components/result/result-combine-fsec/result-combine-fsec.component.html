@@ -37,32 +37,58 @@
     <div class="result_table">
       <table #userinput id="userinput">
         <thead>
-          <tr>
-            <th class="result-sm">部材No</th>
-            <th class="result-sm">節点No</th>
-            <th class="result-lg">着目位置</th>
-            <th class="result-lg">軸方向力</th>
-            <th class="result-lg">y方向の<br />せん断力</th>
-            <th class="result-lg">z方向の<br />せん断力</th>
-            <th class="result-lg">ねじり<br />モーメント</th>
-            <th class="result-lg">y軸周りの<br />曲げモーメント</th>
-            <th class="result-lg">z軸周りの<br />曲げモーメント</th>
-            <th class="result-lg">組み合わせ</th>
-          </tr>
+          <div *ngIf="dimension===3">
+            <tr>
+              <th class="result-sm">部材No</th>
+              <th class="result-sm">節点No</th>
+              <th class="result-lg">着目位置</th>
+              <th class="result-lg">軸方向力</th>
+              <th class="result-lg">y方向の<br />せん断力</th>
+              <th class="result-lg">z方向の<br />せん断力</th>
+              <th class="result-lg">ねじり<br />モーメント</th>
+              <th class="result-lg">y軸周りの<br />曲げモーメント</th>
+              <th class="result-lg">z軸周りの<br />曲げモーメント</th>
+              <th class="result-lg">組み合わせ</th>
+            </tr>
+          </div>
+          <div *ngIf="dimension===2">
+            <tr>
+              <th class="result-sm">部材No</th>
+              <th class="result-sm">節点No</th>
+              <th class="result-lg">着目位置</th>
+              <th class="result-lg">軸方向力</th>
+              <th class="result-lg">y方向の<br />せん断力</th>
+              <th class="result-lg">z軸周りの<br />曲げモーメント</th>
+              <th class="result-lg">組み合わせ</th>
+            </tr>
+          </div>
         </thead>
         <tbody>
-          <tr *ngFor="let resultData of dataset[i]; index as i">
-            <td class="result-sm">{{ resultData.m }}</td>
-            <td class="result-sm">{{ resultData.n }}</td>
-            <td class="result-lg">{{ resultData.l }}</td>
-            <td class="result-lg">{{ resultData.fx }}</td>
-            <td class="result-lg">{{ resultData.fy }}</td>
-            <td class="result-lg">{{ resultData.fz }}</td>
-            <td class="result-lg">{{ resultData.mx }}</td>
-            <td class="result-lg">{{ resultData.my }}</td>
-            <td class="result-lg">{{ resultData.mz }}</td>
-            <td class="result-lg">{{ resultData.case }}</td>
-          </tr>
+          <div *ngIf="dimension===3">
+            <tr *ngFor="let resultData of dataset[i]; index as i">
+              <td class="result-sm">{{ resultData.m }}</td>
+              <td class="result-sm">{{ resultData.n }}</td>
+              <td class="result-lg">{{ resultData.l }}</td>
+              <td class="result-lg">{{ resultData.fx }}</td>
+              <td class="result-lg">{{ resultData.fy }}</td>
+              <td class="result-lg">{{ resultData.fz }}</td>
+              <td class="result-lg">{{ resultData.mx }}</td>
+              <td class="result-lg">{{ resultData.my }}</td>
+              <td class="result-lg">{{ resultData.mz }}</td>
+              <td class="result-lg">{{ resultData.case }}</td>
+            </tr>
+          </div>
+          <div *ngIf="dimension===2">
+            <tr *ngFor="let resultData of dataset[i]; index as i">
+              <td class="result-sm">{{ resultData.m }}</td>
+              <td class="result-sm">{{ resultData.n }}</td>
+              <td class="result-lg">{{ resultData.l }}</td>
+              <td class="result-lg">{{ resultData.fx }}</td>
+              <td class="result-lg">{{ resultData.fy }}</td>
+              <td class="result-lg">{{ resultData.mz }}</td>
+              <td class="result-lg">{{ resultData.case }}</td>
+            </tr>
+          </div>
         </tbody>
       </table>
     </div>

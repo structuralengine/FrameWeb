@@ -266,4 +266,94 @@ export class ResultDataService {
 
     return result;
   }
+
+  // ピックアップファイル出力
+  public GetPicUpText2D(): string {
+
+    const p = this.pickfsec.fsecPickup;
+
+    let result: string = 'PickUpNo,着目力,部材No,最大CaseNo,最小CaseNo,着目点,着目点距離';
+    result += ',最大Nd,最大Vd,最大Md';
+    result += ',最小Nd,最小Vd,最小Md';
+    result += '\n';
+
+    for (let No = 1; No <= Object.keys(p).length; No++) {
+
+      const c = p[No.toString()];
+      const rows: number = Object.keys(c['fx_max']).length;
+      
+      const key = ['M', 'S', 'N'];
+      const symbol = ['fx', 'fy', 'mz'];
+
+      for (let i = 0; i < symbol.length; i++) {
+
+        const maxList = c[symbol[i] + '_max'];
+        const minList = c[symbol[i] + '_min'];
+
+        let mNo: string;
+        let point_counter: number = 0;
+        let point_name: string = '';
+
+        for (let row = 0; row < rows; row++) {
+          const r: string = row.toString();
+          if ( !(r in maxList) ){
+            continue;
+          }
+          const maxFsec = maxList[row.toString()];
+          const minFsec = minList[row.toString()];
+
+          // 部材番号を設定する
+          const mm: number = this.helper.toNumber(maxFsec.m);
+          if (mm != null) {
+            mNo = maxFsec.m;
+          } else {
+            console.log(mm);
+          }
+
+          // 着目点名を設定する
+          const nn: number = this.helper.toNumber(maxFsec.n);
+          if (nn != null) {
+            if ( point_counter === 0 ) {
+              point_name = "ITAN";
+              point_counter += 1;
+            }else {
+              point_name = "JTAN";
+              point_counter = 0;
+            }
+          } else {
+            point_name = point_counter.toString();
+            point_counter += 1;
+          }
+
+
+          result += this.spacePadding(No.toString(),5);
+          result += this.spacePadding(key[i], 5);
+          result += this.spacePadding(mNo, 5);
+          result += this.spacePadding(maxFsec.comb, 5);
+          result += this.spacePadding(minFsec.comb, 5);
+          result += this.spacePadding(point_name, 5);
+          result += this.spacePadding(maxFsec.l.toFixed(3), 10);
+
+          result += this.spacePadding(maxFsec.fx.toFixed(2), 10);
+          result += this.spacePadding(maxFsec.fy.toFixed(2), 10);
+          result += this.spacePadding(maxFsec.mz.toFixed(2), 10);
+
+          result += this.spacePadding(minFsec.fx.toFixed(2), 10);
+          result += this.spacePadding(minFsec.fy.toFixed(2), 10);
+          result += this.spacePadding(minFsec.mz.toFixed(2), 10);
+
+          result += '\n';
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private spacePadding(val, len){
+    for(var i = 0; i < len; i++){
+        val = " " + val;
+    }
+    return val.slice((-1)*len);
+  }
 }

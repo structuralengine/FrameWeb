@@ -8,6 +8,10 @@ $border-color: #42c1ca;
   margin: 0 5;
 }
 
+.dropdownmenu {
+  z-index: 1050;
+}
+
 .title-and-menu {
   display: flex;
   justify-content: space-between;
@@ -191,13 +195,12 @@ i.fas {
 
 // ラジオボタン
 $md-radio-checked-color: rgb(51, 122, 183);
-$md-radio-border-color: rgba(0, 0, 0, 0.54);
+$md-radio-border-color: rgba(255, 255, 255);
 $md-radio-size: 16px;
 $md-radio-checked-size: 8px;
 $md-radio-ripple-size: 12px;
 
 .md-radio {
-  margin: 16px 0;
 
   &.md-radio-inline {
       display: inline-block;

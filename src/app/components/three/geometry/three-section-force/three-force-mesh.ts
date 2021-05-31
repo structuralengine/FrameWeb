@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as THREE from "three";
 import { Vector2 } from 'three';
+import { ThreeLoadText } from '../three-load/three-load-text';
 
 
 @Injectable({
@@ -9,12 +10,14 @@ import { Vector2 } from 'three';
 export class ThreeSectionForceMeshService {
 
   private font: THREE.Font;
+  private text: ThreeLoadText;
 
   private face_mat: THREE.MeshBasicMaterial;
   private line_mat: THREE.LineBasicMaterial;
 
 
   constructor(font: THREE.Font) {
+    this.text = new ThreeLoadText(font);
     this.font = font;
 
     this.face_mat = new THREE.MeshBasicMaterial({
@@ -28,7 +31,7 @@ export class ThreeSectionForceMeshService {
 
   }
 
-  /// 等分布荷重を編集する
+  /// 断面力を編集する
   // target: 編集対象の荷重,
   // nodei: 部材始点,
   // nodej: 部材終点,
@@ -72,6 +75,13 @@ export class ThreeSectionForceMeshService {
     group0.add(child);
     group0.name = "group";
 
+    /*/ 文字を追加する
+    for(const text of this.getText(points, P1, P2)){
+      text.visible = false;
+      group0.add(text);
+    }
+    */
+
      // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -79,19 +89,7 @@ export class ThreeSectionForceMeshService {
 
     group.position.set(nodei.x, nodei.y, nodei.z);
 
-    // 全体の向きを修正する
-    const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-    group.rotateZ(Math.asin(XY.y));
-
-    const lenXY = Math.sqrt(Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2));
-    const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
-    group.rotateY(-Math.asin(XZ.y));
-
-    if (direction === "z") {
-      group.rotateX(-Math.PI / 2);
-    } else if (direction === "y") {
-      group.rotateX(Math.PI);
-    }
+    /* change() 関数で向きを修正するからここでは、必要ない */
 
     group.name = "SectionForce";
 
@@ -179,6 +177,53 @@ export class ThreeSectionForceMeshService {
     return line;
   }
 
+  // 文字
+  private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
+
+    const result = [];
+
+    const size: number = 0.1; // 文字サイズ
+
+    const pos = new THREE.Vector2(0, 0);
+    if(P1 !== 0) {
+      let text: THREE.Group;
+      if (P1 > 0){
+        text = this.text.create(P1.toFixed(2), pos, size, 'left', 'bottom');
+        text.rotateZ(Math.PI/2);
+        text.position.x = points[1].x;
+        text.position.y = points[1].y;
+      } else {
+        text = this.text.create(P1.toFixed(2), pos, size, 'right', 'bottom');
+        text.rotateZ(-Math.PI/2);
+        text.position.x = points[1].x;
+        text.position.y = points[1].y;
+      }
+      text.name = "text";
+      result.push(text);
+    }
+
+    if(P2 !== 0) {
+      let text: THREE.Group;
+      if (P2 > 0){
+        text = this.text.create(P2.toFixed(2), pos, size, 'left', 'top');
+        text.rotateZ(Math.PI/2);
+        text.position.x = points[3].x;
+        text.position.y = points[3].y;
+      } else {
+        text = this.text.create(P2.toFixed(2), pos, size, 'right', 'top');
+        text.rotateZ(-Math.PI/2);
+        text.position.x = points[3].x;
+        text.position.y = points[3].y;
+      }
+      text.name = "text";
+      result.push(text);
+    }
+
+    return result;
+  }
+
+
+
   // 大きさを反映する
   public setScale(group: any, scale: number): void {
     group.scale.set(1, scale, scale);
@@ -248,7 +293,7 @@ export class ThreeSectionForceMeshService {
       if (direction === "z") {
         target.rotateX(Math.PI);
       } else if (direction === "y") {
-        target.rotateX(-Math.PI / 2);
+        target.rotateX(Math.PI / 2);
       }
     } else {
       if (direction === "z") {

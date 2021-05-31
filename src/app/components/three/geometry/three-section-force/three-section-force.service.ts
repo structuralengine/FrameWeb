@@ -30,7 +30,9 @@ export class ThreeSectionForceService {
 
   private scale: number;
   private params: any;   // GUIの表示制御
-  private radioButtons = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
+  private radioButtons3D = ['axialForce', 'shearForceY', 'shearForceZ', 'torsionalMoment', 'momentY', 'momentZ'];
+  private radioButtons2D = ['axialForce', 'shearForceY', 'momentZ'];
+  private radioButtons = this.radioButtons3D || this.radioButtons2D;
   private gui: any;
 
   private mesh: ThreeSectionForceMeshService;
@@ -38,7 +40,7 @@ export class ThreeSectionForceService {
   private nodeData: any;
   private memberData: any;
   private fsecData: any;
-  private max_values: any;
+  private max_values: any = {};
 
   constructor(private scene: SceneService,
     private helper: DataHelperModule,
@@ -47,6 +49,7 @@ export class ThreeSectionForceService {
     private three_node: ThreeNodesService,
     private three_member: ThreeMembersService) {
 
+    this.radioButtons = (this.helper.dimension === 3) ? this.radioButtons3D : this.radioButtons3D ;
     this.ThreeObject1 = new THREE.Object3D();
     this.ThreeObject1.visible = false; // 呼び出されるまで非表示
     this.ThreeObject2 = new THREE.Object3D();
@@ -69,7 +72,11 @@ export class ThreeSectionForceService {
     for (const key of this.radioButtons) {
       this.params[key] = false;
     }
-    this.params.momentY = true; // 初期値
+    if (this.helper.dimension === 3){
+      this.params.momentY = true; // 初期値（3D）
+    } else {
+      this.params.momentZ = true; // 初期値（2D） 
+    }
     this.gui = null;
   }
 
@@ -161,33 +168,49 @@ export class ThreeSectionForceService {
 
   // 解析結果をセットする
   public setResultData(fsecJson: any, max_values: any): void {
+    const keys =  Object.keys(fsecJson);
+    if(keys.length === 0){
+      this.ClearData();
+      return;
+    }
+
     this.nodeData = this.node.getNodeJson(0);
     this.memberData = this.member.getMemberJson(0);
     this.fsecData = { fsec: fsecJson };
     this.max_values = { fsec: max_values };
     this.currentMode = 'fsec';
-    this.currentIndex = Object.keys(fsecJson)[0];
+    this.currentIndex = keys[0];
     this.changeMesh();
     this.currentMode = '';
   }
   // combine
   public setCombResultData(fsecJson: any, max_values: any): void {
+    if(!('comb_fsec' in fsecJson)){
+      return;
+    }
     this.fsecData['comb_fsec'] = fsecJson;
     this.max_values['comb_fsec'] = max_values;
   }
   // pick up
   public setPickupResultData(fsecJson: any, max_values: any): void {
+    if(!('pik_fsec' in fsecJson)){
+      return;
+    }
     this.fsecData['pik_fsec'] = fsecJson;
     this.max_values['pik_fsec'] = max_values;
   }
 
   private changeMesh(){
 
+    if(this.currentIndex === undefined){
+      return;
+    }
+
     let key1: string;
     let key2: string;
     if (this.params.axialForce === true) {
       key1 = 'fx';
-      key2 = 'z';
+      key2 = (this.helper.dimension === 3) ? 'z' : 'y' ;
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
       key1 = 'mx';
@@ -219,8 +242,11 @@ export class ThreeSectionForceService {
       fsecDatas.push(fsecList[this.currentIndex]);
     } else {
       const f = fsecList[this.currentIndex];
-      fsecDatas.push(f[key1 + '_max']);
-      fsecDatas.push(f[key1 + '_min']);
+      for (const k of [key1 + '_max', key1 + '_min']){
+        if( k in f ){
+          fsecDatas.push(f[k]);
+        }
+      }
     }
     const ThreeObjects: THREE.Object3D[] = [this.ThreeObject1, this.ThreeObject2];
 
@@ -265,11 +291,19 @@ export class ThreeSectionForceService {
           const LL = fsec['l'];
           P2 = fsec[key1] - 0;
           L2 = Math.round((len - LL) * 1000) / 1000;
+          //P1 = (this.helper.dimension === 2 && key1 === 'fy') ? P1 * -1 : P1;
+          //P2 = (this.helper.dimension === 2 && key1 === 'fy') ? P2 * -1 : P2;
           if(item === null){
-            const mesh = this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            const mesh = (this.helper.dimension === 2 && key1 === 'fy') ? 
+                            this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, -P1, -P2) :
+                            this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, P1, P2) ;
             ThreeObject.add(mesh);
           } else {
-            this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            if (this.helper.dimension === 2 && key1 === 'fy'){
+              this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, -P1, -P2);
+            } else {
+              this.mesh.change(item, nodei, nodej, localAxis, key2, L1, L2, P1, P2);
+            }
           }
           P1 = P2;
           L1 = LL;
@@ -297,6 +331,9 @@ export class ThreeSectionForceService {
   
   // 断面力図を描く
   private onResize(): void {
+    if(!(this.currentMode in this.max_values)){
+      return;
+    }
 
     const scale1: number = this.scale / 100;
     const scale2: number = this.baseScale();
