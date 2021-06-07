@@ -74,17 +74,17 @@ export class ThreePanelService {
     }
 
     // createPanelLoadを実行させる
-    const targetpanel = panelData;
+    // const targetpanel = panelData;
 
-    for (const target of targetpanel) {
-
-      if (target.Points.length <= 2) {
+    for (const key of Object.keys(panelData)) {
+      const target = panelData[key];
+      if (target.nodes.length <= 2) {
         continue
       }
 
       //対象のnodeDataを入手
       const vertexlist = [];
-      for (const check of target.Points) {
+      for (const check of target.nodes) {
         if (check - 1 in Object.keys(nodeData)) {   //nodeData.key=>0~7, nodeData=>1~8のため（-1）で調整
           const n = nodeData[check];
           const x = n.x;
@@ -96,7 +96,7 @@ export class ThreePanelService {
         }
       }
 
-      this.createPanel(vertexlist, target.row);
+      this.createPanel(vertexlist, key);
     }
   }
 
