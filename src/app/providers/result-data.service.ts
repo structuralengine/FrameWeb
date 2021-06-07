@@ -112,7 +112,7 @@ export class ResultDataService {
       // define データがない時は基本ケース＝defineケースとなる
       for (const caseNo of Object.keys(load)) {
         const n: number = this.helper.toNumber(caseNo);
-        this.defList[caseNo] = (n === null) ? [] : new Array(n);
+        this.defList[caseNo] = (n === null) ? [] : [n];
       }
     }
 

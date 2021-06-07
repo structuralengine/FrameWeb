@@ -53,6 +53,7 @@ export class InputPickupComponent implements OnInit {
         dataType: "string",
         dataIndx: "name",
         sortable: false,
+        align: 'left',
         width: 250,
       });
     }
