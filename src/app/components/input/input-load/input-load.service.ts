@@ -653,7 +653,7 @@ export class InputLoadService {
           load2.push(newLoads[j]);
         }
       } else {
-        i = i + 1;
+        i += 1;
       }
     } while (i < load2.length);
 
@@ -748,6 +748,7 @@ export class InputLoadService {
             targetLoad.L2 = L2;
           } else {
             targetLoad.m2 = j;
+            targetLoad.L2 = L2;
             break;
           }
         }
