@@ -185,17 +185,11 @@ export class ThreeSectionForceService {
   }
   // combine
   public setCombResultData(fsecJson: any, max_values: any): void {
-    if(!('comb_fsec' in fsecJson)){
-      return;
-    }
     this.fsecData['comb_fsec'] = fsecJson;
     this.max_values['comb_fsec'] = max_values;
   }
   // pick up
   public setPickupResultData(fsecJson: any, max_values: any): void {
-    if(!('pik_fsec' in fsecJson)){
-      return;
-    }
     this.fsecData['pik_fsec'] = fsecJson;
     this.max_values['pik_fsec'] = max_values;
   }
@@ -236,6 +230,9 @@ export class ThreeSectionForceService {
     }
 
     // 最初のケースを代表として描画する
+    if(!(this.currentMode in this.fsecData)){
+      return;
+    }
     const fsecList = this.fsecData[this.currentMode];
     const fsecDatas = [];
     if(this.currentMode === 'fsec'){
