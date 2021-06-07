@@ -23,7 +23,6 @@ export class InputCombineService {
 //    for (let i = 0; i < this.combine.length; i++) {
       const i = this.combine.findIndex((element) => element.row === row);
       if(i >= 0){
-      console.log(i);
       const line = {row : this.combine[i].row, name : this.combine[i].name}
       for (let j = 1; j <= col; j++) {
         const key = 'C' + j;
