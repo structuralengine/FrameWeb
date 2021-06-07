@@ -67,8 +67,6 @@ export class ResultCombineDisgService {
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-disg1.worker', { name: 'combine-disg1', type: 'module' });
     this.worker2 = new Worker('./result-combine-disg2.worker', { name: 'combine-disg2', type: 'module' });
-    this.disgKeys = (this.helper.dimension === 3) ? this.disgKeys3D : this.disgKeys2D ;
-    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
   }
 
   public clear(): void {
@@ -86,11 +84,8 @@ export class ResultCombineDisgService {
 
   public setDisgCombineJson(disg: any, defList: any, combList: any, pickList: any): void {
 
-    const postData = {
-      defList,
-      combList,
-      disg
-    };
+    this.disgKeys = (this.helper.dimension === 3) ? this.disgKeys3D : this.disgKeys2D ;
+    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
 
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {
@@ -111,8 +106,8 @@ export class ResultCombineDisgService {
         this.worker2.postMessage({ disgCombine: this.disgCombine });
 
       };
-      // this.disgCombine = this.worker1_test(defList, combList, disg, this.disgKeys );
-      this.worker1.postMessage({ defList, combList, disg, disgKeys: this.disgKeys });
+      this.disgCombine = this.worker1_test(defList, combList, disg, this.disgKeys );
+      // this.worker1.postMessage({ defList, combList, disg, disgKeys: this.disgKeys });
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.

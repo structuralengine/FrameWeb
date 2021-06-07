@@ -72,8 +72,6 @@ export class ResultCombineFsecService {
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-fsec1.worker', { name: 'combine-fsec1', type: 'module' });
     this.worker2 = new Worker('./result-combine-fsec2.worker', { name: 'combine-fsec2', type: 'module' });
-    this.fsecKeys = (this.helper.dimension === 3) ? this.fsecKeys3D : this.fsecKeys2D ;
-    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
   }
 
   public clear(): void {
@@ -90,6 +88,9 @@ export class ResultCombineFsecService {
   }
 
   public setFsecCombineJson(fsec: any, defList: any, combList: any, pickList: any): void {
+
+    this.fsecKeys = (this.helper.dimension === 3) ? this.fsecKeys3D : this.fsecKeys2D ;
+    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
 
     this.isCalculated = false;
     const startTime = performance.now(); // 開始時間

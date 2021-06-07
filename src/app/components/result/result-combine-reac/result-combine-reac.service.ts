@@ -67,8 +67,6 @@ export class ResultCombineReacService {
     this.isCalculated = false;
     this.worker1 = new Worker('./result-combine-reac1.worker', { name: 'combine-reac1', type: 'module' });
     this.worker2 = new Worker('./result-combine-reac2.worker', { name: 'combine-reac2', type: 'module' });
-    this.reacKeys = (this.helper.dimension === 3) ? this.reacKeys3D : this.reacKeys2D ;
-    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
   }
 
   public clear(): void {
@@ -86,11 +84,8 @@ export class ResultCombineReacService {
 
   public setReacCombineJson(reac: any, defList: any, combList: any, pickList: any): void {
 
-    const postData = {
-      defList,
-      combList,
-      reac
-    };
+    this.reacKeys = (this.helper.dimension === 3) ? this.reacKeys3D : this.reacKeys2D ;
+    this.titles = (this.helper.dimension === 3) ? this.titles3D : this.titles2D ;
 
     const startTime = performance.now(); // 開始時間
     if (typeof Worker !== 'undefined') {

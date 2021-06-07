@@ -186,12 +186,12 @@ export class ResultDataService {
         let point_name: string = '';
 
         for (let row = 0; row < rows; row++) {
-          const r: string = row.toString();
-          if ( !(r in maxList) ){
-            continue;
-          }
-          const maxFsec = maxList[row.toString()];
-          const minFsec = minList[row.toString()];
+          // const r: string = row.toString();
+          // if ( !(r in maxList) ){
+          //   continue;
+          // }
+          const maxFsec = maxList[row];
+          const minFsec = minList[row];
 
           // 部材番号を設定する
           const mm: number = this.helper.toNumber(maxFsec.m);
