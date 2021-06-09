@@ -34,6 +34,7 @@ export class ThreeSectionForceService {
   private radioButtons2D = ['axialForce', 'shearForceY', 'momentZ'];
   private radioButtons = this.radioButtons3D || this.radioButtons2D;
   private gui: any;
+  private gui_dimension: number = null;
 
   private mesh: ThreeSectionForceMeshService;
 
@@ -42,7 +43,8 @@ export class ThreeSectionForceService {
   private fsecData: any;
   private max_values: any = {};
 
-  constructor(private scene: SceneService,
+  constructor(
+    private scene: SceneService,
     private helper: DataHelperModule,
     private node: InputNodesService,
     private member: InputMembersService,
@@ -65,12 +67,6 @@ export class ThreeSectionForceService {
 
     // gui
     this.scale = 100;
-    this.params = {
-      forceScale: this.scale
-    };
-    for (const key of this.radioButtons) {
-      this.params[key] = false;
-    }
     this.gui = null;
   }
 
@@ -97,8 +93,8 @@ export class ThreeSectionForceService {
     }
     this.currentMode = ModeName;
     this.changeMesh();
-    this.onResize();
     this.guiEnable();
+    this.onResize();
   }
 
   // データをクリアする
@@ -114,12 +110,43 @@ export class ThreeSectionForceService {
     this.ThreeObject1.children = new Array();
   }
 
-  private guiEnable(): void {
-    if (this.gui !== null) {
+  private setGuiParams(): void {
+
+    if (this.gui !== null && this.gui_dimension === this.helper.dimension) {
       return;
     }
+    
+    this.gui_dimension = this.helper.dimension;
+
+    if (this.helper.dimension === 3){
+      this.radioButtons = this.radioButtons3D;
+    } else {
+      this.radioButtons = this.radioButtons2D;
+    }
+    this.params = {
+      forceScale: this.scale
+    };
+    for (const key of this.radioButtons) {
+      this.params[key] = false;
+    }
+
+    if (this.helper.dimension === 3){
+      this.params.momentY = true; // 初期値（3D）
+    } else {
+      this.params.momentZ = true; // 初期値（2D） 
+    }
+
+  }
+
+  private guiEnable(): void {
+
+    if (this.gui !== null && this.gui_dimension === this.helper.dimension) {
+      return;
+    }
+
     const gui_step: number = 1;
     const gui_max_scale: number = 200;
+
     this.gui = {
       forceScale: this.scene.gui.add(this.params, 'forceScale', 0, gui_max_scale).step(gui_step).onChange((value) => {
         // guiによる設定
@@ -128,14 +155,7 @@ export class ThreeSectionForceService {
         this.scene.render();
       })
     };
-
-    if (this.helper.dimension === 3){
-      this.radioButtons = this.radioButtons3D;
-      this.params.momentY = true; // 初期値（3D）
-    } else {
-      this.radioButtons = this.radioButtons3D;
-      this.params.momentZ = true; // 初期値（2D） 
-    }
+    
     for (const key of this.radioButtons) {
       this.gui[key] = this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
         if (value === true) {
@@ -201,6 +221,8 @@ export class ThreeSectionForceService {
     if(this.currentIndex === undefined){
       return;
     }
+
+    this.setGuiParams();
 
     let key1: string;
     let key2: string;

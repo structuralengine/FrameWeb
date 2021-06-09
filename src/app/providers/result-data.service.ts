@@ -334,13 +334,13 @@ export class ResultDataService {
           result += this.spacePadding(point_name, 5);
           result += this.spacePadding(maxFsec.l.toFixed(3), 10);
 
-          result += this.spacePadding(maxFsec.fx.toFixed(2), 10);
-          result += this.spacePadding(maxFsec.fy.toFixed(2), 10);
           result += this.spacePadding(maxFsec.mz.toFixed(2), 10);
+          result += this.spacePadding(maxFsec.fy.toFixed(2), 10);
+          result += this.spacePadding(maxFsec.fx.toFixed(2), 10);
 
-          result += this.spacePadding(minFsec.fx.toFixed(2), 10);
-          result += this.spacePadding(minFsec.fy.toFixed(2), 10);
           result += this.spacePadding(minFsec.mz.toFixed(2), 10);
+          result += this.spacePadding(minFsec.fy.toFixed(2), 10);
+          result += this.spacePadding(minFsec.fx.toFixed(2), 10);
 
           result += '\n';
         }

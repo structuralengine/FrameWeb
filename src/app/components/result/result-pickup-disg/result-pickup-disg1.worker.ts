@@ -28,11 +28,11 @@ addEventListener('message', ({ data }) => {
           const b = target[id];
           if (key[1] === 'max') {
             if (b[key[0]] > a[key[0]]) {
-              tmp[k] = com[k];
+              tmp[k][id] = com[k][id];
             }
           } else {
             if (b[key[0]] < a[key[0]]) {
-              tmp[k] = com[k];
+              tmp[k][id] = com[k][id];
             }
           }
         }
