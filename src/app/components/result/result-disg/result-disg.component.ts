@@ -58,13 +58,6 @@ export class ResultDisgComponent implements OnInit {
       this.btnPickup = "btn-change disabled";
     }
 
-    /*if (this.helper.dimension === 3){
-    this.dimension2D = false;
-    this.dimension3D = true;
-    } else if (this.helper.dimension == 2){
-    this.dimension2D = true;
-    this.dimension3D = false;
-    }*/
   }
 
   //　pager.component からの通知を受け取る

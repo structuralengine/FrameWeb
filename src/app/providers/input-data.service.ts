@@ -133,7 +133,7 @@ export class InputDataService {
 
     const panel: {} = this.panel.getPanelJson(empty);
     if (Object.keys(panel).length > 0) {
-      jsonData['panel'] = panel;
+      jsonData['shell'] = panel;
     }
 
     const notice_points: {} = this.notice.getNoticePointsJson();

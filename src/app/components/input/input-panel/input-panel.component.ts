@@ -35,7 +35,6 @@ export class InputPanelComponent {
       this.columnHeaders[1].colModel.push({
         title: i.toString(),
         dataType: "integer",
-        //format: "#.000",
         dataIndx: "point-" + i,
         sortable: false,
         minwidth: 30, 
@@ -112,16 +111,10 @@ export class InputPanelComponent {
       const changes = ui.updateList;
       for (const target of changes) {
         const row: number = target.rowIndx;
-        //if (!(target.newRow.includes('point-')) || !('e' in target.newRow)) {
-          //continue;
-        //}
         const key = Object.keys(target.newRow);
         const m: string = target.newRow[key.toString()];
         if ( m === null){
           this.dataset[row]['len'] = null;
-        //} else {
-          //const l: number = this.member.getMemberLength(m);
-          //this.dataset[row]['len'] = (l != null) ? l : null;
         }
         this.grid.refreshDataAndView();
       }

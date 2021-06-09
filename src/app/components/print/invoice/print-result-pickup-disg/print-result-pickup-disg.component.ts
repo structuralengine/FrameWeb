@@ -4,6 +4,7 @@ import { ResultDataService } from "../../../../providers/result-data.service";
 import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
+import { ResultCombineDisgService } from "src/app/components/result/result-combine-disg/result-combine-disg.service";
 
 @Component({
   selector: "app-print-result-pickup-disg",
@@ -22,7 +23,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  key: string;
+  // key: string;
 
   public pickDisg_dataset = [];
   public pickDisg_title = [];
@@ -34,7 +35,8 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
   constructor(
     private InputData: InputDataService,
     private ResultData: ResultDataService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private combDisg: ResultCombineDisgService
   ) {
     this.clear();
   }
@@ -69,20 +71,21 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     let body: any[] = new Array();
     const typeSum: any[] = new Array();
 
-    const KEYS = [
-      "dx_max",
-      "dx_min",
-      "dy_max",
-      "dy_min",
-      "dz_max",
-      "dz_min",
-      "rx_max",
-      "rx_min",
-      "ry_max",
-      "ry_min",
-      "rz_max",
-      "rz_min",
-    ];
+    const KEYS = this.combDisg.disgKeys;
+    // [
+    //   "dx_max",
+    //   "dx_min",
+    //   "dy_max",
+    //   "dy_min",
+    //   "dz_max",
+    //   "dz_min",
+    //   "rx_max",
+    //   "rx_min",
+    //   "ry_max",
+    //   "ry_min",
+    //   "rz_max",
+    //   "rz_min",
+    // ];
 
     const keys: string[] = Object.keys(json);
 
@@ -113,11 +116,13 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
       let table: any[] = new Array();
       let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
-        typeName.push(this.key);
-
+        const key = KEYS[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        if(!(key in elieli)) continue;
+
+        typeName.push(key);
+
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
           this.row = 10;
@@ -173,9 +178,11 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
       for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
+        const key = KEYS[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        if(!(key in elieli)) continue;
+
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         for (const k of Object.keys(elist)) {
           countCell += Object.keys(elist).length;
         }
@@ -197,6 +204,8 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
       const elieli = json[index]; // 1行分のnodeデータを取り出す
       for (let i = 0; i < KEYS.length; i++) {
         const key: string = KEYS[i];
+        if(!(key in elieli)) continue;
+
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
 
         // x方向Max,minなどのタイプでの分割

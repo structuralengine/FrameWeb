@@ -112,7 +112,7 @@ export class ResultDataService {
       // define データがない時は基本ケース＝defineケースとなる
       for (const caseNo of Object.keys(load)) {
         const n: number = this.helper.toNumber(caseNo);
-        this.defList[caseNo] = (n === null) ? [] : new Array(n);
+        this.defList[caseNo] = (n === null) ? [] : [n];
       }
     }
 
@@ -186,12 +186,12 @@ export class ResultDataService {
         let point_name: string = '';
 
         for (let row = 0; row < rows; row++) {
-          const r: string = row.toString();
-          if ( !(r in maxList) ){
-            continue;
-          }
-          const maxFsec = maxList[row.toString()];
-          const minFsec = minList[row.toString()];
+          // const r: string = row.toString();
+          // if ( !(r in maxList) ){
+          //   continue;
+          // }
+          const maxFsec = maxList[row];
+          const minFsec = minList[row];
 
           // 部材番号を設定する
           const mm: number = this.helper.toNumber(maxFsec.m);
@@ -273,8 +273,8 @@ export class ResultDataService {
     const p = this.pickfsec.fsecPickup;
 
     let result: string = 'PickUpNo,着目力,部材No,最大CaseNo,最小CaseNo,着目点,着目点距離';
-    result += ',最大Nd,最大Vd,最大Md';
-    result += ',最小Nd,最小Vd,最小Md';
+    result += ',最大Md,最大Vd,最大Nd';
+    result += ',最小Md,最小Vd,最小Nd';
     result += '\n';
 
     for (let No = 1; No <= Object.keys(p).length; No++) {
@@ -283,7 +283,7 @@ export class ResultDataService {
       const rows: number = Object.keys(c['fx_max']).length;
       
       const key = ['M', 'S', 'N'];
-      const symbol = ['fx', 'fy', 'mz'];
+      const symbol = ['mz', 'fy', 'fx'];
 
       for (let i = 0; i < symbol.length; i++) {
 

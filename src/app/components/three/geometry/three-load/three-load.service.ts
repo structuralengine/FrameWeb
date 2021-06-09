@@ -1004,10 +1004,10 @@ export class ThreeLoadService {
       const dict = loadList.pointLoadList[n];
       for (let k of Object.keys(dict)) {
         dict[k].forEach(item => {
-          if (item.name === "PointLoad") {
+          if (item.name.includes("PointLoad")) {
             // 集中荷重
             this.pointLoad.setScale(item, scale);
-          } else if (item.name === "MomentLoad") {
+          } else if (item.name.includes("MomentLoad")) {
             // 集中曲げモーメント荷重
             this.momentLoad.setScale(item, scale);
           }

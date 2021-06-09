@@ -6,7 +6,7 @@ import { DataHelperModule } from '../../../providers/data-helper.module';
 })
 export class InputPanelService {
 
-  public PANEL_VERTEXS_COUNT = 7;
+  public PANEL_VERTEXS_COUNT = 4;
   public panel_points: any[];
 
   constructor(private helper: DataHelperModule) {
@@ -19,17 +19,10 @@ export class InputPanelService {
 
   public getPanelColumns(row: number): any {
 
-    let result: any = null;
-
-    for (const tmp of this.panel_points) {
-      if (tmp['row'] === row) {
-        result = tmp;
-        break;
-      }
-    }
+    let result: any = this.panel_points.find( (e) => e.row === row.toString());
 
     // 対象データが無かった時に処理
-    if (result == null) {
+    if (result == undefined) {
       result = { row, m: '', len: '' };
       for (let i = 1; i <= this.PANEL_VERTEXS_COUNT; i++) {
         result['point-' + i] = '';
@@ -47,16 +40,22 @@ export class InputPanelService {
   }
 
   public setPanelJson(jsonData: {}): void {
-    if (!('panel' in jsonData)) {
+    if (!('shell' in jsonData)) {
       return;
     }
-    const js: any[] = jsonData['panel'];
-    for (let i = 0; i < js.length; i++) {
-      const item = js[i];
-      const row: string = ('row' in item) ? item['row'] : (i + 1).toString();
+    const json: {} = jsonData['shell'];
+    for (const index of Object.keys(json)) {
+      const item = json[index];
+
+      const row: string = index;
+
       const e = item['e'];
-      const Points: any[] = item.Points;
-      const result = { row: row, e: e };
+      const Points: any[] = item.nodes;
+
+      const result = { 
+        row: row, 
+        e: e 
+      };
       for (let j = 0; j < Points.length; j++) {
         const key = 'point-' + (j + 1).toString();
         const pos: number = this.helper.toNumber(Points[j]);
@@ -68,11 +67,11 @@ export class InputPanelService {
 
   public getPanelJson(empty: number = null) {
 
-    const result = new Array();
+    const result: object = {};
 
     for( const row of this.panel_points) {
-
       const r = row['row'];
+
       const points = new Array();
       for (let j = 1; j < this.PANEL_VERTEXS_COUNT + 1; j++) {
         const key = 'point-' + j;
@@ -90,11 +89,11 @@ export class InputPanelService {
         continue;
       }
 
-      result.push({
-        row: r,
+      const key: string = r;
+      result[key] = {
         e: row.e,
-        Points: points
-       });
+        nodes: points
+      };
     }
     return result;
   }
