@@ -105,7 +105,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
         line1.push(key.replace("C", ""));
         line2.push(item[key].toFixed(2));
         counter += 1;
-        if (counter === 10) {
+        if (counter === 8) {
           body.push(line1); // 表の1行 登録
           body.push(line2);
           counter = 0;
