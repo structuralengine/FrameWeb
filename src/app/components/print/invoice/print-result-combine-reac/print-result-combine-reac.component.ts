@@ -4,6 +4,7 @@ import { ResultDataService } from "../../../../providers/result-data.service";
 import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
+import { ResultCombineReacService } from "src/app/components/result/result-combine-reac/result-combine-reac.service";
 
 @Component({
   selector: "app-print-result-combine-reac",
@@ -22,7 +23,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  key: string;
+  // key: string;
 
   public combReac_dataset = [];
   public combReac_title = [];
@@ -34,7 +35,8 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
   constructor(
     private InputData: InputDataService,
     private ResultData: ResultDataService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private combReac: ResultCombineReacService
   ) {
     this.judge = false;
     this.clear();
@@ -71,20 +73,21 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     const body: any[] = new Array();
     const typeSum: any[] = new Array();
 
-    const KEYS = [
-      "tx_max",
-      "tx_min",
-      "ty_max",
-      "ty_min",
-      "tz_max",
-      "tz_min",
-      "mx_max",
-      "mx_min",
-      "my_max",
-      "my_min",
-      "mz_max",
-      "mz_min",
-    ];
+    const KEYS = this.combReac.reacKeys
+    // [
+    //   "tx_max",
+    //   "tx_min",
+    //   "ty_max",
+    //   "ty_min",
+    //   "tz_max",
+    //   "tz_min",
+    //   "mx_max",
+    //   "mx_min",
+    //   "my_max",
+    //   "my_min",
+    //   "mz_max",
+    //   "mz_min",
+    // ];
     // const TITLES = ['x方向の支点反力 最大', 'x方向の支点反力 最小', 'y方向の支点反力 最大', 'y方向の支点反力 最小', 'z方向の支点反力 最大', 'Z方向の支点反力 最小',
     //   'x軸回りの回転反力 最大', 'x軸回りの回転反力 最小', 'y軸回りの回転反力 最大', 'y軸回りの回転反力 最小', 'z軸回りの回転反力 最大', 'Z軸回りの回転反力 最小'];
 
@@ -119,11 +122,13 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
       let table: any[] = new Array();
       let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
-        typeName.push(this.key);
-
+        const key = KEYS[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        if(!(key in elieli)) continue;
+
+        typeName.push(key);
+
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
           this.row = 9;
@@ -180,9 +185,11 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
       for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
+        const key = KEYS[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        if(!(key in elieli)) continue;
+
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         for (const k of Object.keys(elist)) {
           countCell += Object.keys(elist).length;
         }
@@ -204,6 +211,8 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
       const elieli = json[index]; // 1行分のnodeデータを取り出す
       for (let i = 0; i < KEYS.length; i++) {
         const key: string = KEYS[i];
+        if(!(key in elieli)) continue;
+        
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
 
         // x方向Max,minなどのタイプでの分割

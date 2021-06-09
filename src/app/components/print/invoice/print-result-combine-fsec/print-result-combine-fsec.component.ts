@@ -6,6 +6,7 @@ import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { newArray } from "@angular/compiler/src/util";
 import { ArrayCamera } from "three";
+import { ResultCombineFsecService } from "src/app/components/result/result-combine-fsec/result-combine-fsec.service";
 
 @Component({
   selector: "app-print-result-combine-fsec",
@@ -20,7 +21,6 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  key: string;
 
   public combFsec_dataset = [];
   public combFsec_title = [];
@@ -32,7 +32,8 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   constructor(
     private InputData: InputDataService,
     private ResultData: ResultDataService,
-    private countArea: DataCountService
+    private countArea: DataCountService,
+    private combFsec: ResultCombineFsecService
   ) {
     this.judge = false;
     this.clear();
@@ -69,20 +70,21 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     const body: any[] = new Array();
     const typeSum: any [] = new Array();
 
-    const KEYS = [
-      "fx_max",
-      "fx_min",
-      "fy_max",
-      "fy_min",
-      "fz_max",
-      "fz_min",
-      "mx_max",
-      "mx_min",
-      "my_max",
-      "my_min",
-      "mz_max",
-      "mz_min",
-    ];
+    const KEYS = this.combFsec.fsecKeys; 
+    // [
+    //   "fx_max",
+    //   "fx_min",
+    //   "fy_max",
+    //   "fy_min",
+    //   "fz_max",
+    //   "fz_min",
+    //   "mx_max",
+    //   "mx_min",
+    //   "my_max",
+    //   "my_min",
+    //   "mz_max",
+    //   "mz_min",
+    // ];
     //const TITLES = ['軸方向力 最大', '軸方向力 最小', 'y方向のせん断力 最大', 'y方向のせん断力 最小', 'z方向のせん断力 最大', 'z方向のせん断力 最小',
     //  'ねじりモーメント 最大', 'ねじりモーメント 最小', 'y軸回りの曲げモーメント 最大', 'y軸回りの曲げモーメント力 最小', 'z軸回りの曲げモーメント 最大', 'z軸回りの曲げモーメント 最小'];
 
@@ -116,11 +118,13 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       let table: any[] = new Array();
       let type:  any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
-        typeName.push(this.key);
-
+        const key = KEYS[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        if(!(key in elieli)){ continue; }
+
+        typeName.push(key);
+
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
         if (i === 0) {
           this.row = 10;
@@ -178,9 +182,10 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     for (const index of keys) {
       const elist = json[index]; // 1テーブル分のデータを取り出す
       for (let i = 0; i < KEYS.length; i++) {
-        this.key = KEYS[i];
+        const key = KEYS[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
-        const elist = elieli[this.key]; // 1行分のnodeデータを取り出す.
+        if(!(key in elieli)){ continue; }
+        const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         for (const k of Object.keys(elist)) {
           countCell += Object.keys(elist).length;
         }
@@ -202,6 +207,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       const elieli = json[index]; // 1行分のnodeデータを取り出す
       for (let i = 0; i < KEYS.length; i++) {
         const key: string = KEYS[i];
+        if(!(key in elieli)){ continue; }
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
 
       // x方向Max,minなどのタイプでの分割
