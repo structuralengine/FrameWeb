@@ -49,7 +49,6 @@ export class ThreeSectionForceService {
     private three_node: ThreeNodesService,
     private three_member: ThreeMembersService) {
 
-    this.radioButtons = (this.helper.dimension === 3) ? this.radioButtons3D : this.radioButtons3D ;
     this.ThreeObject1 = new THREE.Object3D();
     this.ThreeObject1.visible = false; // 呼び出されるまで非表示
     this.ThreeObject2 = new THREE.Object3D();
@@ -71,11 +70,6 @@ export class ThreeSectionForceService {
     };
     for (const key of this.radioButtons) {
       this.params[key] = false;
-    }
-    if (this.helper.dimension === 3){
-      this.params.momentY = true; // 初期値（3D）
-    } else {
-      this.params.momentZ = true; // 初期値（2D） 
     }
     this.gui = null;
   }
@@ -134,6 +128,14 @@ export class ThreeSectionForceService {
         this.scene.render();
       })
     };
+
+    if (this.helper.dimension === 3){
+      this.radioButtons = this.radioButtons3D;
+      this.params.momentY = true; // 初期値（3D）
+    } else {
+      this.radioButtons = this.radioButtons3D;
+      this.params.momentZ = true; // 初期値（2D） 
+    }
     for (const key of this.radioButtons) {
       this.gui[key] = this.scene.gui.add(this.params, key, this.params[key]).listen().onChange((value) => {
         if (value === true) {
