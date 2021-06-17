@@ -140,10 +140,10 @@ export class MenuComponent implements OnInit {
   // 計算
   public calcrate(): void {
 
-    if (this.loggedIn === true) {
+    // if (this.loggedIn === true) {
       // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
-      this.auth.calc(this.amount);
-      this.amount = this.auth.amount;
+      // this.auth.calc(this.amount);
+      // this.amount = this.auth.amount;
       const modalRef = this.modalService.open(WaitDialogComponent);
 
       const jsonData: {} = this.InputData.getInputJson(0);
@@ -157,9 +157,9 @@ export class MenuComponent implements OnInit {
       this.ResultData.clear(); // 解析結果情報をクリア
 
       this.post_compress(jsonData, modalRef);
-    } else {
-      alert("ログインしてください")
-    }
+    // } else {
+    //   alert("ログインしてください")
+    // }
   }
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
