@@ -117,6 +117,6 @@ export class InputFixMemberComponent implements OnInit {
     }
   };
 
-  width = (this.helper.dimension === 3) ? 510 : 310 ;
+  width = (this.helper.dimension === 3) ? 510 : 410 ;
 
 }
