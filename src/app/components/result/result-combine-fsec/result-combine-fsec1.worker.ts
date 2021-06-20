@@ -132,6 +132,8 @@ addEventListener('message', ({ data }) => {
       }
 
       const fsecs = fsecDefine[defNo];
+      if(Object.keys(fsecs).length < 1) continue;
+
       // カレントケースを集計する
       const c2 = Math.abs(caseNo).toString().trim();
       for (const key of fsecKeys) {

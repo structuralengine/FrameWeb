@@ -75,12 +75,12 @@ export class ThreeSectionForceMeshService {
     group0.add(child);
     group0.name = "group";
 
-    /*/ 文字を追加する
+    // 文字を追加する
     for(const text of this.getText(points, P1, P2)){
       text.visible = false;
       group0.add(text);
     }
-    */
+    
 
      // 全体の位置を修正する
     const group = new THREE.Group();
@@ -280,7 +280,7 @@ export class ThreeSectionForceMeshService {
     let A = Math.asin(XY.y) 
 
     if( XY.x < 0){
-     A = Math.PI - A;
+      A = Math.PI - A;
     }
     target.rotateZ(A);
 

@@ -106,8 +106,8 @@ export class ResultCombineDisgService {
         this.worker2.postMessage({ disgCombine: this.disgCombine });
 
       };
-      this.disgCombine = this.worker1_test(defList, combList, disg, this.disgKeys );
-      // this.worker1.postMessage({ defList, combList, disg, disgKeys: this.disgKeys });
+      // this.disgCombine = this.worker1_test(defList, combList, disg, this.disgKeys );
+      this.worker1.postMessage({ defList, combList, disg, disgKeys: this.disgKeys });
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
@@ -195,6 +195,8 @@ export class ResultCombineDisgService {
         }
   
         const disgs = disgDefine[defNo];
+        if(Object.keys(disgs).length < 1) continue;
+
         // カレントケースを集計する
         const c2 = Math.abs(caseNo).toString().trim();
         for (const key of disgKeys){

@@ -105,8 +105,8 @@ export class ResultCombineReacService {
         };
         this.worker2.postMessage({ reacCombine: this.reacCombine });
       };
-      //this.worker1.postMessage({ defList, combList, reac, reacKeys: this.reacKeys });
-      this.worker1_test({ defList, combList, reac, reacKeys: this.reacKeys });
+      this.worker1.postMessage({ defList, combList, reac, reacKeys: this.reacKeys });
+      // this.worker1_test({ defList, combList, reac, reacKeys: this.reacKeys });
     } else {
       // Web workers are not supported in this environment.
       // You should add a fallback so that your program still executes correctly.
@@ -199,6 +199,8 @@ export class ResultCombineReacService {
         }
 
         const reacs = reacDefine[defNo];
+        if(Object.keys(reacs).length < 1) continue;
+
         // カレントケースを集計する
         const c2 = Math.abs(caseNo).toString().trim();
         for (const key of reacKeys){
