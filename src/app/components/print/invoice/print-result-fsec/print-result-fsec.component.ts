@@ -36,8 +36,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private helper: DataHelperModule
-  ) {
+    private helper: DataHelperModule ) {
     this.dimension = this.helper.dimension;
     this.clear();
   }

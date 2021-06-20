@@ -7,6 +7,7 @@ import { DataCountService } from "../dataCount.service";
 import { newArray } from "@angular/compiler/src/util";
 import { ArrayCamera } from "three";
 import { ResultCombineFsecService } from "src/app/components/result/result-combine-fsec/result-combine-fsec.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-pickup-fsec",
@@ -25,7 +26,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public pickFsec_dataset = [];
   public pickFsec_title = [];
@@ -38,8 +39,9 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combFsec: ResultCombineFsecService
-  ) {
+    private combFsec: ResultCombineFsecService,
+    private helper: DataHelperModule ) {
+      this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }

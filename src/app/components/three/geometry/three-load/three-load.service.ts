@@ -18,6 +18,7 @@ import { ThreeLoadMoment } from "./three-load-moment";
 import { ThreeLoadTemperature } from "./three-load-temperature";
 import { ThreeLoadMemberPoint } from "./three-load-member-point";
 import { ThreeLoadMemberMoment } from "./three-load-member-moment";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Injectable({
   providedIn: "root",
@@ -56,6 +57,7 @@ export class ThreeLoadService {
   // 初期化
   constructor(
     private scene: SceneService,
+    private helper: DataHelperModule,
     private nodeThree: ThreeNodesService,
     private node: InputNodesService,
     private member: InputMembersService,

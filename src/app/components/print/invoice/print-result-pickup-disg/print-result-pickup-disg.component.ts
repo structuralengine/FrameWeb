@@ -5,6 +5,7 @@ import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { ResultCombineDisgService } from "src/app/components/result/result-combine-disg/result-combine-disg.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-pickup-disg",
@@ -23,7 +24,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public pickDisg_dataset = [];
   public pickDisg_title = [];
@@ -36,8 +37,9 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combDisg: ResultCombineDisgService
-  ) {
+    private combDisg: ResultCombineDisgService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 

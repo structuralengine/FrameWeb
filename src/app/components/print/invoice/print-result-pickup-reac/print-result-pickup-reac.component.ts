@@ -5,6 +5,7 @@ import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { ResultCombineReacService } from "src/app/components/result/result-combine-reac/result-combine-reac.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-pickup-reac",
@@ -23,7 +24,7 @@ export class PrintResultPickupReacComponent implements OnInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public pickReac_datase = [];
   public pickReac_dataset = [];
@@ -39,8 +40,9 @@ export class PrintResultPickupReacComponent implements OnInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combReac: ResultCombineReacService
-  ) {
+    private combReac: ResultCombineReacService,
+    private helper: DataHelperModule ) {
+      this.dimension = this.helper.dimension;
     this.judge = false;
   }
 

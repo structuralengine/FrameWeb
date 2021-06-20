@@ -2,11 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { ResultDataService } from "../../../../providers/result-data.service";
 import { AfterViewInit } from "@angular/core";
-import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
-import { newArray } from "@angular/compiler/src/util";
-import { ArrayCamera } from "three";
 import { ResultCombineFsecService } from "src/app/components/result/result-combine-fsec/result-combine-fsec.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-combine-fsec",
@@ -21,6 +19,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
+  dimension: number;
 
   public combFsec_dataset = [];
   public combFsec_title = [];
@@ -33,8 +32,9 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combFsec: ResultCombineFsecService
-  ) {
+    private combFsec: ResultCombineFsecService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }

@@ -16,27 +16,45 @@
                         <div *ngFor="let datas of branch; index as m">
                             <div *ngIf="m > 0" class="pagerBreak"></div>
                             <table  class="print-sm">
-                                <tr>
-                                    <th>SUPPORT</th>
-                                    <th>TX</th>
-                                    <th>TY</th>
-                                    <th>TZ</th>
-                                    <th>MX</th>
-                                    <th>MY</th>
-                                    <th>MZ</th>
-                                    <th>comb</th>
-                                </tr>
+                                <div *ngIf="dimension===3">
+                                    <tr>
+                                        <th>SUPPORT</th>
+                                        <th>TX</th>
+                                        <th>TY</th>
+                                        <th>TZ</th>
+                                        <th>MX</th>
+                                        <th>MY</th>
+                                        <th>MZ</th>
+                                        <th>comb</th>
+                                    </tr>
 
-                                <tr *ngFor="let data of datas">
-                                    <td>{{data[0]}}</td>
-                                    <td>{{data[1]}}</td>
-                                    <td>{{data[2]}}</td>
-                                    <td>{{data[3]}}</td>
-                                    <td>{{data[4]}}</td>
-                                    <td>{{data[5]}}</td>
-                                    <td>{{data[6]}}</td>
-                                    <td>{{data[7]}}</td>
-                                </tr>
+                                    <tr *ngFor="let data of datas">
+                                        <td>{{data[0]}}</td>
+                                        <td>{{data[1]}}</td>
+                                        <td>{{data[2]}}</td>
+                                        <td>{{data[3]}}</td>
+                                        <td>{{data[4]}}</td>
+                                        <td>{{data[5]}}</td>
+                                        <td>{{data[6]}}</td>
+                                        <td>{{data[7]}}</td>
+                                    </tr>
+                                </div>
+                                <div *ngIf="dimension===2">
+                                    <tr>
+                                        <th>SUPPORT</th>
+                                        <th>H</th>
+                                        <th>N</th>
+                                        <th>M</th>
+                                        <th>comb</th>
+                                    </tr>
+                                    <tr *ngFor="let data of datas">
+                                        <td>{{data[0]}}</td>
+                                        <td>{{data[1]}}</td>
+                                        <td>{{data[2]}}</td>
+                                        <td>{{data[6]}}</td>
+                                        <td>{{data[7]}}</td>
+                                    </tr>
+                                </div>                                
                             </table>
                         </div>
                     </div>

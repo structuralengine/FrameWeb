@@ -5,6 +5,7 @@ import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { ResultCombineReacService } from "src/app/components/result/result-combine-reac/result-combine-reac.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-combine-reac",
@@ -23,7 +24,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public combReac_dataset = [];
   public combReac_title = [];
@@ -36,8 +37,9 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combReac: ResultCombineReacService
-  ) {
+    private combReac: ResultCombineReacService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }

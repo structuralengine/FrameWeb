@@ -4,6 +4,7 @@ import { ResultDataService } from "../../../../providers/result-data.service";
 import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-reac",
@@ -23,6 +24,7 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
   invoiceDetails: Promise<any>[];
   reROW: number = 0;
   remainCount: number = 0;
+  dimension: number;
 
   public reac_table = [];
   public reac_break = [];
@@ -33,8 +35,9 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
   constructor(
     private InputData: InputDataService,
     private ResultData: ResultDataService,
-    private countArea: DataCountService
-  ) {
+    private countArea: DataCountService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 

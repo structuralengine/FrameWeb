@@ -2,9 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { ResultDataService } from "../../../../providers/result-data.service";
 import { AfterViewInit } from "@angular/core";
-import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { ResultCombineDisgService } from "src/app/components/result/result-combine-disg/result-combine-disg.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-combine-disg",
@@ -23,7 +23,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public combDisg_dataset = [];
   public combDisg_title = [];
@@ -36,8 +36,9 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combDisg: ResultCombineDisgService
-  ) {
+    private combDisg: ResultCombineDisgService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }

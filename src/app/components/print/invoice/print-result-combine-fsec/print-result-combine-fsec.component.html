@@ -16,43 +16,73 @@
                         <div *ngFor="let datas of branch; index as m">
                             <div *ngIf="m > 0" class="pagerBreak"></div>
                             <table class="print-sm">
-                                <tr>
-                                    <th>部材</th>
-                                    <th>節点</th>
-                                    <th>着目位置</th>
-                                    <th>FX</th>
-                                    <th>FY</th>
-                                    <th>FZ</th>
-                                    <th>MX</th>
-                                    <th>MY</th>
-                                    <th>MZ</th>
-                                    <th>Comb</th>
-                                </tr>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>No.</th>
-                                    <th>DIST</th>
-                                    <th>(kN)</th>
-                                    <th>(kN)</th>
-                                    <th>(kN)</th>
-                                    <th>(kN・m)</th>
-                                    <th>(kN・m)</th>
-                                    <th>(kN・m)</th>
-                                    <th></th>
-                                </tr>
-
-                                <tr *ngFor="let data of datas">
-                                    <td>{{ data[0] }}</td>
-                                    <td>{{ data[1] }}</td>
-                                    <td>{{ data[2] }}</td>
-                                    <td>{{ data[3] }}</td>
-                                    <td>{{ data[4] }}</td>
-                                    <td>{{ data[5] }}</td>
-                                    <td>{{ data[6] }}</td>
-                                    <td>{{ data[7] }}</td>
-                                    <td>{{ data[8] }}</td>
-                                    <td>{{ data[9] }}</td>
-                                </tr>
+                                <div *ngIf="dimension===3">
+                                    <tr>
+                                        <th>部材</th>
+                                        <th>節点</th>
+                                        <th>着目位置</th>
+                                        <th>FX</th>
+                                        <th>FY</th>
+                                        <th>FZ</th>
+                                        <th>MX</th>
+                                        <th>MY</th>
+                                        <th>MZ</th>
+                                        <th>Comb</th>
+                                    </tr>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>No.</th>
+                                        <th>DIST</th>
+                                        <th>(kN)</th>
+                                        <th>(kN)</th>
+                                        <th>(kN)</th>
+                                        <th>(kN・m)</th>
+                                        <th>(kN・m)</th>
+                                        <th>(kN・m)</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr *ngFor="let data of datas">
+                                        <td>{{ data[0] }}</td>
+                                        <td>{{ data[1] }}</td>
+                                        <td>{{ data[2] }}</td>
+                                        <td>{{ data[3] }}</td>
+                                        <td>{{ data[4] }}</td>
+                                        <td>{{ data[5] }}</td>
+                                        <td>{{ data[6] }}</td>
+                                        <td>{{ data[7] }}</td>
+                                        <td>{{ data[8] }}</td>
+                                        <td>{{ data[9] }}</td>
+                                    </tr>
+                                </div>
+                                <div *ngIf="dimension===2">
+                                    <tr>
+                                        <th>部材</th>
+                                        <th>節点</th>
+                                        <th>着目位置</th>
+                                        <th>N</th>
+                                        <th>S</th>
+                                        <th>M</th>
+                                        <th>Comb</th>
+                                    </tr>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>No.</th>
+                                        <th>DIST</th>
+                                        <th>(kN)</th>
+                                        <th>(kN)</th>
+                                        <th>(kN・m)</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr *ngFor="let data of datas">
+                                        <td>{{ data[0] }}</td>
+                                        <td>{{ data[1] }}</td>
+                                        <td>{{ data[2] }}</td>
+                                        <td>{{ data[3] }}</td>
+                                        <td>{{ data[4] }}</td>
+                                        <td>{{ data[8] }}</td>
+                                        <td>{{ data[9] }}</td>
+                                    </tr>
+                                </div>                                
                             </table>
                         </div>
                     </div>
