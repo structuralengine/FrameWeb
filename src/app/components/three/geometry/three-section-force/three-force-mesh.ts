@@ -11,12 +11,14 @@ export class ThreeSectionForceMeshService {
 
   private font: THREE.Font;
   private text: ThreeLoadText;
+  private dimension: number
 
   private face_mat: THREE.MeshBasicMaterial;
   private line_mat: THREE.LineBasicMaterial;
 
 
-  constructor(font: THREE.Font) {
+  constructor(font: THREE.Font, _dimension: number) {
+    this.dimension = _dimension;
     this.text = new ThreeLoadText(font);
     this.font = font;
 
@@ -77,7 +79,7 @@ export class ThreeSectionForceMeshService {
 
     // 文字を追加する
     for(const text of this.getText(points, P1, P2)){
-      text.visible = false;
+      text.visible = true;
       group0.add(text);
     }
     
@@ -182,7 +184,11 @@ export class ThreeSectionForceMeshService {
 
     const result = [];
 
-    const size: number = 0.1; // 文字サイズ
+    // if(this.dimension===3) {
+      return result;
+    // }
+
+    const size: number = 100; // 文字サイズ
 
     const pos = new THREE.Vector2(0, 0);
     if(P1 !== 0) {
@@ -225,8 +231,17 @@ export class ThreeSectionForceMeshService {
 
 
   // 大きさを反映する
-  public setScale(group: any, scale: number): void {
-    group.scale.set(1, scale, scale);
+  public setScale(target: any, scale: number): void {
+
+    target.scale.set(1, scale, scale);
+
+    const group: THREE.Group = target.getObjectByName("group");
+
+    const text = group.getObjectByName("text");
+    if(text !== undefined){
+      text.scale.set(1, scale, 1);
+    }
+
   }
 
   public change(
@@ -247,6 +262,13 @@ export class ThreeSectionForceMeshService {
     const points: THREE.Vector3[] = p.points;
 
     const group: THREE.Group = target.getObjectByName("group");
+
+    let text = group.getObjectByName("text");
+    while(text !== undefined){
+      group.remove(text);
+      text = group.getObjectByName("text");
+    }
+
     const child = group.getObjectByName("child");
 
     // 面
@@ -260,7 +282,6 @@ export class ThreeSectionForceMeshService {
     geo.verticesNeedUpdate = true;
 
      // 線
-    //child.add(this.getLine(my_color, points));
     const line: any = child.getObjectByName("line");
     const positions = line.geometry.attributes.position.array;
     let index = 0;
@@ -272,6 +293,13 @@ export class ThreeSectionForceMeshService {
     line.geometry.attributes.position.needsUpdate = true;
 
     target.position.set(nodei.x, nodei.y, nodei.z);
+
+    // 文字を追加する
+    for(const text of this.getText(points, P1, P2)){
+      text.visible = true;
+      group.add(text);
+    }
+    
 
     // 全体の向きを修正する
     target.rotation.set(0, 0, 0); 

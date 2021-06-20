@@ -59,7 +59,7 @@ export class ThreeSectionForceService {
     // フォントをロード
     const loader = new THREE.FontLoader();
     loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
-      this.mesh = new ThreeSectionForceMeshService(font);
+      this.mesh = new ThreeSectionForceMeshService(font, this.helper.dimension);
       this.ClearData();
       this.scene.add(this.ThreeObject1);
       this.scene.add(this.ThreeObject2);
@@ -312,8 +312,6 @@ export class ThreeSectionForceService {
           const LL = fsec['l'];
           P2 = fsec[key1] - 0;
           L2 = Math.round((len - LL) * 1000) / 1000;
-          //P1 = (this.helper.dimension === 2 && key1 === 'fy') ? P1 * -1 : P1;
-          //P2 = (this.helper.dimension === 2 && key1 === 'fy') ? P2 * -1 : P2;
           if(item === null){
             const mesh = (this.helper.dimension === 2 && key1 === 'fy') ? 
                             this.mesh.create(nodei, nodej, localAxis, key2, L1, L2, -P1, -P2) :
