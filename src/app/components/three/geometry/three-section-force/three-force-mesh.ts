@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import * as THREE from "three";
 import { Vector2 } from 'three';
 import { ThreeLoadText } from '../three-load/three-load-text';
@@ -16,8 +16,7 @@ export class ThreeSectionForceMeshService {
   private face_mat: THREE.MeshBasicMaterial;
   private line_mat: THREE.LineBasicMaterial;
 
-
-  constructor(font: THREE.Font, dim: number) {
+  constructor(font: THREE.Font, @Inject(Number) dim: number) {
     this.dimension = dim;
     this.text = new ThreeLoadText(font);
     this.font = font;
