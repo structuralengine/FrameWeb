@@ -55,7 +55,7 @@ export class PrintInputMembersComponent implements OnInit, AfterViewInit {
       this.member_page = tables.page;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(1);
+      // this.countArea.setData(1);
     }
   }
 

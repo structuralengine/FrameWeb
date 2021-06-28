@@ -61,7 +61,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
       this.pickDisg_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(14);
+      // this.countArea.setData(14);
     }
   }
 
@@ -136,7 +136,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
           const item = elist[k];
           // 印刷する1行分のリストを作る
           const line = ["", "", "", "", "", "", "", ""];
-          line[0] = item.id.toString();
+          line[0] = k.toString();
           line[1] = item.dx.toFixed(4);
           line[2] = item.dy.toFixed(4);
           line[3] = item.dz.toFixed(4);

@@ -60,7 +60,7 @@ export class PrintInputElementsComponent implements OnInit, AfterViewInit {
       this.elements_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(2);
+      // this.countArea.setData(2);
     }
   }
 

@@ -13,6 +13,7 @@ import { PrintService } from "../../print.service";
   ],
 })
 export class PrintInputCombineComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number = 0;
@@ -52,7 +53,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
       this.comb_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(10);
+      this.isEnable = false;
     }
   }
 

@@ -57,7 +57,7 @@ export class PrintResultPickupReacComponent implements OnInit {
       this.pickReac_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(17);
+      // this.countArea.setData(17);
     }
   }
 
@@ -133,7 +133,7 @@ export class PrintResultPickupReacComponent implements OnInit {
           const item = elist[k];
           // 印刷する1行分のリストを作る
           const line = ["", "", "", "", "", "", "", ""];
-          line[0] = item.id.toString();
+          line[0] = k.toString();
           line[1] = item.tx.toFixed(2);
           line[2] = item.ty.toFixed(2);
           line[3] = item.tz.toFixed(2);

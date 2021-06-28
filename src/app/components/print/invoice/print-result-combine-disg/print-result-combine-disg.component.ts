@@ -62,7 +62,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
       this.combDisg_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(13);
+      // this.countArea.setData(13);
     }
   }
 
@@ -137,7 +137,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
 
           // 印刷する1行分のリストを作る
           const line = ["", "", "", "", "", "", "", ""];
-          line[0] = item.id.toString();
+          line[0] = k.toString();
           line[1] = item.dx.toFixed(4);
           line[2] = item.dy.toFixed(4);
           line[3] = item.dz.toFixed(4);

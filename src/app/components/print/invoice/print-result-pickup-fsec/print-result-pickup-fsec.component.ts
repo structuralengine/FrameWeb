@@ -64,7 +64,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
       this.pickFsec_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(20);
+      // this.countArea.setData(20);
     }
   }
 

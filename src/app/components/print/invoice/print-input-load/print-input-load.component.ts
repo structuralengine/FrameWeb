@@ -76,7 +76,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         tables_actual.last
       );
     } else {
-      this.countArea.setData(8);
+      // this.countArea.setData(8);
     }
   }
 

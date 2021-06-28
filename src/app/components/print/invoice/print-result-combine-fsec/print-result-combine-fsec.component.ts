@@ -58,7 +58,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       this.combFsec_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(19);
+      // this.countArea.setData(19);
     }
   }
 

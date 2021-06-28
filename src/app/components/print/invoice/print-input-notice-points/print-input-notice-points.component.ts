@@ -55,7 +55,7 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       //this.notice_page = tables.page;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);}
     else {
-      this.countArea.setData(5);
+      // this.countArea.setData(5);
      }
   }
 

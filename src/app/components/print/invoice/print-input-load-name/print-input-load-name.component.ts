@@ -54,9 +54,9 @@ export class PrintInputLoadNameComponent implements OnInit {
         tables_basic.this,
         tables_basic.last
       );
-      this.countArea.setData(tables_basic.empty);
+      // this.countArea.setData(tables_basic.empty);
     } else {
-      this.countArea.setData(7);
+      // this.countArea.setData(7);
     }
   }
 

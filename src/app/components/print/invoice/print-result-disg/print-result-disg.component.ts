@@ -53,7 +53,7 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.disg.disg;
     if (resultjson === undefined) {
-      this.countArea.setData(12);
+      // this.countArea.setData(12);
     }
     const tables = this.printDisg(resultjson);
     this.disg_table = tables.table;

@@ -60,7 +60,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       }
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(0);
+      // this.countArea.setData(0);
     }
   }
 

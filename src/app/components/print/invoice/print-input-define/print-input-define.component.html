@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable">
+<div  *ngIf="isEnable" class="invoicetTable">
+    <div *ngIf="judge" class="pagerBreak"></div>
     <h2>DEFINEデータ</h2>
     <div *ngFor="let dataset of define_dataset index as i">
         <div *ngIf="i > 0" class="pagerBreak"></div>

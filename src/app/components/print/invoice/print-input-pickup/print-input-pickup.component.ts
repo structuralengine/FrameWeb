@@ -47,7 +47,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
       this.pickup_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     }else {
-      this.countArea.setData(11);
+      // this.countArea.setData(11);
     }
   }
 
