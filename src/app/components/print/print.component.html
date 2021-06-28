@@ -10,7 +10,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="result0"
-          (change)="toggleEditable($event, 0)"
+          [(ngModel)]="printService.contentEditable1[0]"
         />
         <span class="checkbox-parts">入力データ</span>
       </label>
@@ -22,7 +22,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print1"
-          (change)="toggleEditable($event, 1)"
+          [(ngModel)]="printService.contentEditable1[1]"
         />
         <span class="checkbox-parts">変位量</span>
       </label>
@@ -34,7 +34,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print2"
-          (change)="toggleEditable($event, 2)"
+          [(ngModel)]="printService.contentEditable1[2]"
         />
         <span class="checkbox-parts">COMBINE 変位量</span>
       </label>
@@ -46,7 +46,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print3"
-          (change)="toggleEditable($event, 3)"
+          [(ngModel)]="printService.contentEditable1[3]"
         />
         <span class="checkbox-parts">PICKUP 変位量</span>
       </label>
@@ -58,7 +58,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print4"
-          (change)="toggleEditable($event, 4)"
+          [(ngModel)]="printService.contentEditable1[4]"
         />
         <span class="checkbox-parts">反力</span>
       </label>
@@ -70,7 +70,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print5"
-          (change)="toggleEditable($event, 5)"
+          [(ngModel)]="printService.contentEditable1[5]"
         />
         <span class="checkbox-parts">COMBINE 反力</span>
       </label>
@@ -82,7 +82,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print6"
-          (change)="toggleEditable($event, 6)"
+          [(ngModel)]="printService.contentEditable1[6]"
         />
         <span class="checkbox-parts">PICKUP 反力</span>
       </label>
@@ -94,7 +94,7 @@
           name="checkbox-print"
           class="checkbox-input"
           id="print7"
-          (change)="toggleEditable($event, 7)"
+          [(ngModel)]="printService.contentEditable1[7]"
         />
         <span class="checkbox-parts">断面力</span>
       </label>
@@ -106,7 +106,7 @@
           name="checkbox-result"
           class="checkbox-input"
           id="print8"
-          (change)="toggleEditable($event, 8)"
+          [(ngModel)]="printService.contentEditable1[8]"
         />
         <span class="checkbox-parts">COMBINE 断面力</span>
       </label>
@@ -118,7 +118,7 @@
           name="checkbox-result"
           class="checkbox-input"
           id="print9"
-          (change)="toggleEditable($event, 9)"
+          [(ngModel)]="printService.contentEditable1[9]"
         />
         <span class="checkbox-parts">PICKUP 断面力</span>
       </label>
