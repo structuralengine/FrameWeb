@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable fsecComb">
+<div *ngIf="isEnable"  class="invoicetTable fsecComb">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>COMBINE 断面力</h2>
     <!--combFsec_titileからtitleごとにデータを取り出す-->
     <div *ngFor="let title of combFsec_title; index as i">

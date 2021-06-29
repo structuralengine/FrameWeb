@@ -14,6 +14,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintInputLoadComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number  = 0;
@@ -76,7 +77,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         tables_actual.last
       );
     } else {
-      // this.countArea.setData(8);
+      this.isEnable = false;
     }
   }
 

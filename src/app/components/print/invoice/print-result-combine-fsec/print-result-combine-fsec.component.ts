@@ -12,6 +12,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   styleUrls: ["../../../../app.component.scss", "../invoice.component.scss"],
 })
 export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -58,7 +59,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       this.combFsec_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      // this.countArea.setData(19);
+      this.isEnable = false;
     }
   }
 

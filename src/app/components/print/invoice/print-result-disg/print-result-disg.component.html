@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable disg">
+<div *ngIf="isEnable"  class="invoicetTable disg">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>変位量</h2>
     <div *ngFor="let title of disg_typeNum; index as i">
         <div *ngIf="disg_break[i]" class="pagerBreak"></div>

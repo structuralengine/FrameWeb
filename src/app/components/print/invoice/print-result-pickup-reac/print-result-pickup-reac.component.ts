@@ -17,6 +17,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintResultPickupReacComponent implements OnInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -57,7 +58,7 @@ export class PrintResultPickupReacComponent implements OnInit {
       this.pickReac_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      // this.countArea.setData(17);
+      this.isEnable = false;
     }
   }
 

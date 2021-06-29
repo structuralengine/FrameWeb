@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable pickup">
+<div *ngIf="isEnable"  class="invoicetTable pickup">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>PICKUPデータ</h2>
     <div *ngFor="let dataset of pickup_dataset index as i">
         <div *ngIf="i > 0" class="pagerBreak"></div>

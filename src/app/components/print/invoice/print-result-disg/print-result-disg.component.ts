@@ -18,6 +18,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintResultDisgComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -53,7 +54,7 @@ export class PrintResultDisgComponent implements OnInit, AfterViewInit {
     // const json: {} = this.ResultData.disg.getDisgJson();
     const resultjson: any = this.ResultData.disg.disg;
     if (resultjson === undefined) {
-      // this.countArea.setData(12);
+      this.isEnable = false;
     }
     const tables = this.printDisg(resultjson);
     this.disg_table = tables.table;

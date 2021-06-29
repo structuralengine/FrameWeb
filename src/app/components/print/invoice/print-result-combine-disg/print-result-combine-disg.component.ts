@@ -16,6 +16,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -62,7 +63,7 @@ export class PrintResultCombineDisgComponent implements OnInit, AfterViewInit {
       this.combDisg_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      // this.countArea.setData(13);
+      this.isEnable = false;
     }
   }
 

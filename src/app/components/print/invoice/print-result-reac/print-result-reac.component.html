@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable reac">
+<div *ngIf="isEnable"  class="invoicetTable reac">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>反力</h2>
     <div *ngFor="let title of reac_typeNum; index as i">
         <div *ngIf="reac_break[i]" class="pagerBreak"></div>

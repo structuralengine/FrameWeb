@@ -13,7 +13,7 @@ import { PrintService } from "../../print.service";
   ],
 })
 export class PrintInputDefineComponent implements OnInit, AfterViewInit {
-  isEnable = false;
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number = 0;

@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable elements">
+<div *ngIf="isEnable"  class="invoicetTable elements">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>材料データ</h2>
     <div *ngFor="let title of elements_typeNum; index as i">
         <div *ngIf="elements_break[i]" class="pagerBreak"></div>

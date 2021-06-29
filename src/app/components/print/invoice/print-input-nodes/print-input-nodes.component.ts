@@ -14,6 +14,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintInputNodesComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number  = 0;
@@ -60,7 +61,7 @@ export class PrintInputNodesComponent implements OnInit, AfterViewInit {
       }
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      // this.countArea.setData(0);
+      this.isEnable = false;
     }
   }
 

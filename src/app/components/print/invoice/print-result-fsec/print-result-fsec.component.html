@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable fsec">
+<div *ngIf="isEnable"  class="invoicetTable fsec">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>断面力</h2>
     <div *ngFor="let title of fsec_typeNum; index as i">
         <div *ngIf="fsec_break[i]" class="pagerBreak"></div>

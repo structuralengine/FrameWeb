@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable pickDisg">
+<div *ngIf="isEnable"  class="invoicetTable pickDisg">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>PICKUP 変位量</h2>
     <!--pickDisg_titleからtitleごとにデータを取り出す-->
     <div *ngFor="let title of pickDisg_title; index as i">

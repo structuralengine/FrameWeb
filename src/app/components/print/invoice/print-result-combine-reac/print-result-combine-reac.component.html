@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable reacCombine">
+<div *ngIf="isEnable"  class="invoicetTable reacCombine">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>COMBINE 反力</h2>
     <!--combReac_titleからtitleごとにデータを取り出す-->
     <div *ngFor="let title of combReac_title; index as i">
