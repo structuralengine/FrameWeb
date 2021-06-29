@@ -67,14 +67,14 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
     // あらかじめテーブルの高さを計算する
     const dataCount: number = Object.keys(json).length;
     const splid: any[] = new Array();
-    let row: number;
+    let row: number = 5;
 
     for (const index of Object.keys(json)) {
-      if (index === "1") {
-        row = 5;
-      } else {
-        row = 2;
-      }
+      // if (index === "1") {
+      //   row = 5;
+      // } else {
+      //   row = 2;
+      // }
 
       const item = json[index]; // 1行分のnodeデータを取り出す
 
@@ -116,7 +116,7 @@ export class PrintInputCombineComponent implements OnInit, AfterViewInit {
           line2.push("");
           line1.push(""); // 荷重名称
           line2.push("");
-          row++;
+          row += 4;
         }
       }
       if (counter > 0) {

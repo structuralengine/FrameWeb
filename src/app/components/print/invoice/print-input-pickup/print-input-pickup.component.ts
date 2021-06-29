@@ -93,6 +93,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
           counter = 0;
           line = new Array();
           line.push(""); // PickUpNo
+          line.push(""); // 荷重名称
           row++;
         }
       }
