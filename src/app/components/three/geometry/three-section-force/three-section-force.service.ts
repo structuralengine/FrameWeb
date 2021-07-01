@@ -27,6 +27,7 @@ export class ThreeSectionForceService {
   private ThreeObject2: THREE.Object3D;
   private currentIndex: string;
   private currentMode: string;
+  private currentRadio: string;
 
   private scale: number;
   private params: any;   // GUIの表示制御
@@ -135,8 +136,10 @@ export class ThreeSectionForceService {
 
     if (this.helper.dimension === 3){
       this.params.momentY = true; // 初期値（3D）
+      this.currentRadio = 'momentY';
     } else {
       this.params.momentZ = true; // 初期値（2D） 
+      this.currentRadio = 'momentZ';
     }
 
   }
@@ -230,29 +233,37 @@ export class ThreeSectionForceService {
     let key1: string;
     let key2: string;
     if (this.params.axialForce === true) {
+      this.currentRadio = 'axialForce';
       key1 = 'fx';
       key2 = (this.helper.dimension === 3) ? 'z' : 'y' ;
     } else if (this.params.torsionalMoment === true) {
       // ねじり曲げモーメント
+      this.currentRadio = 'torsionalMoment';
       key1 = 'mx';
       key2 = 'y';
     } else if (this.params.shearForceY === true) {
       // Y方向のせん断力
+      this.currentRadio = 'shearForceY';
       key1 = 'fy';
       key2 = 'y';
     } else if (this.params.momentY === true) {
       // Y軸周りの曲げモーメント
+      this.currentRadio = 'momentY';
       key1 = 'my';
       key2 = 'z';
     } else if (this.params.shearForceZ === true) {
       // Z方向のせん断力
+      this.currentRadio = 'shearForceZ';
       key1 = 'fz';
       key2 = 'z';
     } else if (this.params.momentZ === true) {
       // Z軸周りの曲げモーメント
+      this.currentRadio = 'momentZ';
       key1 = 'mz';
       key2 = 'y';
     } else {
+      this.params[this.currentRadio] = true;
+      this.changeMesh();
       return;
     }
 

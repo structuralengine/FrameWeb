@@ -10,7 +10,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   selector: "app-result-pickup-fsec",
   templateUrl: "./result-pickup-fsec.component.html",
   styleUrls: [
-    "./result-pickup-fsec.component.scss",
+    "../result-combine-fsec/result-combine-fsec.component.scss",
     "../../../app.component.scss",
     "../../../floater.component.scss",
   ],
