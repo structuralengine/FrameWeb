@@ -72,12 +72,14 @@ export class LoginDialogComponent implements OnInit {
     });
   }
 
-  login() {
+  //2
+  login() {　
     const email = this.loginForm.get('email').value;
     const password = this.loginForm.get('password').value;
     this.auth.login(email, password).then((value) => {
+      //3 
       this.activeModal.close('Submit');
-      this.user.loggedIn = true;
+      this.user.loggedIn = true; 
       console.log(value);
     }).catch((error) => {
       alert("メールアドレスまたはパスワードを間違えています。");

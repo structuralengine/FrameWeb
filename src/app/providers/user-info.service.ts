@@ -11,6 +11,7 @@ export class UserInfoService {
   user_id: number;
   purchase_value: number;
   loggedIn: boolean;
+  active:boolean;
 
   constructor() { 
     this.clear();
@@ -22,6 +23,7 @@ export class UserInfoService {
     this.user_id = -1;
     this.purchase_value = -1;
     this.loggedIn = false;
+    this.active = false;
   }
 
   // 計算結果情報から ユーザーポイントを更新する
@@ -30,5 +32,4 @@ export class UserInfoService {
       this.purchase_value = jsonData['new_points'];
     }
   }
-
 }

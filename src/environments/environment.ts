@@ -5,14 +5,13 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyDtl3JOU2I5u876S4aMJE4ORGpWfT-vlA4",
-    authDomain: "structuralengine8a9e.firebaseapp.com",
-    databaseURL: "https://structuralengine8a9e-default-rtdb.firebaseio.com",
-    projectId: "structuralengine8a9e",
-    storageBucket: "structuralengine8a9e.appspot.com",
-    messagingSenderId: "339918426235",
-    appId: "1:339918426235:web:227c8ad791e0923df3d2de",
-    measurementId: "G-02FGCF0CKB"
+    apiKey: "AIzaSyCO4R1CmJQzVUKfotcOqJCLbwNjrwMzRXc",
+    authDomain: "structuralen-395cf.firebaseapp.com",
+    projectId: "structuralen-395cf",
+    storageBucket: "structuralen-395cf.appspot.com",
+    messagingSenderId: "861143356248",
+    appId: "1:861143356248:web:b3236a57a09f7513040b2d",
+    measurementId: "G-Y61W803WE7"
   },
 };
 

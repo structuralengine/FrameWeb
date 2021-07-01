@@ -45,6 +45,7 @@ export class AuthService {
   private itemsCollection: AngularFirestoreCollection<Item>;
   items: Observable<Item[]>;
   amount: number;
+  active: boolean;
   currentUser: any;
   constructor(
     private afAuth: AngularFireAuth,
@@ -81,6 +82,7 @@ export class AuthService {
             (value) => {
               console.log("value", value);
               this.amount = value[0].items[0].plan.amount;
+              this.active = value[0].items[0].plan.active;
               console.log("amount", this.amount);
             },
             (error) => {

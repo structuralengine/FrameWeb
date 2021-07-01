@@ -36,6 +36,7 @@ export class MenuComponent implements OnInit {
   fileName: string;
   isCalculated: boolean;
   amount: number;
+  active: boolean;
   // n:number = 3;
 
   constructor(
@@ -58,7 +59,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.3.11"
+    this.fileName = "立体骨組構造解析ソフトver1.3.7"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -77,7 +78,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.3.11"
+    this.fileName = "立体骨組構造解析ソフトver1.3.7"
   }
 
   // ファイルを開く
@@ -97,7 +98,7 @@ export class MenuComponent implements OnInit {
         this.app.dialogClose(); // 現在表示中の画面を閉じる
         const old = this.helper.dimension;
         this.InputData.loadInputData(text); // データを読み込む
-        if(old !== this.helper.dimension){
+        if (old !== this.helper.dimension) {
           this.setDimension(this.helper.dimension);
         }
         this.three.fileload();
@@ -130,7 +131,7 @@ export class MenuComponent implements OnInit {
       this.fileName = 'frameWebForJS.json';
     }
     let ext = '';
-    if(this.helper.getExt(this.fileName) !== 'json'){
+    if (this.helper.getExt(this.fileName) !== 'json') {
       ext = '.json';
     }
     FileSaver.saveAs(blob, this.fileName + ext);
@@ -140,7 +141,7 @@ export class MenuComponent implements OnInit {
   // 計算
   public calcrate(): void {
 
-    // if (this.loggedIn === true) {
+    if (this.active === true) {
       // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
       // this.auth.calc(this.amount);
       // this.amount = this.auth.amount;
@@ -157,9 +158,9 @@ export class MenuComponent implements OnInit {
       this.ResultData.clear(); // 解析結果情報をクリア
 
       this.post_compress(jsonData, modalRef);
-    // } else {
-    //   alert("ログインしてください")
-    // }
+    } else {
+      alert("サブスクリプションにお申し込みください。")
+    }
   }
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
@@ -185,7 +186,7 @@ export class MenuComponent implements OnInit {
         // 通信成功時の処理（成功コールバック）
         console.log('通信成功!!');
         try {
-          if ( response.includes('error')){
+          if (response.includes('error')) {
             throw response;
           }
           // Decode base64 (convert ascii to binary)
@@ -205,7 +206,7 @@ export class MenuComponent implements OnInit {
           const jsonData = JSON.parse(json);
           // サーバーのレスポンスを集計する
           console.log(jsonData);
-          if ( 'error' in jsonData){
+          if ('error' in jsonData) {
             throw jsonData.error;
           }
           // 解析結果を集計する
@@ -238,7 +239,7 @@ export class MenuComponent implements OnInit {
 
     let pickupJson: string;
     let ext: string;
-    if(this.helper.dimension === 2){
+    if (this.helper.dimension === 2) {
       pickupJson = this.ResultData.GetPicUpText2D();
       ext = '.pik';
     } else {
@@ -259,15 +260,16 @@ export class MenuComponent implements OnInit {
   logIn(): void {
     this.app.dialogClose(); // 現在表示中の画面を閉じる
     this.modalService.open(LoginDialogComponent).result.then((result) => {
+      // 1
       const modalRef = this.modalService.open(WaitDialogComponent);
       this.loggedIn = this.user.loggedIn;
+      this.active = this.auth.active;
       setTimeout(() => {
-        if (this.loggedIn === true) {
-          this.userPoint = this.user.purchase_value.toString();
-          this.amount = this.auth.amount;
-        }
+        this.userPoint = this.user.purchase_value.toString();
+        this.amount = this.auth.amount;
+        this.active = this.auth.active;
         modalRef.close();
-      }, 200);
+      }, 10000);
     });
 
     // 「ユーザー名」入力ボックスにフォーカスを当てる
@@ -276,12 +278,14 @@ export class MenuComponent implements OnInit {
 
   logOut(): void {
     this.loggedIn = false;
+    this.active = false;
     this.user.clear();
     this.auth.signOut();
   }
 
   logout() {
     this.user.loggedIn = false;
+    this.active = false;
     this.auth.signOut();
     this.user.clear();
   }
@@ -334,14 +338,14 @@ export class MenuComponent implements OnInit {
 
   // }
 
-  public setDimension(dim:number = null){
-    if(dim === null) {
-      if(this.helper.dimension === 2) {
+  public setDimension(dim: number = null) {
+    if (dim === null) {
+      if (this.helper.dimension === 2) {
         this.helper.dimension = 3;
-      } else{
+      } else {
         this.helper.dimension = 2;
       }
-    }else{
+    } else {
       this.helper.dimension = dim;
       const g23D: any = document.getElementById("toggle--switch");
       g23D.checked = (this.helper.dimension === 3);
