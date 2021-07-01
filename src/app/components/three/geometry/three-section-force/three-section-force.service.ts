@@ -59,7 +59,7 @@ export class ThreeSectionForceService {
     // フォントをロード
     const loader = new THREE.FontLoader();
     loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
-      this.mesh = new ThreeSectionForceMeshService(font, this.helper.dimension);
+      this.mesh = new ThreeSectionForceMeshService(font);
       this.ClearData();
       this.scene.add(this.ThreeObject1);
       this.scene.add(this.ThreeObject2);
@@ -108,6 +108,9 @@ export class ThreeSectionForceService {
     }
     // オブジェクトを削除する
     this.ThreeObject1.children = new Array();
+    if(this.helper.dimension !== undefined){
+      this.mesh.dimension = this.helper.dimension;
+    }
   }
 
   private setGuiParams(): void {
@@ -258,6 +261,10 @@ export class ThreeSectionForceService {
       return;
     }
     const fsecList = this.fsecData[this.currentMode];
+    if(!(this.currentIndex in fsecList)){
+      return;
+    }
+
     const fsecDatas = [];
     if(this.currentMode === 'fsec'){
       fsecDatas.push(fsecList[this.currentIndex]);
@@ -357,7 +364,11 @@ export class ThreeSectionForceService {
     const scale1: number = this.scale / 100;
     const scale2: number = this.baseScale();
     const max_values = this.max_values[this.currentMode];
+    if(!(this.currentIndex in max_values)){
+      return;
+    }
     const max_value = max_values[this.currentIndex];
+
 
     let scale3: number = 1;
     if (this.params.axialForce === true) {
