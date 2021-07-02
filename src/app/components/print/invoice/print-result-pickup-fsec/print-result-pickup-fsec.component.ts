@@ -155,7 +155,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
           line[6] = item.mx.toFixed(2);
           line[7] = item.my.toFixed(2);
           line[8] = item.mz.toFixed(2);
-          line[9] = item.case;
+          line[9] = item.comb + ':' + item.case;
 
           body.push(line);
           this.row++;
