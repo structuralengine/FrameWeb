@@ -31,13 +31,13 @@ addEventListener('message', ({ data }) => {
           mz: (Math.round(target3.mz * 100) / 100).toFixed(2)
         };
         // 同一要素内の着目点で、直前の断面力と同じ断面力だったら 読み飛ばす
-        if (old['m'] !== item['m'] || old['n'] !== item['n'] 
-            || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
-            || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
+        // if (old['m'] !== item['m'] || old['n'] !== item['n'] 
+        //     || old['fx'] !== item['fx'] || old['fy'] !== item['fy'] || old['fz'] !== item['fz']
+        //     || old['mx'] !== item['mx'] || old['my'] !== item['my'] || old['mz'] !== item['mz']) {
           result.push(item);
           m = target3['m'];
           Object.assign(old, item);
-        }
+        // }
       }
       table[typNo] = result;
     }

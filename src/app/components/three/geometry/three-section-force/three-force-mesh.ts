@@ -181,6 +181,8 @@ export class ThreeSectionForceMeshService {
 
   // 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group {
+    
+    return null; // やっぱ重い
 
     const result = new THREE.Group();
 

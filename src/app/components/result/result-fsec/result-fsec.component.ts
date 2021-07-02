@@ -89,4 +89,6 @@ export class ResultFsecComponent implements OnInit {
     document.body.removeChild(selBox);
   }
 
+
+
 }
