@@ -70,6 +70,7 @@ export class PrintResultPickupReacComponent implements OnInit {
     const typeSum: any = [];
 
     const KEYS = this.combReac.reacKeys;
+    const TITLES = this.combReac.titles; 
     // [
     //   "tx_max",
     //   "tx_min",
@@ -117,10 +118,11 @@ export class PrintResultPickupReacComponent implements OnInit {
       let type: any = [];
       for (let i = 0; i < KEYS.length; i++) {
         const key = KEYS[i];
+        const title2 = TITLES[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         if(!(key in elieli)) continue;
 
-        typeName.push(key);
+        typeName.push(title2);
 
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any = [];

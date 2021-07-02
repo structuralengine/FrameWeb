@@ -72,6 +72,8 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     const typeSum: any [] = new Array();
 
     const KEYS = this.combFsec.fsecKeys; 
+    const TITLES = this.combFsec.titles; 
+
     // [
     //   "fx_max",
     //   "fx_min",
@@ -120,10 +122,11 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       let type:  any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         const key = KEYS[i];
+        const title2 = TITLES[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         if(!(key in elieli)){ continue; }
 
-        typeName.push(key);
+        typeName.push(title2);
 
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
