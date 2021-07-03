@@ -640,10 +640,8 @@ export class ThreeLoadService {
       const node = nodeData[n];
 
       // リストに登録する
-      const target =
-        n in pointLoadList
-          ? pointLoadList[n]
-          : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
+      const target = n in pointLoadList ? pointLoadList[n]
+      : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
 
       // 集中荷重 ---------------------------------
       for (let key of ["tx", "ty", "tz"]) {
@@ -662,7 +660,7 @@ export class ThreeLoadService {
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        pointLoadList[n] = target;
+        // pointLoadList[n] = target;
       }
       // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
       for (let k of ["x", "y", "z"]) {
@@ -682,7 +680,7 @@ export class ThreeLoadService {
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        pointLoadList[n] = target;
+        // pointLoadList[n] = target;
       }
 
       // 曲げモーメント荷重 -------------------------
@@ -712,7 +710,7 @@ export class ThreeLoadService {
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        pointLoadList[n] = target;
+        // pointLoadList[n] = target;
       }
       // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
       for (let k of ["x", "y", "z"]) {
@@ -743,8 +741,9 @@ export class ThreeLoadService {
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        pointLoadList[n] = target;
+        // pointLoadList[n] = target;
       }
+      pointLoadList[n] = target;
 
 
     }
@@ -767,20 +766,28 @@ export class ThreeLoadService {
     }
 
     targetNodeLoad.forEach((load) => {
-      LoadList.pMax = Math.max(
-        LoadList.pMax,
-        Math.abs(load.tx),
-        Math.abs(load.ty),
-        Math.abs(load.tz)
-      );
+      for(const k of ['tx', 'ty', 'tz']){
+        if(k in load){
+          LoadList.pMax = Math.max(LoadList.pMax, Math.abs(load[k]));
+        }
+      }
+      for(const k of ['dx', 'dy', 'dz']){
+        if(k in load){
+          LoadList.pMax = Math.max(LoadList.pMax, Math.abs(load[k]*1000));
+        }
+      }
     });
     targetNodeLoad.forEach((load) => {
-      LoadList.mMax = Math.max(
-        LoadList.mMax,
-        Math.abs(load.rx),
-        Math.abs(load.ry),
-        Math.abs(load.rz)
-      );
+      for(const k of ['rx', 'ry', 'rz']){
+        if(k in load){
+          LoadList.mMax = Math.max(LoadList.mMax, Math.abs(load[k]));
+        }
+      }
+      for(const k of ['ax', 'ay', 'az']){
+        if(k in load){
+          LoadList.mMax = Math.max(LoadList.mMax, Math.abs(load[k]*1000));
+        }
+      }      
     });
   }
 

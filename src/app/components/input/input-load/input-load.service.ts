@@ -136,12 +136,25 @@ export class InputLoadService {
           const _row: string = "row" in item2 ? item2["row"] : i + 1;
 
           const _n: string = "n" in item2 ? item2.n : "";
-          const _tx: string = "tx" in item2 ? item2.tx : "";
-          const _ty: string = "ty" in item2 ? item2.ty : "";
-          const _tz: string = "tz" in item2 ? item2.tz : "";
-          const _rx: string = "rx" in item2 ? item2.rx : "";
-          const _ry: string = "ry" in item2 ? item2.ry : "";
-          const _rz: string = "rz" in item2 ? item2.rz : "";
+          let _tx: string = "";
+          if("tx" in item2 ) _tx = item2.tx;
+          if("dx" in item2 ) _tx = item2.dx;
+          let _ty: string = "";
+          if("ty" in item2 ) _ty = item2.ty;
+          if("dy" in item2 ) _ty = item2.dy;
+          let _tz: string = "";
+          if("tz" in item2 ) _tz = item2.tz;
+          if("dz" in item2 ) _tz = item2.dz;
+          let _rx: string = "";
+          if("rx" in item2 ) _rx = item2.rx;
+          if("ax" in item2 ) _rx = item2.ax;
+          let _ry: string = "";
+          if("ry" in item2 ) _ry = item2.ry;
+          if("ay" in item2 ) _ry = item2.ay;
+          let _rz: string = "";
+          if("rz" in item2 ) _rz = item2.rz;
+          if("az" in item2 ) _rz = item2.az;
+          
 
           tmp_load1[_row] = {
             row: _row,
@@ -411,23 +424,30 @@ export class InputLoadService {
         if ( n != null &&
           ( tx != null || ty != null || tz != null ||
             rx != null || ry != null || rz != null)) {
-          let tmp = (n > 0) ? {
+          let tmp = {};
+          if(n > 0)  {
+            tmp = {
               n: row.n,
               tx: tx == null ? empty : tx,
               ty: ty == null ? empty : ty,
               tz: tz == null ? empty : tz,
               rx: rx == null ? empty : rx,
               ry: ry == null ? empty : ry,
-              rz: rz == null ? empty : rz,
-            } : {
-              n: Math.abs(n).toString(),
-              dx: tx == null ? empty : tx / 1000,
-              dy: ty == null ? empty : ty / 1000,
-              dz: tz == null ? empty : tz / 1000,
-              ax: rx == null ? empty : rx / 1000,
-              ay: ry == null ? empty : ry / 1000,
-              az: rz == null ? empty : rz / 1000,
+              rz: rz == null ? empty : rz
             };
+          } else  {
+            const coef = (empty===null) ? 1 : 1000;
+            const No = (empty===null) ? row["n"] : Math.abs(n).toString();
+            tmp = {
+              n: No,
+              dx: tx == null ? empty : tx / coef,
+              dy: ty == null ? empty : ty / coef,
+              dz: tz == null ? empty : tz / coef,
+              ax: rx == null ? empty : rx / coef,
+              ay: ry == null ? empty : ry / coef,
+              az: rz == null ? empty : rz / coef
+            };
+          }
 
           tmp["row"] = row.row;
 
