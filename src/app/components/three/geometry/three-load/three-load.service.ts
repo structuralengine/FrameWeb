@@ -664,6 +664,26 @@ export class ThreeLoadService {
 
         pointLoadList[n] = target;
       }
+      // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
+      for (let k of ["x", "y", "z"]) {
+        const key1 = 'd' + k;
+        if (load[key1] === 0) continue;
+
+        const value = load[key1] * 1000;
+
+        const key = 't' + k;
+        // 荷重を編集する
+        // 長さを決める
+        // scale = 1 の時 長さlength = maxLengthとなる
+        const arrow = this.pointLoad.create(node, 0, value, 1, key, load.row);
+
+        // リストに登録する
+        arrow["row"] = load.row;
+        target[key].push(arrow);
+        ThreeObject.add(arrow);
+
+        pointLoadList[n] = target;
+      }
 
       // 曲げモーメント荷重 -------------------------
       for (let key of ["rx", "ry", "rz"]) {
@@ -694,6 +714,39 @@ export class ThreeLoadService {
 
         pointLoadList[n] = target;
       }
+      // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
+      for (let k of ["x", "y", "z"]) {
+        const key1 = 'a' + k;
+
+        if (load[key1] === 0) continue;
+
+        const value = load[key1] * 1000;
+
+        const key = 'r' + k;
+        // 配置位置（その他の荷重とぶつからない位置）を決定する
+        let offset = 0;
+        for (const a of target[key]) {
+          if (a.visible === false) {
+            continue;
+          }
+          offset += 0.1;
+        }
+        // 荷重を編集する
+        // 長さを決める
+        // scale = 1 の時 直径Radius = maxLengthとなる
+        const scale = 1; //Math.abs(value) * 0.1;
+        const Radius: number = scale;
+        const arrow = this.momentLoad.create(node, offset, value, Radius, key, load.row);
+
+        // リストに登録する
+        arrow["row"] = load.row;
+        target[key].push(arrow);
+        ThreeObject.add(arrow);
+
+        pointLoadList[n] = target;
+      }
+
+
     }
   }
 

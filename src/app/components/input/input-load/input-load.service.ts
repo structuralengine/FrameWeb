@@ -400,7 +400,7 @@ export class InputLoadService {
       const tmp_node = new Array();
 
       for (const row of this.load[load_id]) {
-        const n = this.helper.toNumber(row["n"]);
+        let n = this.helper.toNumber(row["n"]);
         let tx = this.helper.toNumber(row["tx"]);
         let ty = this.helper.toNumber(row["ty"]);
         let tz = this.helper.toNumber(row["tz"]);
@@ -408,24 +408,26 @@ export class InputLoadService {
         let ry = this.helper.toNumber(row["ry"]);
         let rz = this.helper.toNumber(row["rz"]);
 
-        if (
-          n != null &&
-          (tx != null ||
-            ty != null ||
-            tz != null ||
-            rx != null ||
-            ry != null ||
-            rz != null)
-        ) {
-          const tmp = {
-            n: row.n,
-            tx: tx == null ? empty : tx,
-            ty: ty == null ? empty : ty,
-            tz: tz == null ? empty : tz,
-            rx: rx == null ? empty : rx,
-            ry: ry == null ? empty : ry,
-            rz: rz == null ? empty : rz,
-          };
+        if ( n != null &&
+          ( tx != null || ty != null || tz != null ||
+            rx != null || ry != null || rz != null)) {
+          let tmp = (n > 0) ? {
+              n: row.n,
+              tx: tx == null ? empty : tx,
+              ty: ty == null ? empty : ty,
+              tz: tz == null ? empty : tz,
+              rx: rx == null ? empty : rx,
+              ry: ry == null ? empty : ry,
+              rz: rz == null ? empty : rz,
+            } : {
+              n: Math.abs(n).toString(),
+              dx: tx == null ? empty : tx / 1000,
+              dy: ty == null ? empty : ty / 1000,
+              dz: tz == null ? empty : tz / 1000,
+              ax: rx == null ? empty : rx / 1000,
+              ay: ry == null ? empty : ry / 1000,
+              az: rz == null ? empty : rz / 1000,
+            };
 
           tmp["row"] = row.row;
 
