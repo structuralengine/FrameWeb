@@ -50,12 +50,12 @@ addEventListener('message', ({ data }) => {
 
         const result = {
           id: n.replace('node', ''),
-          tx: (tx == null) ? 0 : tx,
-          ty: (ty == null) ? 0 : ty,
-          tz: (tz == null) ? 0 : tz,
+          tx: (tx == null) ? 0 : -tx,
+          ty: (ty == null) ? 0 : -ty,
+          tz: (tz == null) ? 0 : -tz,
           mx: (mx == null) ? 0 : mx,
           my: (my == null) ? 0 : my,
-          mz: (mz == null) ? 0 : mz
+          mz: (mz == null) ? 0 : -mz
         };
         target.push(result);
       }
