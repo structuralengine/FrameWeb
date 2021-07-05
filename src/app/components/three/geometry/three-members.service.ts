@@ -303,18 +303,43 @@ export class ThreeMembersService {
   }
 
   // 部材座標軸を
-  public localAxis(
-    xi: number,
-    yi: number,
-    zi: number,
-    xj: number,
-    yj: number,
-    zj: number,
-    theta: number
-  ): any {
+  public localAxis( xi: number, yi: number, zi: number,
+                    xj: number, yj: number, zj: number,
+                    theta: number ): any {
     const xM: number[] = [1, 0, 0]; // x だけ1の行列
     const yM: number[] = [0, 1, 0]; // y だけ1の行列
     const zM: number[] = [0, 0, 1]; // z だけ1の行列
+
+    // 座標変換ベクトル × 荷重ベクトル
+    const t3 = this.tMatrix(xi, yi, zi, xj, yj, zj, theta);
+    const tt = this.getInverse(t3);
+
+    const X = new Vector3(
+      tt[0][0] * xM[0] + tt[0][1] * xM[1] + tt[0][2] * xM[2],
+      tt[1][0] * xM[0] + tt[1][1] * xM[1] + tt[1][2] * xM[2],
+      tt[2][0] * xM[0] + tt[2][1] * xM[1] + tt[2][2] * xM[2],
+    );
+    const Y = new Vector3(
+      tt[0][0] * yM[0] + tt[0][1] * yM[1] + tt[0][2] * yM[2],
+      tt[1][0] * yM[0] + tt[1][1] * yM[1] + tt[1][2] * yM[2],
+      tt[2][0] * yM[0] + tt[2][1] * yM[1] + tt[2][2] * yM[2],
+    );
+    const Z = new Vector3(
+      tt[0][0] * zM[0] + tt[0][1] * zM[1] + tt[0][2] * zM[2],
+      tt[1][0] * zM[0] + tt[1][1] * zM[1] + tt[1][2] * zM[2],
+      tt[2][0] * zM[0] + tt[2][1] * zM[1] + tt[2][2] * zM[2],
+    );
+    const result = {
+      x: X,
+      y: Y,
+      z: Z,
+    };
+    return result;
+  }
+
+  public tMatrix( xi: number, yi: number, zi: number,
+                  xj: number, yj: number, zj: number,
+                  theta: number ): any {
 
     const DX: number = xj - xi;
     const DY: number = yj - yi;
@@ -364,32 +389,11 @@ export class ThreeMembersService {
 
     // 座標変換ベクトル × 荷重ベクトル
     const t3 = this.dot(t1, t2);
-    const tt = this.getInverse(t3);
 
-    const X = new Vector3(
-      tt[0][0] * xM[0] + tt[0][1] * xM[1] + tt[0][2] * xM[2],
-      tt[1][0] * xM[0] + tt[1][1] * xM[1] + tt[1][2] * xM[2],
-      tt[2][0] * xM[0] + tt[2][1] * xM[1] + tt[2][2] * xM[2],
-    );
-    const Y = new Vector3(
-      tt[0][0] * yM[0] + tt[0][1] * yM[1] + tt[0][2] * yM[2],
-      tt[1][0] * yM[0] + tt[1][1] * yM[1] + tt[1][2] * yM[2],
-      tt[2][0] * yM[0] + tt[2][1] * yM[1] + tt[2][2] * yM[2],
-    );
-    const Z = new Vector3(
-      tt[0][0] * zM[0] + tt[0][1] * zM[1] + tt[0][2] * zM[2],
-      tt[1][0] * zM[0] + tt[1][1] * zM[1] + tt[1][2] * zM[2],
-      tt[2][0] * zM[0] + tt[2][1] * zM[1] + tt[2][2] * zM[2],
-    );
-    const result = {
-      x: X,
-      y: Y,
-      z: Z,
-    };
-    return result;
+    return t3;
   }
 
-  private dot(a: number[][], B: number[][]): number[][] {
+  public dot(a: number[][], B: number[][]): number[][] {
     const u: number = a.length;
 
     const AB = Array(u)

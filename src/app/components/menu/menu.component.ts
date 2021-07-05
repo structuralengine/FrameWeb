@@ -58,7 +58,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.4.2"
+    this.fileName = "立体骨組構造解析ソフトver1.4.3"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -77,7 +77,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.4.2"
+    this.fileName = "立体骨組構造解析ソフトver1.4.3"
   }
 
   // ファイルを開く
@@ -169,6 +169,7 @@ export class MenuComponent implements OnInit {
 
     // json string にする
     const json = JSON.stringify(jsonData, null, 0);
+    console.log(json);
     // pako を使ってgzip圧縮する
     const compressed = pako.gzip(json);
     //btoa() を使ってBase64エンコードする
