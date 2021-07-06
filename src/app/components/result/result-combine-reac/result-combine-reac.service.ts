@@ -129,7 +129,7 @@ export class ResultCombineReacService {
       for(const caseInfo of defList[defNo]) {
         const baseNo: string = Math.abs(caseInfo).toString();
         const coef: number = Math.sign(caseInfo);
-
+  
         if (!(baseNo in reac)) {
           if(caseInfo === 0 ){
             // 値が全て0 の case 0 という架空のケースを用意する
@@ -139,7 +139,7 @@ export class ResultCombineReacService {
             continue;
           }
         }
-
+  
         // カレントケースを集計する
         for (const key of reacKeys) {
           // 節点番号のループ
@@ -171,7 +171,7 @@ export class ResultCombineReacService {
                 }
               }
             }
-
+  
           } else {
             temp[key] = obj;
           }
@@ -179,8 +179,8 @@ export class ResultCombineReacService {
       }
       reacDefine[defNo] = temp;
     }
-
-
+  
+  
     // combineのループ
     const reacCombine = {};
     for (const combNo of Object.keys(combList)) {
@@ -190,17 +190,17 @@ export class ResultCombineReacService {
         const caseNo = Number(caseInfo.caseNo);
         const defNo: string = caseInfo.caseNo.toString();
         const coef: number = caseInfo.coef;
-
+  
         if (!(defNo in reacDefine)) {
           continue;
         }
         if (coef === 0) {
           continue;
         }
-
+  
         const reacs = reacDefine[defNo];
         if(Object.keys(reacs).length < 1) continue;
-
+  
         // カレントケースを集計する
         const c2 = Math.abs(caseNo).toString().trim();
         for (const key of reacKeys){
@@ -223,10 +223,14 @@ export class ResultCombineReacService {
               case: caseStr
             };
           }
-
+  
           if (key in temp) {
             for (const nodeNo of Object.keys(reacs[key])) {
-                for(const k of Object.keys(obj[nodeNo])){
+              if(!(nodeNo in temp[key])){
+                temp[key][nodeNo] = { tx: 0, ty: 0, tz: 0,
+                  mx: 0, my: 0, mz: 0, case: '' };
+              }
+              for(const k of Object.keys(obj[nodeNo])){
                   temp[key][nodeNo][k] += obj[nodeNo][k];
                 }
                 temp[key][nodeNo]['comb']= combNo;

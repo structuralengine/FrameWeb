@@ -20,8 +20,8 @@ export class InputNoticePointsComponent implements OnInit {
   private dataset = [];
   private columnHeaders: any =[
     { title: "部材No", dataType: "string", dataIndx: "m", sortable: false, minwidth: 10, width: 10 },
-    { title: "部材長", dataType: "float",  format: "#.000", dataIndx: "len", sortable: false, width: 80, editable: false, style: { "background": "#dae6f0" } },
-    { title: 'i橋からの距離.', colModel: [] }
+    { title: "部材長\n(m)", dataType: "float",  format: "#.000", dataIndx: "len", sortable: false, width: 80, editable: false, style: { "background": "#dae6f0" } },
+    { title: 'i-端 からの距離(m)', colModel: [] }
   ];
 
   private ROWS_COUNT = 15;

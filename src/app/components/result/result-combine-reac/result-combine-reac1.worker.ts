@@ -111,11 +111,15 @@ addEventListener('message', ({ data }) => {
 
         if (key in temp) {
           for (const nodeNo of Object.keys(reacs[key])) {
-              for(const k of Object.keys(obj[nodeNo])){
-                temp[key][nodeNo][k] += obj[nodeNo][k];
-              }
-              temp[key][nodeNo]['comb']= combNo;
+            if(!(nodeNo in temp[key])){
+              temp[key][nodeNo] = { tx: 0, ty: 0, tz: 0,
+                mx: 0, my: 0, mz: 0, case: '' };
             }
+            for(const k of Object.keys(obj[nodeNo])){
+              temp[key][nodeNo][k] += obj[nodeNo][k];
+            }
+            temp[key][nodeNo]['comb']= combNo;
+          }
         } else {
           for (const nodeNo of Object.keys(obj)) {
             obj[nodeNo]['comb']= combNo;

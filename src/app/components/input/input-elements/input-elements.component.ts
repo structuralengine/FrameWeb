@@ -18,19 +18,19 @@ export class InputElementsComponent implements OnInit {
 
   private dataset = [];
   private columnHeaders3D =[
-    { title: "弾性係数", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
-    { title: "せん断弾性係数", dataType: "float", format: "#,##0", dataIndx: "G", sortable: false, width: 130 },
+    { title: "弾性係数\n(kN/m2)", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
+    { title: "せん断弾性係数\n(kN/m2)", dataType: "float", format: "#,##0", dataIndx: "G", sortable: false, width: 130 },
     { title: "膨張係数", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
-    { title: "断面積", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
-    { title: "ねじり定数", dataType: "float", format: "#.0000", dataIndx: "J", sortable: false, width: 100 },
-    { title: "断面二次Iy", dataType: "float", format: "#.000000", dataIndx: "Iy", sortable: false, width: 100 },
-    { title: "断面二次Iz", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
+    { title: "断面積\n(m2)", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
+    { title: "ねじり定数\n(m4)", dataType: "float", format: "#.0000", dataIndx: "J", sortable: false, width: 100 },
+    { title: "断面二次Iy\n(m4)", dataType: "float", format: "#.000000", dataIndx: "Iy", sortable: false, width: 100 },
+    { title: "断面二次Iz\n(m4)", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
   ];
   private columnHeaders2D =[
-    { title: "弾性係数", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
+    { title: "弾性係数\n(kN/m2)", dataType: "float", format: "#,##0", dataIndx: "E", sortable: false, width: 120 },
     { title: "膨張係数", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
-    { title: "断面積", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
-    { title: "断面二次Iz", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
+    { title: "断面積\n(m2)", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
+    { title: "断面二次I\n(m4)", dataType: "float", format: "#.000000", dataIndx: "Iz", sortable: false, width: 100 },
   ];
   
   private ROWS_COUNT = 15;

@@ -18,18 +18,18 @@ export class InputFixNodeComponent implements OnInit {
   private dataset = [];
   private columnHeaders3D =[
     { title: "節点No",   dataType: "string", dataIndx: "n",  sortable: false, width: 30 },
-    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-    { title: "Z変位拘束", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
-    { title: "X回転拘束", dataType: "float",   dataIndx: "rx", sortable: false, width: 100 },
-    { title: "Y回転拘束", dataType: "float",   dataIndx: "ry", sortable: false, width: 100 },
-    { title: "Z回転拘束", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
+    { title: "X変位拘束\n(kN/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束\n(kN/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+    { title: "Z変位拘束\n(kN/m)", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
+    { title: "X回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "rx", sortable: false, width: 100 },
+    { title: "Y回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "ry", sortable: false, width: 100 },
+    { title: "Z回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
   ];
   private columnHeaders2D =[
     { title: "節点No",   dataType: "string", dataIndx: "n",  sortable: false, width: 30 },
-    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-    { title: "Z回転拘束", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
+    { title: "X変位拘束\n(kN/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束\n(kN/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+    { title: "Z回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
   ];
 
   private ROWS_COUNT = 15;
