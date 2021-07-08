@@ -93,12 +93,12 @@ export class PrintResultReacComponent implements OnInit, AfterViewInit {
 
         const line = ["", "", "", "", "", "", "", ""];
         line[0] = item.id.toString();
-        line[1] = item.tx;
-        line[2] = item.ty;
-        line[3] = item.tz;
-        line[4] = item.mx;
-        line[5] = item.my;
-        line[6] = item.mz;
+        line[1] = (Math.round(item.tx *100 )/100).toFixed(2);
+        line[2] = (Math.round(item.ty *100 )/100).toFixed(2);
+        line[3] = (Math.round(item.tz *100 )/100).toFixed(2);
+        line[4] = (Math.round(item.mx *100 )/100).toFixed(2);
+        line[5] = (Math.round(item.my *100 )/100).toFixed(2);
+        line[6] = (Math.round(item.mz *100 )/100).toFixed(2);
         body.push(line);
         row++;
 
