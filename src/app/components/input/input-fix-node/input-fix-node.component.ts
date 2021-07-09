@@ -17,20 +17,30 @@ export class InputFixNodeComponent implements OnInit {
 
   private dataset = [];
   private columnHeaders3D =[
-    { title: "節点No",   dataType: "string", dataIndx: "n",  sortable: false, width: 30 },
-    { title: "X変位拘束\n(kN/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束\n(kN/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-    { title: "Z変位拘束\n(kN/m)", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
-    { title: "X回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "rx", sortable: false, width: 100 },
-    { title: "Y回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "ry", sortable: false, width: 100 },
-    { title: "Z回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
+    { title: '節点', align: 'center', colModel: [
+      { title: "No", align: 'center',   dataType: "string", dataIndx: "n",  sortable: false, width: 30 }]},
+    { title: '変位拘束 (kN/m)', align: 'center', colModel: [
+      { title: "X方向", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+      { title: "Y方向", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+      { title: "Z方向", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
+    ]},
+    { title: '回転拘束 (kN・m/rad)', align: 'center', colModel: [
+      { title: "X軸周り", dataType: "float",   dataIndx: "rx", sortable: false, width: 100 },
+      { title: "Y軸周り", dataType: "float",   dataIndx: "ry", sortable: false, width: 100 },
+      { title: "Z軸周り", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
+    ]}
   ];
   private columnHeaders2D =[
-    { title: "節点No",   dataType: "string", dataIndx: "n",  sortable: false, width: 30 },
-    { title: "X変位拘束\n(kN/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束\n(kN/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-    { title: "Z回転拘束\n(kN・m/rad)", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
-  ];
+    { title: '節点', align: 'center', colModel: [
+      { title: "No", align: 'center',   dataType: "string", dataIndx: "n",  sortable: false, width: 30 }]},
+      { title: '変位拘束 (kN/m)', align: 'center', colModel: [
+        { title: "X方向", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+        { title: "Y方向", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+      ]},
+      { title: '回転拘束', align: 'center', colModel: [
+        { title: " (kN・m/rad)", dataType: "float",   dataIndx: "rz", sortable: false, width: 100 }
+      ]}
+    ];
 
   private ROWS_COUNT = 15;
   private page = 1;

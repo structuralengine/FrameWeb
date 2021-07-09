@@ -1,23 +1,21 @@
 <div class="datasheet_inner" [style.width.px]="width">
-  <div class="btn-group">
-    <nav>
-      <a
-        routerLink="/input-load-name"
-        routerLinkActive="selected-item"
-        class="btn-change"
-        >荷重名称</a
-      >
-      <a
-        routerLink="/input-loads"
-        routerLinkActive="selected-item"
-        class="btn-change active"
-        >荷重強度</a
-      >
-    </nav>
+  
+  <div class="boxContainer">
+    <div class="btn-group">
+      <nav>
+        <a routerLink="/input-load-name" routerLinkActive="selected-item" class="btn-change">荷重名称</a>
+        <a routerLink="/input-loads" routerLinkActive="selected-item" class="btn-change active">荷重強度</a>
+      </nav>
+    </div>
+
+    <div class="pager">
+      <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
+    </div>
+    
+    <div class="load-name">
+      <p>{{ load_name }}</p>
+    </div>
   </div>
-  <div class="pager">
-    <app-pager (event)="onReceiveEventFromChild($event)"></app-pager>
-    <p class="load-name">{{ load_name }}</p>
-  </div>
+
   <app-sheet #grid [options]="options"></app-sheet>
 </div>
