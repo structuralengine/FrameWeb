@@ -58,7 +58,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileName = "立体骨組構造解析ソフトver1.3.7"
+    this.fileName = "立体骨組構造解析ソフトver1.4.4"
     this.user.isContentsDailogShow = false;
     this.auth.user.subscribe(user => {
       console.log(user);
@@ -77,7 +77,7 @@ export class MenuComponent implements OnInit {
     this.InputData.clear();
     this.ResultData.clear();
     this.three.ClearData();
-    this.fileName = "立体骨組構造解析ソフトver1.3.7"
+    this.fileName = "立体骨組構造解析ソフトver1.4.4"
   }
 
   // ファイルを開く
@@ -140,10 +140,10 @@ export class MenuComponent implements OnInit {
   // 計算
   public calcrate(): void {
 
-    if (this.loggedIn === true) {
+    // if (this.loggedIn === true) {
       // alert("計算を開始されるとお客様のポイントを消費しますが、よろしいですか？");
-      this.auth.calc(this.amount);
-      this.amount = this.auth.amount;
+      // this.auth.calc(this.amount);
+      // this.amount = this.auth.amount;
       const modalRef = this.modalService.open(WaitDialogComponent);
 
       const jsonData: {} = this.InputData.getInputJson(0);
@@ -157,9 +157,9 @@ export class MenuComponent implements OnInit {
       this.ResultData.clear(); // 解析結果情報をクリア
 
       this.post_compress(jsonData, modalRef);
-    } else {
-      alert("ログインしてください")
-    }
+    // } else {
+    //   alert("ログインしてください")
+    // }
   }
 
   private post_compress(jsonData: {}, modalRef: NgbModalRef) {
@@ -169,6 +169,7 @@ export class MenuComponent implements OnInit {
 
     // json string にする
     const json = JSON.stringify(jsonData, null, 0);
+    console.log(json);
     // pako を使ってgzip圧縮する
     const compressed = pako.gzip(json);
     //btoa() を使ってBase64エンコードする

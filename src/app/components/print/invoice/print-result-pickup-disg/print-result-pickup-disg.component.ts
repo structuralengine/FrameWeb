@@ -5,6 +5,7 @@ import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { ResultCombineDisgService } from "src/app/components/result/result-combine-disg/result-combine-disg.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-pickup-disg",
@@ -16,6 +17,7 @@ import { ResultCombineDisgService } from "src/app/components/result/result-combi
   ],
 })
 export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -23,7 +25,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public pickDisg_dataset = [];
   public pickDisg_title = [];
@@ -36,8 +38,9 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combDisg: ResultCombineDisgService
-  ) {
+    private combDisg: ResultCombineDisgService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.clear();
   }
 
@@ -59,7 +62,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
       this.pickDisg_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(14);
+      this.isEnable = false;
     }
   }
 
@@ -72,6 +75,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
     const typeSum: any[] = new Array();
 
     const KEYS = this.combDisg.disgKeys;
+    const TITLES = this.combDisg.titles; 
     // [
     //   "dx_max",
     //   "dx_min",
@@ -117,10 +121,11 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
       let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         const key = KEYS[i];
+        const title2 = TITLES[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         if(!(key in elieli)) continue;
 
-        typeName.push(key);
+        typeName.push(title2);
 
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
@@ -134,7 +139,7 @@ export class PrintResultPickupDisgComponent implements OnInit, AfterViewInit {
           const item = elist[k];
           // 印刷する1行分のリストを作る
           const line = ["", "", "", "", "", "", "", ""];
-          line[0] = item.id.toString();
+          line[0] = k.toString();
           line[1] = item.dx.toFixed(4);
           line[2] = item.dy.toFixed(4);
           line[3] = item.dz.toFixed(4);

@@ -114,7 +114,7 @@ export class ResultCombineFsecService {
         this.three.setCombResultData(this.fsecCombine, max_values);
 
       };
-      //this.fsecCombine = this.worker1_test({ defList, combList, fsec, fsecKeys: this.fsecKeys});
+      // this.fsecCombine = this.worker1_test({ defList, combList, fsec, fsecKeys: this.fsecKeys});
       this.worker1.postMessage({ defList, combList, fsec, fsecKeys: this.fsecKeys});
 
     } else {
@@ -245,6 +245,8 @@ export class ResultCombineFsecService {
         }
   
         const fsecs = fsecDefine[defNo];
+        if(Object.keys(fsecs).length < 1) continue;
+
         // カレントケースを集計する
         const c2 = Math.abs(caseNo).toString().trim();
         for (const key of fsecKeys) {

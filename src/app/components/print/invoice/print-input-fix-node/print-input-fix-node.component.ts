@@ -15,6 +15,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number = 0;
@@ -61,7 +62,7 @@ export class PrintInputFixNodeComponent implements OnInit, AfterViewInit {
       this.fixNode_typeNum = tables.title;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(3);
+      this.isEnable = false;
     }
   }
 

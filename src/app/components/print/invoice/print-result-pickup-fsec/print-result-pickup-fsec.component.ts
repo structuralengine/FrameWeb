@@ -7,6 +7,7 @@ import { DataCountService } from "../dataCount.service";
 import { newArray } from "@angular/compiler/src/util";
 import { ArrayCamera } from "three";
 import { ResultCombineFsecService } from "src/app/components/result/result-combine-fsec/result-combine-fsec.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-pickup-fsec",
@@ -18,6 +19,7 @@ import { ResultCombineFsecService } from "src/app/components/result/result-combi
   ],
 })
 export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -25,7 +27,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public pickFsec_dataset = [];
   public pickFsec_title = [];
@@ -38,8 +40,9 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combFsec: ResultCombineFsecService
-  ) {
+    private combFsec: ResultCombineFsecService,
+    private helper: DataHelperModule ) {
+      this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }
@@ -62,7 +65,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
       this.pickFsec_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(20);
+      this.isEnable = false;
     }
   }
 
@@ -74,6 +77,8 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
     const typeSum: any = [];
 
     const KEYS = this.combFsec.fsecKeys; 
+    const TITLES = this.combFsec.titles; 
+    
     // [
     //   "fx_max",
     //   "fx_min",
@@ -122,11 +127,12 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
       let type: any = [];
       for (let i = 0; i < KEYS.length; i++) {
         const key = KEYS[i];
+        const title2 = TITLES[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         if(!(key in elieli)) continue;
 
 
-        typeName.push(key);
+        typeName.push(title2);
 
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
@@ -149,7 +155,7 @@ export class PrintResultPickupFsecComponent implements OnInit, AfterViewInit {
           line[6] = item.mx.toFixed(2);
           line[7] = item.my.toFixed(2);
           line[8] = item.mz.toFixed(2);
-          line[9] = item.case;
+          line[9] = item.comb + ':' + item.case;
 
           body.push(line);
           this.row++;

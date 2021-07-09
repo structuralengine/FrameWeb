@@ -5,6 +5,7 @@ import { AfterViewInit } from "@angular/core";
 import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
 import { ResultCombineReacService } from "src/app/components/result/result-combine-reac/result-combine-reac.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-combine-reac",
@@ -16,6 +17,7 @@ import { ResultCombineReacService } from "src/app/components/result/result-combi
   ],
 })
 export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -23,7 +25,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
-  // key: string;
+  dimension: number;
 
   public combReac_dataset = [];
   public combReac_title = [];
@@ -36,8 +38,9 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combReac: ResultCombineReacService
-  ) {
+    private combReac: ResultCombineReacService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }
@@ -61,7 +64,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
       this.combReac_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(16);
+      this.isEnable = false;
     }
   }
 
@@ -74,6 +77,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
     const typeSum: any[] = new Array();
 
     const KEYS = this.combReac.reacKeys
+    const TITLES = this.combReac.titles; 
     // [
     //   "tx_max",
     //   "tx_min",
@@ -123,10 +127,11 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
       let type: any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         const key = KEYS[i];
+        const title2 = TITLES[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         if(!(key in elieli)) continue;
 
-        typeName.push(key);
+        typeName.push(title2);
 
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();
@@ -140,7 +145,7 @@ export class PrintResultCombineReacComponent implements OnInit, AfterViewInit {
           const item = elist[k];
           // 印刷する1行分のリストを作る
           const line = ["", "", "", "", "", "", "", ""];
-          line[0] = item.id.toString();
+          line[0] = k.toString();
           line[1] = item.tx.toFixed(2);
           line[2] = item.ty.toFixed(2);
           line[3] = item.tz.toFixed(2);

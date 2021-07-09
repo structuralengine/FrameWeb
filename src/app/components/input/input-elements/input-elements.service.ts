@@ -73,7 +73,7 @@ export class InputElementsService {
           E: (E === null) ? '' : E.toExponential(2),
           G: (G === null) ? '' : G.toExponential(2),
           Xp: (Xp === null) ? '' : Xp.toExponential(2),
-          A: (A === null) ? '' : A.toFixed(3),
+          A: (A === null) ? '' : A.toFixed(4),
           J: (J === null) ? '' : J.toFixed(4),
           Iy: (Iy === null) ? '' : Iy.toFixed(6),
           Iz: (Iz === null) ? '' : Iz.toFixed(6)

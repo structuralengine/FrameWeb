@@ -2,11 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { InputDataService } from "../../../../providers/input-data.service";
 import { ResultDataService } from "../../../../providers/result-data.service";
 import { AfterViewInit } from "@angular/core";
-import { JsonpClientBackend } from "@angular/common/http";
 import { DataCountService } from "../dataCount.service";
-import { newArray } from "@angular/compiler/src/util";
-import { ArrayCamera } from "three";
 import { ResultCombineFsecService } from "src/app/components/result/result-combine-fsec/result-combine-fsec.service";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Component({
   selector: "app-print-result-combine-fsec",
@@ -14,6 +12,7 @@ import { ResultCombineFsecService } from "src/app/components/result/result-combi
   styleUrls: ["../../../../app.component.scss", "../invoice.component.scss"],
 })
 export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -21,6 +20,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
   invoiceIds: string[];
   invoiceDetails: Promise<any>[];
   row: number = 0;
+  dimension: number;
 
   public combFsec_dataset = [];
   public combFsec_title = [];
@@ -33,8 +33,9 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private combFsec: ResultCombineFsecService
-  ) {
+    private combFsec: ResultCombineFsecService,
+    private helper: DataHelperModule ) {
+    this.dimension = this.helper.dimension;
     this.judge = false;
     this.clear();
   }
@@ -58,7 +59,7 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       this.combFsec_type_break = tables.break_after_type;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(19);
+      this.isEnable = false;
     }
   }
 
@@ -71,6 +72,8 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
     const typeSum: any [] = new Array();
 
     const KEYS = this.combFsec.fsecKeys; 
+    const TITLES = this.combFsec.titles; 
+
     // [
     //   "fx_max",
     //   "fx_min",
@@ -119,10 +122,11 @@ export class PrintResultCombineFsecComponent implements OnInit, AfterViewInit {
       let type:  any[] = new Array();
       for (let i = 0; i < KEYS.length; i++) {
         const key = KEYS[i];
+        const title2 = TITLES[i];
         const elieli = json[index]; // 1行分のnodeデータを取り出す
         if(!(key in elieli)){ continue; }
 
-        typeName.push(key);
+        typeName.push(title2);
 
         const elist = elieli[key]; // 1行分のnodeデータを取り出す.
         let body: any[] = new Array();

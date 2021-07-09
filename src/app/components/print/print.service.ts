@@ -40,9 +40,7 @@ export class PrintService {
     this.pickupJson = this.InputData.pickup.getPickUpJson();
     
     // 
-    this.router.navigate([
-      "/",
-      {
+    this.router.navigate(["/", {
         outlets: {
           print: ["print", documentName, documentData.join()],
         },

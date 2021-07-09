@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
 <div class="invoicetTable combDisg">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>COMBINE　変位量</h2>
     <!--combDisg_titleからtitleごとにデータを取り出す-->
     <div *ngFor="let title of combDisg_title; index as i">
@@ -16,37 +16,61 @@
                         <div *ngFor="let datas of branch; index as m">
                             <div *ngIf="m > 0" class="pagerBreak"></div>
                             <table class="print-md">
-                                <tr>
-                                    <th>節点</th>
-                                    <th>X-Disp</th>
-                                    <th>Y-Disp</th>
-                                    <th>Z-Disp</th>
-                                    <th>X-Rotation</th>
-                                    <th>Y-Rotation</th>
-                                    <th>Z-Rotation</th>
-                                    <th>comb</th>
-                                </tr>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>(mm)</th>
-                                    <th>(mm)</th>
-                                    <th>(mm)</th>
-                                    <th>(mmrad)</th>
-                                    <th>(mmrad)</th>
-                                    <th>(mmrad)</th>
-                                    <th></th>
-                                </tr>
-
-                                <tr *ngFor="let data of datas">
-                                    <td>{{ data[0] }}</td>
-                                    <td>{{ data[1] }}</td>
-                                    <td>{{ data[2] }}</td>
-                                    <td>{{ data[3] }}</td>
-                                    <td>{{ data[4] }}</td>
-                                    <td>{{ data[5] }}</td>
-                                    <td>{{ data[6] }}</td>
-                                    <td>{{ data[7] }}</td>
-                                </tr>
+                                <div *ngIf="dimension===3">
+                                    <tr>
+                                        <th>節点</th>
+                                        <th>X-Disp</th>
+                                        <th>Y-Disp</th>
+                                        <th>Z-Disp</th>
+                                        <th>X-Rotation</th>
+                                        <th>Y-Rotation</th>
+                                        <th>Z-Rotation</th>
+                                        <th>comb</th>
+                                    </tr>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>(mm)</th>
+                                        <th>(mm)</th>
+                                        <th>(mm)</th>
+                                        <th>(mmrad)</th>
+                                        <th>(mmrad)</th>
+                                        <th>(mmrad)</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr *ngFor="let data of datas">
+                                        <td>{{ data[0] }}</td>
+                                        <td>{{ data[1] }}</td>
+                                        <td>{{ data[2] }}</td>
+                                        <td>{{ data[3] }}</td>
+                                        <td>{{ data[4] }}</td>
+                                        <td>{{ data[5] }}</td>
+                                        <td>{{ data[6] }}</td>
+                                        <td>{{ data[7] }}</td>
+                                    </tr>
+                                </div>
+                                <div *ngIf="dimension===2">
+                                    <tr>
+                                        <th>節点</th>
+                                        <th>X-Disp</th>
+                                        <th>Y-Disp</th>
+                                        <th>Rotation</th>
+                                        <th>comb</th>
+                                    </tr>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>(mm)</th>
+                                        <th>(mm)</th>
+                                        <th>(mmrad)</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr *ngFor="let data of datas">
+                                        <td>{{ data[0] }}</td>
+                                        <td>{{ data[1] }}</td>
+                                        <td>{{ data[2] }}</td>
+                                        <td>{{ data[6] }}</td>
+                                        <td>{{ data[7] }}</td>
+                                    </tr>
+                                </div>                                
                             </table>
                         </div>
                     </div>

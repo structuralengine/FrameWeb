@@ -16,6 +16,7 @@ import { ResultCombineDisgService } from '../../result/result-combine-disg/resul
 import { ResultPickupDisgService } from '../../result/result-pickup-disg/result-pickup-disg.service';
 
 import { ThreeNodesService } from './three-nodes.service';
+import { ThreeMembersService } from './three-members.service.js';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,8 @@ export class ThreeDisplacementService {
               private pik_disg: ResultPickupDisgService,
               private node: InputNodesService,
               private member: InputMembersService,
-              private three_node: ThreeNodesService) {
+              private three_node: ThreeNodesService,
+              private three_member: ThreeMembersService) {
     this.lineList = new Array();
     this.targetData = new Array();
 
@@ -171,7 +173,11 @@ export class ThreeDisplacementService {
       if (di === undefined || dj === undefined) {
         continue;
       }
-
+      let Division = 20;
+      if(di.rx===dj.rx && di.ry===dj.ry && di.rz===dj.rz ){
+        Division = 1;
+      }
+      
       this.targetData.push({
         name: key,
         xi: i.x,
@@ -180,6 +186,7 @@ export class ThreeDisplacementService {
         xj: j.x,
         yj: j.y,
         zj: j.z,
+        theta: m.cg,
         dxi: di.dx,
         dyi: di.dy,
         dzi: di.dz,
@@ -192,7 +199,7 @@ export class ThreeDisplacementService {
         rxj: dj.rx,
         ryj: dj.ry,
         rzj: dj.rz,
-        Division: 20,
+        Division,
       });
     }
 
@@ -216,39 +223,34 @@ export class ThreeDisplacementService {
     for (let i = 0; i < this.targetData.length; i++) {
       const target = this.targetData[i];
 
-      let xi: number = target.xi;
-      let yi: number = target.yi;
-      let zi: number = target.zi;
+      const xi: number = target.xi + target.dxi * scale;
+      const yi: number = target.yi + target.dyi * scale;
+      const zi: number = target.zi + target.dzi * scale;
 
-      xi += target.dxi * scale;
-      yi += target.dyi * scale;
-      zi += target.dzi * scale;
+      const xj: number = target.xj + target.dxj * scale;
+      const yj: number = target.yj + target.dyj * scale;
+      const zj: number = target.zj + target.dzj * scale;
 
-      let xj: number = target.xj;
-      let yj: number = target.yj;
-      let zj: number = target.zj;
+      // 要素座標系への変換
+      const t = this.three_member.tMatrix(xi, yi, zi, xj, yj, zj, target.theta);
+      const dge = [ target.dxi, target.dyi, target.dzi, target.rxi, target.ryi, target.rzi, 
+                    target.dxj, target.dyj, target.dzj, target.rxj, target.ryj, target.rzj];//.map(v => v * scale);;
+      const de: number[] = new Array(dge.length);
+      for( let ip=0; ip<4; ip++){
+        const ib = 3 * ip;
+        for(let i=0; i<3; i++){
+          let s = 0;
+          for(let j=0; j<3; j++){
+            s = s + t[i][j] * dge[ib + j];
+          }
+        de[ib + i] = s
+        }
+      }
 
-      xj += target.dxj * scale;
-      yj += target.dyj * scale;
-      zj += target.dzj * scale;
-
-      const dxi: number = target.dxi;
-      const dyi: number = target.dyi;
-      const dzi: number = target.dzi;
-      const rxi: number = target.rxi;
-      const ryi: number = target.ryi;
-      const rzi: number = target.rzi;
-
-      const dxj: number = target.dxj;
-      const dyj: number = target.dyj;
-      const dzj: number = target.dzj;
-      const rxj: number = target.rxj;
-      const ryj: number = target.ryj;
-      const rzj: number = target.rzj;
 
       const Division: number = target.Division;
 
-      const L = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2);
+      const L = Math.sqrt(Math.pow(xi - xj, 2) + Math.pow(yi - yj, 2) + Math.pow(zi - zj, 2));
 
       const positions = [];
       const threeColor = new THREE.Color(0xFF0000);
@@ -257,16 +259,22 @@ export class ThreeDisplacementService {
       // 補間点の節点変位の計算
       for (let j = 0; j <= Division; j++) {
         const n = j / Division;
-        const xhe = (1 - n) * dxi + n * dxj;
-        const yhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dyi + L * (n - 2 * n ** 2 + n ** 3) * rzi
-          + (3 * n ** 2 - 2 * n ** 3) * dyj + L * (0 - n ** 2 + n ** 3) * rzj;
-        const zhe = (1 - 3 * n ** 2 + 2 * n ** 3) * dzi - L * (n - 2 * n ** 2 + n ** 3) * ryi
-          + (3 * n ** 2 - 2 * n ** 3) * dzj - L * (0 - n ** 2 + n ** 3) * ryj;
+        const xhe = (1 - n) * de[0] + n * de[6];
+        const yhe = (1 - 3 * Math.pow(n, 2) + 2 * Math.pow(n, 3)) * de[1] + L * (n - 2 * Math.pow(n, 2) + Math.pow(n, 3)) * de[5]
+          + (3 * Math.pow(n, 2) - 2 * Math.pow(n, 3)) * de[7] + L * (0 - Math.pow(n, 2) + Math.pow(n, 3)) * de[11];
+        const zhe = (1 - 3 * Math.pow(n, 2) + 2 * Math.pow(n, 3)) * de[2] - L * (n - 2 * Math.pow(n, 2) + Math.pow(n, 3)) * de[4]
+          + (3 * Math.pow(n, 2) - 2 * Math.pow(n, 3)) * de[8] - L * ( Math.pow(n, 3)- Math.pow(n, 2)) * de[10];
+
+
+        // 全体座標系への変換
+        const xhg = t[0][0] * xhe + t[1][0] * yhe + t[2][0] * zhe;
+        const yhg = t[0][1] * xhe + t[1][1] * yhe + t[2][1] * zhe;
+        const zhg = t[0][2] * xhe + t[1][2] * yhe + t[2][2] * zhe;
 
         // 補間点の変位を座標値に付加
-        const xk = (1 - n) * xi + n * xj + xhe * scale;
-        const yk = (1 - n) * yi + n * yj + yhe * scale;
-        const zk = (1 - n) * zi + n * zj + zhe * scale;
+        const xk = (1 - n) * xi + n * xj + xhg * scale;
+        const yk = (1 - n) * yi + n * yj + yhg * scale;
+        const zk = (1 - n) * zi + n * zj + zhg * scale;
 
         positions.push(xk, yk, zk);
         colors.push(threeColor.r, threeColor.g, threeColor.b);

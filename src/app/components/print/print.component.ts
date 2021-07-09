@@ -9,12 +9,11 @@ import { PrintService } from "./print.service";
   styleUrls: ["./print.component.scss", "../../app.component.scss"],
 })
 export class PrintComponent implements OnInit {
-  currentY: number = 0;
+  // currentY: number = 0;
   loggedIn: boolean;
 
   constructor(
     public printService: PrintService,
-    public countArea: DataCountService,
     public user: UserInfoService
   ) {
     this.loggedIn = this.user.loggedIn;
@@ -23,18 +22,17 @@ export class PrintComponent implements OnInit {
   ngOnInit(): void {}
 
   public onPrintInvoice() {
-    const invoiceIds = ["101"];
-    this.countArea.clear();
+    const invoiceIds = [""];
     this.printService.printDocument("invoice", invoiceIds);
   }
 
-  toggleEditable(event, id) {
-    if (event.target.checked) {
-      this.printService.contentEditable1[id] = true;
-    } else {
-      this.printService.contentEditable1[id] = false;
-    }
+  // toggleEditable(event, id) {
+  //   if (event.target.checked) {
+  //     this.printService.contentEditable1[id] = true;
+  //   } else {
+  //     this.printService.contentEditable1[id] = false;
+  //   }
 
-    console.log(this.printService.contentEditable1);
-  }
+  //   console.log(this.printService.contentEditable1);
+  // }
 }

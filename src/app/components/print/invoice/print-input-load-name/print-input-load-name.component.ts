@@ -13,6 +13,7 @@ import { DataCountService } from "../dataCount.service";
   ],
 })
 export class PrintInputLoadNameComponent implements OnInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number  = 0;
@@ -54,9 +55,9 @@ export class PrintInputLoadNameComponent implements OnInit {
         tables_basic.this,
         tables_basic.last
       );
-      this.countArea.setData(tables_basic.empty);
+      // this.countArea.setData(tables_basic.empty);
     } else {
-      this.countArea.setData(7);
+      this.isEnable = false;
     }
   }
 

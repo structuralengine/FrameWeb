@@ -16,6 +16,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintResultFsecComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   btnPickup: string;
@@ -36,8 +37,7 @@ export class PrintResultFsecComponent implements OnInit, AfterViewInit {
     private InputData: InputDataService,
     private ResultData: ResultDataService,
     private countArea: DataCountService,
-    private helper: DataHelperModule
-  ) {
+    private helper: DataHelperModule ) {
     this.dimension = this.helper.dimension;
     this.clear();
   }

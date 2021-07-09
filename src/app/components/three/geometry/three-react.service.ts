@@ -119,7 +119,7 @@ export class ThreeReactService {
       reac.ty = this.helper.toNumber(reac.ty);
       reac.tz = this.helper.toNumber(reac.tz);
       reac.mx = this.helper.toNumber(reac.mx);
-      reac.my = this.helper.toNumber(reac.my);
+      reac.my = -this.helper.toNumber(reac.my);
       reac.mz = this.helper.toNumber(reac.mz);
     }
     // スケールを決定する 最大の荷重を 1とする
@@ -199,7 +199,7 @@ export class ThreeReactService {
       0                   // aRotation
     );
 
-    const points = curve.getPoints(50);
+    const points = curve.getPoints(20);
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
     const lineMaterial = new THREE.LineBasicMaterial({ color, linewidth: 5 });
     const ellipse = new THREE.Line(lineGeometry, lineMaterial);
@@ -215,19 +215,26 @@ export class ThreeReactService {
 
     switch (name) {
       case 'mx':
-        ellipse.rotateX(Math.PI / 2);
         ellipse.rotateY(Math.PI / 2);
+        if(value < 0){
+          ellipse.rotateX(Math.PI);
+        }
         break;
       case 'my':
         ellipse.rotateX(Math.PI / 2);
+        if(value < 0){
+          ellipse.rotateY(Math.PI);
+        }
         break;
       case 'mz':
-        ellipse.rotateX(Math.PI); // 反転
+        if(value > 0){
+          ellipse.rotateX(Math.PI); // 反転
+        }
         break;
     }
 
     let scale: number = value / mMax;
-    scale /= 8;
+    scale /= 5;
     ellipse.scale.set(scale, scale, scale);
 
     return ellipse;
@@ -242,10 +249,10 @@ export class ThreeReactService {
       return null;
     }
 
-    const maxLength: number = this.maxLength() * 0.7;
+    const maxLength: number = this.maxLength() * 0.2;
     const length: number = maxLength * value / pMax;
 
-    const linewidth: number = this.nodeThree.baseScale / 50 * 2;
+    const linewidth: number = Math.abs(length) / 5000;
 
     let color: number;
     const positions = [];

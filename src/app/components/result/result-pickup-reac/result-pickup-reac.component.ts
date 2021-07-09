@@ -13,7 +13,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   selector: "app-result-pickup-reac",
   templateUrl: "./result-pickup-reac.component.html",
   styleUrls: [
-    "./result-pickup-reac.component.scss",
+    "../result-combine-reac/result-combine-reac.component.scss",
     "../../../app.component.scss",
     "../../../floater.component.scss",
   ],

@@ -14,6 +14,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   ],
 })
 export class PrintInputLoadComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number  = 0;
@@ -76,7 +77,7 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
         tables_actual.last
       );
     } else {
-      this.countArea.setData(8);
+      this.isEnable = false;
     }
   }
 
@@ -241,12 +242,19 @@ export class PrintInputLoadComponent implements OnInit, AfterViewInit {
       if (ploadCount > 0) {
         this.pload = [];
         for (const item of elist.load_node) {
-          const tx = item.tx !== null ? item.tx : 0;
-          const ty = item.ty !== null ? item.ty : 0;
-          const tz = item.tz !== null ? item.tz : 0;
-          const rx = item.rx !== null ? item.rx : 0;
-          const ry = item.ry !== null ? item.ry : 0;
-          const rz = item.rz !== null ? item.rz : 0;
+          let tx = this.helper.toNumber(item.tx) !== null ? item.tx : 0;
+          let ty = this.helper.toNumber(item.ty) !== null ? item.ty : 0;
+          let tz = this.helper.toNumber(item.tz) !== null ? item.tz : 0;
+          let rx = this.helper.toNumber(item.rx) !== null ? item.rx : 0;
+          let ry = this.helper.toNumber(item.ry) !== null ? item.ry : 0;
+          let rz = this.helper.toNumber(item.rz) !== null ? item.rz : 0;
+
+          tx = this.helper.toNumber(item.dx) !== null ? item.dx : tx;
+          ty = this.helper.toNumber(item.dy) !== null ? item.dy : ty;
+          tz = this.helper.toNumber(item.dz) !== null ? item.dz : tz;
+          rx = this.helper.toNumber(item.ax) !== null ? item.ax : rx;
+          ry = this.helper.toNumber(item.ay) !== null ? item.ay : ry;
+          rz = this.helper.toNumber(item.az) !== null ? item.az : rz;
 
           const line = ["", "", "", "", "", "", "", ""];
           line[0] = "";

@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable loadBasic">
+<div *ngIf="isEnable"  class="invoicetTable loadBasic">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>実荷重データ</h2>
     <!--load_dataからcaseごとにデータを取り出す-->
     <div *ngFor="let case of load_data; index as i">

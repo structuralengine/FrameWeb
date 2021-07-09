@@ -116,6 +116,6 @@ export class InputJointComponent implements OnInit {
       }
     };
 
-    width = (this.helper.dimension === 3) ? 410 : 210 ;
+    width = (this.helper.dimension === 3) ? 410 : 410 ;
 
 }

@@ -16,6 +16,7 @@ import { PrintService } from "../../print.service";
   ],
 })
 export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number  = 0;
@@ -53,10 +54,10 @@ export class PrintInputNoticePointsComponent implements OnInit, AfterViewInit {
       const tables = this.printNoticepoints(inputJson); // {body, title}
       this.notice_dataset = tables.table;
       //this.notice_page = tables.page;
-      this.judge = this.countArea.setCurrentY(tables.this, tables.last);}
-    else {
-      this.countArea.setData(5);
-     }
+      this.judge = this.countArea.setCurrentY(tables.this, tables.last);
+    } else {
+      this.isEnable = false;
+    }
   }
 
   ngAfterViewInit() {}

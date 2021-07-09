@@ -14,6 +14,7 @@ import { PrintService } from "../../print.service";
   ],
 })
 export class PrintInputPickupComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number   = 0;
@@ -47,7 +48,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
       this.pickup_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     }else {
-      this.countArea.setData(11);
+      this.isEnable = false;
     }
   }
 
@@ -92,6 +93,7 @@ export class PrintInputPickupComponent implements OnInit, AfterViewInit {
           counter = 0;
           line = new Array();
           line.push(""); // PickUpNo
+          line.push(""); // 荷重名称
           row++;
         }
       }

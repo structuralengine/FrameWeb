@@ -18,6 +18,7 @@ import { ThreeLoadMoment } from "./three-load-moment";
 import { ThreeLoadTemperature } from "./three-load-temperature";
 import { ThreeLoadMemberPoint } from "./three-load-member-point";
 import { ThreeLoadMemberMoment } from "./three-load-member-moment";
+import { DataHelperModule } from "src/app/providers/data-helper.module";
 
 @Injectable({
   providedIn: "root",
@@ -56,6 +57,7 @@ export class ThreeLoadService {
   // 初期化
   constructor(
     private scene: SceneService,
+    private helper: DataHelperModule,
     private nodeThree: ThreeNodesService,
     private node: InputNodesService,
     private member: InputMembersService,
@@ -638,10 +640,8 @@ export class ThreeLoadService {
       const node = nodeData[n];
 
       // リストに登録する
-      const target =
-        n in pointLoadList
-          ? pointLoadList[n]
-          : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
+      const target = n in pointLoadList ? pointLoadList[n]
+      : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
 
       // 集中荷重 ---------------------------------
       for (let key of ["tx", "ty", "tz"]) {
@@ -660,7 +660,27 @@ export class ThreeLoadService {
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        pointLoadList[n] = target;
+        // pointLoadList[n] = target;
+      }
+      // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
+      for (let k of ["x", "y", "z"]) {
+        const key1 = 'd' + k;
+        if (load[key1] === 0) continue;
+
+        const value = load[key1] * 1000;
+
+        const key = 't' + k;
+        // 荷重を編集する
+        // 長さを決める
+        // scale = 1 の時 長さlength = maxLengthとなる
+        const arrow = this.pointLoad.create(node, 0, value, 1, key, load.row);
+
+        // リストに登録する
+        arrow["row"] = load.row;
+        target[key].push(arrow);
+        ThreeObject.add(arrow);
+
+        // pointLoadList[n] = target;
       }
 
       // 曲げモーメント荷重 -------------------------
@@ -690,8 +710,42 @@ export class ThreeLoadService {
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        pointLoadList[n] = target;
+        // pointLoadList[n] = target;
       }
+      // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
+      for (let k of ["x", "y", "z"]) {
+        const key1 = 'a' + k;
+
+        if (load[key1] === 0) continue;
+
+        const value = load[key1] * 1000;
+
+        const key = 'r' + k;
+        // 配置位置（その他の荷重とぶつからない位置）を決定する
+        let offset = 0;
+        for (const a of target[key]) {
+          if (a.visible === false) {
+            continue;
+          }
+          offset += 0.1;
+        }
+        // 荷重を編集する
+        // 長さを決める
+        // scale = 1 の時 直径Radius = maxLengthとなる
+        const scale = 1; //Math.abs(value) * 0.1;
+        const Radius: number = scale;
+        const arrow = this.momentLoad.create(node, offset, value, Radius, key, load.row);
+
+        // リストに登録する
+        arrow["row"] = load.row;
+        target[key].push(arrow);
+        ThreeObject.add(arrow);
+
+        // pointLoadList[n] = target;
+      }
+      pointLoadList[n] = target;
+
+
     }
   }
 
@@ -712,20 +766,28 @@ export class ThreeLoadService {
     }
 
     targetNodeLoad.forEach((load) => {
-      LoadList.pMax = Math.max(
-        LoadList.pMax,
-        Math.abs(load.tx),
-        Math.abs(load.ty),
-        Math.abs(load.tz)
-      );
+      for(const k of ['tx', 'ty', 'tz']){
+        if(k in load){
+          LoadList.pMax = Math.max(LoadList.pMax, Math.abs(load[k]));
+        }
+      }
+      for(const k of ['dx', 'dy', 'dz']){
+        if(k in load){
+          LoadList.pMax = Math.max(LoadList.pMax, Math.abs(load[k]*1000));
+        }
+      }
     });
     targetNodeLoad.forEach((load) => {
-      LoadList.mMax = Math.max(
-        LoadList.mMax,
-        Math.abs(load.rx),
-        Math.abs(load.ry),
-        Math.abs(load.rz)
-      );
+      for(const k of ['rx', 'ry', 'rz']){
+        if(k in load){
+          LoadList.mMax = Math.max(LoadList.mMax, Math.abs(load[k]));
+        }
+      }
+      for(const k of ['ax', 'ay', 'az']){
+        if(k in load){
+          LoadList.mMax = Math.max(LoadList.mMax, Math.abs(load[k]*1000));
+        }
+      }      
     });
   }
 

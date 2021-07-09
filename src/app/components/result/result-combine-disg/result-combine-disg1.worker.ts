@@ -84,6 +84,8 @@ addEventListener("message", ({ data }) => {
       }
 
       const disgs = disgDefine[defNo];
+      if(Object.keys(disgs).length < 1) continue;
+
       // カレントケースを集計する
       const c2 = Math.abs(caseNo).toString().trim();
       for (const key of disgKeys){

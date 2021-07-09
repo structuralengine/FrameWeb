@@ -18,15 +18,15 @@ export class InputFixMemberComponent implements OnInit {
   private dataset = [];
   private columnHeaders3D =[
     { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
-    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-    { title: "Z変位拘束", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
-    { title: "回転拘束",  dataType: "float",   dataIndx: "tr", sortable: false, width: 100 }
+    { title: "X変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+    { title: "Z変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
+    { title: "回転拘束\n(kNm/rad/m)",  dataType: "float",   dataIndx: "tr", sortable: false, width: 100 }
   ];
   private columnHeaders2D =[
     { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
-    { title: "X変位拘束", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+    { title: "X変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    { title: "Y変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
   ];
 
   private ROWS_COUNT = 15;
@@ -117,6 +117,6 @@ export class InputFixMemberComponent implements OnInit {
     }
   };
 
-  width = (this.helper.dimension === 3) ? 510 : 310 ;
+  width = (this.helper.dimension === 3) ? 510 : 410 ;
 
 }

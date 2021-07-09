@@ -49,7 +49,7 @@
 
         tbody {
             overflow-y: auto;
-            max-height: 250px;
+            // max-height: 250px;
             display: block;
             tr {
                 &:nth-child(2n + 1) {

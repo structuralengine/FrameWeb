@@ -1,5 +1,5 @@
-<div *ngIf="judge" class="pagerBreak"></div>
-<div class="invoicetTable fixMember">
+<div *ngIf="isEnable"  class="invoicetTable fixMember">
+  <div *ngIf="judge" class="pagerBreak"></div>
     <h2>バネデータ</h2>
     <div *ngFor="let title of fixMember_typeNum; index as i">
         <div *ngIf="fixMember_break[i]" class="pagerBreak"></div>

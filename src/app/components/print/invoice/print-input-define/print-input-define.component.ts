@@ -13,6 +13,7 @@ import { PrintService } from "../../print.service";
   ],
 })
 export class PrintInputDefineComponent implements OnInit, AfterViewInit {
+  isEnable = true;
   page: number;
   load_name: string;
   countCell: number = 0;
@@ -32,7 +33,6 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
     private countArea: DataCountService
   ) {
     this.judge = false;
-    countArea.dataExists[9] = true;
     this.clear();
   }
 
@@ -47,7 +47,7 @@ export class PrintInputDefineComponent implements OnInit, AfterViewInit {
       this.define_dataset = tables.splid;
       this.judge = this.countArea.setCurrentY(tables.this, tables.last);
     } else {
-      this.countArea.setData(9);
+      this.isEnable = false;
     }
   }
 
