@@ -21,14 +21,14 @@ export class InputJointComponent implements OnInit {
       { title: "No", dataType: "string", dataIndx: "m", sortable: false },
     ]},      
     { title: 'i端', align: 'center', colModel: [
-      { title: "x軸", dataType: "integer", dataIndx: "xi", sortable: false },
-      { title: "y軸", dataType: "integer", dataIndx: "yi", sortable: false },
-      { title: "z軸", dataType: "integer", dataIndx: "zi", sortable: false },
+      { title: "x", dataType: "integer", dataIndx: "xi", sortable: false },
+      { title: "y", dataType: "integer", dataIndx: "yi", sortable: false },
+      { title: "z", dataType: "integer", dataIndx: "zi", sortable: false },
     ]},      
     { title: 'i端', align: 'center', colModel: [
-      { title: "x軸", dataType: "integer", dataIndx: "xj", sortable: false },
-      { title: "y軸", dataType: "integer", dataIndx: "yj", sortable: false },
-      { title: "z軸", dataType: "integer", dataIndx: "zj", sortable: false }
+      { title: "x", dataType: "integer", dataIndx: "xj", sortable: false },
+      { title: "y", dataType: "integer", dataIndx: "yj", sortable: false },
+      { title: "z", dataType: "integer", dataIndx: "zj", sortable: false }
     ]},      
   ];
   private columnHeaders2D =[

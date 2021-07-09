@@ -12,7 +12,7 @@
         </ul>
         <div *ngIf="Editing">
           <mat-form-field>
-            <input type="number" matInput matType="number" formControlName="number2" class="pageNum">
+            <input type="number" min="1" step="1" matInput matType="number" formControlName="number2" class="pageNum" [(ngModel)]="page">
           </mat-form-field>
         </div>
         <button mat-raised-button (click)="click()">click</button>
