@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
-import { ThreeComponent } from './three.component';
 import { GUI } from './libs/dat.gui.module.js';
 import { OrbitControls } from './libs/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from './libs/CSS2DRenderer.js';
-import { OrientationGizmo } from './OrientationGizmo.js';
-import { SafeHtml } from '@angular/platform-browser';
 import { DataHelperModule } from '../../providers/data-helper.module';
 
 @Injectable({
@@ -21,7 +18,7 @@ export class SceneService {
   private labelRenderer: CSS2DRenderer;
 
   // カメラ
-  private camera: THREE.PerspectiveCamera;
+  public camera: THREE.PerspectiveCamera;
 
   // helper
   private axisHelper: THREE.AxesHelper;
@@ -62,9 +59,6 @@ export class SceneService {
                       deviceRatio,
                       Width,
                       Height);
-
-    var orientationGizmo = new OrientationGizmo(this.camera);
-    document.body.appendChild(orientationGizmo);
 
     // コントロール
     this.addControls();

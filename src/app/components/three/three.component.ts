@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { SceneService } from './scene.service';
 import { ThreeService } from './three.service';
 import html2canvas from 'html2canvas';
+import { debounce, createCube, setupCameraGizmo, IGizmoManager } from "./libs/utils";
 
 @Component({
   selector: 'app-three',
@@ -19,6 +20,11 @@ export class ThreeComponent implements AfterViewInit {
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
   }
+  // gizmo
+  private containerRef: HTMLDivElement;
+  private gizmoManager!: IGizmoManager;
+  private CAMERA_DISTANCE = 6;
+  private CAMERA_FOCUS_POINT = new THREE.Vector3(0, 0, 0);
 
   constructor(private ngZone: NgZone,
               private scene: SceneService,
@@ -40,6 +46,16 @@ export class ThreeComponent implements AfterViewInit {
     const element = this.scene.labelRendererDomElement();
     const div = document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
+
+    // gizmo
+    this.containerRef = document.createElement('div') ;
+    this.gizmoManager = setupCameraGizmo(
+      this.containerRef,
+      this.scene.camera,
+      this.CAMERA_DISTANCE,
+      this.CAMERA_FOCUS_POINT
+    );
+
     // レンダリングする
     this.animate();
   }
@@ -50,6 +66,7 @@ export class ThreeComponent implements AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       window.addEventListener('DOMContentLoaded', () => {
       this.scene.render();
+      this.gizmoManager.renderCameraGizmo();
       });
     });
   }
