@@ -45,7 +45,6 @@ export class ThreeLoadText {
 }
 
 
-
 export class TextBoardObject { 
 
   private plane: any;
@@ -53,15 +52,9 @@ export class TextBoardObject {
   private texture: any;
   private boardWidth: any;
   private boardHeight: any;
-  private textScene: any;
-  private textCamera: any;
-  // private textBord: TextBoardCanvas;
-
 
   private backgroundColor: any;
   private textColor: any;
-  // private boardWidth: any;
-  // private boardHeight: any;
   private fontSize: any;
   private lineHeight: any;
   private fontName: any;
@@ -69,7 +62,6 @@ export class TextBoardObject {
   private _lineHeight: any;
   private textLines: any;
   private canvas: any;
-
 
 
   constructor( parameter ){
@@ -123,6 +115,7 @@ export class TextBoardObject {
     return this.plane;
   }
 
+  // 3Dでスプライトとは常に正面を向く3Dオブジェクトのことを言います。
   private cleateSpriteObject(){
 
     //テクスチャ画像用のcanvas要素の取得
@@ -142,21 +135,6 @@ export class TextBoardObject {
     return this.sprite;
   }
 
-  private cleateTextScreen(){
-
-    this.textScene = new THREE.Scene();
-    if( this.sprite ){
-
-        this.textScene.add( this.sprite );
-
-    } else {
-
-        this.textScene.add( this.cleateSpriteObject() );
-    }
-
-    this.textCamera = new THREE.OrthographicCamera(-this.boardWidth/2, this.boardWidth/2, this.boardHeight/2, -this.boardHeight/2, -10, 10);
-
-  }
 
   public update(){
 
