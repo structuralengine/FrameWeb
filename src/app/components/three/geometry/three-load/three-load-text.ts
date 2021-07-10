@@ -20,29 +20,30 @@ export class ThreeLoadText {
     horizontal = 'center',
     vartical = 'bottom'): THREE.Group {
 
-    const groupe = new THREE.Group();
-
     // 新しい text オブジェクト
     const textBoardObject = new TextBoardObject({
-      fontSize : 80, // [%]
-      textColor : {r:1, g:1, b:1, a:1},//文字色
+      fontSize : 20, // [%]
+      textColor : {r:0, g:0, b:0, a:1},//文字色
       backgroundColor : { r:1, g:1, b:1, a:0.1 },//背景色（RGBA値を0から１で指定）
       boardWidth : 100,  //マッピング対象平面オブジェクトの横幅
-      boardHeight : 100, //マッピング対象平面オブジェクトの縦幅
+      boardHeight : 50, //マッピング対象平面オブジェクトの縦幅
       fontName :"Times New Roman"
     });
 
     textBoardObject.clear();
-    textBoardObject.addTextLine( 'aaa', 0, 1 );
+    textBoardObject.addTextLine( textString, 0, 1 );
     textBoardObject.update();
 
+    const groupe = new THREE.Group();
     groupe.add(textBoardObject.cleatePlaneObject());
-    groupe.scale.set(100, 100, 100);
-    
+    // groupe.scale.set(100, 100, 100);
+
     return groupe;
+
   }
 
 }
+
 
 
 export class TextBoardObject { 
@@ -111,9 +112,11 @@ export class TextBoardObject {
     this.texture.needsUpdate = true;
 
     //形状オブジェクトの宣言と生成
-    var geometry = new THREE.PlaneGeometry( this.boardWidth, this.boardHeight );
+    const geometry = new THREE.PlaneGeometry( this.boardWidth, this.boardHeight );
     //材質オブジェクトの宣言と生成
-    var material = new THREE.MeshBasicMaterial( { map : this.texture, transparent : true } );
+    // var material = new THREE.MeshBasicMaterial( { map : this.texture, transparent : true } );
+    var material = new THREE.MeshBasicMaterial( { map : this.texture } );
+    const material1 = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     //平面オブジェクトの生成
     this.plane = new THREE.Mesh( geometry, material );
 
@@ -261,9 +264,6 @@ export class TextBoardObject {
 
   //文字列の追加
   public addTextLine( text, indent, lineHeight ){
-    text = text || "";
-    indent = indent || 0;
-    lineHeight = lineHeight || this.lineHeight;
 
     this.textLines.push( {text : text, indent : indent, lineHeight : lineHeight} );
     this._lineHeight += lineHeight * this.fontSize /100 * this.canvas.width;
@@ -283,3 +283,4 @@ export class TextBoardObject {
   }
 
 }
+

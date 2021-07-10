@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+  import { Inject, Injectable } from '@angular/core';
 import * as THREE from "three";
 import { Vector2 } from 'three';
 import { ThreeLoadText } from '../three-load/three-load-text';
