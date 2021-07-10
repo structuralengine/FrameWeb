@@ -83,7 +83,7 @@ export class ThreeSectionForceMeshService {
     // 文字を追加する
     const text = this.getText(points, P1, P2);
     if(text !== null){
-      text.visible = false;
+      text.visible = true;
       group.add(text);
     }
     
@@ -182,7 +182,11 @@ export class ThreeSectionForceMeshService {
   // 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group {
     
-    return null; // やっぱ重い
+    const size1: number = 50; // 文字サイズ
+    const pos1 = new THREE.Vector2(0, 0);
+    const a = this.text.create(P1.toFixed(2), pos1, size1, 'left', 'bottom');
+    a.name = 'text';
+    return a; // やっぱ重い
 
     const result = new THREE.Group();
 
@@ -242,7 +246,8 @@ export class ThreeSectionForceMeshService {
     const text = target.getObjectByName("text");
     if(text !== undefined){
       const text = target.getObjectByName("text");
-      text.scale.set(scale, scale, scale);
+      //text.scale.set(scale, scale, scale);
+      text.scale.set(100, 100, 100);
     }
 
   }

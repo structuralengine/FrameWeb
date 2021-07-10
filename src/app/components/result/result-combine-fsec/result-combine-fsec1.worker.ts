@@ -81,7 +81,7 @@ addEventListener('message', ({ data }) => {
             if (k2 === 'max') {
               if (temp[key][id][k1] < obj[id][k1]) {
                 temp[key][id] = obj[id];
-              }
+              } 
             } else if (k2 === 'min') {
               if (temp[key][id][k1] > obj[id][k1]) {
                 temp[key][id] = obj[id];
