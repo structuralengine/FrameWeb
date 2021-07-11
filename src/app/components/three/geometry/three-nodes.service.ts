@@ -3,6 +3,7 @@ import { SceneService } from '../scene.service';
 import { InputNodesService } from '../../../components/input/input-nodes/input-nodes.service';
 import * as THREE from 'three';
 import { CSS2DObject } from '../libs/CSS2DRenderer.js';
+import { Text } from 'troika-three-text'
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +62,20 @@ export class ThreeNodesService {
       this.txtVisible = value;
       this.scene.render();
     });
+
+    // Create:
+    const myText = new Text();
+    this.scene.add(myText);
+
+    // Set properties to configure:
+    myText.text = 'Hello world!';
+    myText.fontSize = 0.2;
+    myText.position.z = -2;
+    myText.color = 0x9966FF;
+
+    // Update the rendering:
+    myText.sync();
+
 
   }
 

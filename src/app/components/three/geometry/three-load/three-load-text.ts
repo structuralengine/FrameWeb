@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as THREE from "three";
+import {Text} from 'troika-three-text'
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class ThreeLoadText {
     size: number,
     horizontal = 'center',
     vartical = 'bottom'): THREE.Group {
+
 
     const text_geo = new THREE.TextGeometry(textString, {
       font: this.font,

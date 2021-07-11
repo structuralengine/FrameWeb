@@ -52,6 +52,7 @@
     "rxjs": "~6.6.2",
     "rxjs-compat": "^6.5.3",
     "three": "^0.120.1",
+    "troika-three-text": "^0.42.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
   },
