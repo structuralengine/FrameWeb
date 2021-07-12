@@ -18,6 +18,8 @@ export class ThreeLoadDistribute {
   private line_mat_Red: THREE.LineBasicMaterial;
   private line_mat_Green: THREE.LineBasicMaterial;
   private line_mat_Blue: THREE.LineBasicMaterial;
+  private face_mat_Pick: THREE.MeshBasicMaterial
+  private line_mat_Pick: THREE.LineBasicMaterial;
 
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
@@ -40,11 +42,14 @@ export class ThreeLoadDistribute {
       color: 0x0000ff,
       opacity: 0.3,
     });
-
     this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true});
     this.line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00, vertexColors: true });
     this.line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff, vertexColors: true });
+    this.line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true});
+    this.face_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xff0000,  transparent: true, side: THREE.DoubleSide, opacity: 0.3 });
   }
+
+
 
   /// 等分布荷重を編集する
   // target: 編集対象の荷重,
@@ -59,17 +64,10 @@ export class ThreeLoadDistribute {
   // row: 対象荷重が記述されている行数
   // offset: 配置位置（その他の荷重とぶつからない位置）
   // scale: スケール
-  public create(
-    nodei: THREE.Vector3,
-    nodej: THREE.Vector3,
-    localAxis: any,
-    direction: string,
-    pL1: number,
-    pL2: number,
-    P1: number,
-    P2: number, 
-    row: number
-  ): THREE.Group {
+  public create( nodei: THREE.Vector3, nodej: THREE.Vector3, localAxis: any,
+    direction: string, pL1: number, pL2: number, P1: number, P2: number, 
+    row: number ): THREE.Group {
+
     const offset: number = 0;
     const height: number = 1;
 
@@ -105,12 +103,12 @@ export class ThreeLoadDistribute {
     group0.add(child);
     group0.name = "group";
 
-    /*/ 文字を追加する
+    // 文字を追加する
     for(const text of this.getText(points, P1, P2)){
       text.visible = false;
       group0.add(text);
     }
-    */
+    
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -161,6 +159,24 @@ export class ThreeLoadDistribute {
     group.name = "DistributeLoad-" + row.toString() + '-' +direction.toString();  //例：DistributeLoad-3-y
 
     return group;
+  }
+
+  // 荷重を削除する
+  public dispose(group: THREE.Group){
+
+    const group0 = group.getObjectByName('group');
+
+    for(const item of group0.children){
+      if(item.name === 'text'){
+        this.text.dispose(item);
+      } else if(item.name === 'child'){
+        const dimensions = item.getObjectByName('Dimension');
+        for(const dim of dimensions.children){
+          this.dim.dispose(dim);
+        }
+      }
+    }
+
   }
 
   private getColor(direction: string): number {
@@ -267,15 +283,6 @@ export class ThreeLoadDistribute {
     } else {
       face_mat = this.face_mat_Blue;
     }
-    /*
-    const face_mat = new THREE.MeshBasicMaterial({
-      transparent: true,
-      side: THREE.DoubleSide,
-      color: my_color,
-      opacity: 0.3,
-    });
-    */
-
     const face_geo = new THREE.Geometry();
     face_geo.vertices = points;
 
@@ -370,7 +377,7 @@ export class ThreeLoadDistribute {
     return dim;
   }
   
-  /*/ 文字
+  // 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
 
     const result = [];
@@ -414,7 +421,7 @@ export class ThreeLoadDistribute {
 
     return result;
   }
-  */
+  
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
@@ -449,56 +456,62 @@ export class ThreeLoadDistribute {
   // ハイライトを反映させる
   public setColor(group: any, status: string): void{
 
-    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
-    const face_mat_Pick = new THREE.MeshBasicMaterial({
-      transparent: true,
-      side: THREE.DoubleSide,
-      color: 0xff0000,
-      opacity: 0.3,
-    });
-    const line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true});
+    const group0 = group.getObjectByName('group');
     
-    for(let target of group.children[0].children[0].children) {
-      if (status === "clear"){
-        if (group.name.slice(-1) === 'y'){
-          if (target.name === 'face'){
-            target.material = this.face_mat_Green; //デフォルトのカラー
-          } else if (target.name === 'line'){
-            target.material = this.line_mat_Green; //デフォルトのカラー
-          }
-        } else if (group.name.slice(-1) === 'z') {
-          if (target.name === 'face'){
-            target.material = this.face_mat_Blue; //デフォルトのカラー
-          } else if (target.name === 'line'){
-            target.material = this.line_mat_Blue; //デフォルトのカラー
+    for(const child of  group0.children){
+      if(child.name === 'child'){
+
+        for(const target of child.children) {
+          if (status === "clear"){
+            if (group.name.slice(-1) === 'y'){
+              if (target.name === 'face'){
+                target.material = this.face_mat_Green; //デフォルトのカラー
+              } else if (target.name === 'line'){
+                target.material = this.line_mat_Green; //デフォルトのカラー
+              }
+            } else if (group.name.slice(-1) === 'z') {
+              if (target.name === 'face'){
+                target.material = this.face_mat_Blue; //デフォルトのカラー
+              } else if (target.name === 'line'){
+                target.material = this.line_mat_Blue; //デフォルトのカラー
+              }
+            }
+            // 寸法線を非表示
+            if (target.name === 'Dimension'){
+              target.visible = false;
+            }
+          } else if (status === "select"){
+            if (group.name.slice(-1) === 'y'){
+              if (target.name === 'face'){
+                target.material = this.face_mat_Pick; //ハイライト用のカラー
+              } else if (target.name === 'line'){
+                //target.material = this.line_mat_Green; //デフォルトのカラー
+                target.material = this.line_mat_Pick; //デフォルトのカラー
+              }
+            } else if (group.name.slice(-1) === 'z') {
+              if (target.name === 'face'){
+                target.material = this.face_mat_Pick; //ハイライト用のカラー
+              } else if (target.name === 'line'){
+                //target.material = this.line_mat_Blue; //デフォルトのカラー
+                target.material = this.line_mat_Pick; //デフォルトのカラー
+              }
+            }
+            // 寸法線を表示
+            if (target.name === 'Dimension'){
+              target.visible = true;
+            }
           }
         }
-        // 寸法線を非表示
-        if (target.name === 'Dimension'){
-          target.visible = false;
-        }
-      } else if (status === "select"){
-        if (group.name.slice(-1) === 'y'){
-          if (target.name === 'face'){
-            target.material = face_mat_Pick; //ハイライト用のカラー
-          } else if (target.name === 'line'){
-            //target.material = this.line_mat_Green; //デフォルトのカラー
-            target.material = line_mat_Pick; //デフォルトのカラー
-          }
-        } else if (group.name.slice(-1) === 'z') {
-          if (target.name === 'face'){
-            target.material = face_mat_Pick; //ハイライト用のカラー
-          } else if (target.name === 'line'){
-            //target.material = this.line_mat_Blue; //デフォルトのカラー
-            target.material = line_mat_Pick; //デフォルトのカラー
-          }
-        }
-        // 寸法線を表示
-        if (target.name === 'Dimension'){
-          target.visible = true;
+
+      } else if(child.name === 'text'){
+        if (status === "clear"){
+          child.visible = false;  // 文字を非表示
+        } else if (status === "select"){
+          child.visible = true; // 文字を表示
         }
       }
     }
+
   }
 
 }
