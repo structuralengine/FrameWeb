@@ -928,6 +928,18 @@ export class InputLoadService {
       }
     }
 
+    // 荷重距離ゼロの行を削除する  . . . . . . . . . . . . . . . . . . . .
+    for (let i = loads.length - 1; i >= 0; i--) {
+      const item = loads[i];
+      const LL: number = Math.round(this.member.getMemberLength(item["m1"]) * 1000);
+      const L1: number = Math.round(this.helper.toNumber(item["L1"]) * 1000);
+      const L2: number = Math.round(item["L2"] * 1000);
+      if ( LL - (L1 + L2 ) <= 0) {
+        loads.splice(i, 1);
+      }
+    }
+
+
     // 戻り値を作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
     result["loads"] = loads;
     result["curNo"] = curNo;
