@@ -700,6 +700,19 @@ export class InputLoadService {
         }
       }
     }
+
+    // 荷重距離ゼロの行を削除する -------------------------------------
+    for (let i = load2.length - 1; i >= 0; i--) {
+      const item = load2[i];
+      const LL: number = Math.round(this.member.getMemberLength(item["m1"]) * 1000);
+      const L1: number = Math.round(this.helper.toNumber(item["L1"]) * 1000);
+      const L2: number = Math.round(item["L2"] * 1000);
+      if ( LL - (L1 + L2 ) <= 0) {
+        load2.splice(i, 1);
+      }
+    }
+
+
     return load2;
   }
 
@@ -808,7 +821,7 @@ export class InputLoadService {
     }
 
     // ちょうど j端 になったら次の部材の 距離0(ゼロ) とする
-    if (curPos >= L - 0.0001) {
+    if (Math.round(curPos*1000) >= Math.round(L*1000)) {
       if (org_m2 > curNo) {
         curNo = curNo + 1;
         curPos = 0;
@@ -928,22 +941,11 @@ export class InputLoadService {
       }
     }
 
-    // 荷重距離ゼロの行を削除する  . . . . . . . . . . . . . . . . . . . .
-    for (let i = loads.length - 1; i >= 0; i--) {
-      const item = loads[i];
-      const LL: number = Math.round(this.member.getMemberLength(item["m1"]) * 1000);
-      const L1: number = Math.round(this.helper.toNumber(item["L1"]) * 1000);
-      const L2: number = Math.round(item["L2"] * 1000);
-      if ( LL - (L1 + L2 ) <= 0) {
-        loads.splice(i, 1);
-      }
-    }
-
-
     // 戻り値を作成する  . . . . . . . . . . . . . . . . . . . . . . . . . . .
     result["loads"] = loads;
     result["curNo"] = curNo;
     result["curPos"] = curPos;
+    
     return result;
   }
 
