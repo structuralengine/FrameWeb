@@ -18,7 +18,7 @@ export class ThreeLoadDimension {
   }
 
    // 寸法線を編集する
-   public create( points: THREE.Vector2[], textStr: string ): THREE.Group {
+  public create( points: THREE.Vector2[], textStr: string ): THREE.Group {
 
     const positions = [
       new THREE.Vector3(points[0].x, points[0].y, 0),
@@ -58,11 +58,11 @@ export class ThreeLoadDimension {
     const x = points[1].x + (points[2].x - points[1].x) / 2;
     const y = points[1].y + (points[2].y - points[1].y) / 2;
     const horizontal: string = 'center';
-     let vartical: string = 'top';
+    let vartical: string = 'bottom';
     if(points[1].y >= 0 ){
-      if (points[1].y < points[0].y) vartical = 'bottom';
+      if (points[1].y < points[0].y) vartical = 'top';
     } else {
-      if (points[1].y > points[0].y) vartical = 'bottom';
+      if (points[1].y > points[0].y) vartical = 'top';
     }
 
     const text = this.text.create(textStr, new THREE.Vector2(x, y), 0.1, horizontal, vartical);
@@ -72,6 +72,10 @@ export class ThreeLoadDimension {
 
     return group;
 
+  }
+  public dispose(group: any){
+    const text = group.getObjectByName('text');
+    this.text.dispose(text);
   }
 
   private getLine(positions: THREE.Vector3[]): THREE.Line{

@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
-
 import * as THREE from 'three';
-import { Line2 } from '../../libs/Line2.js';
-import { LineMaterial } from '../../libs/LineMaterial.js';
-import { LineGeometry } from '../../libs/LineGeometry.js';
 
 import { SceneService } from '../../scene.service';
-
 import { DataHelperModule } from '../../../../providers/data-helper.module';
 
 import { InputNodesService } from '../../../input/input-nodes/input-nodes.service';
@@ -15,7 +10,6 @@ import { InputMembersService } from '../../../input/input-members/input-members.
 import { ThreeMembersService } from '../three-members.service';
 import { ThreeNodesService } from '../three-nodes.service.js';
 import { ThreeSectionForceMeshService } from './three-force-mesh';
-import { Mesh } from 'three';
 
 
 @Injectable({
@@ -100,18 +94,28 @@ export class ThreeSectionForceService {
 
   // データをクリアする
   public ClearData(): void {
+
     for (const mesh of this.ThreeObject1.children) {
       // 文字を削除する
+      let text: any = mesh.getObjectByName("text");
+      while(text !== undefined){
+        mesh.remove(text);
+        text.dispose();
+        text = mesh.getObjectByName("text");
+      }
+      // 文字以外の子要素を削除する
       while (mesh.children.length > 0) {
         const object = mesh.children[0];
         object.parent.remove(object);
       }
     }
+    
     // オブジェクトを削除する
     this.ThreeObject1.children = new Array();
     if(this.helper.dimension !== undefined){
       this.mesh.dimension = this.helper.dimension;
     }
+
   }
 
   private setGuiParams(): void {

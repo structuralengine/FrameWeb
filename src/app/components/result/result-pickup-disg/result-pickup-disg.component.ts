@@ -74,20 +74,6 @@ export class ResultPickupDisgComponent implements OnInit {
 
     this.three.ChangeMode('pik_disg');
     this.three.ChangePage(currentPage);
- }
+  }
 
- /* To copy Text from Textbox */
- copyInputMessage($tbody) {
-  const selBox = document.createElement("textarea");
-  selBox.style.position = "fixed";
-  selBox.style.left = "0";
-  selBox.style.top = "0";
-  selBox.style.opacity = "0";
-  selBox.value = this.helper.table_To_text($tbody);
-  document.body.appendChild(selBox);
-  selBox.focus();
-  selBox.select();
-  document.execCommand("copy");
-  document.body.removeChild(selBox);
-}
 }

@@ -96,7 +96,7 @@ export class InputMembersService {
   public getMember(memberNo: string) {
 
     const member = this.member.find((columns) => {
-      return columns.id === memberNo;
+      return columns.id === memberNo.toString();
     })
 
     if (member === undefined) {

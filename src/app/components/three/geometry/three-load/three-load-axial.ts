@@ -17,8 +17,9 @@ export class ThreeLoadAxial {
   private dim: ThreeLoadDimension;
 
   private matLine: LineMaterial;
-  private three_color: THREE.Color;
+  private matLine_Pick: LineMaterial;
   private arrow_mat: THREE.MeshBasicMaterial;
+  private arrow_mat_Pick: THREE.MeshBasicMaterial;
 
   constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
     this.text = text;
@@ -30,30 +31,24 @@ export class ThreeLoadAxial {
       vertexColors: true,
       dashed: false
     });
-    const line_color = 0xff0000;
-    this.three_color = new THREE.Color(line_color);
-    this.arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
+    this.matLine_Pick  = new LineMaterial({
+      color: 0x00ffff,
+      linewidth: 0.001, // in pixels
+      vertexColors: true,
+      dashed: false
+    });
 
+    this.arrow_mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    this.arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0x00ffff });
   }
-  public create(
-    nodei: THREE.Vector3,
-    nodej: THREE.Vector3,
-    localAxis: any,
-    direction: string,
-    L1: number,
-    L2: number,
-    P1: number,
-    P2: number,
-    row: number
-  ): THREE.Group {
+
+  public create( nodei: THREE.Vector3, nodej: THREE.Vector3, localAxis: any,
+    direction: string, L1: number, L2: number, P1: number, P2: number,
+    row: number ): THREE.Group {
 
     const offset: number = 0.1;
 
     const child = new THREE.Group();
-
-    // 線の色を決める
-    //const line_color = 0xff0000;
-    //const three_color = new THREE.Color(line_color);
 
     const LL = nodei.distanceTo(nodej);
     const L: number = LL - L1 - L2;
@@ -62,22 +57,12 @@ export class ThreeLoadAxial {
     const points = [];
     points.push(0, 0, 0);
     points.push(L, 0, 0);
-    //const colors = [];
     const colors = [1, 1, 1, 1, 1, 1];
-    //colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
-    //colors.push(this.three_color.r, this.three_color.g, this.three_color.b);
 
     const geometry = new LineGeometry();
     geometry.setPositions(points);
     geometry.setColors(colors);
-    /*
-    const matLine = new LineMaterial({
-      color: 0xffffff,
-      linewidth: 0.001, // in pixels
-      vertexColors: true,
-      dashed: false
-    });
-    */
+
     const line2 = new Line2(geometry, this.matLine);
     line2.computeLineDistances();
     line2.position.x = L1;
@@ -87,7 +72,6 @@ export class ThreeLoadAxial {
 
     // 矢印を描く
     const arrow_geo = new THREE.ConeBufferGeometry(0.05, 0.25, 3, 1, false);
-    //const arrow_mat = new THREE.MeshBasicMaterial({ color: line_color });
     const arrow = new THREE.Mesh(arrow_geo, this.arrow_mat);
     arrow.rotation.z = -Math.PI / 2;
     arrow.position.x = L1 + L;
@@ -96,12 +80,11 @@ export class ThreeLoadAxial {
     child.add(arrow);
     child.name = "child";
 
-    /*/ 寸法線
+    // 寸法線
     const dim = this.getDim(L1, L, L2, offset);
-    //dim.visible = false;
-    dim.visible = true;
+    dim.visible = false;
     child.add(dim);
-    */
+
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -110,12 +93,12 @@ export class ThreeLoadAxial {
     group0.add(child);
     group0.name = "group";
 
-    /*/ 文字を追加する
+    // 文字を追加する
     for (const text of this.getText(P1, P2, L1, L1 + L, offset)) {
       text.visible = false;
       group0.add(text);
     }
-    */
+
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
@@ -140,7 +123,25 @@ export class ThreeLoadAxial {
     return group;
   }
 
-  /*/ 寸法線
+  // 荷重を削除する
+  public dispose(group: THREE.Group){
+
+    const group0 = group.getObjectByName('group');
+
+    for(const item of group0.children){
+      if(item.name === 'text'){
+        this.text.dispose(item);
+      } else if(item.name === 'child'){
+        const dimensions = item.getObjectByName('Dimension');
+        for(const dim of dimensions.children){
+          this.dim.dispose(dim);
+        }
+      }
+    }
+  }
+
+
+  // 寸法線
   private getDim(L1: number, L: number, L2: number, offset: number): THREE.Group {
 
     const L1L = L1 + L;
@@ -194,8 +195,8 @@ export class ThreeLoadAxial {
 
     return dim;
   }
-  */
-  /*/ 文字
+  
+  // 文字
   private getText(P1: number, P2: number, pos1: number, pos2: number,  offset: number): THREE.Group[] {
 
     const result = [];
@@ -223,7 +224,7 @@ export class ThreeLoadAxial {
 
     return result;
   }
-  */
+  
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {
@@ -238,32 +239,44 @@ export class ThreeLoadAxial {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, n: string): void {
+  public setColor(group: any, status: string): void {
 
-    //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
-    const matLine_Pick = new LineMaterial({
-      color: 0x00ffff,
-      linewidth: 0.001, // in pixels
-      vertexColors: true,
-      dashed: false
-    });
-    const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-
-    for (let target of group.children[0].children[0].children) {
-      if (n === "clear") {
-        if (target.name === 'line2') {
-          target.material = this.matLine //デフォルトのカラー
-        } else if (target.name === 'arrow') {
-          target.material = this.arrow_mat //デフォルトのカラー
+    const group0 = group.getObjectByName('group');
+    
+    for(const child of  group0.children){
+      if(child.name === 'child'){
+        for(const target of child.children) {
+          if (status === "clear") {
+            if (target.name === 'line2') {
+              target.material = this.matLine //デフォルトのカラー
+            } else if (target.name === 'arrow') {
+              target.material = this.arrow_mat //デフォルトのカラー
+            }
+            // 寸法線を非表示
+            if (target.name === 'Dimension'){
+              target.visible = false;
+            }
+          } else if (status === "select") {
+            if (target.name === 'line2') {
+              target.material = this.matLine_Pick; //ハイライト用のカラー
+            } else if (target.name === 'arrow') {
+              target.material = this.arrow_mat_Pick; //ハイライト用のカラー
+            }
+            // 寸法線を非表示
+            if (target.name === 'Dimension'){
+              target.visible = true;
+            }
+          }
         }
-      } else if (n === "select") {
-        if (target.name === 'line2') {
-          target.material = matLine_Pick; //ハイライト用のカラー
-        } else if (target.name === 'arrow') {
-          target.material = arrow_mat_Pick; //ハイライト用のカラー
+      } else if(child.name === 'text'){
+        if (status === "clear"){
+          child.visible = false;  // 文字を非表示
+        } else if (status === "select"){
+          child.visible = true; // 文字を表示
         }
       }
     }
+
   }
   
 }
