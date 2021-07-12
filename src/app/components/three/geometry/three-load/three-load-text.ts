@@ -22,26 +22,6 @@ export class ThreeLoadText {
     vartical = 'bottom'): THREE.Group {
 
 
-    //   // Create:
-    // const myText = new Text();
-
-    // // Set properties to configure:
-    // myText.text = 'Hello world!';
-    // myText.fontSize = 0.2;
-    // myText.position.z = -2;
-    // myText.color = 0x9966FF;
-
-    // // Update the rendering:
-    // myText.sync();
-
-    // const group1 = new THREE.Group();
-    // group1.add(myText);
-    // group1.name = "text";
-
-    // return group1;
-
-
-
     const text_geo = new THREE.TextGeometry(textString, {
       font: this.font,
       size: size,

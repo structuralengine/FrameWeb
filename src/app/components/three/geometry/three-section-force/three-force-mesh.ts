@@ -83,7 +83,10 @@ export class ThreeSectionForceMeshService {
     group.add(group0);
 
     // 文字を追加する
-    const text = this.getText(points, P1, P2);
+    // const text = this.getText(points, P1, P2);
+    // const ppp = [null, new THREE.Vector3(nodei.x, nodei.y, nodei.z)]
+    const ppp = [null, new THREE.Vector3(0, points[1].y, 0)]
+    const text = this.getText(ppp, P1, P2);
     if(text !== null){
       text.visible = true;
       group.add(text);
@@ -103,14 +106,8 @@ export class ThreeSectionForceMeshService {
 
   // 座標
   private getPoints(
-    nodei: THREE.Vector3,
-    nodej: THREE.Vector3,
-    direction: string,
-    pL1: number,
-    pL2: number,
-    P1: number,
-    P2: number
-  ): any {
+    nodei: THREE.Vector3, nodej: THREE.Vector3, direction: string,
+    pL1: number, pL2: number, P1: number, P2: number ): any {
 
     const len = nodei.distanceTo(nodej);
 
@@ -182,27 +179,32 @@ export class ThreeSectionForceMeshService {
   }
 
   // 文字
-  private getText(points: THREE.Vector3[], P1: number, P2: number): any {
-    return null
-    // Create:
-    const myText = new Text();
-    myText.name = 'text';
-    // Set properties to configure:
-    myText.text = 'Hello world!';
-    myText.fontSize = 0.2;
-    myText.position.z = -2;
-    myText.color = 0x9966FF;
-
-    // Update the rendering:
-    myText.sync();
-
-    return myText;
-
-    const result = new THREE.Group();
+  private getText(points: THREE.Vector3[], P1: number, P2: number): Text {
+    
+    return null; // 重なる問題
 
     if(this.dimension===3) {
       return null;  // 3次元モードの時は、重くなりすぎるので、文字は表示しない
     }
+
+    // Create:
+    const result = new Text();
+    result.name = 'text';
+    // Set properties to configure:
+    result.text = P1.toFixed(2);
+    result.fontSize = 0.2;
+    result.rotateZ(-Math.PI/2);
+    result.rotateX(Math.PI);
+    result.position.x = points[1].x;
+    result.position.y = points[1].y;
+    result.position.z = 0.01;
+    result.color = 0x000000;
+    result['position_y'] = points[1].y;
+    // Update the rendering:
+    result.sync();
+
+    return result;
+
 
     const size: number = 50; // 文字サイズ
 
@@ -255,32 +257,26 @@ export class ThreeSectionForceMeshService {
       return
     }
 
-
     group.scale.set(1, scale, scale);
 
-    const text = target.getObjectByName("text");
-    if(text !== undefined){
-      const text = target.getObjectByName("text");
-      text.scale.set(scale, scale, scale);
+    const text: THREE.Group = target.getObjectByName("text");
+    if(text === undefined){
+      return
     }
+    if(!('position_y' in text)){
+      return
+    }
+    text.position.y = text['position_y'] * scale;
 
   }
 
   public change(
-    target: any,
-    nodei: THREE.Vector3,
-    nodej: THREE.Vector3,
-    localAxis: any,
-    direction: string,
-    pL1: number,
-    pL2: number,
-    P1: number,
-    P2: number
-  ): THREE.Group {
+    target: any, nodei: THREE.Vector3, nodej: THREE.Vector3, localAxis: any,
+    direction: string, L1: number, L2: number, P1: number, P2: number ): THREE.Group {
 
     // 長さを決める
     const p  = this.getPoints(
-      nodei, nodej, direction, pL1, pL2, P1, P2);
+      nodei, nodej, direction, L1, L2, P1, P2);
     const points: THREE.Vector3[] = p.points;
 
     const group: THREE.Group = target.getObjectByName("group");
@@ -311,20 +307,21 @@ export class ThreeSectionForceMeshService {
     }
     line.geometry.attributes.position.needsUpdate = true;
 
-    target.position.set(nodei.x, nodei.y, nodei.z);
 
     // 文字を一旦消して 追加する
-    let text = target.getObjectByName("text");
-    while(text !== undefined){
-      target.remove(text);
-      text.dispose();
-      text = target.getObjectByName("text");
-    }
-    text = this.getText(points, P1, P2)
-    if(text !== null){
-      text.visible = true;
-      target.add(text);
-    }
+    // let text = target.getObjectByName("text");
+    // while(text !== undefined){
+    //   target.remove(text);
+    //   text.dispose();
+    //   text = target.getObjectByName("text");
+    // }
+    // text = this.getText(points, P1, P2)
+    // if(text !== null){
+    //   text.visible = true;
+    //   target.add(text);
+    // }
+
+    target.position.set(nodei.x, nodei.y, nodei.z);
 
     // 全体の向きを修正する
     target.rotation.set(0, 0, 0); 
