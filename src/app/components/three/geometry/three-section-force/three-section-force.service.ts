@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
 import * as THREE from 'three';
+import {Text} from 'troika-three-text'
+
 import { Line2 } from '../../libs/Line2.js';
 import { LineMaterial } from '../../libs/LineMaterial.js';
 import { LineGeometry } from '../../libs/LineGeometry.js';
@@ -98,9 +100,19 @@ export class ThreeSectionForceService {
     this.onResize();
   }
 
+  private myText: Text = null;
+  private g1: THREE.Group;
+
   // データをクリアする
   public ClearData(): void {
     for (const mesh of this.ThreeObject1.children) {
+
+      const myText: any = mesh.getObjectByName("text");
+      if(myText!==undefined){
+        mesh.remove(myText);
+        myText.dispose();
+      }
+
       // 文字を削除する
       while (mesh.children.length > 0) {
         const object = mesh.children[0];
@@ -112,6 +124,31 @@ export class ThreeSectionForceService {
     if(this.helper.dimension !== undefined){
       this.mesh.dimension = this.helper.dimension;
     }
+
+
+    if(this.myText !== null){
+      this.myText.dispose();
+      this.ThreeObject1.remove(this.g1)
+    }
+    // Create:
+    this.myText = new Text();
+    this.myText.name = 'text';
+    // Set properties to configure:
+    this.myText.text = 'Hello world!';
+    this.myText.fontSize = 0.2;
+    this.myText.position.z = -2;
+    this.myText.color = 0x9966FF;
+    // Update the rendering:
+    this.myText.sync();
+    // const g = new THREE.Group();
+    this.g1 = new THREE.Group();
+    this.g1.add(this.myText);
+    this.g1.scale.set(5,5,5)
+    // g.add(g1);
+    // this.scene.add(g);
+    this.ThreeObject1.add(this.g1);
+
+
   }
 
   private setGuiParams(): void {

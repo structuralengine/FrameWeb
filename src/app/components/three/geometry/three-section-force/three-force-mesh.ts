@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import * as THREE from "three";
+import {Text} from 'troika-three-text'
 import { Vector2 } from 'three';
 import { ThreeLoadText } from '../three-load/three-load-text';
+import { noUndefined } from '@angular/compiler/src/util';
 
 
 @Injectable({
@@ -83,7 +85,7 @@ export class ThreeSectionForceMeshService {
     // 文字を追加する
     const text = this.getText(points, P1, P2);
     if(text !== null){
-      text.visible = false;
+      text.visible = true;
       group.add(text);
     }
     
@@ -180,9 +182,21 @@ export class ThreeSectionForceMeshService {
   }
 
   // 文字
-  private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group {
-    
-    return null; // やっぱ重い
+  private getText(points: THREE.Vector3[], P1: number, P2: number): any {
+    return null
+    // Create:
+    const myText = new Text();
+    myText.name = 'text';
+    // Set properties to configure:
+    myText.text = 'Hello world!';
+    myText.fontSize = 0.2;
+    myText.position.z = -2;
+    myText.color = 0x9966FF;
+
+    // Update the rendering:
+    myText.sync();
+
+    return myText;
 
     const result = new THREE.Group();
 
@@ -237,6 +251,11 @@ export class ThreeSectionForceMeshService {
   public setScale(target: any, scale: number): void {
 
     const group: THREE.Group = target.getObjectByName("group");
+    if(group === undefined){
+      return
+    }
+
+
     group.scale.set(1, scale, scale);
 
     const text = target.getObjectByName("text");
@@ -265,6 +284,9 @@ export class ThreeSectionForceMeshService {
     const points: THREE.Vector3[] = p.points;
 
     const group: THREE.Group = target.getObjectByName("group");
+    if(group === undefined){
+      return target
+    }
 
     const child = group.getObjectByName("child");
 
@@ -295,6 +317,7 @@ export class ThreeSectionForceMeshService {
     let text = target.getObjectByName("text");
     while(text !== undefined){
       target.remove(text);
+      text.dispose();
       text = target.getObjectByName("text");
     }
     text = this.getText(points, P1, P2)
