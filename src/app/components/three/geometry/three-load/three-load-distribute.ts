@@ -125,7 +125,7 @@ export class ThreeLoadDistribute {
       let A = Math.asin(XY.y) 
 
       if( XY.x < 0){
-       A = Math.PI - A;
+        A = Math.PI - A;
       }
       group.rotateZ(A);
 
@@ -473,6 +473,10 @@ export class ThreeLoadDistribute {
             target.material = this.line_mat_Blue; //デフォルトのカラー
           }
         }
+        // 寸法線を非表示
+        if (target.name === 'Dimension'){
+          target.visible = false;
+        }
       } else if (status === "select"){
         if (group.name.slice(-1) === 'y'){
           if (target.name === 'face'){
@@ -488,6 +492,10 @@ export class ThreeLoadDistribute {
             //target.material = this.line_mat_Blue; //デフォルトのカラー
             target.material = line_mat_Pick; //デフォルトのカラー
           }
+        }
+        // 寸法線を表示
+        if (target.name === 'Dimension'){
+          target.visible = true;
         }
       }
     }
