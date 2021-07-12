@@ -92,11 +92,11 @@ export class ThreeLoadDistribute {
     // 線
     child.add(this.getLine(my_color, points));
 
-    /*/ 寸法線
+    // 寸法線
     const dim = this.getDim(points, L1, L, L2);
     dim.visible = false;
     child.add(dim);
-    */
+
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -307,7 +307,7 @@ export class ThreeLoadDistribute {
     return line;
   }
 
-  /*/ 寸法線
+  // 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L: number, L2: number): THREE.Group {
 
@@ -369,7 +369,7 @@ export class ThreeLoadDistribute {
 
     return dim;
   }
-  */
+  
   /*/ 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
 
