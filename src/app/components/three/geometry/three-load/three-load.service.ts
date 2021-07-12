@@ -632,7 +632,7 @@ export class ThreeLoadService {
             this.axialLoad.dispose(item);
           } else if (item.name.includes("MemberPointLoad")) {
             // 部材途中集中荷重
-            // this.memberPointLoad.dispose(item);
+            this.memberPointLoad.dispose(item);
           } else if (item.name.includes("MemberMomentLoad")) {
             // 部材途中モーメント
             // this.memberMomentLoad.dispose(item);
@@ -1187,7 +1187,6 @@ export class ThreeLoadService {
         let offset3 = offset0;
         let offset4 = offset0;
         
-        // const Xarea = []; //不要？
         const Xarea1 = [];
         list[k].forEach(item => {
           // 大きさを変更する
@@ -1281,7 +1280,7 @@ export class ThreeLoadService {
 
           
         });
-        // Xarea.push(Xarea1);//不要？現状は未使用
+
       });
 
       // 分布荷重（絶対座標方向）
@@ -1387,7 +1386,6 @@ export class ThreeLoadService {
     return judge
   }
 
-
   // マウス位置とぶつかったオブジェクトを検出する
   public detectObject(raycaster: THREE.Raycaster, action: string): void {
     return; // 軽量化のため 何もしない
@@ -1405,67 +1403,28 @@ export class ThreeLoadService {
     }
 
     //
-    const target: any = this.getParent(intersects[0].object);
+    const item: any = intersects[0].object;
 
-
-    switch (action) {
-      case "click":
-      case "select":
-      case "hover":
-        if (intersects.length > 0) {
-          ThreeObject.children.map((item) => {
-            if (item === target) {
-              // 寸法線を表示する
-              this.textVisible(item, true);
-              this.selectionItem = item;
-            } else {
-              // それ以外は寸法線を非表示にする
-              this.textVisible(item, false);
-            }
-          });
-        }
-        break;
-
-      default:
-        return;
+    //全てのオブジェクトをデフォルトの状態にする
+    if (item.name.includes('AxialLoad-')){
+      this.axialLoad.setColor(item, action);
+    } else if (item.name.includes('DistributeLoad')){
+      this.distributeLoad.setColor(item, action);
+    } else if (item.name.includes('MemberPointLoad')){
+      this.memberPointLoad.setColor(item, action);
+    } else if (item.name.includes('MemberMomentLoad')){
+      this.memberMomentLoad.setColor(item, action);
+    } else if (item.name.includes('MomentLoad')){
+      this.momentLoad.setColor(item, action);
+    } else if (item.name.includes('PointLoad')){
+      this.pointLoad.setColor(item, action);
+    } else if (item.name.includes('TemperatureLoad')) {
+      this.temperatureLoad.setColor(item, action);
+    } else if (item.name.includes('TorsionLoad')) {
+      this.torsionLoad.setColor(item, action);
     }
+
     this.scene.render();
-  }
-
-  private getParent(item): any {
-
-    if (['AxialLoad',
-      'DistributeLoad',
-      'MemberMomentLoad',
-      'MemberPointLoad',
-      'MomentLoad',
-      'PointLoad',
-      'TemperatureLoad',
-      'TorsionLoad'].includes(item.name)) {
-      return item;
-    } else {
-      return this.getParent(item.parent);
-    }
-  }
-
-  private textVisible(item: any, flag: boolean): void {
-    if ('name' in item) {
-      if (item.name === 'Dimension') {
-        item.visible = flag;
-      }
-      if (item.name === 'text') {
-        item.visible = flag;
-      }
-      if (item.name === 'points_center') {
-        item.visible = flag;
-      }
-    }
-    if (!('children' in item)) {
-      return;
-    }
-    for (const child of item.children) {
-      this.textVisible(child, flag);
-    }
   }
 
 }

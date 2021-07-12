@@ -109,7 +109,7 @@ export class ThreeLoadPoint {
     return group;
   }
 
-  public dispose(group: THREE.Group): void{
+  public dispose(group: any): void{
     const group0 = group.getObjectByName('group');
 
     for(const item of group0.children){
