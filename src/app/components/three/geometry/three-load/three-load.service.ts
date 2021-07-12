@@ -126,14 +126,20 @@ export class ThreeLoadService {
       this.addCase(id);
     }
 
-    // 格点データを入手
+    // データを入手
     this.nodeData = this.node.getNodeJson(0);
+    this.memberData = this.member.getMemberJson(0);
+
+    // 格点データ
     this.newNodeData = null;
     if (Object.keys(this.nodeData).length <= 0) {
       return; // 格点がなければ 以降の処理は行わない
     }
     // 節点荷重データを入手
     const nodeLoadData = this.load.getNodeLoadJson(0);
+
+    // 要素荷重データを入手
+    const memberLoadData = this.load.getMemberLoadJson(0);
 
     // 荷重図を非表示のまま作成する
     for (const id of Object.keys(this.AllCaseLoadList)) {
@@ -157,11 +163,8 @@ export class ThreeLoadService {
 
       // 要素荷重 --------------------------------------------
       // 要素データを入手
-      this.memberData = this.member.getMemberJson(0);
       this.newMemberData = null;
       if (Object.keys(this.memberData).length > 0) {
-        // 要素荷重データを入手
-        const memberLoadData = this.load.getMemberLoadJson(0);
         if (id in memberLoadData) {
           const targetMemberLoad = memberLoadData[id];
           // 要素荷重の最大値を調べる
