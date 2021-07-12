@@ -54,9 +54,6 @@ export class ThreeLoadService {
   private newNodeData: any;    // 変更された 節点データ
   private newMemberData: any;  // 変更された 要素データ
 
-  private value_text: Text[];
-  private dimension: ThreeLoadDimension[];
-
   // 初期化
   constructor(
     private scene: SceneService,

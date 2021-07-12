@@ -1,4 +1,4 @@
-  import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import * as THREE from "three";
 import {Text} from 'troika-three-text'
 import { Vector2 } from 'three';
