@@ -707,8 +707,10 @@ export class InputLoadService {
       const LL: number = Math.round(this.member.getMemberLength(item["m1"]) * 1000);
       const L1: number = Math.round(this.helper.toNumber(item["L1"]) * 1000);
       const L2: number = Math.round(item["L2"] * 1000);
-      if ( LL - (L1 + L2 ) <= 0) {
-        load2.splice(i, 1);
+      if(item.mark===2){
+        if ( LL - (L1 + L2 ) <= 0) {
+          load2.splice(i, 1);
+        }
       }
     }
 
