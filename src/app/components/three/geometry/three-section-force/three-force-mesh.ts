@@ -259,7 +259,7 @@ export class ThreeSectionForceMeshService {
 
     group.scale.set(1, scale, scale);
 
-    const text: THREE.Group = target.getObjectByName("text");
+    const text: any = target.getObjectByName("text");
     if(text === undefined){
       return
     }
