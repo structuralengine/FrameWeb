@@ -25,7 +25,6 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
 })
 export class ThreeLoadService {
   private isVisible = { object: false, gui: false };
-  private selectionItem: THREE.Object3D; // 選択中のアイテム
 
   // 全ケースの荷重を保存
   private AllCaseLoadList: {};
@@ -54,6 +53,10 @@ export class ThreeLoadService {
   private newNodeData: any;    // 変更された 節点データ
   private newMemberData: any;  // 変更された 要素データ
 
+  // 選択中のアイテム
+  private text: ThreeLoadText[]; // 荷重値
+  private dimension: ThreeLoadDimension[];  // 寸法線
+
   // 初期化
   constructor(
     private scene: SceneService,
@@ -70,6 +73,10 @@ export class ThreeLoadService {
       // 荷重の雛形をあらかじめ生成する
       const text = new ThreeLoadText(font);
       const dim = new ThreeLoadDimension(text); //寸法戦を扱うモジュール
+
+      this.text = [new ThreeLoadText(font), new ThreeLoadText(font)]; // 荷重値
+      this.dimension = [new ThreeLoadDimension(text), new ThreeLoadDimension(text), new ThreeLoadDimension(text)]; // 寸法線
+
       this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
       this.momentLoad = new ThreeLoadMoment(text); // 節点モーメントのテンプレート
       this.distributeLoad = new ThreeLoadDistribute(text, dim); // 分布荷重のテンプレート
