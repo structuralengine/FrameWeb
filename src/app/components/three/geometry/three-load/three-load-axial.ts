@@ -13,17 +13,12 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadAxial {
 
-  private text: ThreeLoadText;
-  private dim: ThreeLoadDimension;
-
   private matLine: LineMaterial;
   private matLine_Pick: LineMaterial;
   private arrow_mat: THREE.MeshBasicMaterial;
   private arrow_mat_Pick: THREE.MeshBasicMaterial;
 
-  constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
-    this.text = text;
-    this.dim = dim;
+  constructor() {
     this.matLine = new LineMaterial({
       //color: 0xffffff,  //65行目付近のcolor.pushと同時に削除
       color: 0xff0000,
@@ -239,7 +234,7 @@ export class ThreeLoadAxial {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, status: string): void {
+  public setColor(group: any, text, dim, status: string): void {
 
     const group0 = group.getObjectByName('group');
     

@@ -19,7 +19,7 @@ export class ThreeSectionForceMeshService {
   private line_mat: THREE.LineBasicMaterial;
 
   constructor(font: THREE.Font) {
-    this.text = new ThreeLoadText(font);
+    this.text = new ThreeLoadText();
     this.font = font;
 
     this.face_mat = new THREE.MeshBasicMaterial({

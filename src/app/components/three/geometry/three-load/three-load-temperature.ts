@@ -13,17 +13,12 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadTemperature {
 
-  private text: ThreeLoadText;
-  private dim: ThreeLoadDimension;
-
   private colors: number[];
   private arrow_mat: THREE.MeshBasicMaterial;
 
   private matLine: LineMaterial;
 
-  constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
-    this.text = text;
-    this.dim = dim;
+  constructor() {
 
     // 線の色を決める
     const line_color = 0xff0000;
@@ -192,7 +187,7 @@ export class ThreeLoadTemperature {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, n: string): void {
+  public setColor(group: any, text, dim, status: string): void {
 
     //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
     const matLine_Pick = new LineMaterial({
@@ -204,13 +199,13 @@ export class ThreeLoadTemperature {
     const arrow_mat_Pick = new THREE.MeshBasicMaterial({ color: 0x00ffff });
 
     for (let target of group.children[0].children[0].children) {
-      if (n === 'clear') {
+      if (status === 'clear') {
         if (target.name === 'line2') {
           target.material = this.matLine; //デフォルトのカラー
         } else if (target.name === 'arrow') {
           target.material = this.arrow_mat //デフォルトのカラー
         }
-      } else if (n === "select") {
+      } else if (status === "select") {
         if (target.name === 'line2') {
           target.material = matLine_Pick; //ハイライト用のカラー
         } else if (target.name === 'arrow') {

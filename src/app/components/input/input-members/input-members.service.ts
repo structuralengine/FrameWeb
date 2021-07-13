@@ -92,11 +92,10 @@ export class InputMembersService {
   }
 
   // 補助関数 ///////////////////////////////////////////////////////////////
+  private getMember(memberNo: string) {
 
-  public getMember(memberNo: string) {
-    memberNo = memberNo.toString();
     const member = this.member.find((columns) => {
-      return columns.id === memberNo.toString();
+      return columns.id === memberNo;
     })
 
     if (member === undefined) {
@@ -108,8 +107,8 @@ export class InputMembersService {
   }
 
   public getMemberLength(memberNo: string): number {
-    memberNo = memberNo.toString();
-    const memb = this.getMember(memberNo);
+
+    const memb = this.getMember(memberNo.toString());
     const ni: string = memb.ni;
     const nj: string = memb.nj;
     if (ni === null || nj === null) {

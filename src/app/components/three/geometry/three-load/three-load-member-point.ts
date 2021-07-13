@@ -12,8 +12,7 @@ import { RouterLinkWithHref } from '@angular/router';
 })
 export class ThreeLoadMemberPoint {
 
-  private text: ThreeLoadText;
-  private dim: ThreeLoadDimension;
+
   private point: ThreeLoadPoint;
   
   private arrow_mat_Red: THREE.MeshBasicMaterial;
@@ -26,13 +25,8 @@ export class ThreeLoadMemberPoint {
   private line_mat_Pick: THREE.LineBasicMaterial; //ハイライト用のカラー
 
 
-  constructor(
-    text: ThreeLoadText,
-    dim: ThreeLoadDimension,
-    point: ThreeLoadPoint) {
-    this.text = text;
-    this.dim = dim;
-    this.point = point;
+  constructor() {
+    this.point = new ThreeLoadPoint();
     this.arrow_mat_Red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     this.arrow_mat_Green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     this.arrow_mat_Blue = new THREE.MeshBasicMaterial({ color: 0x0000ff });
@@ -332,14 +326,14 @@ export class ThreeLoadMemberPoint {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, status: string) {
+  public setColor(group: any, text, dim, status: string) {
 
     const group0 = group.getObjectByName('group');
     const child = group0.getObjectByName('child');
 
     for (let target of child.children) {
       if ( target.name.includes('PointLoad')){
-        this.point.setColor(target, status);
+        this.point.setColor(target, text, dim, status);
       } else if(target.name === 'Dimension'){
         if (status === 'clear') {
           target.visible = false;

@@ -12,17 +12,10 @@ import { RouterLinkWithHref } from '@angular/router';
 })
 export class ThreeLoadMemberMoment {
 
-  private text: ThreeLoadText;
-  private dim: ThreeLoadDimension;
   private moment: ThreeLoadMoment;
 
-  constructor(
-    text: ThreeLoadText,
-    dim: ThreeLoadDimension,
-    moment: ThreeLoadMoment) {
-    this.text = text;
-    this.dim = dim;
-    this.moment = moment;
+  constructor() {
+    this.moment = new ThreeLoadMoment();
   }
 
   /// 部材途中集中荷重を編集する
@@ -327,7 +320,7 @@ export class ThreeLoadMemberMoment {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, n: string) {
+  public setColor(group: any, text, dim, status: string) {
 
     //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
     const arrow_mat_Red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -341,7 +334,7 @@ export class ThreeLoadMemberMoment {
 
     for (let target1 of group.children[0].children[0].children) {
       for (let target2 of target1.children[0].children[1].children) {  //children: (2) [Mesh(arrow), Line(line)]
-        if (n === 'clear') {
+        if (status === 'clear') {
           if (target2.name === 'arrow' && group.name.slice(-1) === 'x') {
             target2.material = arrow_mat_Red; //デフォルトのカラー
           } else if (target2.name === 'arrow' && group.name.slice(-1) === 'y') {
@@ -369,7 +362,7 @@ export class ThreeLoadMemberMoment {
           } else if (target2.name === 'line' && group.name.slice(-1) === 'z') {
             target2.material = line_mat_Pick; //ハイライト用のカラー
           }*/
-        } else if (n === 'select') {
+        } else if (status === 'select') {
           if (target2.name === 'arrow') {
             target2.material = arrow_mat_Pick; //ハイライト用のカラー
           } else if (target2.name === 'line') {

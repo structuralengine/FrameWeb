@@ -7,10 +7,7 @@ import {Text} from 'troika-three-text'
 })
 export class ThreeLoadText {
 
-  private font: THREE.Font;
-
-  constructor(font: THREE.Font) {
-    this.font = font;
+  constructor() {
   }
 
   public init(): Text {

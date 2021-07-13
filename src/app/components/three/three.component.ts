@@ -1,16 +1,17 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, HostListener, NgZone } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, HostListener, NgZone, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 
 import { SceneService } from './scene.service';
 import { ThreeService } from './three.service';
 import html2canvas from 'html2canvas';
+import { ThreeLoadService } from './geometry/three-load/three-load.service';
 
 @Component({
   selector: 'app-three',
   templateUrl: './three.component.html',
   styleUrls: ['./three.component.scss'],
 })
-export class ThreeComponent implements AfterViewInit {
+export class ThreeComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
   @ViewChild('canvas') img: ElementRef;
@@ -24,7 +25,8 @@ export class ThreeComponent implements AfterViewInit {
 
   constructor(private ngZone: NgZone,
               private scene: SceneService,
-              private three: ThreeService) {
+              private three: ThreeService,
+              private load: ThreeLoadService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
     
   }
@@ -37,6 +39,7 @@ export class ThreeComponent implements AfterViewInit {
                       window.innerWidth,
                       window.innerHeight - 120);
     this.three.OnInit();
+    this.load.init();
 
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.labelRendererDomElement();
@@ -44,6 +47,10 @@ export class ThreeComponent implements AfterViewInit {
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
     // レンダリングする
     this.animate();
+  }
+
+  ngOnDestroy() {
+    this.load.dispose();
   }
 
   animate(): void {

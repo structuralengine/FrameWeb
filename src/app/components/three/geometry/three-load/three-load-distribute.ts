@@ -9,8 +9,7 @@ import { ThreeLoadDimension } from "./three-load-dimension";
   providedIn: "root",
 })
 export class ThreeLoadDistribute {
-  private text: ThreeLoadText;
-  private dim: ThreeLoadDimension;
+
   private face_mat_Red: THREE.MeshBasicMaterial;
   private face_mat_Green: THREE.MeshBasicMaterial;
   private face_mat_Blue: THREE.MeshBasicMaterial;
@@ -21,9 +20,7 @@ export class ThreeLoadDistribute {
   private face_mat_Pick: THREE.MeshBasicMaterial
   private line_mat_Pick: THREE.LineBasicMaterial;
 
-  constructor(text: ThreeLoadText, dim: ThreeLoadDimension) {
-    this.text = text;
-    this.dim = dim;
+  constructor() {
     this.face_mat_Red = new THREE.MeshBasicMaterial({
       transparent: true,
       side: THREE.DoubleSide,
@@ -453,7 +450,7 @@ export class ThreeLoadDistribute {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, status: string): void{
+  public setColor(group: any, text, dim, status: string): void{
 
     const group0 = group.getObjectByName('group');
     

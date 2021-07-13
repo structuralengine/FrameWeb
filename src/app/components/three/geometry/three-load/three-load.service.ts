@@ -6,6 +6,8 @@ import { InputLoadService } from "../../../input/input-load/input-load.service";
 import { ThreeNodesService } from "../three-nodes.service";
 
 import * as THREE from "three";
+import { Text } from 'troika-three-text'
+
 import { ThreeMembersService } from "../three-members.service";
 
 import { ThreeLoadText } from "./three-load-text";
@@ -24,6 +26,7 @@ import { DataHelperModule } from "src/app/providers/data-helper.module";
   providedIn: "root",
 })
 export class ThreeLoadService {
+
   private isVisible = { object: false, gui: false };
 
   // 全ケースの荷重を保存
@@ -34,6 +37,8 @@ export class ThreeLoadService {
 
   // 荷重のテンプレート
   private loadEditor: {};
+  private text: ThreeLoadText;
+  private dim: ThreeLoadDimension; //寸法戦を扱うモジュール
 
   // 大きさを調整するためのスケール
   private LoadScale: number;
@@ -47,7 +52,7 @@ export class ThreeLoadService {
   private newMemberData: any;  // 変更された 要素データ
 
   // 選択中のアイテム
-  private valueText: ThreeLoadText[]; // 荷重値
+  private valueText: Text[]; // 荷重値
   private dimension: THREE.Group[];  // 寸法線
 
   // 初期化
@@ -60,38 +65,24 @@ export class ThreeLoadService {
     private load: InputLoadService,
     private three_member: ThreeMembersService
   ) {
-    // フォントをロード
-    const loader = new THREE.FontLoader();
-    loader.load("./assets/fonts/helvetiker_regular.typeface.json", (font) => {
 
-      // 荷重の雛形をあらかじめ生成する
-      const text = new ThreeLoadText(font);
-      const dim = new ThreeLoadDimension(text); //寸法戦を扱うモジュール
+    // 荷重の雛形をあらかじめ生成する
+    this.text = new ThreeLoadText();
+    this.dim = new ThreeLoadDimension(); //寸法戦を扱うモジュール
 
-      this.valueText = [text.init(), text.init()]; // 荷重値
-      this.dimension = [dim.init(), dim.init(), dim.init()]; // 寸法線
+    this.valueText = [this.text.init(), this.text.init()]; // 荷重値
+    this.dimension = [this.dim.init(), this.dim.init(), this.dim.init()]; // 寸法線
 
-      const pointLoad = new ThreeLoadPoint(text);
-      const momentLoad = new ThreeLoadMoment(text);
-      this.loadEditor = {
-        AxialLoad: new ThreeLoadAxial(text, dim),                           // 軸方向荷重のテンプレート
-        DistributeLoad: new ThreeLoadDistribute(text, dim),                 // 分布荷重のテンプレート
-        PointMemberLoad: new ThreeLoadMemberPoint(text, dim, pointLoad),    // 部材の途中にある節点荷重のテンプレート
-        PointLoad: pointLoad,                                               // 節点荷重のテンプレート
-        MomentLoad: momentLoad,                                             // 節点モーメントのテンプレート
-        MomentMemberLoad: new ThreeLoadMemberMoment(text, dim, momentLoad), // 部材の途中にある節点モーメントのテンプレート
-        TemperatureLoad: new ThreeLoadTemperature(text, dim),               // 温度荷重のテンプレート
-        TorsionLoad: new ThreeLoadTorsion(text, dim, momentLoad)            // ねじり分布荷重のテンプレート
-      }
-      // this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
-      // this.momentLoad = new ThreeLoadMoment(text); // 節点モーメントのテンプレート
-      // this.distributeLoad = new ThreeLoadDistribute(text, dim); // 分布荷重のテンプレート
-      // this.axialLoad = new ThreeLoadAxial(text, dim); // 軸方向荷重のテンプレート
-      // this.torsionLoad = new ThreeLoadTorsion(text, dim, this.momentLoad); // ねじり分布荷重のテンプレート
-      // this.temperatureLoad = new ThreeLoadTemperature(text, dim); // 温度荷重のテンプレート
-      // this.PointMemberLoad = new ThreeLoadMemberPoint(text, dim, this.pointLoad); // 部材の途中にある節点荷重のテンプレート
-      // this.MomentMemberLoad = new ThreeLoadMemberMoment(text, dim, this.momentLoad); // 部材の途中にある節点モーメントのテンプレート
-    });
+    this.loadEditor = {
+      AxialLoad: new ThreeLoadAxial(),                // 軸方向荷重のテンプレート
+      DistributeLoad: new ThreeLoadDistribute(),      // 分布荷重のテンプレート
+      PointMemberLoad: new ThreeLoadMemberPoint(),    // 部材の途中にある節点荷重のテンプレート
+      PointLoad: new ThreeLoadPoint(),                // 節点荷重のテンプレート
+      MomentLoad: new ThreeLoadMoment(),              // 節点モーメントのテンプレート
+      MomentMemberLoad: new ThreeLoadMemberMoment(),  // 部材の途中にある節点モーメントのテンプレート
+      TemperatureLoad: new ThreeLoadTemperature(),    // 温度荷重のテンプレート
+      TorsionLoad: new ThreeLoadTorsion()             // ねじり分布荷重のテンプレート
+    }
 
     this.AllCaseLoadList = {};
     this.currentIndex = null;
@@ -111,6 +102,30 @@ export class ThreeLoadService {
     };
     this.gui = {};
   }
+  
+  // three.component から終了時に呼ばれる メモリリークの解消処理
+  public dispose(): void {
+    for( const t of this.valueText){
+      this.scene.remove(t);
+      this.text.dispose(t);
+    }
+    for( const d of this.dimension){
+      this.scene.remove(d);
+      this.dim.dispose(d);
+    }
+  }
+
+  // three.component から開始時に呼ばれる 
+  // 文字２つと寸法線３つを ワールドに登録しておく
+  public init(): void {
+    for( const t of this.valueText){
+      this.scene.add(t);
+    }
+    for( const d of this.dimension){
+      this.scene.add(d);
+    }
+  }
+  
 
   // 荷重を再設定する
   public ClearData(): void {
@@ -272,21 +287,48 @@ export class ThreeLoadService {
       }
     }
 
-    //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
+
+    let column = '-';
+    if(index_column===9){
+      column += 'tx';
+    }else if(index_column===10){
+      column += 'ty';
+    }else if(index_column===11){
+      column += 'tz';
+    }else if(index_column===12){
+      column += 'rx';
+    }else if(index_column===13){
+      column += 'ry';
+    }else if(index_column===14){
+      column += 'rz';
+    } 
+
+    // 全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
     for (let item of this.AllCaseLoadList[id].ThreeObject.children) {
 
       //カレント行のオブジェクトをハイライトする
       for(const k of Object.keys(this.loadEditor)){
-        if(k === 'MomentLoad'){
-          console.log('')
-        }
-        const editor: any = this.loadEditor[k]
-        const key = k + '-' +  + index_row.toString();
-        if (item.name.indexOf(key) !== -1){
-          editor.setColor(item, "select");
-        } else {
-          editor.setColor(item, "clear");
-        }
+
+        if (item.name.indexOf(k) !== -1){
+          const editor: any = this.loadEditor[k]
+          
+          if( index_column < 8){ // 節点荷重ではない
+            if (item.name.indexOf('PointLoad') !== -1 ||
+                item.name.indexOf('MomentLoad') !== -1) {
+              editor.setColor(item, this.valueText, this.dimension, "clear");
+              break;
+            }
+          }
+
+          const key = k + '-' + index_row.toString() + column;
+          if (item.name.indexOf(key) !== -1) {
+            editor.setColor(item, this.valueText, this.dimension, "select");
+          } else {
+            editor.setColor(item, this.valueText, this.dimension, "clear");
+          }
+
+          break;
+        } 
       }
 
     }
@@ -602,6 +644,7 @@ export class ThreeLoadService {
 
       for (let key of ["tx", "ty", "tz"]) {
 
+        if (!(key in load)) continue;
         if (load[key] === 0) continue;
 
         const value = load[key];
@@ -620,6 +663,7 @@ export class ThreeLoadService {
       // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
       for (let k of ["x", "y", "z"]) {
         const key1 = 'd' + k;
+        if (!(key1 in load)) continue;
         if (load[key1] === 0) continue;
 
         const value = load[key1] * 1000;
@@ -641,6 +685,7 @@ export class ThreeLoadService {
       // 曲げモーメント荷重 -------------------------
       for (let key of ["rx", "ry", "rz"]) {
 
+        if (!(key in load)) continue;
         if (load[key] === 0) continue;
 
         const value = load[key];
@@ -671,6 +716,7 @@ export class ThreeLoadService {
       for (let k of ["x", "y", "z"]) {
         const key1 = 'a' + k;
 
+        if (!(key1 in load)) continue;
         if (load[key1] === 0) continue;
 
         const value = load[key1] * 1000;
@@ -942,6 +988,7 @@ export class ThreeLoadService {
     }
   }
 
+  // three.service から呼ばれる 表示・非表示の制御
   public visibleChange(flag: boolean, gui: boolean): void {
 
     // 非表示にする
@@ -1320,7 +1367,7 @@ export class ThreeLoadService {
 
   // マウス位置とぶつかったオブジェクトを検出する
   public detectObject(raycaster: THREE.Raycaster, action: string): void {
-    // return; // 軽量化のため 何もしない
+    return; // 軽量化のため 何もしない
 
     if (!(this.currentIndex in this.AllCaseLoadList)) {
       return; // 対象がなければ何もしない
@@ -1334,23 +1381,36 @@ export class ThreeLoadService {
       return;
     }
 
-    //
+    // マウス位置とぶつかったオブジェクトの親を取得
     const item: any = this.getParent(intersects[0].object);
     if(item === null){
       return;
     }
 
+    // 全てのハイライトを元に戻す
+    for (let item of this.AllCaseLoadList[this.currentIndex].ThreeObject.children) {
+      for(const key of Object.keys(this.loadEditor)){
+        if (item.name.indexOf(key) !== -1){
+          const editor: any = this.loadEditor[key];
+          editor.setColor(item, this.valueText, this.dimension, "clear");
+          break;
+        } 
+      }
+    }
+
     //全てのオブジェクトをデフォルトの状態にする
     for(const key of Object.keys(this.loadEditor)){
-      const editor: any = this.loadEditor[key]
+      const editor: any = this.loadEditor[key];
       if (item.name.indexOf(key) !== -1){
-        editor.setColor(item, action);
+        editor.setColor(item, this.valueText, this.dimension, action);
+        break;
       }
     }
 
     this.scene.render();
   }
 
+  // マウス位置とぶつかったオブジェクトの親を取得
   private getParent(item): any {
 
     if(!('name' in item)){

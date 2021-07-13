@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as THREE from "three";
-import { LineBasicMaterial } from 'three';
-
 import { ThreeLoadText } from "./three-load-text";
 
 @Injectable({
@@ -9,7 +7,6 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadPoint {
 
-  private text: ThreeLoadText;
   private line_mat_Red: THREE.LineBasicMaterial;
   private line_mat_Green: THREE.LineBasicMaterial;
   private line_mat_Blue: THREE.LineBasicMaterial;
@@ -19,8 +16,7 @@ export class ThreeLoadPoint {
   private arrow_mat_Blue: THREE.MeshBasicMaterial;
   private arrow_mat_Pick: THREE.MeshBasicMaterial;  //ハイライトカラー
 
-  constructor(text: ThreeLoadText) {
-    this.text = text;
+  constructor() {
     this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000 });
     this.line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     this.line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff });
@@ -139,7 +135,7 @@ export class ThreeLoadPoint {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, status: string): void {
+  public setColor(group: any, text, dim, status: string): void {
 
     //置き換えるマテリアルを生成 -> colorを設定し，対象オブジェクトのcolorを変える
     const group0 = group.getObjectByName('group');

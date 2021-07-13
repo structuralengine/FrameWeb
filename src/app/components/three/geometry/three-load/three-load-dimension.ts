@@ -11,8 +11,8 @@ export class ThreeLoadDimension {
   private text: ThreeLoadText;
   private line_mat: THREE.LineBasicMaterial;
   
-  constructor(text: ThreeLoadText) {
-    this.text = text;
+  constructor() {
+    this.text = new ThreeLoadText();;
     this.line_mat = new THREE.LineBasicMaterial({ color: 0x000000 });
 
   }
