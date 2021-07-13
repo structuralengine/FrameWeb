@@ -94,7 +94,7 @@ export class InputMembersService {
   // 補助関数 ///////////////////////////////////////////////////////////////
 
   public getMember(memberNo: string) {
-
+    memberNo = memberNo.toString();
     const member = this.member.find((columns) => {
       return columns.id === memberNo.toString();
     })
@@ -108,7 +108,7 @@ export class InputMembersService {
   }
 
   public getMemberLength(memberNo: string): number {
-
+    memberNo = memberNo.toString();
     const memb = this.getMember(memberNo);
     const ni: string = memb.ni;
     const nj: string = memb.nj;
