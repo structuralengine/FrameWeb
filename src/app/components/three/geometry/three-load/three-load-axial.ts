@@ -81,9 +81,9 @@ export class ThreeLoadAxial {
     child.name = "child";
 
     // 寸法線
-    const dim = this.getDim(L1, L, L2, offset);
-    dim.visible = false;
-    child.add(dim);
+    // const dim = this.getDim(L1, L, L2, offset);
+    // dim.visible = false;
+    // child.add(dim);
 
     // 全体
     child.name = "child";
@@ -94,10 +94,10 @@ export class ThreeLoadAxial {
     group0.name = "group";
 
     // 文字を追加する
-    for (const text of this.getText(P1, P2, L1, L1 + L, offset)) {
-      text.visible = false;
-      group0.add(text);
-    }
+    // for (const text of this.getText(P1, P2, L1, L1 + L, offset)) {
+    //   text.visible = false;
+    //   group0.add(text);
+    // }
 
     // 全体の位置を修正する
     const group = new THREE.Group();
@@ -124,24 +124,24 @@ export class ThreeLoadAxial {
   }
 
   // 荷重を削除する
-  public dispose(group: THREE.Group){
+  // public dispose(group: THREE.Group){
 
-    const group0 = group.getObjectByName('group');
+  //   const group0 = group.getObjectByName('group');
 
-    for(const item of group0.children){
-      if(item.name === 'text'){
-        this.text.dispose(item);
-      } else if(item.name === 'child'){
-        const dimensions = item.getObjectByName('Dimension');
-        for(const dim of dimensions.children){
-          this.dim.dispose(dim);
-        }
-      }
-    }
-  }
+  //   for(const item of group0.children){
+  //     if(item.name === 'text'){
+  //       this.text.dispose(item);
+  //     } else if(item.name === 'child'){
+  //       const dimensions = item.getObjectByName('Dimension');
+  //       for(const dim of dimensions.children){
+  //         this.dim.dispose(dim);
+  //       }
+  //     }
+  //   }
+  // }
 
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(L1: number, L: number, L2: number, offset: number): THREE.Group {
 
     const L1L = L1 + L;
@@ -195,8 +195,8 @@ export class ThreeLoadAxial {
 
     return dim;
   }
-  
-  // 文字
+  */
+  /*/ 文字
   private getText(P1: number, P2: number, pos1: number, pos2: number,  offset: number): THREE.Group[] {
 
     const result = [];
@@ -224,7 +224,7 @@ export class ThreeLoadAxial {
 
     return result;
   }
-  
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

@@ -118,7 +118,7 @@ export class ThreeLoadMemberMoment {
       group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "MemberMomentLoad-" + row.toString() + '-' + direction.toString();
+    group.name = "MomentMemberLoad-" + row.toString() + '-' + direction.toString();
 
     return group;
   }

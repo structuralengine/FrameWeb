@@ -13,6 +13,11 @@ export class ThreeLoadText {
     this.font = font;
   }
 
+  public init(): Text {
+    const temp = this.create('', new THREE.Vector2(0, 0), 0.1, 'left', 'bottom');
+    temp.visible = false;
+    return temp
+  }
   // 文字を描く
   public create(
     textString: string,

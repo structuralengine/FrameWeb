@@ -86,9 +86,9 @@ export class ThreeLoadMemberPoint {
     }
 
     // 寸法線
-    const dim = this.getDim(points, L1, L2);
-    dim.visible = false;
-    child.add(dim);
+    // const dim = this.getDim(points, L1, L2);
+    // dim.visible = false;
+    // child.add(dim);
 
     // 全体
     child.name = "child";
@@ -106,7 +106,6 @@ export class ThreeLoadMemberPoint {
     group.position.set(nodei.x, nodei.y, nodei.z);
 
     // 全体の向きを修正する
-
     if (!direction.includes('g')) {
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
       let A = Math.asin(XY.y);
@@ -142,26 +141,26 @@ export class ThreeLoadMemberPoint {
       group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "MemberPointLoad-" + row.toString() + '-' + direction.toString();
+    group.name = "PointMemberLoad-" + row.toString() + '-' + direction.toString();
 
     return group;
   }
 
   // 荷重を削除する
-  public dispose(group: THREE.Group){
+  // public dispose(group: THREE.Group){
 
-    const group0 = group.getObjectByName('group');
-    const child = group0.getObjectByName('child');
+  //   const group0 = group.getObjectByName('group');
+  //   const child = group0.getObjectByName('child');
 
-    for (let target of child.children) {
-      if ( target.name.includes('PointLoad')){
-        this.point.dispose(target);
-      } else if(target.name === 'Dimension'){
-        this.dim.dispose(target);
-      }
-    }
+  //   for (let target of child.children) {
+  //     if ( target.name.includes('PointLoad')){
+  //       this.point.dispose(target);
+  //     } else if(target.name === 'Dimension'){
+  //       this.dim.dispose(target);
+  //     }
+  //   }
 
-  }
+  // }
 
   // 座標
   private getPoints(
@@ -256,7 +255,7 @@ export class ThreeLoadMemberPoint {
 
   }
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L2: number): THREE.Group {
 
@@ -304,7 +303,7 @@ export class ThreeLoadMemberPoint {
 
     return dim;
   }
-
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

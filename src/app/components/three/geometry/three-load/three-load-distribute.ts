@@ -91,9 +91,9 @@ export class ThreeLoadDistribute {
     child.add(this.getLine(my_color, points));
 
     // 寸法線
-    const dim = this.getDim(points, L1, L, L2);
-    dim.visible = false;
-    child.add(dim);
+    // const dim = this.getDim(points, L1, L, L2);
+    // dim.visible = false;
+    // child.add(dim);
 
     // 全体
     child.name = "child";
@@ -104,10 +104,10 @@ export class ThreeLoadDistribute {
     group0.name = "group";
 
     // 文字を追加する
-    for(const text of this.getText(points, P1, P2)){
-      text.visible = false;
-      group0.add(text);
-    }
+    // for(const text of this.getText(points, P1, P2)){
+    //   text.visible = false;
+    //   group0.add(text);
+    // }
     
     // 全体の位置を修正する
     const group = new THREE.Group();
@@ -116,7 +116,6 @@ export class ThreeLoadDistribute {
 
   
     // 全体の向きを修正する
-
     if (!direction.includes("g")) {
     
       const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
@@ -161,23 +160,23 @@ export class ThreeLoadDistribute {
     return group;
   }
 
-  // 荷重を削除する
-  public dispose(group: THREE.Group){
+  // // 荷重を削除する
+  // public dispose(group: THREE.Group){
 
-    const group0 = group.getObjectByName('group');
+  //   const group0 = group.getObjectByName('group');
 
-    for(const item of group0.children){
-      if(item.name === 'text'){
-        this.text.dispose(item);
-      } else if(item.name === 'child'){
-        const dimensions = item.getObjectByName('Dimension');
-        for(const dim of dimensions.children){
-          this.dim.dispose(dim);
-        }
-      }
-    }
+  //   for(const item of group0.children){
+  //     if(item.name === 'text'){
+  //       this.text.dispose(item);
+  //     } else if(item.name === 'child'){
+  //       const dimensions = item.getObjectByName('Dimension');
+  //       for(const dim of dimensions.children){
+  //         this.dim.dispose(dim);
+  //       }
+  //     }
+  //   }
 
-  }
+  // }
 
   private getColor(direction: string): number {
     let my_color = 0xff0000;
@@ -314,7 +313,7 @@ export class ThreeLoadDistribute {
     return line;
   }
 
-  // 寸法線
+  /*/ 寸法線
   private getDim(points: THREE.Vector3[],
                 L1: number, L: number, L2: number): THREE.Group {
 
@@ -376,8 +375,8 @@ export class ThreeLoadDistribute {
 
     return dim;
   }
-  
-  // 文字
+  */
+  /*/ 文字
   private getText(points: THREE.Vector3[], P1: number, P2: number): THREE.Group[] {
 
     const result = [];
@@ -421,7 +420,7 @@ export class ThreeLoadDistribute {
 
     return result;
   }
-  
+  */
 
   // 大きさを反映する
   public setSize(group: any, scale: number): void {

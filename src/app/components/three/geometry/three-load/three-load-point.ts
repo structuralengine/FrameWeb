@@ -68,22 +68,22 @@ export class ThreeLoadPoint {
     const group0 = new THREE.Group();
 
     // 文字を追加する
-    const textStr: string = value.toFixed(2);
-    const size: number = 0.1;
-    const vartical: string = 'bottom';
-    let horizontal: string;
-    let pos: THREE.Vector2;
-    if (value < 0) {
-      horizontal = 'right';
-      pos = new THREE.Vector2(length, 0);
-    } else {
-      horizontal = 'left';
-      pos = new THREE.Vector2(-length, 0);
-    }
-    const text = this.text.create(textStr, pos, size, horizontal, vartical);
-    text.name = "text";
-    text.visible = false;
-    group0.add(text);
+    // const textStr: string = value.toFixed(2);
+    // const size: number = 0.1;
+    // const vartical: string = 'bottom';
+    // let horizontal: string;
+    // let pos: THREE.Vector2;
+    // if (value < 0) {
+    //   horizontal = 'right';
+    //   pos = new THREE.Vector2(length, 0);
+    // } else {
+    //   horizontal = 'left';
+    //   pos = new THREE.Vector2(-length, 0);
+    // }
+    // const text = this.text.create(textStr, pos, size, horizontal, vartical);
+    // text.name = "text";
+    // text.visible = false;
+    // group0.add(text);
 
     child.position.y = offset;
 
@@ -109,15 +109,15 @@ export class ThreeLoadPoint {
     return group;
   }
 
-  public dispose(group: any): void{
-    const group0 = group.getObjectByName('group');
+  // public dispose(group: any): void{
+  //   const group0 = group.getObjectByName('group');
 
-    for(const item of group0.children){
-      if(item.name === 'text'){
-        this.text.dispose(item);
-      }
-    }
-  }
+  //   for(const item of group0.children){
+  //     if(item.name === 'text'){
+  //       this.text.dispose(item);
+  //     }
+  //   }
+  // }
 
   // 大きさを反映する
   public setSize(group: any, size: number): void {

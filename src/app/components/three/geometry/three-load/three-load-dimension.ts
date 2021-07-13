@@ -16,7 +16,17 @@ export class ThreeLoadDimension {
     this.line_mat = new THREE.LineBasicMaterial({ color: 0x000000 });
 
   }
-
+  public init(): THREE.Group {
+    const temp = this.create([
+      new THREE.Vector2(0, 0),
+      new THREE.Vector2(0, 1),
+      new THREE.Vector2(1, 1),
+      new THREE.Vector2(1, 0),
+    ], '');
+    
+    temp.visible = false;
+    return temp
+  }
    // 寸法線を編集する
   public create( points: THREE.Vector2[], textStr: string ): THREE.Group {
 

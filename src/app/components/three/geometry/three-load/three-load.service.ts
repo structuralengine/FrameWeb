@@ -33,14 +33,7 @@ export class ThreeLoadService {
   private currentIndex_child2: string;
 
   // 荷重のテンプレート
-  private distributeLoad: ThreeLoadDistribute; // 分布荷重のテンプレート
-  private axialLoad: ThreeLoadAxial; // 軸方向荷重のテンプレート
-  private torsionLoad: ThreeLoadTorsion; // ねじり分布荷重のテンプレート
-  private temperatureLoad: ThreeLoadTemperature; // 温度荷重のテンプレート
-  private pointLoad: ThreeLoadPoint; // 節点荷重のテンプレート
-  private momentLoad: ThreeLoadMoment; // 節点モーメントのテンプレート
-  private memberPointLoad: ThreeLoadMemberPoint; // 部材の途中にある節点荷重のテンプレート
-  private memberMomentLoad: ThreeLoadMemberMoment; // 部材の途中にある節点モーメントのテンプレート
+  private loadEditor: {};
 
   // 大きさを調整するためのスケール
   private LoadScale: number;
@@ -55,7 +48,7 @@ export class ThreeLoadService {
 
   // 選択中のアイテム
   private valueText: ThreeLoadText[]; // 荷重値
-  private dimension: ThreeLoadDimension[];  // 寸法線
+  private dimension: THREE.Group[];  // 寸法線
 
   // 初期化
   constructor(
@@ -70,23 +63,36 @@ export class ThreeLoadService {
     // フォントをロード
     const loader = new THREE.FontLoader();
     loader.load("./assets/fonts/helvetiker_regular.typeface.json", (font) => {
+
       // 荷重の雛形をあらかじめ生成する
       const text = new ThreeLoadText(font);
       const dim = new ThreeLoadDimension(text); //寸法戦を扱うモジュール
 
-      this.valueText = [text.create('', new THREE.Vector2(0, 0), 0.1, 'left', 'bottom'),
-                        text.create('', new THREE.Vector2(0, 0), 0.1, 'left', 'bottom')]; // 荷重値
-      this.dimension = [dim.create()]; // 寸法線
+      this.valueText = [text.init(), text.init()]; // 荷重値
+      this.dimension = [dim.init(), dim.init(), dim.init()]; // 寸法線
 
-      this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
-      this.momentLoad = new ThreeLoadMoment(text); // 節点モーメントのテンプレート
-      this.distributeLoad = new ThreeLoadDistribute(text, dim); // 分布荷重のテンプレート
-      this.axialLoad = new ThreeLoadAxial(text, dim); // 軸方向荷重のテンプレート
-      this.torsionLoad = new ThreeLoadTorsion(text, dim, this.momentLoad); // ねじり分布荷重のテンプレート
-      this.temperatureLoad = new ThreeLoadTemperature(text, dim); // 温度荷重のテンプレート
-      this.memberPointLoad = new ThreeLoadMemberPoint(text, dim, this.pointLoad); // 部材の途中にある節点荷重のテンプレート
-      this.memberMomentLoad = new ThreeLoadMemberMoment(text, dim, this.momentLoad); // 部材の途中にある節点モーメントのテンプレート
+      const pointLoad = new ThreeLoadPoint(text);
+      const momentLoad = new ThreeLoadMoment(text);
+      this.loadEditor = {
+        AxialLoad: new ThreeLoadAxial(text, dim),                           // 軸方向荷重のテンプレート
+        DistributeLoad: new ThreeLoadDistribute(text, dim),                 // 分布荷重のテンプレート
+        PointMemberLoad: new ThreeLoadMemberPoint(text, dim, pointLoad),    // 部材の途中にある節点荷重のテンプレート
+        PointLoad: pointLoad,                                               // 節点荷重のテンプレート
+        MomentLoad: momentLoad,                                             // 節点モーメントのテンプレート
+        MomentMemberLoad: new ThreeLoadMemberMoment(text, dim, momentLoad), // 部材の途中にある節点モーメントのテンプレート
+        TemperatureLoad: new ThreeLoadTemperature(text, dim),               // 温度荷重のテンプレート
+        TorsionLoad: new ThreeLoadTorsion(text, dim, momentLoad)            // ねじり分布荷重のテンプレート
+      }
+      // this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
+      // this.momentLoad = new ThreeLoadMoment(text); // 節点モーメントのテンプレート
+      // this.distributeLoad = new ThreeLoadDistribute(text, dim); // 分布荷重のテンプレート
+      // this.axialLoad = new ThreeLoadAxial(text, dim); // 軸方向荷重のテンプレート
+      // this.torsionLoad = new ThreeLoadTorsion(text, dim, this.momentLoad); // ねじり分布荷重のテンプレート
+      // this.temperatureLoad = new ThreeLoadTemperature(text, dim); // 温度荷重のテンプレート
+      // this.PointMemberLoad = new ThreeLoadMemberPoint(text, dim, this.pointLoad); // 部材の途中にある節点荷重のテンプレート
+      // this.MomentMemberLoad = new ThreeLoadMemberMoment(text, dim, this.momentLoad); // 部材の途中にある節点モーメントのテンプレート
     });
+
     this.AllCaseLoadList = {};
     this.currentIndex = null;
     this.currentIndex_child1 = null;
@@ -258,8 +264,6 @@ export class ThreeLoadService {
   //シートの選択行が指すオブジェクトをハイライトする
   public selectChange(index_row, index_column): void {
     const id: string = this.currentIndex;
-    //console.log("three-load.service.ts selectChange index =", index_row, index_column);
-    //console.log(this.AllCaseLoadList[id]);
 
     if (this.currentIndex_child1 === index_row) {
       if (this.currentIndex_child2 === index_column) {
@@ -268,83 +272,23 @@ export class ThreeLoadService {
       }
     }
 
-    let column = "";
-    if (index_column >= 0 && index_column <= 8) {
-      //何もなし
-    } else if (index_column === 9) {
-      column = "tx"
-    } else if (index_column === 10) {
-      column = "ty"
-    } else if (index_column === 11) {
-      column = "tz"
-    } else if (index_column === 12) {
-      column = "rx"
-    } else if (index_column === 13) {
-      column = "ry"
-    } else if (index_column === 14) {
-      column = "rz"
-    } else {
-      //console.log("-----error-----three-load.service.ts(selectChenge)-----error-----");
-    }
-
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
     for (let item of this.AllCaseLoadList[id].ThreeObject.children) {
 
-      //全てのオブジェクトをデフォルトの状態にする
-      if (item.name.includes('AxialLoad-')){
-        this.axialLoad.setColor(item, "clear");
-      } else if (item.name.includes('DistributeLoad')){
-        this.distributeLoad.setColor(item, "clear");
-      } else if (item.name.includes('MemberPointLoad')){
-        this.memberPointLoad.setColor(item, "clear");
-      } else if (item.name.includes('MemberMomentLoad')){
-        this.memberMomentLoad.setColor(item, "clear");
-      } else if (item.name.includes('MomentLoad')){
-        this.momentLoad.setColor(item, "clear");
-      } else if (item.name.includes('PointLoad')){
-        this.pointLoad.setColor(item, "clear");
-      } else if (item.name.includes('TemperatureLoad')) {
-        this.temperatureLoad.setColor(item, "clear");
-      } else if (item.name.includes('TorsionLoad')) {
-        this.torsionLoad.setColor(item, "clear");
-      }
-
       //カレント行のオブジェクトをハイライトする
-      //列によりハイライトするオブジェクトが変化する場合があるため，分岐により制御
-      if (index_column >= 0 && index_column <= 7) {
-        if (item.name === 'AxialLoad-' + index_row.toString()) {
-          this.axialLoad.setColor(item, "select");
-        } else if ( item.name === 'DistributeLoad-' + index_row.toString() + '-y' ||
-                    item.name === 'DistributeLoad-' + index_row.toString() + '-z' ) {
-          this.distributeLoad.setColor(item, "select");
-        } else if ( item.name === 'MemberPointLoad-' + index_row.toString() + '-x' ||
-                    item.name === 'MemberPointLoad-' + index_row.toString() + '-y' ||
-                    item.name === 'MemberPointLoad-' + index_row.toString() + '-z' ) {
-          this.memberPointLoad.setColor(item, "select");
-        } else if ( item.name === 'MemberMomentLoad-' + index_row.toString() + '-x' ||
-                    item.name === 'MemberMomentLoad-' + index_row.toString() + '-y' ||
-                    item.name === 'MemberMomentLoad-' + index_row.toString() + '-z' ) {
-          this.memberMomentLoad.setColor(item, "select");
-        } else if (item.name === 'TemperatureLoad-' + index_row.toString()) {
-          this.temperatureLoad.setColor(item, "select");
-        } else if (item.name === 'TorsionLoad-' + index_row.toString()) {
-          this.torsionLoad.setColor(item, "select");
+      for(const k of Object.keys(this.loadEditor)){
+        if(k === 'MomentLoad'){
+          console.log('')
         }
-
-      } else if (index_column === 8) {
-        if (item.name.includes('MomentLoad-' + index_row.toString() + '-')){
-          this.momentLoad.setColor(item, "select");
-        } else if (item.name.includes('PointLoad-' + index_row.toString() + '-')) {
-          this.pointLoad.setColor(item, "select");
-        }
-
-      } else if (index_column >= 9 && index_column <= 14) {
-        if (item.name === 'MomentLoad-' + index_row.toString() + '-' + column.toString()) {
-          this.momentLoad.setColor(item, "select");
-        } else if (item.name === 'PointLoad-' + index_row.toString() + '-' + column.toString()) {
-          this.pointLoad.setColor(item, "select");
+        const editor: any = this.loadEditor[k]
+        const key = k + '-' +  + index_row.toString();
+        if (item.name.indexOf(key) !== -1){
+          editor.setColor(item, "select");
+        } else {
+          editor.setColor(item, "clear");
         }
       }
+
     }
     
     this.currentIndex_child1 = index_row;
@@ -565,20 +509,9 @@ export class ThreeLoadService {
       for (const key2 of ["tx", "ty", "tz", "rx", "ry", "rz"]) {
         for (let i = list[key2].length - 1; i >= 0; i--) {
           const item = list[key2][i];
-                    
           if(row !== null && item.row !== row) {
             continue;
           }
-
-
-          if (item.name.includes("PointLoad")) {
-            // 集中荷重
-            this.pointLoad.dispose(item);
-          } else if (item.name.includes("MomentLoad")) {
-            // 集中曲げモーメント荷重
-            // this.momentLoad.dispose(item);
-          }
-
           LoadList.ThreeObject.remove(item);
           list[key2].splice(i, 1);
         }
@@ -627,28 +560,9 @@ export class ThreeLoadService {
       for (const key2 of ["gx", "gy", "gz", "x", "y", "z", "t", "r"]) {
         for (let i = list[key2].length - 1; i >= 0; i--) {
           const item = list[key2][i];
-          
           if(row !== null && item.row !== row) {
             continue;
           }
-
-          if (item.name.includes("DistributeLoad")) {
-            // 分布荷重
-            this.distributeLoad.dispose(item);
-          } else if (item.name.includes("TorsionLoad")) {
-            // ねじり分布荷重
-            // this.torsionLoad.dispose(item);
-          } else if (item.name.includes("AxialLoad")) {
-            // 軸方向分布荷重
-            this.axialLoad.dispose(item);
-          } else if (item.name.includes("MemberPointLoad")) {
-            // 部材途中集中荷重
-            this.memberPointLoad.dispose(item);
-          } else if (item.name.includes("MemberMomentLoad")) {
-            // 部材途中モーメント
-            // this.memberMomentLoad.dispose(item);
-          }
-
           LoadList.ThreeObject.remove(item);
           list[key2].splice(i, 1);
         }
@@ -667,6 +581,9 @@ export class ThreeLoadService {
       return;
     }
 
+    const pointLoad = this.loadEditor['PointLoad'];
+    const momentLoad = this.loadEditor['MomentLoad'];
+
     // 集中荷重の矢印をシーンに追加する
     for (const load of targetNodeLoad) {
       const n = load.n.toString();
@@ -682,6 +599,7 @@ export class ThreeLoadService {
       : { tx: [], ty: [], tz: [], rx: [], ry: [], rz: [] };
 
       // 集中荷重 ---------------------------------
+
       for (let key of ["tx", "ty", "tz"]) {
 
         if (load[key] === 0) continue;
@@ -691,14 +609,13 @@ export class ThreeLoadService {
         // 荷重を編集する
         // 長さを決める
         // scale = 1 の時 長さlength = maxLengthとなる
-        const arrow = this.pointLoad.create(node, 0, value, 1, key, load.row);
+        const arrow = pointLoad.create(node, 0, value, 1, key, load.row);
 
         // リストに登録する
         arrow["row"] = load.row;
         target[key].push(arrow);
         ThreeObject.add(arrow);
 
-        // pointLoadList[n] = target;
       }
       // 強制変位(仮：集中荷重と同じとしている) ---------------------------------
       for (let k of ["x", "y", "z"]) {
@@ -711,7 +628,7 @@ export class ThreeLoadService {
         // 荷重を編集する
         // 長さを決める
         // scale = 1 の時 長さlength = maxLengthとなる
-        const arrow = this.pointLoad.create(node, 0, value, 1, key, load.row);
+        const arrow = pointLoad.create(node, 0, value, 1, key, load.row);
 
         // リストに登録する
         arrow["row"] = load.row;
@@ -741,7 +658,7 @@ export class ThreeLoadService {
         // scale = 1 の時 直径Radius = maxLengthとなる
         const scale = 1; //Math.abs(value) * 0.1;
         const Radius: number = scale;
-        const arrow = this.momentLoad.create(node, offset, value, Radius, key, load.row);
+        const arrow = momentLoad.create(node, offset, value, Radius, key, load.row);
 
         // リストに登録する
         arrow["row"] = load.row;
@@ -772,7 +689,7 @@ export class ThreeLoadService {
         // scale = 1 の時 直径Radius = maxLengthとなる
         const scale = 1; //Math.abs(value) * 0.1;
         const Radius: number = scale;
-        const arrow = this.momentLoad.create(node, offset, value, Radius, key, load.row);
+        const arrow = momentLoad.create(node, offset, value, Radius, key, load.row);
 
         // リストに登録する
         arrow["row"] = load.row;
@@ -876,6 +793,7 @@ export class ThreeLoadService {
     ThreeObject: THREE.Object3D,
     memberLoadList: any
   ): void {
+
     if (memberLoadData === undefined) {
       return;
     }
@@ -886,6 +804,13 @@ export class ThreeLoadService {
         temp: memberLoadData,
       })
     ).temp;
+    
+    const distributeLoad = this.loadEditor['DistributeLoad'];
+    const torsionLoad = this.loadEditor['TorsionLoad'];
+    const axialLoad = this.loadEditor['AxialLoad'];
+    const temperatureLoad = this.loadEditor['TemperatureLoad'];
+    const PointMemberLoad = this.loadEditor['PointMemberLoad'];
+    const MomentMemberLoad = this.loadEditor['MomentMemberLoad'];
 
     // 分布荷重の矢印をシーンに追加する
     for (const load of targetMemberLoad) {
@@ -965,39 +890,39 @@ export class ThreeLoadService {
 
         if (direction === "y" || direction === "z" ||
           direction === "gx" || direction === "gy" || direction === "gz") {
-          arrow = this.distributeLoad.create(
+          arrow = distributeLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
 
         } else if (direction === "r") {
           // ねじり布荷重
-          arrow = this.torsionLoad.create(
+          arrow = torsionLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
 
         } else if (direction === "x") {
           // 軸方向分布荷重
-          arrow = this.axialLoad.create(
+          arrow = axialLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
         }
       } else if (load.mark === 9) {
         // 温度荷重
-        arrow = this.temperatureLoad.create(
+        arrow = temperatureLoad.create(
           nodei, nodej, localAxis, P1, load.row);
         direction = 't';
 
       } else if (load.mark === 1) {
         // 集中荷重荷重
         if (["x", "y", "z", "gx", "gy", "gz"].includes(direction)) {
-          arrow = this.memberPointLoad.create(
+          arrow = PointMemberLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
         }
       } else if (load.mark === 11) {
         // モーメント荷重
         if (["x", "y", "z", "gx", "gy", "gz"].includes(direction)) {
-          arrow = this.memberMomentLoad.create(
+          arrow = MomentMemberLoad.create(
             nodei, nodej, localAxis,
             direction, load.L1, load.L2, P1, P2, load.row);
           direction = 'r';
@@ -1032,7 +957,6 @@ export class ThreeLoadService {
       this.guiEnable();
     } else {
       // 黒に戻す
-      this.selectionItem = null;
       this.guiDisable();
     }
     this.isVisible.gui = gui;
@@ -1079,6 +1003,7 @@ export class ThreeLoadService {
 
   // スケールを反映する
   private onResize(id: string = this.currentIndex): void {
+
     if (!(id in this.AllCaseLoadList)) {
       return;
     }
@@ -1086,21 +1011,19 @@ export class ThreeLoadService {
 
     const scale1: number = this.LoadScale / 100;
     const scale2: number = this.baseScale();
+    const scale: number = scale1 * scale2;
 
     // 節点荷重のスケールを変更する
-    const scale: number = scale1 * scale2;
     for (const n of Object.keys(loadList.pointLoadList)) {
       const dict = loadList.pointLoadList[n];
       for (let k of Object.keys(dict)) {
-        dict[k].forEach(item => {
-          if (item.name.includes("PointLoad")) {
-            // 集中荷重
-            this.pointLoad.setScale(item, scale);
-          } else if (item.name.includes("MomentLoad")) {
-            // 集中曲げモーメント荷重
-            this.momentLoad.setScale(item, scale);
+        for(const item of dict[k]) {
+          for(const key of ['PointLoad', 'MomentLoad']){ //集中荷重, 集中曲げモーメント荷重
+            if (item.name.indexOf(key) !== -1) {
+              this.loadEditor[key].setScale(item, scale);
+            }
           }
-        });
+        }
       }
     }
 
@@ -1108,27 +1031,15 @@ export class ThreeLoadService {
     for (const m of Object.keys(loadList.memberLoadList)) {
       const dict = loadList.memberLoadList[m];
       for (const direction of ["gx", "gy", "gz", "r", "x", "y", "z"]) {
-        dict[direction].forEach(item => {
-          if (item.name.includes("DistributeLoad")) {
-            // 分布荷重
-            this.distributeLoad.setScale(item, scale);
-          } else if (item.name.includes("TorsionLoad")) {
-            // ねじり分布荷重
-            this.torsionLoad.setScale(item, scale);
-          } else if (item.name.includes("AxialLoad")) {
-            // 軸方向分布荷重
-            this.axialLoad.setScale(item, scale);
-          } else if (item.name.includes("MemberPointLoad")) {
-            // 部材途中集中荷重
-            this.memberPointLoad.setScale(item, scale);
-          } else if (item.name.includes("MemberMomentLoad")) {
-            // 部材途中モーメント
-            this.memberMomentLoad.setScale(item, scale);
+        for(const item of dict[direction]) {
+          for(const key of ['DistributeLoad', 'TorsionLoad', 'AxialLoad', 'PointMemberLoad', 'MomentMemberLoad']){
+            if (item.name.indexOf(key) !== -1) {
+              this.loadEditor[key].setScale(item, scale);
+            }
           }
-        });
+        }
       }
     }
-
     //this.scene.render(); //コメントアウト：レンダリング不要の場合があるため、レンダリングはこの関数の外側で行う
   }
 
@@ -1140,6 +1051,9 @@ export class ThreeLoadService {
     }
     const loadList = this.AllCaseLoadList[id];
 
+    const pointLoad = this.loadEditor['PointLoad'];
+    const momentLoad = this.loadEditor['MomentLoad'];
+
     // 配置位置（その他の荷重とぶつからない位置）を決定する
     for (const n of Object.keys(loadList.pointLoadList)) {
       const list = loadList.pointLoadList[n];
@@ -1150,13 +1064,13 @@ export class ThreeLoadService {
         for (const item of list[k]) {
           // 大きさを変更する
           const scale: number = 4 * Math.abs(item.value) / loadList.pMax;
-          this.pointLoad.setSize(item, scale);
+          pointLoad.setSize(item, scale);
           // オフセットする
           if (item.value > 0) {
-            this.pointLoad.setOffset(item, offset1);
+            pointLoad.setOffset(item, offset1);
             offset1 -= (scale * 1.0); // オフセット距離に高さを加算する
           } else {
-            this.pointLoad.setOffset(item, offset2);
+            pointLoad.setOffset(item, offset2);
             offset2 += (scale * 1.0); // オフセット距離に高さを加算する
           }
         }
@@ -1166,12 +1080,19 @@ export class ThreeLoadService {
         let offset = 0;
         for (const item of list[k]) {
           const scale: number = item.value / loadList.mMax;
-          this.momentLoad.setSize(item, scale);
-          this.momentLoad.setOffset(item, offset);
+          momentLoad.setSize(item, scale);
+          momentLoad.setOffset(item, offset);
           offset += this.baseScale() * 0.1;
         }
       });
     }
+
+    const distributeLoad = this.loadEditor['DistributeLoad'];
+    const torsionLoad = this.loadEditor['TorsionLoad'];
+    const axialLoad = this.loadEditor['AxialLoad'];
+    const temperatureLoad = this.loadEditor['TemperatureLoad'];
+    const PointMemberLoad = this.loadEditor['PointMemberLoad'];
+    const MomentMemberLoad = this.loadEditor['MomentMemberLoad'];
 
     // 要素荷重のスケールを変更する
     for (const m of Object.keys(loadList.memberLoadList)) {
@@ -1180,13 +1101,13 @@ export class ThreeLoadService {
       // ねじりモーメント
       let offset0 = 0;
       for (const item of list['r']) {
-        if (item.name.includes("MemberMomentLoad")) {
+        if (item.name.indexOf("MomentMemberLoad") !== -1) {
           const scale: number = 1 * Math.abs(item.value) / loadList.mMax;
-          this.memberMomentLoad.setSize(item, scale);
-        } else if (item.name.includes("TorsionLoad")) {
+          MomentMemberLoad.setSize(item, scale);
+        } else if (item.name.indexOf("TorsionLoad") !== -1) {
           // 大きさを変更する
           const scale: number = 1 * Math.abs(item.value / loadList.rMax);
-          this.torsionLoad.setSize(item, scale);
+          torsionLoad.setSize(item, scale);
           offset0 += (scale * 0.5);
         }
       }
@@ -1201,10 +1122,10 @@ export class ThreeLoadService {
         const Xarea1 = [];
         list[k].forEach(item => {
           // 大きさを変更する
-          if (item.name.includes("DistributeLoad")) {
+          if (item.name.indexOf("DistributeLoad") !== -1) {
             // 分布荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.wMax;
-            this.distributeLoad.setSize(item, scale);
+            distributeLoad.setSize(item, scale);
             //以降は当たり判定に用いる部分
             const vertice_points = [];
             //当たり判定のエリアを登録
@@ -1213,7 +1134,7 @@ export class ThreeLoadService {
               vertice_points.push(num.y)
             }
             if (Xarea1.length === 0) {
-              this.distributeLoad.setOffset(item, 0);
+              distributeLoad.setOffset(item, 0);
             }
 
             all_check: //次のforループの名称 -> breakで使用
@@ -1229,7 +1150,7 @@ export class ThreeLoadService {
                   // オフセットする
                   if (item.value > 0) {
                     offset1 += (pre_scale * 1.0); // オフセット距離に高さを加算する
-                    this.distributeLoad.setOffset(item, offset1);
+                    distributeLoad.setOffset(item, offset1);
                     vertice_points[1] += offset1;
                     vertice_points[3] += offset1;
                     vertice_points[5] += offset1;
@@ -1237,7 +1158,7 @@ export class ThreeLoadService {
                     vertice_points[9] += offset1;
                   } else {
                     offset2 -= (pre_scale * 1.0); // オフセット距離に高さを加算する
-                    this.distributeLoad.setOffset(item, offset2);
+                    distributeLoad.setOffset(item, offset2);
                     vertice_points[1] += offset2;
                     vertice_points[3] += offset2;
                     vertice_points[5] += offset2;
@@ -1247,9 +1168,9 @@ export class ThreeLoadService {
                 } else if (judgeX === "NotHit" || judgeY === "NotHit") {
                   //オフセットしない
                   if (item.value > 0) {
-                    this.distributeLoad.setOffset(item, offset1);
+                    distributeLoad.setOffset(item, offset1);
                   } else {
-                    this.distributeLoad.setOffset(item, offset2);
+                    distributeLoad.setOffset(item, offset2);
                   }
                   break;
                 } else {
@@ -1273,16 +1194,16 @@ export class ThreeLoadService {
             offset2 = offset0;
 
 
-          } else if (item.name.includes("MemberPointLoad")) {
+          } else if (item.name.indexOf("PointMemberLoad") !== -1) {
             // 集中荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
-            this.memberPointLoad.setSize(item, scale);
+            PointMemberLoad.setSize(item, scale);
             // オフセットする
             if (item.value > 0) {
-              this.memberPointLoad.setOffset(item, offset3);
+              PointMemberLoad.setOffset(item, offset3);
               offset3 += (scale * 1.0); // オフセット距離に高さを加算する
             } else {
-              this.memberPointLoad.setOffset(item, offset4);
+              PointMemberLoad.setOffset(item, offset4);
               offset4 -= (scale * 1.0); // オフセット距離に高さを加算する
             }
             offset1 = offset3;
@@ -1300,28 +1221,28 @@ export class ThreeLoadService {
         let offset2 = offset0;
         list[k].forEach(item => {
           // 大きさを変更する
-          if (item.name.includes("DistributeLoad")) {
+          if (item.name.indexOf("DistributeLoad") !== -1) {
             // 分布荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.wMax;
-            this.distributeLoad.setSize(item, scale);
+            distributeLoad.setSize(item, scale);
             // オフセットする
             if (item.value > 0) {
-              this.distributeLoad.setGlobalOffset(item, offset1, k);
+              distributeLoad.setGlobalOffset(item, offset1, k);
               offset1 -= (scale * 1.0); // オフセット距離に高さを加算する
             } else {
-              this.distributeLoad.setGlobalOffset(item, offset2, k);
+              distributeLoad.setGlobalOffset(item, offset2, k);
               offset2 += (scale * 1.0); // オフセット距離に高さを加算する
             }
-          } else if (item.name.includes("MemberPointLoad")) {
+          } else if (item.name.indexOf("PointMemberLoad") !== -1) {
             // 集中荷重
             const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
-            this.memberPointLoad.setSize(item, scale);
+            PointMemberLoad.setSize(item, scale);
             // オフセットする
             if (item.value > 0) {
-              this.memberPointLoad.setGlobalOffset(item, offset1, k);
+              PointMemberLoad.setGlobalOffset(item, offset1, k);
               offset1 -= (scale * 1.0); // オフセット距離に高さを加算する
             } else {
-              this.memberPointLoad.setGlobalOffset(item, offset2, k);
+              PointMemberLoad.setGlobalOffset(item, offset2, k);
               offset2 += (scale * 1.0); // オフセット距離に高さを加算する
             }
           }
@@ -1332,12 +1253,12 @@ export class ThreeLoadService {
       // 部材軸方向荷重
       list['x'].forEach(item => {
         // 大きさを変更する
-        if (item.name.includes("MemberPointLoad")) {
+        if (item.name.indexOf("PointMemberLoad") !== -1) {
           const scale: number = 1 * Math.abs(item.value) / loadList.pMax;
-          this.memberPointLoad.setSize(item, scale);
-        } else if (item.name.includes("AxialLoad")) {
+          PointMemberLoad.setSize(item, scale);
+        } else if (item.name.indexOf("AxialLoad") !== -1) {
           const scale: number = 1 * Math.abs(item.value) / loadList.qMax;
-          this.axialLoad.setSize(item, scale);
+          axialLoad.setSize(item, scale);
         }
       });
 
@@ -1399,7 +1320,7 @@ export class ThreeLoadService {
 
   // マウス位置とぶつかったオブジェクトを検出する
   public detectObject(raycaster: THREE.Raycaster, action: string): void {
-    return; // 軽量化のため 何もしない
+    // return; // 軽量化のため 何もしない
 
     if (!(this.currentIndex in this.AllCaseLoadList)) {
       return; // 対象がなければ何もしない
@@ -1414,28 +1335,40 @@ export class ThreeLoadService {
     }
 
     //
-    const item: any = intersects[0].object;
+    const item: any = this.getParent(intersects[0].object);
+    if(item === null){
+      return;
+    }
 
     //全てのオブジェクトをデフォルトの状態にする
-    if (item.name.includes('AxialLoad-')){
-      this.axialLoad.setColor(item, action);
-    } else if (item.name.includes('DistributeLoad')){
-      this.distributeLoad.setColor(item, action);
-    } else if (item.name.includes('MemberPointLoad')){
-      this.memberPointLoad.setColor(item, action);
-    } else if (item.name.includes('MemberMomentLoad')){
-      this.memberMomentLoad.setColor(item, action);
-    } else if (item.name.includes('MomentLoad')){
-      this.momentLoad.setColor(item, action);
-    } else if (item.name.includes('PointLoad')){
-      this.pointLoad.setColor(item, action);
-    } else if (item.name.includes('TemperatureLoad')) {
-      this.temperatureLoad.setColor(item, action);
-    } else if (item.name.includes('TorsionLoad')) {
-      this.torsionLoad.setColor(item, action);
+    for(const key of Object.keys(this.loadEditor)){
+      const editor: any = this.loadEditor[key]
+      if (item.name.indexOf(key) !== -1){
+        editor.setColor(item, action);
+      }
     }
 
     this.scene.render();
+  }
+
+  private getParent(item): any {
+
+    if(!('name' in item)){
+      return null;
+    }
+
+    for(const key of Object.keys(this.loadEditor)){
+      if (item.name.indexOf(key) !== -1){
+        return item;
+      }
+    }
+
+    if(!('parent' in item)){
+      return null;
+    }
+
+    return this.getParent(item.parent);
+    
   }
 
 }
