@@ -54,7 +54,7 @@ export class ThreeLoadService {
   private newMemberData: any;  // 変更された 要素データ
 
   // 選択中のアイテム
-  private text: ThreeLoadText[]; // 荷重値
+  private valueText: ThreeLoadText[]; // 荷重値
   private dimension: ThreeLoadDimension[];  // 寸法線
 
   // 初期化
@@ -74,8 +74,9 @@ export class ThreeLoadService {
       const text = new ThreeLoadText(font);
       const dim = new ThreeLoadDimension(text); //寸法戦を扱うモジュール
 
-      this.text = [new ThreeLoadText(font), new ThreeLoadText(font)]; // 荷重値
-      this.dimension = [new ThreeLoadDimension(text), new ThreeLoadDimension(text), new ThreeLoadDimension(text)]; // 寸法線
+      this.valueText = [text.create('', new THREE.Vector2(0, 0), 0.1, 'left', 'bottom'),
+                        text.create('', new THREE.Vector2(0, 0), 0.1, 'left', 'bottom')]; // 荷重値
+      this.dimension = [dim.create()]; // 寸法線
 
       this.pointLoad = new ThreeLoadPoint(text); // 節点荷重のテンプレート
       this.momentLoad = new ThreeLoadMoment(text); // 節点モーメントのテンプレート
