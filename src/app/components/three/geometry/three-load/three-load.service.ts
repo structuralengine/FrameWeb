@@ -1168,7 +1168,10 @@ export class ThreeLoadService {
       ["y", "z"].forEach(k => {
         let offset1 = offset0;
         let offset2 = offset0;
-        const Xarea = []; //不要？
+        let offset3 = offset0;
+        let offset4 = offset0;
+        
+        // const Xarea = []; //不要？
         const Xarea1 = [];
         list[k].forEach(item => {
           // 大きさを変更する
@@ -1186,6 +1189,7 @@ export class ThreeLoadService {
             if (Xarea1.length === 0) {
               this.distributeLoad.setOffset(item, 0);
             }
+
             all_check: //次のforループの名称 -> breakで使用
             for (let hit_points of Xarea1) {
               const pre_scale: number = 1 * Math.abs(hit_points[10]) / loadList.wMax;
@@ -1228,14 +1232,20 @@ export class ThreeLoadService {
                 }
               }
             }
+
+            Xarea1.push( [vertice_points[0], vertice_points[1],
+              vertice_points[2], vertice_points[3],
+              vertice_points[4], vertice_points[5],
+              vertice_points[6], vertice_points[7],
+              vertice_points[8], vertice_points[9],
+              item.value]);  //メッシュの5点の2次元座標と，valueの値を保存する
+
+            const pre_scale: number = 1 * Math.abs(item.value) / loadList.wMax;
+            offset3 = offset1 + pre_scale;
+            offset4 = offset2 - pre_scale;
             offset1 = offset0;
             offset2 = offset0;
-            Xarea1.push([vertice_points[0], vertice_points[1],
-            vertice_points[2], vertice_points[3],
-            vertice_points[4], vertice_points[5],
-            vertice_points[6], vertice_points[7],
-            vertice_points[8], vertice_points[9],
-            item.value]);  //メッシュの5点の2次元座標と，valueの値を保存する
+
 
           } else if (item.name.includes("MemberPointLoad")) {
             // 集中荷重
@@ -1243,15 +1253,19 @@ export class ThreeLoadService {
             this.memberPointLoad.setSize(item, scale);
             // オフセットする
             if (item.value > 0) {
-              this.memberPointLoad.setOffset(item, offset1);
-              offset1 += (scale * 1.0); // オフセット距離に高さを加算する
+              this.memberPointLoad.setOffset(item, offset3);
+              offset3 += (scale * 1.0); // オフセット距離に高さを加算する
             } else {
-              this.memberPointLoad.setOffset(item, offset2);
-              offset2 -= (scale * 1.0); // オフセット距離に高さを加算する
+              this.memberPointLoad.setOffset(item, offset4);
+              offset4 -= (scale * 1.0); // オフセット距離に高さを加算する
             }
+            offset1 = offset3;
+            offset2 = offset4;
           }
+
+          
         });
-        Xarea.push(Xarea1);//不要？現状は未使用
+        // Xarea.push(Xarea1);//不要？現状は未使用
       });
 
       // 分布荷重（絶対座標方向）

@@ -1,22 +1,25 @@
 .datasheet_inner {
     width: 1020px;
-    margin-top: 20px;
 }
 
 .btn-group {
-    display: flex;
-    width: 1020px;
-    padding: 0 16px;
-    margin-right: auto;
+    float: left;
+    padding: 16px 16px;
 }
 
 .pager {
+    float: left;
+    margin-top: 4px;
     margin-left: 0.5px;
     margin-right: 0.5px;
-    .pager-title {
-        float: left;
-    }
-    p{
-        margin-top: 16px;
-    }
+}
+
+.load-name {
+    margin-top: 16px;
+    padding-top: 14px;
+    float: left;
+}
+
+.boxContainer{
+    overflow: hidden;
 }

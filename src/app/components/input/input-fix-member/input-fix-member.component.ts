@@ -17,17 +17,29 @@ export class InputFixMemberComponent implements OnInit {
 
   private dataset = [];
   private columnHeaders3D =[
-    { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
-    { title: "X変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-    { title: "Z変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
-    { title: "回転拘束\n(kNm/rad/m)",  dataType: "float",   dataIndx: "tr", sortable: false, width: 100 }
+    { title: '部材', align: 'center', colModel: [
+      { title: "No", align: 'center',   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
+    ]},
+    { title: '変位拘束 (kN/m/m)', align: 'center', colModel: [
+      { title: "部材軸方向", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+      { title: "部材Y軸", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+      { title: "部材Z軸", dataType: "float",   dataIndx: "tz", sortable: false, width: 100 },
+    ]},
+    { title: '回転拘束', align: 'center', colModel: [
+      { title: "(kNm/rad/m)",  dataType: "float",   dataIndx: "tr", sortable: false, width: 100 }
+    ]},
   ];
   private columnHeaders2D =[
-    { title: "部材No",   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
-    { title: "X変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
-    { title: "Y変位拘束\n(kN/m/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
-  ];
+    { title: '部材', align: 'center', colModel: [
+      { title: "No", align: 'center',   dataType: "string", dataIndx: "m",  sortable: false, width: 30 },
+    ]},
+    { title: '部材軸方向', align: 'center', colModel: [
+      { title: "(kN/m/m)", dataType: "float",   dataIndx: "tx", sortable: false, width: 100 },
+    ]},
+    { title: '軸直角方向', align: 'center', colModel: [
+      { title: "(kN/m/m)", dataType: "float",   dataIndx: "ty", sortable: false, width: 100 },
+    ]},
+];
 
   private ROWS_COUNT = 15;
   private page = 1;

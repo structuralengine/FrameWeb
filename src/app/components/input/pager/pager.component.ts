@@ -17,7 +17,7 @@ export class PagerComponent implements OnInit {
   public liNumber = [1, 2, 3, 4, 5];
   public myControl: FormGroup;
   public Editing: boolean = false;
-  private page: number;
+  public page: number = 0;
 
   constructor(private helper: DataHelperModule) {
     this.changePage(1);
@@ -30,6 +30,8 @@ export class PagerComponent implements OnInit {
   }
 
   public changePage(currentPage: number): void {
+
+    currentPage = Math.abs(currentPage);
 
     if (currentPage === this.page) {
       // 同じボタンを押した時
@@ -95,6 +97,7 @@ export class PagerComponent implements OnInit {
     }
 
     if (value !== null) {
+      this.page = null; // 一旦 null
       this.changePage(value);
       this.Editing = false;
     }
