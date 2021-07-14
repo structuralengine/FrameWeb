@@ -1025,7 +1025,7 @@ export class ThreeLoadService {
     if (!("LoadScale" in this.gui)) {
       const gui_step: number = 1;
       this.gui["LoadScale"] = this.scene.gui
-        .add(this.params, "LoadScale", 0, 200)
+        .add(this.params, "LoadScale", 0, 400)
         .step(gui_step)
         .onChange((value) => {
           this.LoadScale = value;

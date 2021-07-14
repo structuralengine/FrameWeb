@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as THREE from "three";
-import {Text} from 'troika-three-text'
+import { Text } from 'troika-three-text'
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +12,9 @@ export class ThreeLoadText {
 
   public init(): Text {
     const temp = this.create('', new THREE.Vector2(0, 0), 0.1, 'left', 'bottom');
-    temp.visible = false;
+    temp.visible = true;
     return temp
-  }
+  }s
   // 文字を描く
   public create(
     textString: string,
@@ -29,9 +29,6 @@ export class ThreeLoadText {
     // Set properties to configure:
     text.text = textString;
     text.fontSize = size;
-
-    text.rotateZ(Math.PI);
-    text.rotateY(Math.PI);
 
     text.anchorY = vartical;
     text.anchorX = horizontal;

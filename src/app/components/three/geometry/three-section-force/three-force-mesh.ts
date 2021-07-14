@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import * as THREE from "three";
-import {Text} from 'troika-three-text'
+import { Text } from 'troika-three-text'
 import { Vector2 } from 'three';
 import { ThreeLoadText } from '../three-load/three-load-text';
 import { noUndefined } from '@angular/compiler/src/util';
