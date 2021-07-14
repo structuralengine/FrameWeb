@@ -40,11 +40,11 @@ export class ThreeLoadDistribute {
       color: 0x0000ff,
       opacity: 0.3,
     });
-    this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true});
+    this.line_mat_Red = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true });
     this.line_mat_Green = new THREE.LineBasicMaterial({ color: 0x00ff00, vertexColors: true });
     this.line_mat_Blue = new THREE.LineBasicMaterial({ color: 0x0000ff, vertexColors: true });
-    this.line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true});
-    this.face_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xff0000,  transparent: true, side: THREE.DoubleSide, opacity: 0.3 });
+    this.line_mat_Pick = new THREE.LineBasicMaterial({ color: 0xff0000, vertexColors: true });
+    this.face_mat_Pick = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, side: THREE.DoubleSide, opacity: 0.3 });
   }
 
 
@@ -62,9 +62,9 @@ export class ThreeLoadDistribute {
   // row: 対象荷重が記述されている行数
   // offset: 配置位置（その他の荷重とぶつからない位置）
   // scale: スケール
-  public create( nodei: THREE.Vector3, nodej: THREE.Vector3, localAxis: any,
-    direction: string, pL1: number, pL2: number, P1: number, P2: number, 
-    row: number ): THREE.Group {
+  public create(nodei: THREE.Vector3, nodej: THREE.Vector3, localAxis: any,
+    direction: string, pL1: number, pL2: number, P1: number, P2: number,
+    row: number): THREE.Group {
 
     const offset: number = 0;
     const height: number = 1;
@@ -92,28 +92,28 @@ export class ThreeLoadDistribute {
     group0.add(child);
     group0.name = "group";
 
-      const group = new THREE.Group();
+    const group = new THREE.Group();
     group.add(group0);
     group["points"] = p.points;
     group["L1"] = p.L1;
     group["L"] = p.L;
     group["L2"] = p.L2;
     group["value"] = p.Pmax; // 大きい方の値を保存
-    group["P1"] = P1; 
-    group["P2"] = P2; 
+    group["P1"] = P1;
+    group["P2"] = P2;
     group["nodei"] = nodei;
     group["nodej"] = nodej;
     group["direction"] = direction;
     group["localAxis"] = localAxis;
     group["editor"] = this;
-  
+
     // 全体の向きを修正する
     if (!direction.includes("g")) {
-    
-      const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-      let A = Math.asin(XY.y) 
 
-      if( XY.x < 0){
+      const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
+      let A = Math.asin(XY.y)
+
+      if (XY.x < 0) {
         A = Math.PI - A;
       }
       group.rotateZ(A);
@@ -138,7 +138,7 @@ export class ThreeLoadDistribute {
           group.rotateX(Math.PI);
         }
       }
-    
+
     } else if (direction === "gx") {
       group.rotation.z = Math.asin(-Math.PI / 2);
     } else if (direction === "gz") {
@@ -337,7 +337,7 @@ export class ThreeLoadDistribute {
   }
 
   // ハイライトを反映させる
-  public setColor(group: any, text: Text[], dim, status: string): void{
+  public setColor(group: any, text: Text[], dim, status: string): void {
 
     const group0 = group.getObjectByName('group');
     const child = group0.getObjectByName('child');
@@ -345,26 +345,26 @@ export class ThreeLoadDistribute {
     let face_color = this.face_mat_Pick; //ハイライト用のカラー
     let line_color = this.line_mat_Pick;
 
-    if (status !== "select"){
+    if (status !== "select") {
       //デフォルトのカラーに戻す
       const direction: string = group.name.slice(-1);
-      if (direction === 'y'){
+      if (direction === 'y') {
         face_color = this.face_mat_Green;
-        line_color = this.line_mat_Green; 
+        line_color = this.line_mat_Green;
       } else if (direction === 'z') {
         face_color = this.face_mat_Blue;
         line_color = this.line_mat_Blue;
       }
-    } else{
+    } else {
       // 文字を表示
       this.setText(group, text);
     }
 
     // カラーの適用
-    for(const target of child.children) {
-      if (target.name === 'face'){
-        target.material = face_color; 
-      } else if (target.name === 'line'){
+    for (const target of child.children) {
+      if (target.name === 'face') {
+        target.material = face_color;
+      } else if (target.name === 'line') {
         target.material = line_color;
       }
     }
@@ -374,127 +374,124 @@ export class ThreeLoadDistribute {
   // 文字
   private setText(group: any, text: Text[]): void {
 
-      const direction = group.direction;
-      const localAxis = group.localAxis;
-      const scale1 = group.scale.y;
-      const scale2 = group.children[0].scale.y;
-      const points = group.points;
-      const nodei = group.nodei
-      const L1 = new THREE.Vector3(localAxis.x.x * group.L1, localAxis.x.y * group.L1, localAxis.x.z * group.L1)
-      const posi = new THREE.Vector3(nodei.x + L1.x, nodei.y + L1.y, nodei.z + L1.z ); 
+    const direction = group.direction;
+    const localAxis = group.localAxis;
+    const scale1 = group.scale.y;
+    const scale2 = group.children[0].scale.y;
+    const points = group.points;
 
-      const nodej = group.nodej
-      const L2 = new THREE.Vector3(localAxis.x.x * group.L2, localAxis.x.y * group.L2, localAxis.x.z * group.L2)
-      const posj = new THREE.Vector3(nodej.x - L2.x, nodej.y - L2.y, nodej.z - L2.z ); 
- 
-      const list = [{
-        text: text[0],
-        position: posi,
-        value: group.P1,
-        volume: points[1].y,
-        anchorY: 'top'
-      },{
-        text: text[1],
-        position: posj,
-        value: group.P2,
-        volume: points[3].y,
-        anchorY: 'bottom'
-      }];
+    const nodei = group.nodei
+    const L1 = new THREE.Vector3(localAxis.x.x * group.L1, localAxis.x.y * group.L1, localAxis.x.z * group.L1)
 
-      for(const target of list){
+    const nodej = group.nodej
+    const L2 = new THREE.Vector3(localAxis.x.x * group.L2, localAxis.x.y * group.L2, localAxis.x.z * group.L2)
 
-        const text = target.text;
-        if(target.value===0){
-          text.visible = false;
-          continue;
-        }
+    const list = [{
+      text: text[0],
+      position: new THREE.Vector3(nodei.x + L1.x, nodei.y + L1.y, nodei.z + L1.z),
+      value: group.P1,
+      volume: points[1].y,
+      anchorY: 'top'
+    }, {
+      text: text[1],
+      position: new THREE.Vector3(nodej.x - L2.x, nodej.y - L2.y, nodej.z - L2.z),
+      value: group.P2,
+      volume: points[3].y,
+      anchorY: 'bottom'
+    }];
 
-        text.visible = true;
-        text.text = target.value.toFixed(2) + 'kN/m';
+    for (const target of list) {
 
-        const V1 = new THREE.Vector3(localAxis[direction].x * target.volume, localAxis[direction].y * target.volume, localAxis[direction].z * target.volume);
-        V1.multiplyScalar(scale1).multiplyScalar(scale2);
-
-        const position = new THREE.Vector3(target.position.x, target.position.y, target.position.z );
-        if(Math.sign(target.value)>0){
-          position.add(V1);
-          text.anchorX = 'left';
-        }else{
-          position.sub(V1);
-          text.anchorX = 'right';
-        }
-
-        text.position.set(position.x, position.y, position.z);
-        text.rotation.set(0, 0, 0);
-
-        // 向きを修正する
-        const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
-        let A = Math.asin(XY.y);
-        if( XY.x < 0){
-          A = Math.PI - A;
-        }
-        text.rotateZ(A);
-        
-        const lenXY = Math.sqrt(
-          Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2)
-        );
-        const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
-        text.rotateY(-Math.asin(XZ.y));
-
-        if (localAxis.x.x === 0 && localAxis.x.y === 0) {
-          // 鉛直の部材
-          if (direction === "z") {
-            if(Math.sign(target.value)<0){
-              position.add(V1);
-              text.anchorX = 'left';
-            }else{
-              position.sub(V1);
-              text.anchorX = 'right';
-            }
-            text.rotateZ(Math.PI / 2);
-            text.rotateY(Math.PI);
-
-          } else if (direction === "y") {
-            if(Math.sign(target.value)>0){
-              position.add(V1);
-              text.anchorX = 'left';
-            }else{
-              position.sub(V1);
-              text.anchorX = 'right';
-            }
-            text.rotateZ(Math.PI/2);
-            text.rotateY(-Math.PI/2);
-
-          }
-        } else {
-          if (direction === "z") {
-            if(Math.sign(target.value)<0){
-              position.add(V1);
-              text.anchorX = 'left';
-            }else{
-              position.sub(V1);
-              text.anchorX = 'right';
-            }
-            text.rotateZ(Math.PI/2);
-            text.rotateY(-Math.PI/2);
-
-          } else if (direction === "y") {
-            if(Math.sign(target.value)<0){
-              position.add(V1);
-              text.anchorX = 'left';
-            }else{
-              position.sub(V1);
-              text.anchorX = 'right';
-            }
-
-            text.rotateZ(Math.PI/2);
-          }
-        }
-        text.anchorY = target.anchorY;
-        text.sync();
+      const text = target.text;
+      if (target.value === 0) {
+        text.visible = false;
+        continue;
       }
 
-    
+      text.visible = true;
+      text.text = target.value.toFixed(2) + ' kN/m';
+
+      // 向きを修正する
+      text.rotation.set(0, 0, 0);
+      const XY = new Vector2(localAxis.x.x, localAxis.x.y).normalize();
+      let A = Math.asin(XY.y);
+      if (XY.x < 0) {
+        A = Math.PI - A;
+      }
+      text.rotateZ(A);
+
+      const lenXY = Math.sqrt(
+        Math.pow(localAxis.x.x, 2) + Math.pow(localAxis.x.y, 2)
+      );
+      const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
+      text.rotateY(-Math.asin(XZ.y));
+
+      // 位置を修正する
+      const position = new THREE.Vector3(target.position.x, target.position.y, target.position.z);
+
+      const V1 = new THREE.Vector3(localAxis[direction].x * target.volume, localAxis[direction].y * target.volume, localAxis[direction].z * target.volume);
+      V1.multiplyScalar(scale1).multiplyScalar(scale2);
+
+      if (localAxis.x.x === 0 && localAxis.x.y === 0) {
+        // 鉛直の部材
+
+        if (direction === "z") {
+          if (Math.sign(target.value) < 0) {
+            position.add(V1);
+            text.anchorX = 'left';
+          } else {
+            position.sub(V1);
+            text.anchorX = 'right';
+          }
+          text.rotateZ(Math.PI / 2);
+          text.rotateY(Math.PI);
+
+        } else if (direction === "y") {
+          if (Math.sign(target.value) > 0) {
+            position.add(V1);
+            text.anchorX = 'left';
+          } else {
+            position.sub(V1);
+            text.anchorX = 'right';
+          }
+          text.rotateZ(Math.PI / 2);
+          text.rotateY(-Math.PI / 2);
+
+        }
+
+      } else {
+        // 鉛直以外の部材
+
+        if (direction === "z") {
+          if (Math.sign(target.value) < 0) {
+            position.add(V1);
+            text.anchorX = 'left';
+          } else {
+            position.sub(V1);
+            text.anchorX = 'right';
+          }
+          text.rotateZ(Math.PI / 2);
+          text.rotateY(-Math.PI / 2);
+
+        } else if (direction === "y") {
+          if (Math.sign(target.value) > 0) {
+            position.add(V1);
+            text.anchorX = 'left';
+          } else {
+            position.sub(V1);
+            text.anchorX = 'right';
+          }
+          text.rotateZ(Math.PI / 2);
+
+        }
+      }
+      text.anchorY = target.anchorY;
+
+      text.position.set(position.x, position.y, position.z);
+      text.sync();
+    }
+
+
   }
 
 

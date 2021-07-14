@@ -336,7 +336,9 @@ export class ThreeLoadService {
     this.currentIndex_child1 = index_row;
     this.currentIndex_child2 = index_column;
 
-    this.scene.render();
+    setTimeout(() => {
+      this.scene.render();
+    }, 100);
   }
 
   // ケースの荷重図を消去する
