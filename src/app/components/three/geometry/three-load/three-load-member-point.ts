@@ -12,6 +12,7 @@ import { RouterLinkWithHref } from '@angular/router';
 })
 export class ThreeLoadMemberPoint {
 
+  static id = 'PointMemberLoad';
 
   private point: ThreeLoadPoint;
   
@@ -95,6 +96,17 @@ export class ThreeLoadMemberPoint {
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
+    group["points"] = p.points;
+    group["L1"] = p.L1;
+    group["L"] = p.L;
+    group["L2"] = p.L2;
+    group["P1"] = P1;
+    group["P2"] = P2;
+    group["nodei"] = nodei;
+    group["nodej"] = nodej;
+    group["direction"] = direction;
+    group["localAxis"] = localAxis;
+    group["editor"] = this;
     group['value'] = p.Pmax; // 大きい方の値を保存　
 
     group.position.set(nodei.x, nodei.y, nodei.z);
@@ -135,26 +147,11 @@ export class ThreeLoadMemberPoint {
       group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "PointMemberLoad-" + row.toString() + '-' + direction.toString();
+    group.name = ThreeLoadMemberPoint.id + "-" + row.toString() + '-' + direction.toString();
 
     return group;
   }
 
-  // 荷重を削除する
-  // public dispose(group: THREE.Group){
-
-  //   const group0 = group.getObjectByName('group');
-  //   const child = group0.getObjectByName('child');
-
-  //   for (let target of child.children) {
-  //     if ( target.name.includes('PointLoad')){
-  //       this.point.dispose(target);
-  //     } else if(target.name === 'Dimension'){
-  //       this.dim.dispose(target);
-  //     }
-  //   }
-
-  // }
 
   // 座標
   private getPoints(

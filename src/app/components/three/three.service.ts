@@ -133,6 +133,10 @@ export class ThreeService {
       case "members":
         this.member.selectChange(index);
         break;
+      
+      case "elements":
+        this.member.selectChange(index, mode);
+        break;
 
       case "joints":
         this.joint.selectChange(index, index_sub);

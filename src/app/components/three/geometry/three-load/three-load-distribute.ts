@@ -10,6 +10,7 @@ import { ThreeLoadDimension } from "./three-load-dimension";
   providedIn: "root",
 })
 export class ThreeLoadDistribute {
+  static id = 'DistributeLoad';
 
   private face_mat_Red: THREE.MeshBasicMaterial;
   private face_mat_Green: THREE.MeshBasicMaterial;
@@ -98,7 +99,6 @@ export class ThreeLoadDistribute {
     group["L1"] = p.L1;
     group["L"] = p.L;
     group["L2"] = p.L2;
-    group["value"] = p.Pmax; // 大きい方の値を保存
     group["P1"] = P1;
     group["P2"] = P2;
     group["nodei"] = nodei;
@@ -106,6 +106,7 @@ export class ThreeLoadDistribute {
     group["direction"] = direction;
     group["localAxis"] = localAxis;
     group["editor"] = this;
+    group["value"] = p.Pmax; // 大きい方の値を保存
 
     // 全体の向きを修正する
     if (!direction.includes("g")) {
@@ -148,28 +149,11 @@ export class ThreeLoadDistribute {
     // 全体の位置を修正する
     group.position.set(nodei.x, nodei.y, nodei.z);
 
-    group.name = "DistributeLoad-" + row.toString() + '-' + direction.toString();  //例：DistributeLoad-3-y
+    // 例：DistributeLoad-3-y
+    group.name = ThreeLoadDistribute.id + "-" + row.toString() + '-' + direction.toString(); 
 
     return group;
   }
-
-  // // 荷重を削除する
-  // public dispose(group: THREE.Group){
-
-  //   const group0 = group.getObjectByName('group');
-
-  //   for(const item of group0.children){
-  //     if(item.name === 'text'){
-  //       this.text.dispose(item);
-  //     } else if(item.name === 'child'){
-  //       const dimensions = item.getObjectByName('Dimension');
-  //       for(const dim of dimensions.children){
-  //         this.dim.dispose(dim);
-  //       }
-  //     }
-  //   }
-
-  // }
 
   private getColor(direction: string): number {
     let my_color = 0xff0000;

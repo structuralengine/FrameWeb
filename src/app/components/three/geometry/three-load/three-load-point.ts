@@ -6,6 +6,8 @@ import { ThreeLoadText } from "./three-load-text";
   providedIn: 'root'
 })
 export class ThreeLoadPoint {
+  
+  static id = 'PointLoad';
 
   private line_mat_Red: THREE.LineBasicMaterial;
   private line_mat_Green: THREE.LineBasicMaterial;
@@ -88,10 +90,11 @@ export class ThreeLoadPoint {
 
     const group = new THREE.Group();
     group.add(group0);
-
-    group.name = "PointLoad-" + row.toString() + '-' + direction.toString();
+    group["direction"] = direction;
+    group["editor"] = this;
     group['value'] = value; //値を保存
 
+    group.name = ThreeLoadPoint.id + "-" + row.toString() + '-' + direction.toString();
     // 向きを変更する
     if (direction === "ty") {
       group.rotateZ(Math.PI / 2);
@@ -105,17 +108,7 @@ export class ThreeLoadPoint {
     return group;
   }
 
-  // public dispose(group: any): void{
-  //   const group0 = group.getObjectByName('group');
-
-  //   for(const item of group0.children){
-  //     if(item.name === 'text'){
-  //       this.text.dispose(item);
-  //     }
-  //   }
-  // }
-
-  // 大きさを反映する
+   // 大きさを反映する
   public setSize(group: any, size: number): void {
     for (const item of group.children) {
       item.scale.set(size, size, size);

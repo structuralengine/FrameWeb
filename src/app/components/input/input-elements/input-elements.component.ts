@@ -25,7 +25,7 @@ export class InputElementsComponent implements OnInit {
       { title: "G(kN/m2)", dataType: "float", format: "0.00e+00", dataIndx: "G", sortable: false, width: 130 },
     ]},
     { title: '膨張係数', align: 'center', colModel: [
-      { title: "", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
+      { title: "", dataType: "float", format: "#.0000000", dataIndx: "Xp", sortable: false, width: 100 },
     ]},
     { title: '断面積', align: 'center', colModel: [
       { title: "A(m2)", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },
@@ -43,7 +43,7 @@ export class InputElementsComponent implements OnInit {
       { title: "E(kN/m2)", dataType: "float", format: "0.00e+00", dataIndx: "E", sortable: false, width: 120 },
     ]},
     { title: '膨張係数', align: 'center', colModel: [
-      { title: "", dataType: "float", format: "#.000000", dataIndx: "Xp", sortable: false, width: 100 },
+      { title: "", dataType: "float", format: "#.0000000", dataIndx: "Xp", sortable: false, width: 100 },
     ]},
     { title: '断面積', align: 'center', colModel: [
       { title: "A(m2)", dataType: "float", format: "#.0000", dataIndx: "A", sortable: false, width: 100 },

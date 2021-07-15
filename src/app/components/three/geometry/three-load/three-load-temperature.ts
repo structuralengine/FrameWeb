@@ -12,6 +12,8 @@ import { ThreeLoadText } from "./three-load-text";
   providedIn: 'root'
 })
 export class ThreeLoadTemperature {
+  
+  static id = 'TemperatureLoad';
 
   private colors: number[];
   private arrow_mat: THREE.MeshBasicMaterial;
@@ -94,12 +96,6 @@ export class ThreeLoadTemperature {
     child.add(arrow);
     child.name = "child";
 
-    /*/ 寸法線
-    const dim = this.getDim(L, offset);
-    dim.visible = false;
-    child.add(dim);
-    */
-
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -108,15 +104,14 @@ export class ThreeLoadTemperature {
     group0.add(child);
     group0.name = "group";
 
-    /*/ 文字を追加する
-    const text = this.getText(P1, L, offset);
-    text.visible = false;
-    group0.add(text);
-    */
-
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
+    group["P1"] = P1;
+    group["nodei"] = nodei;
+    group["nodej"] = nodej;
+    group["localAxis"] = localAxis;
+    group["editor"] = this;
     group['value'] = Math.abs(P1); // 大きい方の値を保存　
 
     group.position.set(nodei.x, nodei.y, nodei.z);
@@ -129,7 +124,7 @@ export class ThreeLoadTemperature {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "TemperatureLoad-" + row.toString();
+    group.name = ThreeLoadTemperature.id + "-" + row.toString();
     return group;
   }
 

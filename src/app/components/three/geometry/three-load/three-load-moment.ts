@@ -7,6 +7,8 @@ import { ThreeLoadText } from "./three-load-text";
   providedIn: 'root'
 })
 export class ThreeLoadMoment {
+  
+  static id = 'MomentLoad';
 
   private arrow_mat_Red: THREE.MeshBasicMaterial;
   private arrow_mat_Green: THREE.MeshBasicMaterial;
@@ -162,12 +164,14 @@ export class ThreeLoadMoment {
 
     const group = new THREE.Group();
     group.add(group0);
+    group["direction"] = direction;
+    group["editor"] = this;
+    group['value'] = Math.abs(value); //値を保存
+
+    group.name = ThreeLoadMoment.id + "-" + row.toString() + '-' + direction.toString();
 
     // 位置を修正する
     group.position.set(node.x, node.y, node.z);
-
-    group.name = "MomentLoad-" + row.toString() + '-' + direction.toString();
-    group['value'] = Math.abs(value); //値を保存
 
     return group;
   }

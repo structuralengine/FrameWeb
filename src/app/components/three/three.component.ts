@@ -4,7 +4,6 @@ import * as THREE from 'three';
 import { SceneService } from './scene.service';
 import { ThreeService } from './three.service';
 import html2canvas from 'html2canvas';
-import { ThreeLoadService } from './geometry/three-load/three-load.service';
 
 @Component({
   selector: 'app-three',
@@ -14,7 +13,8 @@ import { ThreeLoadService } from './geometry/three-load/three-load.service';
 export class ThreeComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
-  @ViewChild('canvas') img: ElementRef;
+  @ViewChild('img') img: ElementRef;
+  @ViewChild('screen') screen: ElementRef;
   @ViewChild('downloadLink') downloadLink: ElementRef;
 
   private get canvas(): HTMLCanvasElement {
@@ -25,8 +25,7 @@ export class ThreeComponent implements AfterViewInit, OnDestroy {
 
   constructor(private ngZone: NgZone,
               private scene: SceneService,
-              private three: ThreeService,
-              private load: ThreeLoadService) {
+              private three: ThreeService) {
     THREE.Object3D.DefaultUp.set(0, 0, 1);
     
   }
@@ -39,7 +38,6 @@ export class ThreeComponent implements AfterViewInit, OnDestroy {
                       window.innerWidth,
                       window.innerHeight - 120);
     this.three.OnInit();
-    this.load.init();
 
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.labelRendererDomElement();
@@ -50,7 +48,6 @@ export class ThreeComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.load.dispose();
   }
 
   animate(): void {
@@ -111,18 +108,18 @@ export class ThreeComponent implements AfterViewInit, OnDestroy {
 
 
   public downloadImage(){
+    // html2canvas(this.screen.nativeElement).then(canvas => {
     html2canvas(this.canvasRef.nativeElement).then(canvas => {
       // this.scene.render();
       this.img.nativeElement.src = canvas.toDataURL();
       this.downloadLink.nativeElement.href = canvas.toDataURL('image/png');
+
       const date = new Date();
-      const dateFormat = date.getFullYear()  + "_" +
-				(date.getMonth() + 1)  + "_" +
-				 date.getDate() + "_" +
-				 date.getHours() + "_"+
-				 date.getMinutes()  + "_" +
-				 date.getSeconds()  ;
-      this.downloadLink.nativeElement.download = dateFormat;
+      const filename = date.getFullYear()  + "_" +
+				(date.getMonth() + 1)  + "_" +  date.getDate() + "_" +
+        date.getHours() + date.getMinutes() + date.getSeconds()  + ".png";
+
+        this.downloadLink.nativeElement.download = filename;
       this.downloadLink.nativeElement.click();
     });
   }

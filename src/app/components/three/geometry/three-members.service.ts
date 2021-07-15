@@ -87,13 +87,12 @@ export class ThreeMembersService {
     // メンバーデータを入手
     const jsonData = this.member.getMemberJson(0);
     const jsonKeys = Object.keys(jsonData);
-    if (jsonKeys.length <= 0) {
-      this.ClearData();
-      return null;
-    }
 
     // 要素を排除する
     this.ClearData();
+    if (jsonKeys.length <= 0) {
+      return null;
+    }
 
     // 新しい入力を適用する
     for (const key of jsonKeys) {
@@ -125,6 +124,7 @@ export class ThreeMembersService {
         new THREE.MeshBasicMaterial({ color: 0x000000 })
       );
       mesh.name = "member" + key;
+      mesh['element'] = 'element' + member.e;
       mesh.rotation.z = Math.acos(v.y / len);
       mesh.rotation.y = 0.5 * Math.PI + Math.atan2(v.x, v.z);
       mesh.position.set(x, y, z);
@@ -176,7 +176,7 @@ export class ThreeMembersService {
   }
 
   //シートの選択行が指すオブジェクトをハイライトする
-  public selectChange(index): void{
+  public selectChange(index, mode = "members"): void{
 
     if (this.currentIndex === index){
       //選択行の変更がないとき，何もしない
@@ -185,12 +185,15 @@ export class ThreeMembersService {
 
     //全てのハイライトを元に戻し，選択行のオブジェクトのみハイライトを適応する
     for (let item of this.memberList.children){
-
       item['material']['color'].setHex(0X000000);
-
-      if (item.name === 'member' + index.toString()){
-
-        item['material']['color'].setHex(0X00A5FF);
+      if( mode === "elements"){
+        if (item['element'] === 'element' + index.toString()){
+          item['material']['color'].setHex(0XFF0000);
+        }
+      } else {
+        if (item.name === 'member' + index.toString()){
+          item['material']['color'].setHex(0XFF0000);
+        }
       }
     }
 

@@ -10,6 +10,8 @@ import { ThreeLoadMoment } from './three-load-moment';
   providedIn: 'root'
 })
 export class ThreeLoadTorsion {
+  
+  static id = 'TorsionLoad';
 
   private moment: ThreeLoadMoment;
 
@@ -71,21 +73,26 @@ export class ThreeLoadTorsion {
       child.add(arrow);
     }
 
-    /*/ 寸法線
-    const dim = this.getDim(points, L1, L, L2);
-    dim.visible = false;
-    child.add(dim);
-    */
-
     // 全体
     child.name = "child";
 
     const group = new THREE.Group();
     group.add(child);
-    group.name = "TorsionLoad";
+    group["points"] = p.points;
+    group["L1"] = p.L1;
+    group["L"] = p.L;
+    group["L2"] = p.L2;
+    group["P1"] = P1;
+    group["P2"] = P2;
+    group["nodei"] = nodei;
+    group["nodej"] = nodej;
+    group["direction"] = direction;
+    group["localAxis"] = localAxis;
+    group["editor"] = this;
+    group['value'] = p.Pmax; // 大きい方の値を保存　
+    group.name = ThreeLoadTorsion.id;
 
     // 全体の位置を修正する
-    group['value'] = p.Pmax; // 大きい方の値を保存　
 
     group.position.set(nodei.x, nodei.y, nodei.z);
 
@@ -97,7 +104,7 @@ export class ThreeLoadTorsion {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "TorsionLoad-" + row.toString();
+    group.name = ThreeLoadTorsion.id + "-" + row.toString();
 
     return group;
   }

@@ -11,6 +11,8 @@ import { RouterLinkWithHref } from '@angular/router';
   providedIn: 'root'
 })
 export class ThreeLoadMemberMoment {
+  
+  static id = 'MomentMemberLoad';
 
   private moment: ThreeLoadMoment;
 
@@ -51,7 +53,6 @@ export class ThreeLoadMemberMoment {
     const p = this.getPoints(
       nodei, nodej, direction, pL1, pL2, P1, P2, height);
 
-    const points: THREE.Vector3[] = p.points;
     const L1 = p.L1;
     const L2 = p.L2;
 
@@ -59,12 +60,6 @@ export class ThreeLoadMemberMoment {
     for (const arrow of this.getArrow(direction, [P1, P2], [L1, L2])) {
       child.add(arrow);
     }
-
-    /*/ 寸法線
-    const dim = this.getDim(points, L1, L2);
-    dim.visible = false;
-    child.add(dim);
-    */
 
     // 全体
     child.name = "child";
@@ -77,6 +72,17 @@ export class ThreeLoadMemberMoment {
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
+    group["points"] = p.points;
+    group["L1"] = p.L1;
+    group["L"] = p.L;
+    group["L2"] = p.L2;
+    group["P1"] = P1;
+    group["P2"] = P2;
+    group["nodei"] = nodei;
+    group["nodej"] = nodej;
+    group["direction"] = direction;
+    group["localAxis"] = localAxis;
+    group["editor"] = this;
     group['value'] = p.Pmax; // 大きい方の値を保存　
 
     group.position.set(nodei.x, nodei.y, nodei.z);
@@ -97,13 +103,6 @@ export class ThreeLoadMemberMoment {
       group.rotateY(-Math.asin(XZ.y));
 
 
-      //個別の集中モーメント荷重の向きを修正する
-      /*if (direction === "z") {
-        group.rotateX(-Math.PI / 2);
-      } else if (direction === "y") {
-        group.rotateX(Math.PI);
-      }*/
-
     } else if (direction === "gx") {
       group.rotation.z = Math.asin(-Math.PI / 2);
 
@@ -111,7 +110,7 @@ export class ThreeLoadMemberMoment {
       group.rotation.x = Math.asin(-Math.PI / 2);
 
     }
-    group.name = "MomentMemberLoad-" + row.toString() + '-' + direction.toString();
+    group.name = ThreeLoadMemberMoment.id + "-" + row.toString() + '-' + direction.toString();
 
     return group;
   }

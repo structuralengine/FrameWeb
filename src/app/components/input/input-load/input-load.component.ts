@@ -27,7 +27,18 @@ export class InputLoadComponent implements OnInit {
       { title: 'マーク', align: 'center', colModel: [
         { title: "(1,2,9)", dataType: "integer", dataIndx: "mark", sortable: false, width: 60, }]},
       { title: 'L1', align: 'center', colModel: [
-        { title: "(m)", dataType: "float", format: "#.000", dataIndx: "L1", sortable: false, width: 70, }]},
+        { title: "(m)", dataType: "string", align: 'right', dataIndx: "L1", sortable: false, width: 70, 
+          format: (val) => {
+            const num = this.helper.toNumber(val);
+            if(num === null) return null
+            const str = val.toString();
+            if(num===0 && str.charAt(0) === '-'){
+              return '-0.000'
+            } else {
+              return num.toFixed(3);
+            }
+          }}
+      ]},
       { title: 'L2', align: 'center', colModel: [
         { title: "(m)", dataType: "float", format: "#.000", dataIndx: "L2", sortable: false, width: 70, }]},
       { title: 'P1', align: 'center', colModel: [
@@ -63,7 +74,18 @@ export class InputLoadComponent implements OnInit {
       { title: 'マーク', align: 'center', colModel: [
         { title: "(1,2,9)", dataType: "integer", dataIndx: "mark", sortable: false, width: 60, }]},
       { title: 'L1', align: 'center', colModel: [
-        { title: "(m)", dataType: "float", format: "#.000", dataIndx: "L1", sortable: false, width: 70, }]},
+        { title: "(m)", dataType: "string", align: 'right', dataIndx: "L1", sortable: false, width: 70, 
+          format: (val) => {
+            const num = this.helper.toNumber(val);
+            if(num === null) return null
+            const str = val.toString();
+            if(num===0 && str.charAt(0) === '-'){
+              return '-0.000'
+            } else {
+              return num.toFixed(3);
+            }
+          }}
+      ]},
       { title: 'L2', align: 'center', colModel: [
         { title: "(m)", dataType: "float", format: "#.000", dataIndx: "L2", sortable: false, width: 70, }]},
       { title: 'P1', align: 'center', colModel: [
@@ -168,8 +190,12 @@ export class InputLoadComponent implements OnInit {
       this.three.selectChange("load_values", row, column);
     },
     change: (evt, ui) => {
-
       for (const range of ui.updateList){
+        // L1行に 数字ではない入力がされていたら削除する
+        const L1 = this.helper.toNumber(range.rowData["L1"]);
+        if ( L1 === null) {
+          range.rowData["L1"] = null;
+        }
         const row = range.rowIndx + 1;
         this.three.changeData("load_values", row);
       }
@@ -178,4 +204,14 @@ export class InputLoadComponent implements OnInit {
 
   width = (this.helper.dimension === 3) ? 1020 : 810 ;
 
+  private formatL1  (val): string {
+    const num = this.helper.toNumber(val);
+    if(num === null) return null
+    const str = val.toString();
+    if(num===0 && str.charAt(0) === '-'){
+      return '-0.000'
+    } else {
+      return num.toFixed(3);
+    }
+  }
 }

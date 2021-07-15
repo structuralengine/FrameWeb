@@ -13,6 +13,7 @@ import { ThreeLoadText } from "./three-load-text";
 })
 export class ThreeLoadAxial {
 
+  static id = 'AxialLoad';
   private matLine: LineMaterial;
   private matLine_Pick: LineMaterial;
   private arrow_mat: THREE.MeshBasicMaterial;
@@ -75,11 +76,6 @@ export class ThreeLoadAxial {
     child.add(arrow);
     child.name = "child";
 
-    // 寸法線
-    // const dim = this.getDim(L1, L, L2, offset);
-    // dim.visible = false;
-    // child.add(dim);
-
     // 全体
     child.name = "child";
     child.position.y = offset;
@@ -88,15 +84,20 @@ export class ThreeLoadAxial {
     group0.add(child);
     group0.name = "group";
 
-    // 文字を追加する
-    // for (const text of this.getText(P1, P2, L1, L1 + L, offset)) {
-    //   text.visible = false;
-    //   group0.add(text);
-    // }
-
     // 全体の位置を修正する
     const group = new THREE.Group();
     group.add(group0);
+    group["points"] = points;
+    group["L1"] = L1;
+    group["L"] = L;
+    group["L2"] = L2;
+    group["P1"] = P1;
+    group["P2"] = P2;
+    group["nodei"] = nodei;
+    group["nodej"] = nodej;
+    group["direction"] = direction;
+    group["localAxis"] = localAxis;
+    group["editor"] = this;
     group['value'] = Math.max(Math.abs(P1), Math.abs(P2)); // 大きい方の値を保存　
 
     group.position.set(nodei.x, nodei.y, nodei.z);
@@ -114,26 +115,9 @@ export class ThreeLoadAxial {
     const XZ = new Vector2(lenXY, localAxis.x.z).normalize();
     group.rotateY(-Math.asin(XZ.y));
 
-    group.name = "AxialLoad-" + row.toString();
+    group.name = ThreeLoadAxial.id + "-" + row.toString();
     return group;
   }
-
-  // 荷重を削除する
-  // public dispose(group: THREE.Group){
-
-  //   const group0 = group.getObjectByName('group');
-
-  //   for(const item of group0.children){
-  //     if(item.name === 'text'){
-  //       this.text.dispose(item);
-  //     } else if(item.name === 'child'){
-  //       const dimensions = item.getObjectByName('Dimension');
-  //       for(const dim of dimensions.children){
-  //         this.dim.dispose(dim);
-  //       }
-  //     }
-  //   }
-  // }
 
 
   /*/ 寸法線

@@ -1,14 +1,10 @@
 <a class="camera" (click)="downloadImage()"><i class="fas fa-camera"></i></a>
-
-
-<canvas #myCanvas id="myCanvas"
-style="overflow:hidden; position: absolute;"
-(mousedown)="onMouseDown($event)" 
-(mouseup)="onMouseUp($event)"
-(mousemove)="onMouseMove($event)">
-</canvas>
-
+<div #screen id="screen">
+    <canvas #myCanvas id="myCanvas" style="overflow:hidden; position: absolute;" (mousedown)="onMouseDown($event)"
+        (mouseup)="onMouseUp($event)" (mousemove)="onMouseMove($event)">
+    </canvas>
+</div>
 <div id="download">
-    <img #canvas>
+    <img #img>
     <a #downloadLink></a>
 </div>
